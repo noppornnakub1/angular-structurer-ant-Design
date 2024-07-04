@@ -30,6 +30,10 @@ export const routes: Routes = [
         path: "supplier",
         loadChildren: () => import("./modules/supplier/supplier.routes")
       },
+      {
+        path: "user-manager",
+        loadChildren: () => import("./modules/user-manager/user-manager.routes")
+      },
     ]
   }
 ];

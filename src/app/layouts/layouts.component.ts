@@ -39,8 +39,8 @@ export class LayoutsComponent {
     { title: 'Dashboard', icon: 'dashboard', label: 'Dashboard', route: '/feature/dashboard' },
     { title: 'Customer', icon: 'user', label: 'Customer', route: '/feature/customer' },
     { title: 'Supplier', icon: 'shop', label: 'Supplier', route: '/feature/supplier' },
-    { title: 'User', icon: 'team', label: 'User', route: '/user' },
-    { title: 'Role', icon: 'solution', label: 'Role', route: '/role' }
+    { title: 'User', icon: 'team', label: 'User', route: '/feature/user-manager/user' },
+    { title: 'Role', icon: 'solution', label: 'Role', route: '/feature//user-manager/role' }
   ];
   
 

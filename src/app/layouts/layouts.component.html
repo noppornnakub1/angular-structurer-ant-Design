@@ -22,10 +22,31 @@
   </nz-sider>
   <nz-layout>
     <nz-header>
-      <div class="app-header">
-        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+      <div class="app-header display-flex justify-content-between     align-items-center ">
+        <span class="header-trigger " (click)="isCollapsed = !isCollapsed">
           <span class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
+          <b class="ml-3 title-name-label">test twst</b>
         </span>
+        <div>
+      
+          <span nz-icon nzType="user-switch" class="font-size-22 mr-6 cursor-pointer" [nzSpin]="false" nz-popover
+            nzPopoverTitle="ผู้ใช้งาน" [nzPopoverContent]="contentTemplateUser" nzPopoverPlacement="bottom"></span>
+            <span nz-icon nzType="logout" class="font-size-22 mr-7 cursor-pointer" (click)="navigateTo('/auth')" [nzSpin]="false" nz-popover
+            nzPopoverPlacement="bottom"></span>
+        </div>
+        <ng-template #contentTemplateUser>
+          <div class=" mb-4 display-flex mt-1 align-items-center">
+            <nz-avatar class=" ml-1" [nzSize]="36" nzIcon="user"></nz-avatar>
+            <div class="display-grid ml-2">
+              <b class="slate-gray-color font-size-17 ">{{  this.currentUser?.name }}</b>
+              <span class="slate-gray-color  font-size-14">{{ this.currentUser?.username}}</span>
+            </div>
+          </div>
+          <!-- <div>
+            <button (click)="navigateTo('/auth')" class="button-logout-icon">ออกจากระบบ</button>
+          </div> -->
+        </ng-template>
+      
       </div>
     </nz-header>
     <nz-content>

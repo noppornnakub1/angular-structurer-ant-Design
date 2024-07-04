@@ -3,6 +3,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { NgZorroAntdModule } from '../shared/ng-zorro-antd.module';
+import { AuthMockupService } from '../core/mockup-api/auth-mockup.service';
+import { IUser } from '../modules/user-manager/interface/user.interface';
 
 
 export interface MenuItem {
@@ -21,10 +23,10 @@ export interface MenuItem {
 })
 export class LayoutsComponent {
   isCollapsed = false;
-
+  currentUser!: IUser | null;
 
   currentRoute!: string;
-
+  private readonly authService = inject(AuthMockupService);
 
   constructor(private _router: Router) {
     this.currentRoute = this._router.url;  // Initialize currentRoute
@@ -32,6 +34,10 @@ export class LayoutsComponent {
       filter(event => event instanceof NavigationEnd)
     ).subscribe(event => {
       this.currentRoute = (event as NavigationEnd).urlAfterRedirects;
+    });
+    this.authService.currentUser.subscribe(user => {
+      this.currentUser = user;
+     
     });
   }
 
@@ -51,8 +57,6 @@ export class LayoutsComponent {
 
   isActive(route: string): boolean {
     const currentRoute = this._router.url;
-    console.log(currentRoute,route);
-    
     return currentRoute.startsWith(route);
   }
 

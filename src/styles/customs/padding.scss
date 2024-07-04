@@ -1,0 +1,29 @@
+@for $i from 1 through 30 {
+  .p-#{$i} {
+    padding: $i * 5px;
+  }
+}
+
+@for $i from 1 through 30 {
+  .pt-#{$i} {
+    padding-top: $i * 5px;
+  }
+}
+
+@for $i from 1 through 30 {
+  .pb-#{$i} {
+    padding-bottom: $i * 5px;
+  }
+}
+
+@for $i from 1 through 30 {
+  .pl-#{$i} {
+    padding-left: $i * 5px;
+  }
+}
+
+@for $i from 1 through 30 {
+  .pr-#{$i} {
+    padding-right: $i * 5px;
+  }
+}

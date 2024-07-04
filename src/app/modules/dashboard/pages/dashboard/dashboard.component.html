@@ -1,1 +1,60 @@
-<p>dashboard works!</p>
+<div class="content-card-search">
+  <h2>Dashboard</h2>
+  <div nz-row >
+      <div nz-col [nzXs]="24" [nzMd]="24" [nzLg]="5" class="pr-3">
+        <nz-form-label nzNoColon>ชื่อ</nz-form-label>
+        <nz-input-group nzPrefixIcon="search" class="form-input">
+          <input nz-input  placeholder="ชื่อ"
+            />
+        </nz-input-group>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
+        <nz-form-label nzNoColon>สกุล</nz-form-label>
+        <nz-input-group nzPrefixIcon="search" class="form-input">
+          <input nz-input  placeholder="สกุล"
+      />
+        </nz-input-group>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
+        <nz-form-label nzNoColon>สถานะ</nz-form-label>
+        <nz-input-group nzPrefixIcon="search" class="form-input">
+          <input nz-input  placeholder="สถานะ"  />
+        </nz-input-group>
+      </div>
+     
+    </div>
+    <div class="mt-5 display-flex justify-center ">
+      <button nz-button nzType="primary" class="mr-2">ค้นหา</button>
+      <button nz-button nzType="default" >ล้างการค้นหา</button>
+    </div>
+</div>
+<div class="content-data-table mt-3">
+  <nz-table #basicTable  nzBordered [nzData]="listOfData">
+      <thead>
+        <tr>
+          <th>ลำดับที่</th>
+          <th>ชื่อ</th>
+          <th>สกุล</th>
+          <th>สถานะ</th>
+          <th>Acc Approve Status</th>
+          <th>Fin Approve Status</th>
+          <th>Sync Status</th>
+  
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of basicTable.data; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ data.name }}</td>
+          <td>{{ data.group }}</td>
+          <td>{{ data.status }}</td>
+          <td>{{ data.accApproveStatus }}</td>
+          <td>{{ data.finApproveStatus }}</td>
+          <td>{{ data.syncStatus }}</td>
+          
+        </tr>
+      </tbody>
+    </nz-table>
+    
+</div>
+

@@ -28,13 +28,13 @@ export class SignInComponent {
   }
 
   ngOnInit(): void { }
-
+  
   login(): void {
     if (this.loginForm.valid) {
       const { username, password } = this.loginForm.value;
       this.authService.login(username, password).subscribe(
         response => {
-          if (response) {
+          if (response && response.user) {
             this.router.navigate(['/feature/dashboard']);
             console.log('Login successful', response);
           } else {

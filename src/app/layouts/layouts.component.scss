@@ -70,11 +70,9 @@ nz-header {
 }
 
 nz-content {
-    margin: 24px;
+    margin: 14px;
 }
-
-.inner-content {
-    padding: 24px;
-    background: #fff;
-    height: 100%;
-}
+.active {
+    background-color: #1890ff;
+    color: #fff;
+  }

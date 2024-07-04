@@ -1,20 +1,14 @@
+// auth-mockup.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, BehaviorSubject } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { IUser } from '../../modules/user-manager/interface/user.interface';
 
-
-interface User {
-  id: number;
-  username: string;
-  password: string;
-  name: string;
-  token: string;
-}
 
 interface LoginResponse {
   token: string;
-  user: User;
+  user: IUser;
 }
 
 @Injectable({
@@ -22,14 +16,21 @@ interface LoginResponse {
 })
 export class AuthMockupService {
   private usersUrl = '/assets/data/users.json';  // URL to web api
+  private currentUserSubject: BehaviorSubject<IUser | null>;
+  public currentUser: Observable<IUser | null>;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    const storedUser = localStorage.getItem('currentUser');
+    this.currentUserSubject = new BehaviorSubject<IUser | null>(storedUser ? JSON.parse(storedUser) : null);
+    this.currentUser = this.currentUserSubject.asObservable();
+  }
 
   login(username: string, password: string): Observable<LoginResponse | null> {
-    return this.http.get<User[]>(this.usersUrl).pipe(
+    return this.http.get<IUser[]>(this.usersUrl).pipe(
       map(users => {
         const user = users.find(u => u.username === username && u.password === password);
         if (user) {
+          this.setUser(user);
           return {
             token: user.token,
             user: user
@@ -39,6 +40,20 @@ export class AuthMockupService {
       }),
       catchError(this.handleError<LoginResponse>('login', undefined))
     );
+  }
+
+  setUser(user: IUser): void {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    this.currentUserSubject.next(user);
+  }
+
+  getUser(): IUser | null {
+    return this.currentUserSubject.value;
+  }
+
+  logout(): void {
+    localStorage.removeItem('currentUser');
+    this.currentUserSubject.next(null);
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

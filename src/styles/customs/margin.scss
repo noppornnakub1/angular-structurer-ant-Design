@@ -1,0 +1,29 @@
+@for $i from 1 through 30 {
+  .m-#{$i} {
+    margin: $i * 5px;
+  }
+}
+
+@for $i from 1 through 30 {
+  .mt-#{$i} {
+    margin-top: $i * 5px;
+  }
+}
+
+@for $i from 1 through 30 {
+  .mb-#{$i} {
+    margin-bottom: $i * 5px;
+  }
+}
+
+@for $i from 1 through 30 {
+  .ml-#{$i} {
+    margin-left: $i * 5px;
+  }
+}
+
+@for $i from 1 through 30 {
+  .mr-#{$i} {
+    margin-right: $i * 5px;
+  }
+}

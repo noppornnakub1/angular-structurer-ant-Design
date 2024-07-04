@@ -1,0 +1,250 @@
+@import "./customs/margin.scss";
+@import "./customs/padding.scss";
+@import "./customs/colors.scss";
+@import "./customs/font-size.scss";
+
+@font-face {
+  font-family: "Anupark";
+  src: url(../assets/fonts/anupark/anupark-regular.ttf);
+  font-display: swap;
+}
+
+* {
+  font-family: "Anupark", sans-serif, Arial, Helvetica;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.h-100vh {
+  height: 100vh;
+}
+
+.full-width-line {
+  width: 100%;
+  height: 3.5px; // Adjust the height as needed
+  background: linear-gradient(
+    to right,
+    #ff0000,
+    #ff6600,
+    #ffcc00,
+    #99ff00,
+    #00ff66,
+    #00ccff,
+    #0066ff,
+    #9900ff,
+    #ff00cc,
+    #ff0066
+  ); // Set the color of the line
+  margin: 0; // Remove default margin
+  padding: 0; // Remove default padding
+}
+
+.display-grid {
+  display: grid;
+}
+
+.ant-select-show-search.ant-select:not(.ant-select-customize-input)
+  .ant-select-selector {
+  border-radius: 7px;
+}
+
+.ant-select-disabled.ant-select:not(.ant-select-customize-input)
+  .ant-select-selector {
+  color: rgba(0, 0, 0, 0.25);
+  background: #eaeaea;
+  cursor: not-allowed;
+  border-radius: 7px;
+}
+
+.display-flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.border-none {
+  border: none;
+}
+
+.border-radius-2 {
+  border-radius: 2px;
+}
+
+.border-radius-3 {
+  border-radius: 3px;
+}
+
+.border-radius-4 {
+  border-radius: 4px;
+}
+
+.border-radius-5 {
+  border-radius: 5px;
+}
+
+.border-radius-6 {
+  border-radius: 6px;
+}
+
+.overflow-h {
+  overflow: hidden;
+}
+
+.input-group-field {
+  padding: 12px;
+  border-radius: 7px;
+}
+
+.content-card-search{
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.content-data-table{
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+
+.content-card{
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+.form-input {
+  padding: 8px;
+  border-radius: 6px;
+}
+.container-table {
+  margin-block: 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+    rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  nz-table {
+    overflow-x: auto;
+    /* Add horizontal scrollbar for small screens */
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.card-form-custom {
+  padding: 24px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+    rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+tbody > tr:hover > td {
+  background-color: #f1f4ff !important;
+}
+
+.hover:hover {
+  background-color: #f1f4ff !important;
+}
+
+nz-table {
+  overflow: auto;
+  th {
+    text-align: center !important;
+  }
+
+  // td {
+  //   span {
+  //     cursor: pointer;
+  //     font-size: 20px;
+  //   }
+  // }
+}
+
+.ant-modal-body {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.ant-modal-content {
+  border-radius: 7px !important; /* ปรับค่าตามต้องการ */
+}
+
+.custom-card {
+  border-radius: 7px;
+  background-color: #fff;
+  padding: 0px 0px 10px 0px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+pre span {
+  white-space: normal;
+}
+.string {
+  color: #827e18;
+}
+.number {
+  color: #152ab4;
+}
+.boolean {
+  color: #008080;
+}
+.null {
+  color: magenta;
+}
+.key {
+  color: red;
+}
+
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  border-radius: 7px;
+}
+.ant-pagination-options-size-changer.ant-select .ant-select-selector {
+  display: inline-block;
+  width: auto;
+  border-radius: 0px;
+}
+
+.ant-modal-close-x {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  right: 28px;
+  bottom: 7px;
+}
+
+.display-flex-align-justify-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,9 +1,10 @@
+
 <div class="login-container">
   <div class="login-form">
     <form [formGroup]="loginForm" (ngSubmit)="login()">
       <div class="logo">
       </div>
-      <h1>Welcome back!</h1>
+      <h1>One Portal</h1>
       <p>Enter to get unlimited access to data & information.</p>
       <nz-form-item>
         <nz-form-control>
@@ -28,23 +29,11 @@
       <div *ngIf="errorMessage" class="error-message">
         {{ errorMessage }}
       </div>
-
-      <nz-form-item>
-        <nz-form-control>
-          <label nz-checkbox>Remember me</label>
-          <a class="login-form-forgot" href="">Forgot your password?</a>
-        </nz-form-control>
-      </nz-form-item>
+   
       <nz-form-item>
         <button [disabled]="loginForm.invalid" nz-button nzType="primary" class="login-form-button">Log In</button>
       </nz-form-item>
-      <div class="login-form-other">
-        <p>Or, Login with</p>
-        <button nz-button nzType="default" nzShape="round" class="google-button">
-          <i nz-icon nzType="google" nzTheme="outline"></i> Sign up with Google
-        </button>
-        <p>Don't have an account? <a href="">Register here</a></p>
-      </div>
+      
     </form>
   </div>
   <div class="login-background">

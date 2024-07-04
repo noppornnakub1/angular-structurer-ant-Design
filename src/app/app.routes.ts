@@ -6,20 +6,29 @@ import { AuthGuard } from './core/guard/auth.guard';
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/auth' },
   {
-    
     path: "auth",
-    loadChildren: () => import("./modules/authentication/authentication.routes"),
-    canActivate: [NoAuthGuard],
+    loadChildren: () => import("./modules/authentication/authentication.routes")
   },
   {
     path: 'feature',
     component: LayoutsComponent,
-    canActivate: [AuthGuard],
     children: [
       { path: '', redirectTo: 'feature/dashboard', pathMatch: 'full' },
       {
+        
         path: "dashboard",
+        data: {
+          customBreadcrumb: 'Display Name'
+        },
         loadChildren: () => import("./modules/dashboard/dashboard.routes")
+      },
+      {
+        path: "customer",
+        loadChildren: () => import("./modules/customer/customer.routes")
+      },
+      {
+        path: "supplier",
+        loadChildren: () => import("./modules/supplier/supplier.routes")
       },
     ]
   }

@@ -40,7 +40,7 @@ export class LayoutsComponent {
     { title: 'Customer', icon: 'user', label: 'Customer', route: '/feature/customer' },
     { title: 'Supplier', icon: 'shop', label: 'Supplier', route: '/feature/supplier' },
     { title: 'User', icon: 'team', label: 'User', route: '/feature/user-manager/user' },
-    { title: 'Role', icon: 'solution', label: 'Role', route: '/feature//user-manager/role' }
+    { title: 'Role', icon: 'solution', label: 'Role', route: '/feature/user-manager/role' }
   ];
   
 
@@ -50,9 +50,11 @@ export class LayoutsComponent {
   }
 
   isActive(route: string): boolean {
-    return this.currentRoute === route;
+    const currentRoute = this._router.url;
+    console.log(currentRoute,route);
+    
+    return currentRoute.startsWith(route);
   }
-
 
 
 }

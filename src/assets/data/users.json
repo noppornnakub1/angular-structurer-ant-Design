@@ -3,7 +3,7 @@
     "id": 1,
     "username": "admin",
     "password": "password",
-    "name": "Test User",
+    "name": "Admin ทดสอบ",
     "token": "mock-token-1",
     "roles": ["admin", "approved", "user"]
   },
@@ -11,15 +11,15 @@
     "id": 2,
     "username": "user",
     "password": "password",
-    "name": "Another User",
+    "name": "User ทดสอบ",
     "token": "mock-token-2",
     "roles": ["user"]
   },
   {
     "id": 3,
-    "username": "approve",
+    "username": "approver",
     "password": "password",
-    "name": "Another User",
+    "name": "Approver ทดสอบ",
     "token": "mock-token-3",
     "roles": ["approved"]
   }

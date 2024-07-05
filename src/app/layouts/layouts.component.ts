@@ -12,6 +12,7 @@ export interface MenuItem {
   icon: string;
   label: string;
   route: string;
+  roles?: string[];
 }
 
 @Component({
@@ -24,7 +25,7 @@ export interface MenuItem {
 export class LayoutsComponent {
   isCollapsed = false;
   currentUser!: IUser | null;
-
+  filteredMenuItems: MenuItem[] = [];
   currentRoute!: string;
   private readonly authService = inject(AuthMockupService);
 
@@ -37,7 +38,8 @@ export class LayoutsComponent {
     });
     this.authService.currentUser.subscribe(user => {
       this.currentUser = user;
-     
+      this.filterMenuItemsByRole();
+      console.log(this.currentUser)
     });
   }
 
@@ -45,10 +47,20 @@ export class LayoutsComponent {
     { title: 'Dashboard', icon: 'dashboard', label: 'Dashboard', route: '/feature/dashboard' },
     { title: 'Customer', icon: 'user', label: 'Customer', route: '/feature/customer' },
     { title: 'Supplier', icon: 'shop', label: 'Supplier', route: '/feature/supplier' },
-    { title: 'User', icon: 'team', label: 'User', route: '/feature/user-manager/user' },
-    { title: 'Role', icon: 'solution', label: 'Role', route: '/feature/user-manager/role' }
+    { title: 'User', icon: 'team', label: 'User', route: '/feature/user-manager/user', roles: ['admin']},
+    { title: 'Role', icon: 'solution', label: 'Role', route: '/feature/user-manager/role',roles: ['admin'] }
   ];
   
+  filterMenuItemsByRole(): void {
+    if (this.currentUser && this.currentUser.roles) {
+      this.filteredMenuItems = this.menuItems.filter(item => {
+        if (item.roles) {
+          return item.roles.some(role => this.currentUser!.roles.includes(role));
+        }
+        return true;
+      });
+    }
+  }
 
 
   navigateTo(routeName: string): void {

@@ -1,0 +1,51 @@
+.ant-modal {
+    .ant-form-item {
+      margin-bottom: 16px;
+    }
+    .ant-form-label {
+      text-align: right;
+    }
+    .ant-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px 16px;
+    }
+    .ant-btn {
+      margin-left: 8px;
+    }
+  }
+  ::ng-deep .ant-modal-body {
+    padding-top: 24px;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 16px;
+  }
+  
+  button {
+    margin-left: 8px;
+  }
+
+  .green-button {
+    background-color: green;
+    color: white;
+    border-color: green;
+  
+    &:hover {
+      background-color: darkgreen;
+      border-color: darkgreen;
+    }
+  }
+
+  .red-button {
+    background-color: red;
+    color: white;
+    border-color: red;
+  
+    &:hover {
+      background-color: darkred;
+      border-color: darkred;
+    }
+  }

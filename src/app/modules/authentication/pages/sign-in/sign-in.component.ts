@@ -35,6 +35,8 @@ export class SignInComponent {
       const { username, password } = this.loginForm.value;
       this.authService.login(username, password).subscribe(
         response => {
+          console.log("authService == " , response);
+          
           if (response) {
             this.authService.getRole(response.user_id).subscribe(
               responseRole => {

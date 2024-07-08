@@ -15,18 +15,18 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(username: string, password: string): Observable<LoginResponse | null> {
+  login(username: string, password: string): Observable<IUser | null> {
     const loginRequest: any = { username, password };
 
-    return this.http.post<LoginResponse>('/User/login', loginRequest).pipe(
+    return this.http.post<IUser>('/User/login', loginRequest).pipe(
       map(response => {
-        if (response && response.user) {
-          this.setUser(response.user);
+        if (response) {
+          this.setUser(response);
           return response;
         }
         return null;
       }),
-      catchError(this.handleError<LoginResponse>('login', undefined))
+      catchError(this.handleError<IUser>('login', undefined))
     );
   }
 

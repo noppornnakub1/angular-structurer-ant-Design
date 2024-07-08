@@ -5,6 +5,7 @@ import { filter } from 'rxjs/operators';
 import { NgZorroAntdModule } from '../shared/ng-zorro-antd.module';
 import { AuthMockupService } from '../core/mockup-api/auth-mockup.service';
 import { IUser } from '../modules/user-manager/interface/user.interface';
+import { IRole } from '../modules/user-manager/interface/role.interface';
 
 
 export interface MenuItem {
@@ -25,6 +26,7 @@ export interface MenuItem {
 export class LayoutsComponent {
   isCollapsed = false;
   currentUser!: IUser | null;
+  currentRole!: IRole | null;
   filteredMenuItems: MenuItem[] = [];
   currentRoute!: string;
   private readonly authService = inject(AuthMockupService);
@@ -52,14 +54,14 @@ export class LayoutsComponent {
   ];
   
   filterMenuItemsByRole(): void {
-    // if (this.currentUser && this.currentUser.roles) {
-    //   this.filteredMenuItems = this.menuItems.filter(item => {
-    //     if (item.roles) {
-    //       return item.roles.some(role => this.currentUser!.roles.includes(role));
-    //     }
-    //     return true;
-    //   });
-    // }
+    if (this.currentRole && this.currentRole.action) {
+      this.filteredMenuItems = this.menuItems.filter(item => {
+        if (item.roles) {
+          return item.roles.some(role => this.currentRole!.action.includes(role));
+        }
+        return true;
+      });
+    }
   }
 
 

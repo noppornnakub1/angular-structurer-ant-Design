@@ -1,10 +1,8 @@
 export interface ICustomer {
     key: string;
     name: string;
-    group: string;
+    customer_num: string;
+    tax: string;
     status: string;
-    accApproveStatus: string;
-    finApproveStatus: string;
-    syncStatus: string;
   }
   

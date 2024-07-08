@@ -1,10 +1,8 @@
 export interface ISupplier {
-    key: string;
-    name: string;
-    group: string;
-    status: string;
-    accApproveStatus: string;
-    finApproveStatus: string;
-    syncStatus: string;
+  key: string;
+  name: string;
+  supplier_num: string;
+  tax: string;
+  status: string;
   }
   

@@ -15,22 +15,18 @@ import { ICustomer } from '../../../customer/interface/customer.interface';
 export class DashboardComponent {
   listOfData: ICustomer[] = [
     {
-      key: '1',
-      name: 'ทดสอบ',
-      group: 'Test',
-      status: 'submit',
-      accApproveStatus: 'Approved',
-      finApproveStatus: 'Approved',
-      syncStatus: 'Success'
+      key: "1",
+      name: "ทดสอบ ทดสอบ",
+      customer_num: "AA005",
+      tax: "1994558991234",
+      status: "submit"
     },
     {
-      key: '2',
-      name: 'ทดสอบ2',
-      group: 'Test2',
-      status: 'Draft',
-      accApproveStatus: 'Approved',
-      finApproveStatus: 'Approved',
-      syncStatus: 'Success'
-    }
+      key: "2",
+      name: "ทดสอบ2 ทดสอบ2",
+      customer_num: "AA006",
+      tax: "1994558991234",
+      status: "Draft"
+    },
   ];
 }

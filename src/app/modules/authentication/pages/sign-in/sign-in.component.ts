@@ -35,7 +35,7 @@ export class SignInComponent {
       this.authService.login(username, password).subscribe(
         response => {
           if (response && response.user) {
-            this.router.navigate(['/feature/dashboard']);
+            this.router.navigate(['/feature/customer']);
             console.log('Login successful', response);
           } else {
             this.errorMessage = 'Invalid username or password';

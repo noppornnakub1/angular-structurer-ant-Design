@@ -58,7 +58,7 @@ export class AuthService {
         }
         return null;
       }),
-      catchError(this.handleError<IRole>('getRole', null))
+      catchError(this.handleError<IRole>('getRole', undefined))
     );
   }
 

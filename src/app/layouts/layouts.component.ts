@@ -6,6 +6,7 @@ import { NgZorroAntdModule } from '../shared/ng-zorro-antd.module';
 import { AuthMockupService } from '../core/mockup-api/auth-mockup.service';
 import { IUser } from '../modules/user-manager/interface/user.interface';
 import { IRole } from '../modules/user-manager/interface/role.interface';
+import { AuthService } from '../modules/authentication/services/auth.service';
 
 
 export interface MenuItem {
@@ -29,7 +30,7 @@ export class LayoutsComponent {
   currentRole!: IRole | null;
   filteredMenuItems: MenuItem[] = [];
   currentRoute!: string;
-  private readonly authService = inject(AuthMockupService);
+  private readonly authService = inject(AuthService);
 
   constructor(private _router: Router) {
     this.currentRoute = this._router.url;  // Initialize currentRoute
@@ -40,8 +41,12 @@ export class LayoutsComponent {
     });
     this.authService.currentUser.subscribe(user => {
       this.currentUser = user;
+      
+    });
+    this.authService.currenttRole.subscribe(user => {
+  
       this.filterMenuItemsByRole();
-      console.log(this.currentUser)
+     
     });
   }
 

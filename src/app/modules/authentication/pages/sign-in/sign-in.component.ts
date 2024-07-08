@@ -35,7 +35,7 @@ export class SignInComponent {
       const { username, password } = this.loginForm.value;
       this.authService.login(username, password).subscribe(
         response => {
-          if (response && response.user) {
+          if (response) {
             this.router.navigate(['/feature/customer']);
             console.log('Login successful', response);
           } else {

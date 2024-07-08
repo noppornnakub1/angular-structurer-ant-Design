@@ -52,14 +52,14 @@ export class LayoutsComponent {
   ];
   
   filterMenuItemsByRole(): void {
-    if (this.currentUser && this.currentUser.roles) {
-      this.filteredMenuItems = this.menuItems.filter(item => {
-        if (item.roles) {
-          return item.roles.some(role => this.currentUser!.roles.includes(role));
-        }
-        return true;
-      });
-    }
+    // if (this.currentUser && this.currentUser.roles) {
+    //   this.filteredMenuItems = this.menuItems.filter(item => {
+    //     if (item.roles) {
+    //       return item.roles.some(role => this.currentUser!.roles.includes(role));
+    //     }
+    //     return true;
+    //   });
+    // }
   }
 
 

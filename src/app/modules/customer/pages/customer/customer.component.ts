@@ -36,9 +36,9 @@ export class CustomerComponent implements OnInit {
     this.authService.currentUser.subscribe(user => {
       this.currentUser = user;
       if (user) {
-        this.isAdmin = user.roles.includes('admin');
-        this.isApproved = user.roles.includes('approved');
-        this.isUser = user.roles.includes('user');
+        // this.isAdmin = user.roles.includes('admin');
+        // this.isApproved = user.roles.includes('approved');
+        // this.isUser = user.roles.includes('user');
       }
     });
   }

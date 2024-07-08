@@ -13,9 +13,23 @@ export interface LoginResponse {
 })
 export class AuthService {
 
-  private currentUserSubject!: BehaviorSubject<IUser | null>;
-  private currentRoleubject!: BehaviorSubject<IRole | null>;
-  constructor(private http: HttpClient) {}
+  private currentUserSubject: BehaviorSubject<IUser | null>;
+  public currentUser: Observable<IUser | null>;
+
+  private currentRoleubject: BehaviorSubject<IRole | null>;
+  public currenttRole: Observable<IRole | null>;
+
+  constructor(private http: HttpClient) {
+
+    const storedUser = localStorage.getItem('currentUser');
+    this.currentUserSubject = new BehaviorSubject<IUser | null>(storedUser ? JSON.parse(storedUser) : null);
+    this.currentUser = this.currentUserSubject.asObservable();
+
+    const storedRole = localStorage.getItem('currentRole');
+    this.currentRoleubject = new BehaviorSubject<IRole | null>(storedRole ? JSON.parse(storedRole) : null);
+    this.currenttRole = this.currentRoleubject.asObservable();
+
+  }
 
   login(username: string, password: string): Observable<IUser | null> {
     const loginRequest: any = { username, password };

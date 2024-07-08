@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthMockupService } from '../../../../core/mockup-api/auth-mockup.service';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { SharedModule } from '../../../../shared/shared.module';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -18,7 +19,7 @@ export class SignInComponent {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthMockupService,
+    private authService: AuthService,
     private router: Router
   ) {
     this.loginForm = this.fb.group({

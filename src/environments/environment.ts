@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  api_url: 'http://localhost:2222',
+  api_url: 'https://localhost:7126/api',
   name: 'development environment',
   i18_name: '',
   code: 1001,

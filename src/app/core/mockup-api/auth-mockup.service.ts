@@ -25,22 +25,7 @@ export class AuthMockupService {
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  login(username: string, password: string): Observable<LoginResponse | null> {
-    return this.http.get<IUser[]>(this.usersUrl).pipe(
-      map(users => {
-        const user = users.find(u => u.username === username && u.password === password);
-        if (user) {
-          this.setUser(user);
-          return {
-            token: user.token,
-            user: user
-          };
-        }
-        return null;
-      }),
-      catchError(this.handleError<LoginResponse>('login', undefined))
-    );
-  }
+ 
 
   setUser(user: IUser): void {
     localStorage.setItem('currentUser', JSON.stringify(user));

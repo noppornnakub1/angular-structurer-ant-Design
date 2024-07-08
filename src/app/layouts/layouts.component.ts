@@ -60,6 +60,8 @@ export class LayoutsComponent {
   ];
   
   filterMenuItemsByRole(): void {
+    console.log("this.currentRole!.action" , this.currentRole!.action);
+    
     if (this.currentRole && this.currentRole.action) {
       this.filteredMenuItems = this.menuItems.filter(item => {
         if (item.roles) {

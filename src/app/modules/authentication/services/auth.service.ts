@@ -22,6 +22,8 @@ export class AuthService {
 
     return this.http.post<IUser>('/User/login', loginRequest).pipe(
       map(response => {
+        console.log("'/User/login'" , response);
+        
         if (response) {
           this.setUser(response);
           return response;

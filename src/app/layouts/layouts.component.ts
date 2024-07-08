@@ -65,7 +65,7 @@ export class LayoutsComponent {
     if (this.currentRole && this.currentRole.action) {
       this.filteredMenuItems = this.menuItems.filter(item => {
         if (item.roles) {
-          return item.roles.some(role => this.hasRole(this.currentRole!.action, 'admin'));
+          return item.roles.some(role => this.hasRole(this.currentRole!.action, role));
         }
         return true;
       });

@@ -34,6 +34,7 @@ export class SupplierComponent implements OnInit {
     });
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
+      
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');

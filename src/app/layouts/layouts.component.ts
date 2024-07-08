@@ -63,12 +63,19 @@ export class LayoutsComponent {
     if (this.currentRole && this.currentRole.action) {
       this.filteredMenuItems = this.menuItems.filter(item => {
         if (item.roles) {
-          return item.roles.some(role => this.currentRole!.action.includes(role));
+          return item.roles.some(role => this.hasRole(this.currentRole!.action, role));
         }
         return true;
       });
     }
   }
+  
+  hasRole(roleString: string, roleToCheck: string): boolean {
+    const roleArray = roleString.split(',');
+    return roleArray.includes(roleToCheck);
+  }
+
+
 
 
   navigateTo(routeName: string): void {

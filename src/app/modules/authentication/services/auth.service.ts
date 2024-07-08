@@ -50,16 +50,15 @@ export class AuthService {
 
 
   getRole(id: number): Observable<IRole | null> {
-    return this.http.post<IRole>('/User/findby/', id).pipe(
+    return this.http.get<IRole>(`/User/findby/${id}`).pipe(
       map(response => {
         if (response) {
-         
           this.setRole(response);
           return response;
         }
         return null;
       }),
-      catchError(this.handleError<IRole>('login', undefined))
+      catchError(this.handleError<IRole>('getRole', null))
     );
   }
 

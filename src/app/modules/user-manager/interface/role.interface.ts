@@ -1,6 +1,6 @@
-
 export interface IRole {
-    id: number;
-    name: string;
-    description: string;
-  }
+  id: number;
+  user_id: number;
+  role_name: string;
+  action: string;
+}

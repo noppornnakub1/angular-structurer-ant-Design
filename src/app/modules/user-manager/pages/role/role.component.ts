@@ -46,11 +46,11 @@ export class RoleComponent implements OnInit {
 
     instance.handleOk.subscribe((result: any) => {
       if (result) {
-        this.roles.push({
-          id: this.roles.length + 1,
-          name: result.roleName,
-          description: result.roleDescription,
-        });
+        // this.roles.push({
+        //   id: this.roles.length + 1,
+        //   name: result.roleName,
+        //   description: result.roleDescription,
+        // });
       }
       modal.close();
     });

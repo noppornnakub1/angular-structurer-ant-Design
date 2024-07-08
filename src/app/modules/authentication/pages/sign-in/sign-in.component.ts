@@ -36,6 +36,18 @@ export class SignInComponent {
       this.authService.login(username, password).subscribe(
         response => {
           if (response) {
+            this.authService.getRole(response.user_id).subscribe(
+              responseRole => {
+                if (responseRole) {
+                  this.router.navigate(['/feature/customer']);
+                } 
+              },
+              error => {
+                console.error('Login failed', error);
+                this.errorMessage = 'Login failed. Please try again later.';
+              }
+            );
+
             this.router.navigate(['/feature/customer']);
             console.log('Login successful', response);
           } else {

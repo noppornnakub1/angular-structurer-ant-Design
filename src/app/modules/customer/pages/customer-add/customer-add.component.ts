@@ -25,6 +25,7 @@ export class CustomerAddComponent implements OnInit {
   items_provinces: DataLocation[] = items_province;
   filteredItemsProvince: DataLocation[] = items_province;
   customerForm!: FormGroup;
+  customerBankForm!: FormGroup;
 
   constructor(private _location: Location, private fb: FormBuilder) {
  
@@ -32,8 +33,7 @@ export class CustomerAddComponent implements OnInit {
 
   ngOnInit(): void {
     this.customerForm = this.fb.group({
-      firstName: [''],
-      lastName: [''],
+      Name: [''],
       taxId: [''],
       address: [''],
       district: [''],
@@ -45,6 +45,9 @@ export class CustomerAddComponent implements OnInit {
       customerNumber: [''],
       customerType: [''],
       site: [''],
+      bankName: ['']
+    });
+    this.customerBankForm = this.fb.group({
       bankName: ['']
     });
   }

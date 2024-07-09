@@ -1,47 +1,46 @@
 <div class="content-card-search">
-    <h2>User</h2>
-    <div nz-row>
-      <div nz-col [nzXs]="24" [nzMd]="24" [nzLg]="5" class="pr-3">
-        <nz-form-label nzNoColon>ชื่อ</nz-form-label>
-        <nz-input-group nzPrefixIcon="search" class="form-input">
-          <input nz-input placeholder="ชื่อ" />
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
-        <nz-form-label nzNoColon>username</nz-form-label>
-        <nz-input-group nzPrefixIcon="search" class="form-input">
-          <input nz-input placeholder="username" />
-        </nz-input-group>
-      </div>
+  <h2>User</h2>
+  <div nz-row [formGroup]="filterForm">
+    <div nz-col [nzXs]="24" [nzMd]="24" [nzLg]="5" class="pr-3">
+      <nz-form-label nzNoColon>ชื่อ</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="ชื่อ" formControlName="name" />
+      </nz-input-group>
     </div>
-    <div class="mt-5 display-flex justify-center">
-      <button nz-button nzType="primary" class="mr-2">ค้นหา</button>
-      <button nz-button nzType="default" >เพิ่มข้อมูล</button>
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
+      <nz-form-label nzNoColon>username</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="username" formControlName="username" />
+      </nz-input-group>
     </div>
   </div>
-  <div class="content-data-table mt-3">
-    <nz-table #basicTable nzBordered [nzData]="users">
-      <thead>
-        <tr>
-          <th>ลำดับที่</th>
-          <th>ชื่อ</th>
-          <th>username</th>
-          <th>role</th>
-          <th>action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of basicTable.data; let i = index">
-          <td>{{ i + 1 }}</td>
-          <td>{{ user.firstname }}</td>
-          <td>{{ user.firstname }}</td>
-          <td>{{ user.firstname }}</td>
-          <td class="text-center">
-            <button  nz-button nzType="primary" class="mr-1" nzShape="round">Edit</button>
-            <button  nz-button nzType="default" class="mr-1" nzShape="round">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </nz-table>
+  <div class="mt-5 display-flex justify-center">
+    <button nz-button nzType="primary" class="mr-2" (click)="applyFilters()">ค้นหา</button>
+    <button nz-button nzType="default" (click)="showAddRoleModal()">เพิ่มข้อมูล</button>
   </div>
-  
+</div>
+<div class="content-data-table mt-3">
+  <nz-table #basicTable nzBordered [nzData]="filteredData">
+    <thead>
+      <tr>
+        <th>ลำดับที่</th>
+        <th>ชื่อ</th>
+        <th>username</th>
+        <th>role</th>
+        <th>action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of filteredData; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ data.firstname }}</td>
+        <td>{{ data.username }}</td>
+        <td>{{ data.role }}</td>
+        <td class="text-center">
+          <button nz-button nzType="primary" class="mr-1" nzShape="round">Edit</button>
+          <button nz-button nzType="default" class="mr-1" nzShape="round">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>

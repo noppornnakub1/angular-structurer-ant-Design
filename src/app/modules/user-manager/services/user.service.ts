@@ -11,8 +11,9 @@ import { IUser } from '../interface/user.interface';
 })
 export class UserService {
 
-    constructor(private http: HttpClient) {}
+    constructor(private _http: HttpClient) {}
 
-    getUsers(): Observable<IUser[]> {
-        return this.http.get<IUser[]>('/assets/data/users.json');
-      }}
+    getUser() {
+      return this._http.get(`/User/UserInfo`);
+    }
+  }

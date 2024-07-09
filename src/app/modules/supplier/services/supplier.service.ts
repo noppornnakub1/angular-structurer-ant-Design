@@ -9,9 +9,10 @@ import { ISupplier } from '../interface/supplier.interface';
   })
   export class SupplierService {
 
-    constructor(private http: HttpClient) { }
-    getData(): Observable<ISupplier[]> {
-      return this.http.get<ISupplier[]>('/assets/data/customer-data.json');
+    constructor(private _http: HttpClient) { }
+    
+    getData() {
+      return this._http.get(`/Supplier/SupplierInfo`);
     }
 
   }

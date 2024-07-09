@@ -1,19 +1,7 @@
 <form [formGroup]="customerForm">
 <div class="content-card">
-  <nz-divider nzText="Customer"></nz-divider>
+  <nz-divider nzText="Customer Info"></nz-divider>
   <div nz-row nzGutter="16" class="mt-2">
-    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-      <nz-form-label nzNoColon>First Name</nz-form-label>
-      <nz-input-group nzPrefixIcon="user" class="form-input">
-        <input nz-input placeholder="First Name" formControlName="firstName" />
-      </nz-input-group>
-    </div>
-    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-      <nz-form-label nzNoColon>Last Name</nz-form-label>
-      <nz-input-group nzPrefixIcon="user" class="form-input">
-        <input nz-input placeholder="Last Name" formControlName="lastName" />
-      </nz-input-group>
-    </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Tax ID</nz-form-label>
       <nz-input-group nzPrefixIcon="idcard" class="form-input">
@@ -21,31 +9,38 @@
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>Name</nz-form-label>
+      <nz-input-group nzPrefixIcon="user" class="form-input">
+        <input nz-input placeholder="Name" formControlName="Name" />
+      </nz-input-group>
+    </div>
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>Telephone</nz-form-label>
+      <nz-input-group nzPrefixIcon="phone" class="form-input">
+        <input nz-input placeholder="Telephone" formControlName="telephone" />
+      </nz-input-group>
+    </div>
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>Email</nz-form-label>
+      <nz-input-group nzPrefixIcon="mail" class="form-input">
+        <input nz-input placeholder="Email" formControlName="email" />
+      </nz-input-group>
+    </div>
+    <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>Last Name</nz-form-label>
+      <nz-input-group nzPrefixIcon="user" class="form-input">
+        <input nz-input placeholder="Last Name" formControlName="lastName" />
+      </nz-input-group>
+    </div> -->
+    
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3">
       <nz-form-label nzNoColon>Address</nz-form-label>
       <nz-input-group nzPrefixIcon="home" class="form-input">
         <input nz-input placeholder="Address" formControlName="address" />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-      <nz-form-label nzNoColon>District</nz-form-label>
-      <nz-input-group nzPrefixIcon="cluster" class="form-input">
-        <input nz-input placeholder="District" formControlName="district" />
-      </nz-input-group>
-    </div>
-    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-      <nz-form-label nzNoColon>Subdistrict</nz-form-label>
-      <nz-input-group nzPrefixIcon="environment" class="form-input">
-        <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
-      </nz-input-group>
-    </div>
-    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-      <nz-form-label nzNoColon>Province</nz-form-label>
-      <nz-input-group nzPrefixIcon="global" class="form-input">
-        <input nz-input placeholder="Province" formControlName="province" />
-      </nz-input-group>
-    </div>
-    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-      <nz-form-label nzNoColon>Postal Code</nz-form-label>
+      <nz-form-label nzNoColon>Postal Code<span style="color: red;">*</span></nz-form-label>
       <nz-form-item>
         <nz-form-control>
           <nz-select
@@ -64,18 +59,27 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-      <nz-form-label nzNoColon>Telephone</nz-form-label>
-      <nz-input-group nzPrefixIcon="phone" class="form-input">
-        <input nz-input placeholder="Telephone" formControlName="telephone" />
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+      <nz-form-label nzNoColon>Subdistrict</nz-form-label>
+      <nz-input-group nzPrefixIcon="environment" class="form-input">
+        <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
       </nz-input-group>
     </div>
-    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-      <nz-form-label nzNoColon>Email</nz-form-label>
-      <nz-input-group nzPrefixIcon="mail" class="form-input">
-        <input nz-input placeholder="Email" formControlName="email" />
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+      <nz-form-label nzNoColon>District</nz-form-label>
+      <nz-input-group nzPrefixIcon="cluster" class="form-input">
+        <input nz-input placeholder="District" formControlName="district" />
       </nz-input-group>
     </div>
+    
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+      <nz-form-label nzNoColon>Province</nz-form-label>
+      <nz-input-group nzPrefixIcon="global" class="form-input">
+        <input nz-input placeholder="Province" formControlName="province" />
+      </nz-input-group>
+    </div>
+    
+    
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Customer Number</nz-form-label>
       <nz-input-group nzPrefixIcon="number" class="form-input">
@@ -88,7 +92,7 @@
         <input nz-input placeholder="Customer Type" formControlName="customerType" />
       </nz-input-group>
     </div>
-    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
       <nz-form-label nzNoColon>Site</nz-form-label>
       <nz-input-group nzPrefixIcon="global" class="form-input">
         <input nz-input placeholder="Site" formControlName="site" />

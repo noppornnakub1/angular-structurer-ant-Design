@@ -14,4 +14,5 @@ import { IRole } from "../interface/role.interface";
     getRoles(): Observable<IRole[]> {
       return this.http.get<IRole[]>(this.rolesUrl);
     }
+
   }

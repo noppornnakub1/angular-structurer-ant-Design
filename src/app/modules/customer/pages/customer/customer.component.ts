@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ICustomer } from '../../interface/customer.interface';
 import { CustomerService } from '../../services/customer.service';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
@@ -27,23 +27,14 @@ export class CustomerComponent implements OnInit {
   listOfData: ICustomer[] = [];
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
-
+  private _cdr = inject(ChangeDetectorRef);
   constructor(private customerService: CustomerService) {}
 
   ngOnInit(): void {
-    this.customerService.getData().subscribe(data => {
-      this.listOfData = data;
-    });
+    this.getData();
+  }
 
-    // this.authService.currentUser.subscribe(user => {
-    //   this.currentUser = user;
-    //   if (user) {
-    //     this.isAdmin = user.roles.includes('admin');
-    //     this.isApproved = user.roles.includes('approved');
-    //     this.isUser = user.roles.includes('user');
-    //   }
-    // });
-
+  checkRole(){
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
       if (user) {
@@ -53,6 +44,21 @@ export class CustomerComponent implements OnInit {
       }
     });
   }
+
+  getData() {
+    this.customerService.getData().subscribe({
+      next: (res: any) => {
+        const data = res;
+        this.listOfData = data;
+   
+        this._cdr.markForCheck();
+      },
+      error: (err) => {
+
+      }
+    })
+  }
+
 
   addData(){
     this._router.navigate(['/feature/customer/add'])

@@ -5,13 +5,15 @@ import { Observable } from 'rxjs';
 import { ICustomer } from '../interface/customer.interface';
 
 @Injectable({
-    providedIn: 'root'
-  })
-  export class CustomerService {
+  providedIn: 'root'
+})
+export class CustomerService {
 
-    constructor(private http: HttpClient) { }
-    getData(): Observable<ICustomer[]> {
-      return this.http.get<ICustomer[]>('/assets/data/customer-data.json');
-    }
+  constructor(private _http: HttpClient) { }
 
+  getData() {
+    return this._http.get(`/api/dashboard/get-dashboard/`);
   }
+
+
+}

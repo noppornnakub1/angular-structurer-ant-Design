@@ -35,7 +35,7 @@
 
 
 <div class="content-data-table mt-3">
-  <nz-table #basicTable nzBordered [nzData]="listOfData">
+  <nz-table nzBordered [nzData]="listOfData">
     <thead>
       <tr>
         <th>No.</th>
@@ -47,12 +47,12 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of basicTable.data; let i = index">
+      <tr *ngFor="let data of listOfData; let i = index">
         <td>{{ i + 1 }}</td>
         <td>{{ data.name }}</td>
         <td>{{ data.customer_num }}</td>
-        <td>{{ data.tax }}</td>
-        <td>{{ data.status }}</td>
+        <td>{{ data.customer_num }}</td>
+        <td>{{ data.customer_num }}</td>
         <td class="text-center">
           <button *ngIf="isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round">View</button>
           <button *ngIf="isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round">Edit</button>

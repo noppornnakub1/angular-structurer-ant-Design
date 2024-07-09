@@ -62,15 +62,17 @@ export class CustomerComponent implements OnInit {
     });
   }
 
+
   applyFilters(): void {
     const { name, customer_num, tax_Id, status } = this.filters;
     this.filteredData = this.listOfData.filter(data =>
-      data.name.includes(name) &&
-      data.customer_num.includes(customer_num) &&
-      data.tax_Id.includes(tax_Id) &&
-      data.status.includes(status)
+      (data.name?.includes(name) ?? true) &&
+      (data.customer_num?.includes(customer_num) ?? true) &&
+      (data.tax_Id?.includes(tax_Id) ?? true) &&
+      (data.status?.includes(status) ?? true)
     );
   }
+
 
   addData(): void {
     this._router.navigate(['/feature/customer/add']);

@@ -34,9 +34,9 @@ export class AuthService {
   login(username: string, password: string): Observable<IUser | null> {
     const loginRequest: any = { username, password };
 
-    return this.http.post<IUser>('/User/login', loginRequest).pipe(
+    return this.http.post<IUser>('/Login/signIn', loginRequest).pipe(
       map(response => {
-        console.log("'/User/login'" , response);
+        console.log("'/Login/signIn'" , response);
         
         if (response) {
           this.setUser(response);

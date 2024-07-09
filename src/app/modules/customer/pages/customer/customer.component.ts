@@ -18,23 +18,27 @@ import { IRole } from '../../../user-manager/interface/role.interface';
   styleUrl: './customer.component.scss'
 })
 export class CustomerComponent implements OnInit {
-
   currentUser!: IRole | null;
-  isAdmin: boolean = false;
-  isApproved: boolean = false;
-  isUser: boolean = false;
+  isAdmin = false;
+  isApproved = false;
+  isUser = false;
 
   listOfData: ICustomer[] = [];
+  filteredData: ICustomer[] = [];
+  filters = { name: '', customer_num: '', tax_Id: '', status: '' };
+
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
+
   constructor(private customerService: CustomerService) {}
 
   ngOnInit(): void {
+    this.checkRole();
     this.getData();
   }
 
-  checkRole(){
+  checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
       if (user) {
@@ -45,22 +49,31 @@ export class CustomerComponent implements OnInit {
     });
   }
 
-  getData() {
+  getData(): void {
     this.customerService.getData().subscribe({
-      next: (res: any) => {
-        const data = res;
-        this.listOfData = data;
-   
+      next: (response: any) => {
+        this.listOfData = response;
+        this.filteredData = [...this.listOfData];
         this._cdr.markForCheck();
       },
-      error: (err) => {
-
+      error: () => {
+        // Handle error
       }
-    })
+    });
   }
 
-
-  addData(){
-    this._router.navigate(['/feature/customer/add'])
+  applyFilters(): void {
+    const { name, customer_num, tax_Id, status } = this.filters;
+    this.filteredData = this.listOfData.filter(data =>
+      data.name.includes(name) &&
+      data.customer_num.includes(customer_num) &&
+      data.tax_Id.includes(tax_Id) &&
+      data.status.includes(status)
+    );
   }
-}
+
+  addData(): void {
+    this._router.navigate(['/feature/customer/add']);
+  }
+
+  }

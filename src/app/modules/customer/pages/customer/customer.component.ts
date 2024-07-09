@@ -53,7 +53,7 @@ export class CustomerComponent implements OnInit {
     this.customerService.getData().subscribe({
       next: (response: any) => {
         this.listOfData = response;
-        this.filteredData = [...this.listOfData];
+        this.filteredData = response;
         this._cdr.markForCheck();
       },
       error: () => {

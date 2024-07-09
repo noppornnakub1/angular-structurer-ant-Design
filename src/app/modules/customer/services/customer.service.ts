@@ -12,7 +12,7 @@ export class CustomerService {
   constructor(private _http: HttpClient) { }
 
   getData() {
-    return this._http.get(`/api/Customer/CustomerInfo`);
+    return this._http.get(`/Customer/CustomerInfo`);
   }
 
 

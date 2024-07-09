@@ -10,19 +10,19 @@
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
       <nz-form-label nzNoColon>Customer Number</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="Customer Number" [(ngModel)]="filters.customer_num" (input)="applyFilters()" />
+        <input nz-input placeholder="Customer Number" [(ngModel)]="filters.customer_num"  />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
       <nz-form-label nzNoColon>Tax</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="Tax" [(ngModel)]="filters.tax_Id" (input)="applyFilters()" />
+        <input nz-input placeholder="Tax" [(ngModel)]="filters.tax_Id"  />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
       <nz-form-label nzNoColon>Status</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="สถานะ" [(ngModel)]="filters.status" (input)="applyFilters()" />
+        <input nz-input placeholder="สถานะ" [(ngModel)]="filters.status"  />
       </nz-input-group>
     </div>
   </div>

@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 
 interface DataLocation {
   id:number,
-  province: string;
+  provice: string;
   district: string;
   subdistrict: string;
   postal_code: string;
@@ -38,17 +38,19 @@ export class CustomerAddComponent implements OnInit {
 
   ngOnInit(): void {
     this.customerForm = this.fb.group({
-      Name: ['', Validators.required],
-      taxId: ['', Validators.required],
-      address: ['', Validators.required],
+      id: [0],
+      name: ['', Validators.required],
+      tax_Id: ['', Validators.required],
+      address_sup: ['', Validators.required],
       district: ['', Validators.required],
       subdistrict: ['', Validators.required],
-      province: ['', Validators.required],
-      postalCode: ['', Validators.required],
-      telephone: ['', Validators.required],
+      provice: ['', Validators.required],
+      postal: ['', Validators.required],
+      tel: ['', Validators.required],
       email: ['', Validators.required],
-      customerNumber: ['', Validators.required],
-      customerType: ['', Validators.required],
+      customer_id: ['1', Validators.required],
+      customer_num: ['', Validators.required],
+      customer_type: ['', Validators.required],
       site: ['', Validators.required],
     });
     this.customerBankForm = this.fb.group({
@@ -60,19 +62,19 @@ export class CustomerAddComponent implements OnInit {
     this.filteredItemsProvince = this.items_provinces.filter(item => 
       item.subdistrict.includes(value) ||
       item.district.includes(value) ||
-      item.province.includes(value) ||
+      item.provice.includes(value) ||
       item.postal_code.includes(value)
     );
   }
 
   onPostalCodeChange(value: any): void {
     console.log("value ", value);
-    const selectedItem = this.items_provinces.find(item => item.id === value);
+    const selectedItem = this.items_provinces.find(item => item.postal_code === value);
     if (selectedItem) {
       this.customerForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
-        province: selectedItem.province
+        provice: selectedItem.provice
       });
     }
   }

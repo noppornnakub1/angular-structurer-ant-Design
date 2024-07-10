@@ -5,19 +5,19 @@
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Tax ID</nz-form-label>
       <nz-input-group nzPrefixIcon="idcard" class="form-input">
-        <input nz-input placeholder="Tax ID" maxlength="13" formControlName="taxId" />
+        <input nz-input placeholder="Tax ID" maxlength="13" formControlName="tax_Id" />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Name</nz-form-label>
       <nz-input-group nzPrefixIcon="user" class="form-input">
-        <input nz-input placeholder="Name" formControlName="Name" />
+        <input nz-input placeholder="Name" formControlName="name" />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Telephone</nz-form-label>
       <nz-input-group nzPrefixIcon="phone" class="form-input">
-        <input nz-input placeholder="Telephone" maxlength="10" formControlName="telephone" />
+        <input nz-input placeholder="Telephone" maxlength="10" formControlName="tel" />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
@@ -36,7 +36,7 @@
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3">
       <nz-form-label nzNoColon>Address</nz-form-label>
       <nz-input-group nzPrefixIcon="home" class="form-input">
-        <input nz-input placeholder="Address" formControlName="address" />
+        <input nz-input placeholder="Address" formControlName="address_sup" />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
@@ -49,11 +49,11 @@
             nzPlaceHolder="Postal Code"
             (nzOnSearch)="onSearch($event)"
             (ngModelChange)="onPostalCodeChange($event)"
-            formControlName="postalCode"
+            formControlName="postal"
           >
             <nz-option *ngFor="let item of filteredItemsProvince" 
-                       [nzLabel]="(item.subdistrict + ' ' + item.district + ' ' +  item.province + ' ' +  item.postal_code)" 
-                       [nzValue]="item.id">
+                       [nzLabel]="(item.subdistrict + ' ' + item.district + ' ' +  item.provice + ' ' +  item.postal_code)" 
+                       [nzValue]="item.postal_code">
             </nz-option>
           </nz-select>
         </nz-form-control>
@@ -75,7 +75,7 @@
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
       <nz-form-label nzNoColon>Province</nz-form-label>
       <nz-input-group nzPrefixIcon="global" class="form-input">
-        <input nz-input placeholder="Province" formControlName="province" />
+        <input nz-input placeholder="Province" formControlName="provice" />
       </nz-input-group>
     </div>
     
@@ -83,13 +83,13 @@
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Customer Number</nz-form-label>
       <nz-input-group nzPrefixIcon="number" class="form-input">
-        <input nz-input placeholder="Customer Number" formControlName="customerNumber" />
+        <input nz-input placeholder="Customer Number" formControlName="customer_num" />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Customer Type</nz-form-label>
       <nz-input-group nzPrefixIcon="team" class="form-input">
-        <input nz-input placeholder="Customer Type" formControlName="customerType" />
+        <input nz-input placeholder="Customer Type" formControlName="customer_type" />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
@@ -101,6 +101,7 @@
   </div>
 </div>
 </form>
+<form [formGroup]="customerBankForm" >
 <div class="content-card mt-3">
   <nz-divider nzText="Customer Bank"></nz-divider>
   <div nz-row nzGutter="16">
@@ -116,3 +117,4 @@
     <button nz-button nzType="primary" (click)="onSubmit()">บันทึก</button>
   </div>
 </div>
+</form>

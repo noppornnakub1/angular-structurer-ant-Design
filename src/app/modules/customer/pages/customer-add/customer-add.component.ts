@@ -3,7 +3,9 @@ import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { SharedModule } from '../../../../shared/shared.module';
 import {Location} from '@angular/common';
 import { items_province } from '../../../../shared/constants/data-province.constant';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CustomerService } from '../../services/customer.service';
+import { Router } from '@angular/router';
 
 
 interface DataLocation {
@@ -27,25 +29,27 @@ export class CustomerAddComponent implements OnInit {
   customerForm!: FormGroup;
   customerBankForm!: FormGroup;
 
-  constructor(private _location: Location, private fb: FormBuilder) {
+  constructor(private _location: Location, private fb: FormBuilder
+    ,private customerService: CustomerService,
+    private router: Router 
+  ) {
  
   }
 
   ngOnInit(): void {
     this.customerForm = this.fb.group({
-      Name: [''],
-      taxId: [''],
-      address: [''],
-      district: [''],
-      subdistrict: [''],
-      province: [''],
-      postalCode: [''],
-      telephone: [''],
-      email: [''],
-      customerNumber: [''],
-      customerType: [''],
-      site: [''],
-      bankName: ['']
+      Name: ['', Validators.required],
+      taxId: ['', Validators.required],
+      address: ['', Validators.required],
+      district: ['', Validators.required],
+      subdistrict: ['', Validators.required],
+      province: ['', Validators.required],
+      postalCode: ['', Validators.required],
+      telephone: ['', Validators.required],
+      email: ['', Validators.required],
+      customerNumber: ['', Validators.required],
+      customerType: ['', Validators.required],
+      site: ['', Validators.required],
     });
     this.customerBankForm = this.fb.group({
       bankName: ['']
@@ -70,6 +74,22 @@ export class CustomerAddComponent implements OnInit {
         subdistrict: selectedItem.subdistrict,
         province: selectedItem.province
       });
+    }
+  }
+
+  onSubmit(): void {
+    if (this.customerForm.valid) {
+      this.customerService.addData(this.customerForm.value).subscribe({
+        next: (response) => {
+          console.log('Data added successfully', response);
+          this.router.navigate(['/feature/customer']); // Redirect to customer list after successful addition
+        },
+        error: (err) => {
+          console.error('Error adding data', err);
+        }
+      });
+    } else {
+      console.log('Form is not valid');
     }
   }
 

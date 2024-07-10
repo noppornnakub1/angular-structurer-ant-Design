@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NzModalService, NzModalRef, NzModalModule } from 'ng-zorro-antd/modal';
 import { NzTableModule } from 'ng-zorro-antd/table';
@@ -8,6 +8,9 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { IRole } from '../../interface/role.interface';
 import { RoleService } from '../../services/role.service';
 import { AddRoleModalComponent } from './add-role-modal/add-role-modal.component';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../authentication/services/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-role',
@@ -19,19 +22,63 @@ import { AddRoleModalComponent } from './add-role-modal/add-role-modal.component
     NzButtonModule,
     NzFormModule,
     NzInputModule,
+    FormsModule
   ],
   templateUrl: './role.component.html',
   styleUrls: ['./role.component.scss'],
 })
 export class RoleComponent implements OnInit {
-  roles: IRole[] = [];
+
+  currentUser!: IRole | null;
+  isAdmin = false;
+  isApproved = false;
+  isUser = false;
+
+  listOfData: IRole[] = [];
+  filteredData: IRole[] = [];
+  filters = { role_name: ''};
+  
+  private readonly _router = inject(Router);
+  private readonly authService = inject(AuthService);
+  private _cdr = inject(ChangeDetectorRef);
 
   constructor(private roleService: RoleService, private modalService: NzModalService) {}
 
   ngOnInit(): void {
-    this.roleService.getRoles().subscribe((data) => {
-      this.roles = data;
+    this.checkRole();
+    this.getData();
+  }
+
+  checkRole(): void {
+    this.authService.currenttRole.subscribe(user => {
+      this.currentUser = user;
+      if (user) {
+        this.isAdmin = user.action.includes('admin');
+        this.isApproved = user.action.includes('approved');
+        this.isUser = user.action.includes('user');
+      }
     });
+  }
+
+  getData(): void {
+    this.roleService.getRoles().subscribe({
+      next: (response: any) => {
+        this.listOfData = response;
+        this.filteredData = response;
+        this._cdr.markForCheck();
+      },
+      error: () => {
+        // Handle error
+      }
+    });
+  }
+
+
+  applyFilters(): void {
+    const { role_name} = this.filters;
+    this.filteredData = this.listOfData.filter(data =>
+      (data.role_name?.includes(role_name) ?? true)
+    );
   }
 
   showAddRoleModal(): void {

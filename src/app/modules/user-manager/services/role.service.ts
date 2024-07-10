@@ -9,10 +9,14 @@ import { IRole } from "../interface/role.interface";
   export class RoleService {
     private rolesUrl = '/assets/data/roles.json';  // Path to the JSON file
   
-    constructor(private http: HttpClient) { }
+    constructor(private _http: HttpClient) { }
   
-    getRoles(): Observable<IRole[]> {
-      return this.http.get<IRole[]>(this.rolesUrl);
+    // getRoles(): Observable<IRole[]> {
+    //   return this.http.get<IRole[]>(this.rolesUrl);
+    // }
+
+    getRoles() {
+      return this._http.get(`/Role/RoleList`);
     }
 
   }

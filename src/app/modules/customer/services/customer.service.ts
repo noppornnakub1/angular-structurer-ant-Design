@@ -15,5 +15,8 @@ export class CustomerService {
     return this._http.get(`/Customer/CustomerInfo`);
   }
 
+  addData(customer: any): Observable<any> {
+    return this._http.post(`/Customer/AddCustomer`, customer);
+  }
 
 }

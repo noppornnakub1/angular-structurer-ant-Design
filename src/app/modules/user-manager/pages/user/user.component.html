@@ -4,13 +4,13 @@
     <div nz-col [nzXs]="24" [nzMd]="24" [nzLg]="5" class="pr-3">
       <nz-form-label nzNoColon>ชื่อ</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="ชื่อ" formControlName="name" />
+        <input nz-input placeholder="ชื่อ" formControlName="name" [(ngModel)]="filters.name "(input)="applyFilters()"/>
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
       <nz-form-label nzNoColon>username</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="username" formControlName="username" />
+        <input nz-input placeholder="username" formControlName="username" [(ngModel)]="filters.username "/>
       </nz-input-group>
     </div>
   </div>

@@ -6,19 +6,22 @@ import { items_province } from '../../../../shared/constants/data-province.const
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SupplierService } from '../../services/supplier.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PostCodeService } from '../../../../shared/constants/post-code.service';
+import { HttpClientModule } from '@angular/common/http';
 
 interface DataLocation {
   id:number,
-  provice: string;
+  province: string;
   district: string;
   subdistrict: string;
-  postal_code: string;
+  postalCode: string;
 }
 
 @Component({
   selector: 'app-supplier-add',
   standalone: true,
-  imports: [SharedModule,NgZorroAntdModule],
+  imports: [SharedModule,NgZorroAntdModule,HttpClientModule],
+  providers: [PostCodeService],
   templateUrl: './supplier-add.component.html',
   styleUrl: './supplier-add.component.scss'
 })
@@ -36,7 +39,8 @@ export class SupplierAddComponent {
   constructor(private _location: Location,private fb: FormBuilder
     ,private supplierService: SupplierService,
     private router: Router,
-    private route: ActivatedRoute ) 
+    private route: ActivatedRoute,
+    private postCodeService: PostCodeService ) 
   {}
 
   ngOnInit(): void {
@@ -47,14 +51,14 @@ export class SupplierAddComponent {
       address_sup: ['', Validators.required],
       district: ['', Validators.required],
       subdistrict: ['', Validators.required],
-      provice: ['', Validators.required],
-      postal: ['', Validators.required],
+      province: ['', Validators.required],
+      postalCode: ['', Validators.required],
       tel: ['', Validators.required],
       email: ['', Validators.required],
       supplier_id: ['1', Validators.required],
       supplier_num: ['', Validators.required],
       supplier_type: ['', Validators.required],
-      site: ['', Validators.required],
+      site: ['00000', Validators.required],
       supplier_group: ['', Validators.required],
     });
     this.supplierBankForm = this.fb.group({
@@ -71,6 +75,11 @@ export class SupplierAddComponent {
       this.isViewMode = true;
       this.supplierForm.disable(); // ทำให้ฟอร์มไม่สามารถแก้ไขได้
     }
+    this.postCodeService.getPostCodes().subscribe(data => {
+      console.log(data)
+      this.items_provinces = data;
+      this.filteredItemsProvince = data;
+    });
   }
 
   loadCustomerData(id: number): void {
@@ -83,18 +92,18 @@ export class SupplierAddComponent {
     this.filteredItemsProvince = this.items_provinces.filter(item => 
       item.subdistrict.includes(value) ||
       item.district.includes(value) ||
-      item.provice.includes(value) ||
-      item.postal_code.includes(value)
+      item.province.includes(value) ||
+      item.postalCode.includes(value)
     );
   }
   onPostalCodeChange(value: any): void {
     console.log("value ", value);
-    const selectedItem = this.items_provinces.find(item => item.postal_code === value);
+    const selectedItem = this.items_provinces.find(item => item.postalCode === value);
     if (selectedItem) {
       this.supplierForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
-        provice: selectedItem.provice
+        province: selectedItem.province
       });
     }
   }

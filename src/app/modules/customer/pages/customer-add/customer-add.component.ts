@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { SharedModule } from '../../../../shared/shared.module';
 import {Location} from '@angular/common';
@@ -6,35 +6,47 @@ import { items_province } from '../../../../shared/constants/data-province.const
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomerService } from '../../services/customer.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { PostCodeService } from '../../../../shared/constants/post-code.service';
+import { AuthService } from '../../../authentication/services/auth.service';
+import { IRole } from '../../../user-manager/interface/role.interface';
 
 
 interface DataLocation {
   id:number,
-  provice: string;
+  province: string;
   district: string;
   subdistrict: string;
-  postal_code: string;
+  postalCode: string;
 }
 
 @Component({
   selector: 'app-customer-add',
   standalone: true,
-  imports: [SharedModule,NgZorroAntdModule],
+  imports: [SharedModule,NgZorroAntdModule,HttpClientModule],
+  providers: [PostCodeService],
   templateUrl: './customer-add.component.html',
   styleUrl: './customer-add.component.scss'
 })
 export class CustomerAddComponent implements OnInit {
+  currentUser!: IRole | null;
   items_provinces: DataLocation[] = items_province;
   filteredItemsProvince: DataLocation[] = items_province;
   customerForm!: FormGroup;
   customerBankForm!: FormGroup;
   customerId: number | null = null;
   isViewMode: boolean = false;
+  isAdmin = false;
+  isApproved = false;
+  isUser = false;
+  private readonly _router = inject(Router);
+  private readonly authService = inject(AuthService)
 
   constructor(private _location: Location, private fb: FormBuilder
     ,private customerService: CustomerService,
     private router: Router ,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private postCodeService: PostCodeService
   ) {
  
   }
@@ -47,14 +59,14 @@ export class CustomerAddComponent implements OnInit {
       address_sup: ['', Validators.required],
       district: ['', Validators.required],
       subdistrict: ['', Validators.required],
-      provice: ['', Validators.required],
-      postal: ['', Validators.required],
+      province: ['', Validators.required],
+      postalCode: ['', Validators.required],
       tel: ['', Validators.required],
       email: ['', Validators.required],
       customer_id: ['1', Validators.required],
       customer_num: ['', Validators.required],
       customer_type: ['', Validators.required],
-      site: ['', Validators.required],
+      site: ['00000', Validators.required],
     });
     this.customerBankForm = this.fb.group({
       bankName: ['']
@@ -70,6 +82,22 @@ export class CustomerAddComponent implements OnInit {
       this.isViewMode = true;
       this.customerForm.disable(); // ทำให้ฟอร์มไม่สามารถแก้ไขได้
     }
+    this.postCodeService.getPostCodes().subscribe(data => {
+      console.log(data)
+      this.items_provinces = data;
+      this.filteredItemsProvince = data;
+    });
+  }
+
+  checkRole(): void {
+    this.authService.currenttRole.subscribe(user => {
+      this.currentUser = user;
+      if (user) {
+        this.isAdmin = user.action.includes('admin');
+        this.isApproved = user.action.includes('approved');
+        this.isUser = user.action.includes('user');
+      }
+    });
   }
 
   loadCustomerData(id: number): void {
@@ -82,19 +110,19 @@ export class CustomerAddComponent implements OnInit {
     this.filteredItemsProvince = this.items_provinces.filter(item => 
       item.subdistrict.includes(value) ||
       item.district.includes(value) ||
-      item.provice.includes(value) ||
-      item.postal_code.includes(value)
+      item.province.includes(value) ||
+      item.postalCode.includes(value)
     );
   }
 
   onPostalCodeChange(value: any): void {
     console.log("value ", value);
-    const selectedItem = this.items_provinces.find(item => item.postal_code === value);
+    const selectedItem = this.items_provinces.find(item => item.postalCode === value);
     if (selectedItem) {
       this.customerForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
-        provice: selectedItem.provice
+        province: selectedItem.province
       });
     }
   }

@@ -65,7 +65,13 @@
         </nz-input-group>
       </div>
 
-
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        <nz-form-label nzNoColon>Supplier Group</nz-form-label>
+        <nz-select formControlName="customer_group" nzPlaceHolder="Select Customer Group" class="custom-select">
+          <nz-option nzValue="GCH Group" nzLabel="GCH Group"></nz-option>
+          <nz-option nzValue="ONE Group" nzLabel="ONE Group"></nz-option>
+        </nz-select>
+      </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Customer Number</nz-form-label>
         <nz-input-group nzPrefixIcon="number" class="form-input">

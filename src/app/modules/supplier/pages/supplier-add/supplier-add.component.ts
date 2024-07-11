@@ -55,6 +55,7 @@ export class SupplierAddComponent {
       supplier_num: ['', Validators.required],
       supplier_type: ['', Validators.required],
       site: ['', Validators.required],
+      supplier_group: ['', Validators.required],
     });
     this.supplierBankForm = this.fb.group({
       bankName: ['']

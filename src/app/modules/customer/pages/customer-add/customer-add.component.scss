@@ -1,0 +1,30 @@
+
+.custom-select .ant-select-selector {
+    height: 32px; /* กำหนดความสูง */
+    display: flex;
+    align-items: center;
+  }
+  
+  .custom-input {
+    height: 32px; /* กำหนดความสูง */
+    width: 100%;
+  }
+
+  ::ng-deep .ant-select-single .ant-select-selector {
+    height: 2.5rem !important;
+    display: flex;
+    align-items: center;
+    width: 100% !important;
+  }
+  
+  ::ng-deep .ant-select-top-control {
+    height: 2.5rem !important;
+    width: 100% !important;
+  }
+  .custom-select {
+    width: 100%;
+  }
+  
+  .nz-input-group .ant-select {
+    width: 100%;
+  }

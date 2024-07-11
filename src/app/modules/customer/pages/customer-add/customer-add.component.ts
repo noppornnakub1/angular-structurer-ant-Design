@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { SharedModule } from '../../../../shared/shared.module';
 import {Location} from '@angular/common';
@@ -10,6 +10,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { PostCodeService } from '../../../../shared/constants/post-code.service';
 import { AuthService } from '../../../authentication/services/auth.service';
 import { IRole } from '../../../user-manager/interface/role.interface';
+import { ICustomerType } from '../../interface/customerType.interface';
 
 
 interface DataLocation {
@@ -29,6 +30,8 @@ interface DataLocation {
   styleUrl: './customer-add.component.scss'
 })
 export class CustomerAddComponent implements OnInit {
+  listOfType: ICustomerType[] = [];
+  filteredDataType: ICustomerType[] = [];
   currentUser!: IRole | null;
   items_provinces: DataLocation[] = items_province;
   filteredItemsProvince: DataLocation[] = items_province;
@@ -41,6 +44,7 @@ export class CustomerAddComponent implements OnInit {
   isUser = false;
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService)
+  private _cdr = inject(ChangeDetectorRef);
 
   constructor(private _location: Location, private fb: FormBuilder
     ,private customerService: CustomerService,
@@ -87,6 +91,7 @@ export class CustomerAddComponent implements OnInit {
       this.items_provinces = data;
       this.filteredItemsProvince = data;
     });
+    this.getCustomerType();
   }
 
   checkRole(): void {
@@ -102,6 +107,12 @@ export class CustomerAddComponent implements OnInit {
 
   loadCustomerData(id: number): void {
     this.customerService.findCustomerById(id).subscribe((data: any) => {
+      this.customerForm.patchValue(data);
+    });
+  }
+
+  loadCustomerType(id: number): void {
+    this.customerService.findCustomerTypeById(id).subscribe((data: any) => {
       this.customerForm.patchValue(data);
     });
   }
@@ -163,6 +174,19 @@ export class CustomerAddComponent implements OnInit {
       this.customerForm.markAllAsTouched();
       console.log('Form is not valid');
     }
+  }
+
+  getCustomerType(): void {
+    this.customerService.getCustomerType().subscribe({
+      next: (response: any) => {
+        this.listOfType = response;
+        this.filteredDataType = response;
+        this._cdr.markForCheck();
+      },
+      error: () => {
+        // Handle error
+      }
+    });
   }
   // คอมเม้นไว้ก่อนยังไม่ได้ทำ API
   // approveCustomer(): void {

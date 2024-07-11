@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ICustomer } from '../interface/customer.interface';
+import { ICustomerType } from '../interface/customerType.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,13 @@ export class CustomerService {
     return this._http.put(`/Customer/UpdateCustomer?id=${id}`, data);
   }
 
+  findCustomerTypeById(id: number): Observable<ICustomerType> {
+    return this._http.get<ICustomerType>(`/Customer/FindCustomerTypeByID?id=${id}`);
+  }
+
+  getCustomerType() {
+    return this._http.get(`/Customer/GetCustomerType`);
+  }
   // approveCustomer(id: number): Observable<any> {
   //   return this._http.post<any>(`${this.apiUrl}/ApproveCustomer`, { id });
   // }

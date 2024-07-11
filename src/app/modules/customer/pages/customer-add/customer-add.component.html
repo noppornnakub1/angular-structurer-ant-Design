@@ -33,7 +33,7 @@
       </nz-input-group>
     </div> -->
 
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Address</nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
           <input nz-input placeholder="Address" formControlName="address_sup" />
@@ -75,10 +75,16 @@
 
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Customer Type</nz-form-label>
+        <nz-select formControlName="customer_type" nzPlaceHolder="Select customer_type" class="custom-select">
+          <nz-option *ngFor="let type of listOfType" [nzLabel]="type.code" [nzValue]="type.code"></nz-option>
+        </nz-select>
+      </div>
+      <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        <nz-form-label nzNoColon>Customer Type</nz-form-label>
         <nz-input-group nzPrefixIcon="team" class="form-input">
           <input nz-input placeholder="Customer Type" formControlName="customer_type" />
         </nz-input-group>
-      </div>
+      </div> -->
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Customer Number</nz-form-label>
         <nz-input-group nzPrefixIcon="number" class="form-input">

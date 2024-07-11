@@ -1,132 +1,150 @@
-<div class="content-card">
+<form [formGroup]="supplierForm" (ngSubmit)="onSubmit()">
+  <div class="content-card">
     <nz-divider nzText="Supplier Info"></nz-divider>
     <div nz-row nzGutter="16" class="mt-2">
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Tax ID</nz-form-label>
         <nz-input-group nzPrefixIcon="idcard" class="form-input">
-          <input nz-input placeholder="Tax ID" />
+          <input nz-input placeholder="Tax ID" maxlength="13" formControlName="tax_Id" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Name</nz-form-label>
         <nz-input-group nzPrefixIcon="user" class="form-input">
-          <input nz-input placeholder="Name" />
+          <input nz-input placeholder="Name" formControlName="name" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Telephone</nz-form-label>
         <nz-input-group nzPrefixIcon="phone" class="form-input">
-          <input nz-input placeholder="Telephone" />
+          <input nz-input placeholder="Telephone" maxlength="10" formControlName="tel" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Email</nz-form-label>
         <nz-input-group nzPrefixIcon="mail" class="form-input">
-          <input nz-input placeholder="Email" />
+          <input nz-input placeholder="Email" formControlName="email" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3">
         <nz-form-label nzNoColon>Address</nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Address" />
+          <input nz-input placeholder="Address" formControlName="address_sup" />
         </nz-input-group>
       </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
+        <nz-form-label nzNoColon>Postal Code<span style="color: red;">*</span></nz-form-label>
+        <nz-form-item>
+          <nz-form-control>
+            <nz-select nzShowSearch nzServerSearch nzPlaceHolder="Postal Code" (nzOnSearch)="onSearch($event)"
+              (ngModelChange)="onPostalCodeChange($event)" formControlName="postal">
+              <nz-option *ngFor="let item of filteredItemsProvince"
+                [nzLabel]="(item.subdistrict + ' ' + item.district + ' ' +  item.provice + ' ' +  item.postal_code)"
+                [nzValue]="item.postal_code">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Postal Code</nz-form-label>
-        <nz-input-group nzPrefixIcon="mail" class="form-input">
-          <input nz-input placeholder="Postal Code" />
+        <nz-form-label nzNoColon>Subdistrict</nz-form-label>
+        <nz-input-group nzPrefixIcon="environment" class="form-input">
+          <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>District</nz-form-label>
         <nz-input-group nzPrefixIcon="cluster" class="form-input">
-          <input nz-input placeholder="District" />
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Subdistrict</nz-form-label>
-        <nz-input-group nzPrefixIcon="environment" class="form-input">
-          <input nz-input placeholder="Subdistrict" />
+          <input nz-input placeholder="District" formControlName="district" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Province</nz-form-label>
         <nz-input-group nzPrefixIcon="global" class="form-input">
-          <input nz-input placeholder="Province" />
+          <input nz-input placeholder="Province" formControlName="provice" />
         </nz-input-group>
       </div>
-      
-      
+
+
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Customer Number</nz-form-label>
         <nz-input-group nzPrefixIcon="number" class="form-input">
-          <input nz-input placeholder="Customer Number" />
+          <input nz-input placeholder="Customer Number" formControlName="supplier_num" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Customer Type</nz-form-label>
         <nz-input-group nzPrefixIcon="team" class="form-input">
-          <input nz-input placeholder="Customer Type" />
+          <input nz-input placeholder="Customer Type" formControlName="supplier_type" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Site</nz-form-label>
         <nz-input-group nzPrefixIcon="global" class="form-input">
-          <input nz-input placeholder="Site" />
+          <input nz-input placeholder="Site" formControlName="site" />
         </nz-input-group>
       </div>
     </div>
-</div>
-<div class="content-card mt-3">
+  </div>
+</form>
+<form [formGroup]="supplierBankForm">
+  <div class="content-card mt-3">
     <nz-divider nzText="Supplier Bank"></nz-divider>
     <div nz-row nzGutter="16">
-        <div nz-row nzGutter="16">
-            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon>Bank Name</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <input nz-input id="bankName" placeholder="Bank Name" class="form-input" />
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon>Branch</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <input nz-input id="branch" placeholder="Branch" class="form-input" />
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon>Account Number</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <input nz-input id="accountNumber" placeholder="Account Number" class="form-input" />
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon>Account Name</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <input nz-input id="accountName" placeholder="Account Name" class="form-input" />
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24" nzFor="vat" nzNoColon>VAT</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <input nz-input id="vat" placeholder="VAT" class="form-input" />
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-          </div>
-       </div>
-       <div class="mt-5 display-flex justify-center ">
-        <button nz-button nzType="default" class="mr-2" (click)="backClicked()">ย้อนกลับ</button>
-        <button nz-button nzType="primary" (click)="backClicked()">บันทึก</button>
-
+      <div nz-row nzGutter="16">
+        <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon>Bank Name</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <input nz-input id="bankName" placeholder="Bank Name" class="form-input" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon>Branch</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <input nz-input id="branch" placeholder="Branch" class="form-input" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon>Account Number</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <input nz-input id="accountNumber" placeholder="Account Number" class="form-input" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon>Account Name</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <input nz-input id="accountName" placeholder="Account Name" class="form-input" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzFor="vat" nzNoColon>VAT</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <input nz-input id="vat" placeholder="VAT" class="form-input" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
       </div>
+    </div>
+    <div class="mt-5 display-flex justify-center ">
+      <button nz-button nzType="default" class="mr-2" (click)="backClicked()">ย้อนกลับ</button>
+    <button *ngIf="!isViewMode" nz-button nzType="primary" (click)="onSubmit()">บันทึก</button>
+    <button *ngIf="isViewMode" class="mr-2" nz-button nzType="primary" (click)="approveCustomer()">Approve</button>
+    <button *ngIf="isViewMode" nz-button nzType="default" (click)="rejectCustomer()">Reject</button>
+    </div>
   </div>
-  
+</form>
+<div *ngIf="isViewMode" class="content-card mt-3">
+  <nz-divider nzText="Approved Info"></nz-divider>
+  <p>Approve By : ทดสอบ ทดสอบ</p>
+  <p>Status : Approve</p>
+  <p>Time : เวลา</p>
+</div>

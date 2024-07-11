@@ -13,7 +13,7 @@ import { IRole } from '../../../user-manager/interface/role.interface';
 @Component({
   selector: 'app-customer',
   standalone: true,
-  imports: [SharedModule,NgZorroAntdModule],
+  imports: [SharedModule, NgZorroAntdModule],
   templateUrl: './customer.component.html',
   styleUrl: './customer.component.scss'
 })
@@ -31,7 +31,7 @@ export class CustomerComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
 
-  constructor(private customerService: CustomerService) {}
+  constructor(private customerService: CustomerService) { }
 
   ngOnInit(): void {
     this.checkRole();
@@ -78,4 +78,11 @@ export class CustomerComponent implements OnInit {
     this._router.navigate(['/feature/customer/add']);
   }
 
+  editCustomer(id: number): void {
+    this._router.navigate(['/feature/customer/edit', id]);
   }
+  viewCustomer(id: number): void {
+    this._router.navigate(['/feature/customer/view', id]);
+  }
+
+}

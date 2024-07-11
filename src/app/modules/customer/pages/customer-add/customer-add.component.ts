@@ -5,7 +5,7 @@ import {Location} from '@angular/common';
 import { items_province } from '../../../../shared/constants/data-province.constant';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomerService } from '../../services/customer.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 interface DataLocation {
@@ -28,10 +28,13 @@ export class CustomerAddComponent implements OnInit {
   filteredItemsProvince: DataLocation[] = items_province;
   customerForm!: FormGroup;
   customerBankForm!: FormGroup;
+  customerId: number | null = null;
+  isViewMode: boolean = false;
 
   constructor(private _location: Location, private fb: FormBuilder
     ,private customerService: CustomerService,
-    private router: Router 
+    private router: Router ,
+    private route: ActivatedRoute
   ) {
  
   }
@@ -55,6 +58,23 @@ export class CustomerAddComponent implements OnInit {
     });
     this.customerBankForm = this.fb.group({
       bankName: ['']
+    });
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.customerId = +id;
+        this.loadCustomerData(this.customerId);
+      }
+    });
+    if (this.router.url.includes('/view/')) {
+      this.isViewMode = true;
+      this.customerForm.disable(); // ทำให้ฟอร์มไม่สามารถแก้ไขได้
+    }
+  }
+
+  loadCustomerData(id: number): void {
+    this.customerService.findCustomerById(id).subscribe((data: any) => {
+      this.customerForm.patchValue(data);
     });
   }
 
@@ -81,18 +101,77 @@ export class CustomerAddComponent implements OnInit {
 
   onSubmit(): void {
     if (this.customerForm.valid) {
-      this.customerService.addData(this.customerForm.value).subscribe({
+      if (this.customerId) {
+        this.onUpdate();  // Call update function if customerId exists
+      } else {
+        this.customerService.addData(this.customerForm.value).subscribe({
+          next: (response) => {
+            console.log('Data added successfully', response);
+            this.router.navigate(['/feature/customer']); 
+          },
+          error: (err) => {
+            console.error('Error adding data', err);
+          }
+        });
+      }
+    } else {
+      this.customerForm.markAllAsTouched();
+      console.log('Form is not valid');
+    }
+  }
+
+  onUpdate(): void {
+    if (this.customerForm.valid && this.customerId) {
+      this.customerService.updateData(this.customerId, this.customerForm.value).subscribe({
         next: (response) => {
-          console.log('Data added successfully', response);
-          this.router.navigate(['/feature/customer']); // Redirect to customer list after successful addition
+          console.log('Data updated successfully', response);
+          this.router.navigate(['/feature/customer']); 
         },
         error: (err) => {
-          console.error('Error adding data', err);
+          console.error('Error updating data', err);
         }
       });
     } else {
+      this.customerForm.markAllAsTouched();
       console.log('Form is not valid');
     }
+  }
+  // คอมเม้นไว้ก่อนยังไม่ได้ทำ API
+  // approveCustomer(): void {
+  //   if (this.customerId !== null) {
+  //     this.customerService.approveCustomer(this.customerId).subscribe({
+  //       next: (response) => {
+  //         console.log('Customer approved successfully', response);
+  //         this.router.navigate(['/feature/customer']);
+  //       },
+  //       error: (err) => {
+  //         console.error('Error approving customer', err);
+  //       }
+  //     });
+  //   }
+  // }
+
+  // rejectCustomer(): void {
+  //   if (this.customerId !== null) {
+  //     this.customerService.rejectCustomer(this.customerId).subscribe({
+  //       next: (response) => {
+  //         console.log('Customer rejected successfully', response);
+  //         this.router.navigate(['/feature/customer']);
+  //       },
+  //       error: (err) => {
+  //         console.error('Error rejecting customer', err);
+  //       }
+  //     });
+  //   }
+  // }
+  approveCustomer(): void {
+    console.log('Customer approved');
+    this.router.navigate(['/feature/customer']);
+  }
+
+  rejectCustomer(): void {
+    console.log('Customer rejected');
+    this.router.navigate(['/feature/customer']);
   }
 
   backClicked(): void {

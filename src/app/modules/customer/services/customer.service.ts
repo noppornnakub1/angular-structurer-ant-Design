@@ -19,4 +19,20 @@ export class CustomerService {
     return this._http.post(`/Customer/AddCustomer`, customer);
   }
 
+  findCustomerById(id: number): Observable<ICustomer> {
+    return this._http.get<ICustomer>(`/Customer/FindCustomerByID?id=${id}`);
+  }
+
+  updateData(id: number, data: ICustomer): Observable<any> {
+    return this._http.put(`/Customer/UpdateCustomer?id=${id}`, data);
+  }
+
+  // approveCustomer(id: number): Observable<any> {
+  //   return this._http.post<any>(`${this.apiUrl}/ApproveCustomer`, { id });
+  // }
+
+  // rejectCustomer(id: number): Observable<any> {
+  //   return this._http.post<any>(`${this.apiUrl}/RejectCustomer`, { id });
+  // }
+
 }

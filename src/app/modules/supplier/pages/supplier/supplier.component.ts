@@ -77,4 +77,11 @@ export class SupplierComponent implements OnInit {
   addData(): void {
     this._router.navigate(['/feature/supplier/add']);
   }
+
+  editCustomer(id: number): void {
+    this._router.navigate(['/feature/supplier/edit', id]);
+  }
+  viewCustomer(id: number): void {
+    this._router.navigate(['/feature/supplier/view', id]);
+  }
 }

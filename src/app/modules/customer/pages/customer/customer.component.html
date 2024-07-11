@@ -52,8 +52,8 @@
         <td>{{ data.tax_Id }}</td>
         <td>{{ data.status }}</td>
         <td class="text-center">
-          <button *ngIf="isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round">View</button>
-          <button *ngIf="isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round">Edit</button>
+          <button *ngIf="isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round" (click)="viewCustomer(data.id)">View</button>
+          <button *ngIf="isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round" (click)="editCustomer(data.id)">Edit</button>
           <button *ngIf="isUser || isAdmin" nz-button nzType="default" class="mr-1" nzShape="round">Cancel</button>
           <button *ngIf="isUser || isAdmin" nz-button nzType="default" class="mr-1" nzShape="round">Submit</button>
           <button *ngIf="isApproved || isAdmin" nz-button nzType="default" class="mr-1" nzShape="round">Reject</button>

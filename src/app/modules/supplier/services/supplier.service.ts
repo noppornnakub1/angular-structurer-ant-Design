@@ -15,4 +15,15 @@ import { ISupplier } from '../interface/supplier.interface';
       return this._http.get(`/Supplier/SupplierInfo`);
     }
 
+    addData(supplier: any): Observable<any> {
+      return this._http.post(`/Supplier/AddSupplier`, supplier);
+    }
+    findSupplierById(id: number): Observable<ISupplier> {
+      return this._http.get<ISupplier>(`/Supplier/FindSupplierByID?id=${id}`);
+    }
+  
+    updateData(id: number, data: ISupplier): Observable<any> {
+      return this._http.put(`/Supplier/UpdateSupplier?id=${id}`, data);
+    }
+
   }

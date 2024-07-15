@@ -35,12 +35,12 @@
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Postal Code<span style="color: red;">*</span></nz-form-label>
         <nz-form-item>
-          <nz-form-control>
+          <nz-form-control nzErrorTip="Please select postal code!">
             <nz-select nzShowSearch nzServerSearch nzPlaceHolder="Postal Code" (nzOnSearch)="onSearch($event)"
-              (ngModelChange)="onPostalCodeChange($event)" formControlName="postalCode">
+              formControlName="postalCode" (ngModelChange)="onPostalCodeChange($event)">
               <nz-option *ngFor="let item of filteredItemsProvince"
-                [nzLabel]="(item.subdistrict + ' ' + item.district + ' ' +  item.province + ' ' +  item.postalCode)"
-                [nzValue]="item.postalCode">
+                [nzLabel]="item.subdistrict + ' ' + item.district + ' ' + item.province + ' ' + item.postalCode"
+                [nzValue]="item.post_id">
               </nz-option>
             </nz-select>
           </nz-form-control>
@@ -72,14 +72,20 @@
           <nz-option nzValue="ONE Group" nzLabel="ONE Group"></nz-option>
         </nz-select>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
+      <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
         <nz-form-label nzNoColon>Customer Type</nz-form-label>
         <nz-input-group nzPrefixIcon="team" class="form-input">
           <input nz-input placeholder="Customer Type" formControlName="supplier_type" />
         </nz-input-group>
+      </div> -->
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        <nz-form-label nzNoColon>Supplier Type</nz-form-label>
+        <nz-select formControlName="supplier_type" nzPlaceHolder="Select supplier_type" class="custom-select">
+          <nz-option *ngFor="let type of listOfType" [nzLabel]="type.code" [nzValue]="type.code"></nz-option>
+        </nz-select>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Customer Number</nz-form-label>
+        <nz-form-label nzNoColon>Supplier Number</nz-form-label>
         <nz-input-group nzPrefixIcon="number" class="form-input">
           <input nz-input placeholder="Customer Number" formControlName="supplier_num" />
         </nz-input-group>
@@ -102,7 +108,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon>Bank Name</nz-form-label>
             <nz-form-control [nzSpan]="24">
-              <input nz-input id="bankName" placeholder="Bank Name" class="form-input" />
+              <input nz-input id="bankName" placeholder="Bank Name" formControlName="bankName" class="form-input" />
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -110,7 +116,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon>Branch</nz-form-label>
             <nz-form-control [nzSpan]="24">
-              <input nz-input id="branch" placeholder="Branch" class="form-input" />
+              <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input" />
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -118,7 +124,8 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon>Account Number</nz-form-label>
             <nz-form-control [nzSpan]="24">
-              <input nz-input id="accountNumber" placeholder="Account Number" class="form-input" />
+              <input nz-input id="accountNumber" placeholder="Account Number" formControlName="account_num"
+                class="form-input" />
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -126,7 +133,8 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon>Account Name</nz-form-label>
             <nz-form-control [nzSpan]="24">
-              <input nz-input id="accountName" placeholder="Account Name" class="form-input" />
+              <input nz-input id="accountName" placeholder="Account Name" formControlName="account_name"
+                class="form-input" />
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -134,7 +142,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="vat" nzNoColon>VAT</nz-form-label>
             <nz-form-control [nzSpan]="24">
-              <input nz-input id="vat" placeholder="VAT" class="form-input" />
+              <input nz-input id="vat" placeholder="VAT" formControlName="vat" class="form-input" />
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -142,9 +150,9 @@
     </div>
     <div class="mt-5 display-flex justify-center ">
       <button nz-button nzType="default" class="mr-2" (click)="backClicked()">ย้อนกลับ</button>
-    <button *ngIf="!isViewMode" nz-button nzType="primary" (click)="onSubmit()">บันทึก</button>
-    <button *ngIf="isViewMode" class="mr-2" nz-button nzType="primary" (click)="approveCustomer()">Approve</button>
-    <button *ngIf="isViewMode" nz-button nzType="default" (click)="rejectCustomer()">Reject</button>
+      <button *ngIf="!isViewMode" nz-button nzType="primary" (click)="onSubmit()">บันทึก</button>
+      <button *ngIf="isViewMode" class="mr-2" nz-button nzType="primary" (click)="approveCustomer()">Approve</button>
+      <button *ngIf="isViewMode" nz-button nzType="default" (click)="rejectCustomer()">Reject</button>
     </div>
   </div>
 </form>

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ISupplier } from '../interface/supplier.interface';
+import { IsupplierType } from '../interface/supplierType.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -24,6 +25,18 @@ import { ISupplier } from '../interface/supplier.interface';
   
     updateData(id: number, data: ISupplier): Observable<any> {
       return this._http.put(`/Supplier/UpdateSupplier?id=${id}`, data);
+    }
+
+    findSupplierTypeById(id: number): Observable<IsupplierType> {
+      return this._http.get<IsupplierType>(`/Supplier/FindSupplierTypeByID?id=${id}`);
+    }
+  
+    getSupplierType() {
+      return this._http.get(`/Supplier/GetSupplierType`);
+    }
+
+    addSupplierBank(supplierbank: any): Observable<any> {
+      return this._http.post(`/SupplierBank/AddSupplierBank`, supplierbank);
     }
 
   }

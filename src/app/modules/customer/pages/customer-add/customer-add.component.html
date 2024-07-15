@@ -47,7 +47,7 @@
               (ngModelChange)="onPostalCodeChange($event)" formControlName="postalCode">
               <nz-option *ngFor="let item of filteredItemsProvince"
                 [nzLabel]="(item.subdistrict + ' ' + item.district + ' ' +  item.province + ' ' +  item.postalCode)"
-                [nzValue]="item.postalCode">
+                [nzValue]="item.post_id">
               </nz-option>
             </nz-select>
           </nz-form-control>

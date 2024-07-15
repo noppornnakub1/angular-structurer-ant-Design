@@ -1,13 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-export interface DataLocation {
-    id: number;
-    province: string;
-    district: string;
-    subdistrict: string;
-    postalCode: string;
-  }
+import { DataLocation } from '../../modules/supplier/pages/supplier-add/supplier-add.component';
+
 @Injectable({
   providedIn: 'root'
 })

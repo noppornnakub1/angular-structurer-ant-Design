@@ -11,15 +11,8 @@ import { PostCodeService } from '../../../../shared/constants/post-code.service'
 import { AuthService } from '../../../authentication/services/auth.service';
 import { IRole } from '../../../user-manager/interface/role.interface';
 import { ICustomerType } from '../../interface/customerType.interface';
+import { DataLocation } from '../../../supplier/pages/supplier-add/supplier-add.component';
 
-
-interface DataLocation {
-  id:number,
-  province: string;
-  district: string;
-  subdistrict: string;
-  postalCode: string;
-}
 
 @Component({
   selector: 'app-customer-add',
@@ -33,8 +26,8 @@ export class CustomerAddComponent implements OnInit {
   listOfType: ICustomerType[] = [];
   filteredDataType: ICustomerType[] = [];
   currentUser!: IRole | null;
-  items_provinces: DataLocation[] = items_province;
-  filteredItemsProvince: DataLocation[] = items_province;
+  items_provinces: DataLocation[] = [];
+  filteredItemsProvince: DataLocation[] = [];
   customerForm!: FormGroup;
   customerBankForm!: FormGroup;
   customerId: number | null = null;
@@ -92,6 +85,14 @@ export class CustomerAddComponent implements OnInit {
       this.filteredItemsProvince = data;
     });
     this.getCustomerType();
+
+      // Subscribe to customer_type changes
+      this.customerForm.get('customer_type')!.valueChanges.subscribe(value => {
+        const customerTypeId = this.getCustomerTypeId(value);
+        if (customerTypeId) {
+          this.loadCustomerType(customerTypeId); // เรียกใช้ฟังก์ชันนี้เมื่อมีการเปลี่ยนแปลงค่า customer_type
+        }
+      });
   }
 
   checkRole(): void {
@@ -113,8 +114,14 @@ export class CustomerAddComponent implements OnInit {
 
   loadCustomerType(id: number): void {
     this.customerService.findCustomerTypeById(id).subscribe((data: any) => {
-      this.customerForm.patchValue(data);
+      const customerNum = data.code_from
+      this.customerForm.patchValue({ customer_num: customerNum });
     });
+  }
+
+  getCustomerTypeId(code: string): number | undefined {
+    const type = this.listOfType.find(t => t.code === code);
+    return type ? type.id : undefined;
   }
 
   onSearch(value: string): void {

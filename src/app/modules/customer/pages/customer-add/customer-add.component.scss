@@ -28,3 +28,26 @@
   .nz-input-group .ant-select {
     width: 100%;
   }
+
+  .green-button {
+    background-color: yellowgreen;
+    color: white;
+    border-color: yellowgreen;
+  
+    &:hover {
+      background-color: darkgreen;
+      border-color: darkgreen;
+    }
+  }
+
+  .button-yellow{
+    background-color: #ffc107;
+    color: white;
+    border-color: #ffc107;
+    color: black;
+  
+    &:hover {
+      background-color: darkgoldenrod;
+      border-color: darkgoldenrod;
+    }
+  }

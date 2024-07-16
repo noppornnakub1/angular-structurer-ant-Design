@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 import { ISupplier } from '../interface/supplier.interface';
 import { IsupplierType } from '../interface/supplierType.interface';
 
@@ -37,6 +37,19 @@ import { IsupplierType } from '../interface/supplierType.interface';
 
     addSupplierBank(supplierbank: any): Observable<any> {
       return this._http.post(`/SupplierBank/AddSupplierBank`, supplierbank);
+    }
+
+    getTopSupplierByType(supplier_type: string): Observable<{ supplier_num: string, code_from: string }> {
+      return this._http.get<{ supplier_num: string, code_from: string }>(`/Supplier/FindSupplierByTypeName?supplierType=${supplier_type}`)
+        .pipe(
+          catchError(error => {
+            if (error.status === 404) {
+              return of({ supplier_num: '000', code_from: '' }); // ในกรณีที่ไม่พบข้อมูลให้ return ค่า default
+            } else {
+              throw error;
+            }
+          })
+        );
     }
 
   }

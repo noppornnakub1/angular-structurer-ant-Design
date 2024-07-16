@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { SharedModule } from '../../../../shared/shared.module';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
-import {CommonModule, Location} from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { items_province } from '../../../../shared/constants/data-province.constant';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SupplierService } from '../../services/supplier.service';
@@ -15,9 +15,11 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { AuthService } from '../../../authentication/services/auth.service';
+import { IRole } from '../../../user-manager/interface/role.interface';
 
 export interface DataLocation {
-  post_id:number,
+  post_id: number,
   province: string;
   district: string;
   subdistrict: string;
@@ -27,8 +29,8 @@ export interface DataLocation {
 @Component({
   selector: 'app-supplier-add',
   standalone: true,
-  imports: [SharedModule,NgZorroAntdModule,HttpClientModule
-    ,CommonModule,
+  imports: [SharedModule, NgZorroAntdModule, HttpClientModule
+    , CommonModule,
     FormsModule,
     ReactiveFormsModule,
     NzFormModule,
@@ -45,6 +47,7 @@ export interface DataLocation {
 
 
 export class SupplierAddComponent {
+  currentUser!: IRole | null;
   listOfType: IsupplierType[] = [];
   filteredDataType: IsupplierType[] = [];
   items_provinces: DataLocation[] = [];
@@ -53,15 +56,19 @@ export class SupplierAddComponent {
   supplierBankForm!: FormGroup;
   suppilerId: number | null = null;
   isViewMode: boolean = false;
+  isAdmin = false;
+  isApproved = false;
+  isUser = false;
   private _cdr = inject(ChangeDetectorRef);
+  private readonly _router = inject(Router);
+  private readonly authService = inject(AuthService)
 
-  constructor(private _location: Location,private fb: FormBuilder
-    ,private supplierService: SupplierService,
+  constructor(private _location: Location, private fb: FormBuilder
+    , private supplierService: SupplierService,
     private router: Router,
     private route: ActivatedRoute,
     private postCodeService: PostCodeService,
-    private cdr: ChangeDetectorRef ) 
-  {}
+    private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.supplierForm = this.fb.group({
@@ -83,7 +90,7 @@ export class SupplierAddComponent {
     });
     this.supplierBankForm = this.fb.group({
       supbank_id: ['1'],
-      supplier_id:[''],
+      supplier_id: [''],
       bankName: [''],
       branch: [''],
       account_num: [''],
@@ -94,7 +101,7 @@ export class SupplierAddComponent {
       const id = params.get('id');
       if (id) {
         this.suppilerId = +id;
-        this.loadCustomerData(this.suppilerId);
+        this.loadSupplierData(this.suppilerId);
       }
     });
     if (this.router.url.includes('/view/')) {
@@ -108,28 +115,77 @@ export class SupplierAddComponent {
     });
     this.getSupplierType();
 
-      // Subscribe to customer_type changes
-      this.supplierForm.get('supplier_type')!.valueChanges.subscribe(value => {
-        const customerTypeId = this.getSupplierTypeId(value);
-        if (customerTypeId) {
-          this.loadSupplierType(customerTypeId); // เรียกใช้ฟังก์ชันนี้เมื่อมีการเปลี่ยนแปลงค่า customer_type
-        }
-      });
+    // Subscribe to customer_type changes
+    this.supplierForm.get('supplier_type')!.valueChanges.subscribe(value => {
+      const supplierTypeId = this.getSupplierTypeId(value);
+      if (supplierTypeId) {
+        this.loadSupplierType(supplierTypeId); // เรียกใช้ฟังก์ชันนี้เมื่อมีการเปลี่ยนแปลงค่า supplier_type
+      }
+    });
+
+    this.checkRole();
   }
 
-  loadCustomerData(id: number): void {
+  checkRole(): void {
+    this.authService.currenttRole.subscribe(user => {
+      this.currentUser = user;
+      console.log(this.currentUser);
+      if (user) {
+        this.isAdmin = user.action.includes('admin');
+        this.isApproved = user.action.includes('approved');
+        this.isUser = user.action.includes('user');
+        console.log(`isAdmin: ${this.isAdmin}, isApproved: ${this.isApproved}, isUser: ${this.isUser}`); // Log ค่าเพื่อเช็ค
+      }
+
+    });
+  }
+
+  loadSupplierData(id: number): void {
     this.supplierService.findSupplierById(id).subscribe((data: any) => {
-      this.supplierForm.patchValue(data);
+      console.log('dataload', data)
+      const postalCodeCombination = data.postalCode + '-' + data.subdistrict;
+      this.supplierForm.patchValue({
+        ...data,
+        postalCode: postalCodeCombination
+      }
+      );
     });
   }
 
   loadSupplierType(id: number): void {
     this.supplierService.findSupplierTypeById(id).subscribe((data: any) => {
-      const supplierNum = data.code_from
-      this.supplierForm.patchValue({ supplier_num: supplierNum });
+      const SupplierNumPrefix = data.code_from;
+      this.supplierService.getTopSupplierByType(data.code).subscribe(topSupplierData => {
+        let newSupplierNum: string;
+        console.log('before', topSupplierData.supplier_num);
+
+        if (topSupplierData.supplier_num === '000') {
+          // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
+          newSupplierNum = SupplierNumPrefix + '000';
+        } else {
+          // ถ้าเจอข้อมูล ใช้ค่า supplier_num ที่ดึงมาแล้ว increment
+          newSupplierNum = this.incrementSupplierNum(topSupplierData.supplier_num, SupplierNumPrefix);
+        }
+
+        this.supplierForm.patchValue({ supplier_num: newSupplierNum });
+        console.log('after', newSupplierNum);
+      });
     });
   }
 
+  private incrementSupplierNum(supplier_num: string, codeFrom: string): string {
+    // ลบเว้นวรรคใน codeFrom
+    const cleanCodeFrom = codeFrom.trim();
+    
+    // แยกส่วนของตัวอักษรและตัวเลข
+    const numPart = supplier_num.substring(cleanCodeFrom.length);
+    const num = parseInt(numPart, 10) + 1;
+
+    // เติม 0 นำหน้าถ้าจำเป็น
+    const paddedNum = num.toString().padStart(numPart.length, '0');
+
+    return cleanCodeFrom + paddedNum;
+}
   getSupplierTypeId(code: string): number | undefined {
     const type = this.listOfType.find(t => t.code === code);
     return type ? type.id : undefined;
@@ -148,30 +204,43 @@ export class SupplierAddComponent {
 
   onPostalCodeChange(value: any): void {
     console.log('Selected Postal Code: ', value);
-    const selectedItem = this.items_provinces.find(item => item.post_id === value);
+    // หา selected item โดยใช้ทั้ง postalCode และบางค่าเฉพาะ เช่น subdistrict
+    const [postalCode, subdistrict] = value.split('-');
+    const selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
     if (selectedItem) {
       console.log('Selected Item: ', selectedItem);
       this.supplierForm.patchValue({
-        postalCode: selectedItem.postalCode,
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
         province: selectedItem.province
       });
+
       this.cdr.markForCheck();
     } else {
       console.log('Selected Item not found.');
     }
   }
 
+  // ฟังก์ชันช่วยเพื่อหาค่า subdistrict ที่ตรงกัน
+  isSubdistrictMatching(item: DataLocation): boolean {
+    const currentSubdistrict = this.supplierForm.get('subdistrict')?.value;
+    return item.subdistrict === currentSubdistrict;
+  }
+
   onSubmit(): void {
     if (this.supplierForm.valid) {
+      const formValue = this.prepareFormData();
+      const selectedPostItem = this.items_provinces.find(item => item.postalCode === formValue.postalCode && this.isSubdistrictMatching(item));
+      if (selectedPostItem) {
+        formValue.post_id = selectedPostItem.post_id;
+      }
       if (this.suppilerId) {
-        this.onUpdate();  // Call update function if customerId exists
+        this.onUpdate(formValue);  // Call update function if customerId exists
       } else {
-        this.supplierService.addData(this.supplierForm.value).subscribe({
+        this.supplierService.addData(formValue).subscribe({
           next: (response) => {
             console.log('Data added successfully', response);
-            this.router.navigate(['/feature/customer']); 
+            this.router.navigate(['/feature/customer']);
           },
           error: (err) => {
             console.error('Error adding data', err);
@@ -183,12 +252,12 @@ export class SupplierAddComponent {
       console.log('Form is not valid');
     }
   }
-  onUpdate(): void {
+  onUpdate(formValue: any): void {
     if (this.supplierForm.valid && this.suppilerId) {
-      this.supplierService.updateData(this.suppilerId, this.supplierForm.value).subscribe({
+      this.supplierService.updateData(this.suppilerId, formValue).subscribe({
         next: (response) => {
           console.log('Data updated successfully', response);
-          this.router.navigate(['/feature/supplier']); 
+          this.router.navigate(['/feature/supplier']);
         },
         error: (err) => {
           console.error('Error updating data', err);
@@ -198,6 +267,20 @@ export class SupplierAddComponent {
       this.supplierForm.markAllAsTouched();
       console.log('Form is not valid');
     }
+  }
+
+  prepareFormData(): any {
+    const formValue = { ...this.supplierForm.value };
+    const selectedPostItem = this.items_provinces.find(item => {
+      const postalCode = formValue.postalCode.split('-')[0];
+      return item.postalCode === postalCode && this.isSubdistrictMatching(item);
+    });
+
+    if (selectedPostItem) {
+      formValue.postalCode = selectedPostItem.postalCode; // ใช้ค่า postalCode ที่ถูกต้อง
+      formValue.post_id = selectedPostItem.post_id; // เพิ่ม post_id เข้าไปใน formValue
+    }
+    return formValue;
   }
 
   getSupplierType(): void {
@@ -213,7 +296,7 @@ export class SupplierAddComponent {
       }
     });
   }
-  
+
 
   approveCustomer(): void {
     console.log('Customer approved');

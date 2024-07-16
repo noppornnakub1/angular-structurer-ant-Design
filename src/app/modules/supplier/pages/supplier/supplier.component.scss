@@ -1,0 +1,28 @@
+.button-yellow{
+    background-color: #ffc107;
+    color: white;
+    border-color: #ffc107;
+    color: black;
+  
+    &:hover {
+      background-color: darkgoldenrod;
+      border-color: darkgoldenrod;
+    }
+  }
+
+  .add-user-button {
+    background-color: #4CAF50; /* สีพื้นหลังเขียว */
+    color: white; /* สีตัวอักษรขาว */
+    border: none; /* ไม่มีขอบ */
+    text-align: center; /* จัดตัวอักษรให้อยู่กลาง */
+    text-decoration: none; /* ไม่มีเส้นใต้ */
+    display: inline-block; /* จัดการการแสดงผล */
+    cursor: pointer; /* เปลี่ยนรูปเม้าส์เมื่อชี้ */
+    transition-duration: 0.4s; /* ระยะเวลาในการเปลี่ยนแปลง */
+  }
+  
+  .add-user-button:hover {
+    background-color: white; /* สีพื้นหลังเมื่อชี้ */
+    color: black; /* สีตัวอักษรเมื่อชี้ */
+    border: 2px solid #4CAF50; /* ขอบเมื่อชี้ */
+  }

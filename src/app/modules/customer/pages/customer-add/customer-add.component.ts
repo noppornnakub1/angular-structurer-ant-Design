@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { SharedModule } from '../../../../shared/shared.module';
-import {Location} from '@angular/common';
+import { Location } from '@angular/common';
 import { items_province } from '../../../../shared/constants/data-province.constant';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomerService } from '../../services/customer.service';
@@ -17,7 +17,7 @@ import { DataLocation } from '../../../supplier/pages/supplier-add/supplier-add.
 @Component({
   selector: 'app-customer-add',
   standalone: true,
-  imports: [SharedModule,NgZorroAntdModule,HttpClientModule],
+  imports: [SharedModule, NgZorroAntdModule, HttpClientModule],
   providers: [PostCodeService],
   templateUrl: './customer-add.component.html',
   styleUrl: './customer-add.component.scss'
@@ -40,12 +40,13 @@ export class CustomerAddComponent implements OnInit {
   private _cdr = inject(ChangeDetectorRef);
 
   constructor(private _location: Location, private fb: FormBuilder
-    ,private customerService: CustomerService,
-    private router: Router ,
+    , private customerService: CustomerService,
+    private router: Router,
     private route: ActivatedRoute,
-    private postCodeService: PostCodeService
+    private postCodeService: PostCodeService,
+    private cdr: ChangeDetectorRef
   ) {
- 
+
   }
 
   ngOnInit(): void {
@@ -65,9 +66,6 @@ export class CustomerAddComponent implements OnInit {
       customer_type: ['', Validators.required],
       site: ['00000', Validators.required],
     });
-    this.customerBankForm = this.fb.group({
-      bankName: ['']
-    });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
@@ -86,37 +84,72 @@ export class CustomerAddComponent implements OnInit {
     });
     this.getCustomerType();
 
-      // Subscribe to customer_type changes
-      this.customerForm.get('customer_type')!.valueChanges.subscribe(value => {
-        const customerTypeId = this.getCustomerTypeId(value);
-        if (customerTypeId) {
-          this.loadCustomerType(customerTypeId); // เรียกใช้ฟังก์ชันนี้เมื่อมีการเปลี่ยนแปลงค่า customer_type
-        }
-      });
+    // Subscribe to customer_type changes
+    this.customerForm.get('customer_type')!.valueChanges.subscribe(value => {
+      const customerTypeId = this.getCustomerTypeId(value);
+      if (customerTypeId) {
+        this.loadCustomerType(customerTypeId); // เรียกใช้ฟังก์ชันนี้เมื่อมีการเปลี่ยนแปลงค่า customer_type
+      }
+    });
+    // this.customerForm.get('customer_type')!.valueChanges.subscribe(value => {
+    //   const customerTypeId = this.getCustomerTypeId(value);
+    //   if (customerTypeId) {
+    //     this.loadCustomerType(customerTypeId); // เรียกใช้ฟังก์ชันนี้เมื่อมีการเปลี่ยนแปลงค่า customer_type
+    //   }
+    // });
+    this.checkRole();
   }
+
+
 
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
+      console.log(this.currentUser);
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
         this.isUser = user.action.includes('user');
+        console.log(`isAdmin: ${this.isAdmin}, isApproved: ${this.isApproved}, isUser: ${this.isUser}`); // Log ค่าเพื่อเช็ค
       }
+
     });
   }
 
   loadCustomerData(id: number): void {
     this.customerService.findCustomerById(id).subscribe((data: any) => {
-      this.customerForm.patchValue(data);
+      const postalCodeCombination = data.postalCode + '-' + data.subdistrict;
+      this.customerForm.patchValue({
+        ...data,
+        postalCode: postalCodeCombination
+      });
+
     });
   }
 
   loadCustomerType(id: number): void {
     this.customerService.findCustomerTypeById(id).subscribe((data: any) => {
-      const customerNum = data.code_from
-      this.customerForm.patchValue({ customer_num: customerNum });
+        const customerNumPrefix = data.code_from;
+        this.customerService.getTopCustomerByType(data.code).subscribe(topCustomerData => {
+            let newCustomerNum: string;
+
+            if (topCustomerData.customer_num === '000') {
+                // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
+                newCustomerNum = customerNumPrefix + '000';
+            } else {
+                // ถ้าเจอข้อมูล ใช้ค่า customer_num ที่ดึงมาแล้ว increment
+                newCustomerNum = this.incrementCustomerNum(topCustomerData.customer_num, customerNumPrefix);
+            }
+
+            this.customerForm.patchValue({ customer_num: newCustomerNum });
+        });
     });
+}
+  private incrementCustomerNum(customerNum: string, codeFrom: string): string {
+    const numPart = customerNum.replace(codeFrom, '');
+    const num = parseInt(numPart, 10) + 1;
+    const paddedNum = num.toString().padStart(numPart.length, '0');
+    return codeFrom + paddedNum;
   }
 
   getCustomerTypeId(code: string): number | undefined {
@@ -125,7 +158,7 @@ export class CustomerAddComponent implements OnInit {
   }
 
   onSearch(value: string): void {
-    this.filteredItemsProvince = this.items_provinces.filter(item => 
+    this.filteredItemsProvince = this.items_provinces.filter(item =>
       item.subdistrict.includes(value) ||
       item.district.includes(value) ||
       item.province.includes(value) ||
@@ -134,26 +167,39 @@ export class CustomerAddComponent implements OnInit {
   }
 
   onPostalCodeChange(value: any): void {
-    console.log("value ", value);
-    const selectedItem = this.items_provinces.find(item => item.postalCode === value);
+    console.log('Selected Postal Code: ', value);
+    // หา selected item โดยใช้ทั้ง postalCode และบางค่าเฉพาะ เช่น subdistrict
+    const [postalCode, subdistrict] = value.split('-');
+    const selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
     if (selectedItem) {
       this.customerForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
         province: selectedItem.province
       });
+      this.cdr.markForCheck();
     }
+  }
+
+  isSubdistrictMatching(item: DataLocation): boolean {
+    const currentSubdistrict = this.customerForm.get('subdistrict')?.value;
+    return item.subdistrict === currentSubdistrict;
   }
 
   onSubmit(): void {
     if (this.customerForm.valid) {
+      const formValue = this.prepareFormData();
+      const selectedPostItem = this.items_provinces.find(item => item.postalCode === formValue.postalCode && this.isSubdistrictMatching(item));
+      if (selectedPostItem) {
+        formValue.post_id = selectedPostItem.post_id;
+      }
       if (this.customerId) {
-        this.onUpdate();  // Call update function if customerId exists
+        this.onUpdate(formValue);  // Call update function if customerId exists
       } else {
         this.customerService.addData(this.customerForm.value).subscribe({
           next: (response) => {
             console.log('Data added successfully', response);
-            this.router.navigate(['/feature/customer']); 
+            this.router.navigate(['/feature/customer']);
           },
           error: (err) => {
             console.error('Error adding data', err);
@@ -166,12 +212,12 @@ export class CustomerAddComponent implements OnInit {
     }
   }
 
-  onUpdate(): void {
+  onUpdate(formValue: any): void {
     if (this.customerForm.valid && this.customerId) {
-      this.customerService.updateData(this.customerId, this.customerForm.value).subscribe({
+      this.customerService.updateData(this.customerId, formValue).subscribe({
         next: (response) => {
           console.log('Data updated successfully', response);
-          this.router.navigate(['/feature/customer']); 
+          this.router.navigate(['/feature/customer']);
         },
         error: (err) => {
           console.error('Error updating data', err);
@@ -181,6 +227,20 @@ export class CustomerAddComponent implements OnInit {
       this.customerForm.markAllAsTouched();
       console.log('Form is not valid');
     }
+  }
+
+  prepareFormData(): any {
+    const formValue = { ...this.customerForm.value };
+    const selectedPostItem = this.items_provinces.find(item => {
+      const postalCode = formValue.postalCode.split('-')[0];
+      return item.postalCode === postalCode && this.isSubdistrictMatching(item);
+    });
+
+    if (selectedPostItem) {
+      formValue.postalCode = selectedPostItem.postalCode; // ใช้ค่า postalCode ที่ถูกต้อง
+      formValue.post_id = selectedPostItem.post_id; // เพิ่ม post_id เข้าไปใน formValue
+    }
+    return formValue;
   }
 
   getCustomerType(): void {

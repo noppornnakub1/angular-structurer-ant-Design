@@ -1,67 +1,72 @@
 <div class="content-card-search">
-    <h2>Supplier</h2>
-    <div nz-row >
-      <div nz-col [nzXs]="24" [nzMd]="24" [nzLg]="5" class="pr-3">
-        <nz-form-label nzNoColon>Name</nz-form-label>
-        <nz-input-group nzPrefixIcon="search" class="form-input">
-          <input nz-input placeholder="ชื่อ" [(ngModel)]="filters.name" (input)="applyFilters()"/>
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
-        <nz-form-label nzNoColon>Supplier Number</nz-form-label>
-        <nz-input-group nzPrefixIcon="search" class="form-input">
-          <input nz-input placeholder="Supplier Number" [(ngModel)]="filters.supplier_num"/>
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
-        <nz-form-label nzNoColon>Tax</nz-form-label>
-        <nz-input-group nzPrefixIcon="search" class="form-input">
-          <input nz-input placeholder="Tax" [(ngModel)]="filters.tax_Id"/>
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
-        <nz-form-label nzNoColon>Status</nz-form-label>
-        <nz-input-group nzPrefixIcon="search" class="form-input">
-          <input nz-input placeholder="สถานะ" [(ngModel)]="filters.status"/>
-        </nz-input-group>
-      </div>
-       
-      </div>
-      <div class="mt-5 display-flex justify-center ">
-        <button nz-button nzType="primary" class="mr-2" (click)="applyFilters()"><span nz-icon nzType="search" nzTheme="outline"></span>ค้นหา</button>
-        <button nz-button class="add-user-button" nzType="default" (click)="addData()"><span nz-icon nzType="user-add" nzTheme="outline"></span>เพิ่มข้อมูล</button>
-      </div>
+  <h2>Supplier</h2>
+  <div nz-row>
+    <div nz-col [nzXs]="24" [nzMd]="24" [nzLg]="5" class="pr-3">
+      <nz-form-label nzNoColon>Name</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="ชื่อ" [(ngModel)]="filters.name" (input)="applyFilters()" />
+      </nz-input-group>
+    </div>
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
+      <nz-form-label nzNoColon>Supplier Number</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="Supplier Number" [(ngModel)]="filters.supplier_num" />
+      </nz-input-group>
+    </div>
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
+      <nz-form-label nzNoColon>Tax</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="Tax" [(ngModel)]="filters.tax_Id" />
+      </nz-input-group>
+    </div>
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
+      <nz-form-label nzNoColon>Status</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="สถานะ" [(ngModel)]="filters.status" />
+      </nz-input-group>
+    </div>
+
+  </div>
+  <div class="mt-5 display-flex justify-center ">
+    <button nz-button nzType="primary" class="mr-2" (click)="applyFilters()"><span nz-icon nzType="search"
+        nzTheme="outline"></span>ค้นหา</button>
+    <button nz-button class="add-user-button" nzType="default" (click)="addData()"><span nz-icon nzType="user-add"
+        nzTheme="outline"></span>เพิ่มข้อมูล</button>
+  </div>
 </div>
 <div class="content-data-table mt-3">
-    <nz-table #basicTable nzBordered [nzData]="filteredData">
-      <thead>
-        <tr>
-          <th>No.</th>
-          <th>Name</th>
-          <th>Supplier Number</th>
-          <th>Tax</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of filteredData; let i = index">
-          <td>{{ i + 1 }}</td>
-          <td>{{ data.name }}</td>
-          <td>{{ data.supplier_num }}</td>
-          <td>{{ data.tax_Id }}</td>
-          <td>{{ data.status }}</td>
-          <td class="text-center">
-            <button *ngIf="isApproved || isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round" (click)="viewCustomer(data.id)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
-            <button *ngIf="isUser || isAdmin" nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round" (click)="editCustomer(data.id)"><span nz-icon nzType="edit" nzTheme="outline"></span>Edit</button>
-            <button *ngIf="isUser || isAdmin" nz-button nzType="primary" nzDanger class="mr-1" nzShape="round"><span nz-icon nzType="close" nzTheme="outline"></span>Cancel</button>
-            <!-- <button *ngIf="isUser || isAdmin" nz-button nzType="default" class="mr-1" nzShape="round">Submit</button> -->
-            <!-- <button *ngIf="isApproved || isAdmin" nz-button nzType="default" class="mr-1" nzShape="round">Reject</button>
-            <button *ngIf="isApproved || isAdmin" nz-button nzType="default" nzShape="round">Approve</button> -->
-          </td>
-        </tr>
-      </tbody>
-      </nz-table>
-      
+  <nz-table #basicTable nzBordered [nzData]="displayData" [nzFrontPagination]="false" [nzTotal]="filteredData.length"
+    [nzPageIndex]="pageIndex" [nzPageSize]="pageSize" (nzPageIndexChange)="onPageIndexChange($event)"
+    (nzPageSizeChange)="onPageSizeChange($event)">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Name</th>
+        <th>Supplier Number</th>
+        <th>Tax</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of displayData; let i = index">
+        <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+        <td>{{ data.name }}</td>
+        <td>{{ data.supplier_num }}</td>
+        <td>{{ data.tax_Id }}</td>
+        <td>{{ data.status }}</td>
+        <td class="text-center">
+          <button *ngIf="isApproved || isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
+            (click)="viewCustomer(data.id)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
+          <button *ngIf="isUser || isAdmin" nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round"
+            (click)="editCustomer(data.id)"><span nz-icon nzType="edit" nzTheme="outline"></span>Edit</button>
+          <button *ngIf="isUser || isAdmin" nz-button nzType="primary" nzDanger class="mr-1" nzShape="round"><span
+              nz-icon nzType="close" nzTheme="outline"></span>Cancel</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+  <nz-pagination [nzPageSize]="pageSize" [nzTotal]="filteredData.length" [(nzPageIndex)]="pageIndex"
+    [nzShowSizeChanger]="true" [nzPageSizeOptions]="[10, 20, 50]" (nzPageSizeChange)="onPageSizeChange($event)"
+    (nzPageIndexChange)="onPageIndexChange($event)"></nz-pagination>
 </div>
-

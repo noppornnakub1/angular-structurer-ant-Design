@@ -11,7 +11,7 @@ export interface ISupplier {
     status:string,
     tel: string,
     email: string,
-    supplier_id: string,
+    supplier_id: number,
     supplier_num: string,
     supplier_type: string,
     site: string,

@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { SharedModule } from '../../../../shared/shared.module';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { CommonModule, Location } from '@angular/common';
-import { items_province } from '../../../../shared/constants/data-province.constant';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SupplierService } from '../../services/supplier.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,6 +16,7 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { AuthService } from '../../../authentication/services/auth.service';
 import { IRole } from '../../../user-manager/interface/role.interface';
+import { BankMasterService } from '../../../../shared/constants/bank-master.service';
 
 export interface DataLocation {
   post_id: number,
@@ -24,6 +24,14 @@ export interface DataLocation {
   district: string;
   subdistrict: string;
   postalCode: string;
+}
+
+export interface DataBank {
+  bank_id: number,
+  bank_name: string,
+  bank_number: string,
+  alternate_bank_name: string,
+  short_bank_name: string
 }
 
 @Component({
@@ -50,6 +58,8 @@ export class SupplierAddComponent {
   currentUser!: IRole | null;
   listOfType: IsupplierType[] = [];
   filteredDataType: IsupplierType[] = [];
+  listOfBank: DataBank[] = [];
+  filteredDataBank: DataBank[] = [];
   items_provinces: DataLocation[] = [];
   filteredItemsProvince: DataLocation[] = [];
   supplierForm!: FormGroup;
@@ -68,7 +78,8 @@ export class SupplierAddComponent {
     private router: Router,
     private route: ActivatedRoute,
     private postCodeService: PostCodeService,
-    private cdr: ChangeDetectorRef) { }
+    private cdr: ChangeDetectorRef,
+    private bankMasterService: BankMasterService) { }
 
   ngOnInit(): void {
     this.supplierForm = this.fb.group({
@@ -82,16 +93,15 @@ export class SupplierAddComponent {
       postalCode: ['', Validators.required],
       tel: ['', Validators.required],
       email: ['', Validators.required],
-      supplier_id: ['1', Validators.required],
       supplier_num: ['', Validators.required],
       supplier_type: ['', Validators.required],
       site: ['00000', Validators.required],
       supplier_group: ['', Validators.required],
     });
     this.supplierBankForm = this.fb.group({
-      supbank_id: ['1'],
-      supplier_id: [''],
-      bankName: [''],
+      supbank_id: [0],
+      supplier_id: [],
+      name_bank: [''],
       branch: [''],
       account_num: [''],
       vat: [''],
@@ -113,8 +123,9 @@ export class SupplierAddComponent {
       this.items_provinces = data;
       this.filteredItemsProvince = data;
     });
-    this.getSupplierType();
 
+    this.getSupplierType();
+    this.getDataBank();
     // Subscribe to customer_type changes
     this.supplierForm.get('supplier_type')!.valueChanges.subscribe(value => {
       const supplierTypeId = this.getSupplierTypeId(value);
@@ -122,8 +133,20 @@ export class SupplierAddComponent {
         this.loadSupplierType(supplierTypeId); // เรียกใช้ฟังก์ชันนี้เมื่อมีการเปลี่ยนแปลงค่า supplier_type
       }
     });
+    this.supplierBankForm.get('name_bank')!.valueChanges.subscribe(value => {
+      this.onBankNameChange(value);
+    });
 
     this.checkRole();
+  }
+
+  onBankNameChange(value: string): void {
+    const selectedBank = this.listOfBank.find(bank => bank.short_bank_name === value);
+    if (selectedBank) {
+      this.supplierBankForm.patchValue({ account_num: selectedBank.bank_number });
+    } else {
+      this.supplierBankForm.patchValue({ account_num: '' });
+    }
   }
 
   checkRole(): void {
@@ -149,6 +172,22 @@ export class SupplierAddComponent {
         postalCode: postalCodeCombination
       }
       );
+    });
+    this.loadSupplierBank(id);
+  }
+
+  loadSupplierBank(id: number): void {
+    this.supplierService.findSupplierBankBySupplierId(id).subscribe((data: any) => {
+      console.log('dataload supplier bank', data)
+      this.supplierBankForm.patchValue({
+        supbank_id: data.supbank_id,
+        supplier_id: data.supplier_id,
+        name_bank: data.name_bank,
+        branch: data.branch,
+        account_num: data.account_num,
+        vat: data.vat,
+        account_name: data.account_name
+    });
     });
   }
 
@@ -176,7 +215,7 @@ export class SupplierAddComponent {
   private incrementSupplierNum(supplier_num: string, codeFrom: string): string {
     // ลบเว้นวรรคใน codeFrom
     const cleanCodeFrom = codeFrom.trim();
-    
+
     // แยกส่วนของตัวอักษรและตัวเลข
     const numPart = supplier_num.substring(cleanCodeFrom.length);
     const num = parseInt(numPart, 10) + 1;
@@ -185,7 +224,7 @@ export class SupplierAddComponent {
     const paddedNum = num.toString().padStart(numPart.length, '0');
 
     return cleanCodeFrom + paddedNum;
-}
+  }
   getSupplierTypeId(code: string): number | undefined {
     const type = this.listOfType.find(t => t.code === code);
     return type ? type.id : undefined;
@@ -240,7 +279,15 @@ export class SupplierAddComponent {
         this.supplierService.addData(formValue).subscribe({
           next: (response) => {
             console.log('Data added successfully', response);
-            this.router.navigate(['/feature/customer']);
+  
+            if (response && response.supplier_id) {
+              this.supplierBankForm.patchValue({ supplier_id: response.supplier_id });
+              this.addBankData();
+              console.log('Data Bank added successfully', response);
+              this.router.navigate(['/feature/supplier']);
+            } else {
+              console.error('Response does not contain supplier_id', response);
+            }
           },
           error: (err) => {
             console.error('Error adding data', err);
@@ -257,6 +304,7 @@ export class SupplierAddComponent {
       this.supplierService.updateData(this.suppilerId, formValue).subscribe({
         next: (response) => {
           console.log('Data updated successfully', response);
+          this.onUpdateSupplierBank();
           this.router.navigate(['/feature/supplier']);
         },
         error: (err) => {
@@ -265,10 +313,12 @@ export class SupplierAddComponent {
       });
     } else {
       this.supplierForm.markAllAsTouched();
+      this.supplierBankForm.markAllAsTouched();
       console.log('Form is not valid');
     }
   }
 
+  
   prepareFormData(): any {
     const formValue = { ...this.supplierForm.value };
     const selectedPostItem = this.items_provinces.find(item => {
@@ -297,15 +347,63 @@ export class SupplierAddComponent {
     });
   }
 
+  getDataBank(): void {
+    this.bankMasterService.getBankData().subscribe({
+      next: (response: any) => {
+        console.log(response)
+        this.listOfBank = response;
+        this.filteredDataBank = response;
+        this._cdr.markForCheck();
+      },
+      error: () => {
+        // Handle error
+      }
+    });
+  }
+
+  addBankData(): void {
+    const bankFormValue = this.supplierBankForm.value;
+    console.log('Bank form value before submitting:', bankFormValue);  // Add logging here
+    if (this.supplierBankForm.valid) {
+      this.supplierService.addBankData(bankFormValue).subscribe({
+        next: (response) => {
+          console.log('Bank data added successfully', response);
+        },
+        error: (err) => {
+          console.error('Error adding bank data', err);
+        }
+      });
+    }
+  }
+
+  onUpdateSupplierBank(): void {
+    if (this.supplierBankForm.valid && this.suppilerId) {
+      this.supplierService.updateBankData(this.suppilerId, this.supplierBankForm.value).subscribe({
+        next: (response) => {
+          console.log('Data bank updated successfully', response);
+          
+          this.router.navigate(['/feature/supplier']);
+        },
+        error: (err) => {
+          console.error('Error updating data', err);
+        }
+      });
+    } else {
+      this.supplierForm.markAllAsTouched();
+      this.supplierBankForm.markAllAsTouched();
+      console.log('Form is not valid');
+    }
+  }
+
 
   approveCustomer(): void {
-    console.log('Customer approved');
-    this.router.navigate(['/feature/customer']);
+    console.log('supplier approved');
+    this.router.navigate(['/feature/supplier']);
   }
 
   rejectCustomer(): void {
-    console.log('Customer rejected');
-    this.router.navigate(['/feature/customer']);
+    console.log('supplier rejected');
+    this.router.navigate(['/feature/supplier']);
   }
 
 

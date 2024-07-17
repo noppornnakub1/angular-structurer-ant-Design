@@ -24,8 +24,11 @@ export class SupplierComponent implements OnInit {
   isUser: boolean = false;
   listOfData: ISupplier[] = [];
   filteredData: ISupplier[] = [];
+  displayData: ISupplier[] = [];
   filters = { name: '', supplier_num: '', tax_Id: '', status: '' };
-  
+  pageIndex: number = 1;
+  pageSize: number = 10;
+
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
@@ -53,7 +56,9 @@ export class SupplierComponent implements OnInit {
     this.supplierService.getData().subscribe({
       next: (response: any) => {
         this.listOfData = response;
-        this.filteredData = response;
+        this.applyFilters();
+        // this.filteredData = response;
+        // this.total = response.length;
         this._cdr.markForCheck();
       },
       error: () => {
@@ -71,8 +76,30 @@ export class SupplierComponent implements OnInit {
       (data.tax_Id?.includes(tax_Id) ?? true) &&
       (data.status?.includes(status) ?? true)
     );
+    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อมีการกรองข้อมูลใหม่
+    this.updateDisplayData();
   }
 
+  onPageIndexChange(pageIndex: number): void {
+    this.pageIndex = pageIndex;
+    this.updateDisplayData();
+    console.log(pageIndex);
+    
+  }
+
+  onPageSizeChange(pageSize: number): void {
+    this.pageSize = pageSize;
+    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อเปลี่ยนขนาดหน้า
+    this.updateDisplayData();
+    console.log('pageSize',pageSize);
+  }
+
+  updateDisplayData(): void {
+    const startIndex = (this.pageIndex - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.displayData = this.filteredData.slice(startIndex, endIndex);
+    this._cdr.markForCheck();
+  }
 
   addData(): void {
     this._router.navigate(['/feature/supplier/add']);

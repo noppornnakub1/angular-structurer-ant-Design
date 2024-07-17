@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { SharedModule } from '../../../../shared/shared.module';
 import { Location } from '@angular/common';
-import { items_province } from '../../../../shared/constants/data-province.constant';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomerService } from '../../services/customer.service';
 import { ActivatedRoute, Router } from '@angular/router';

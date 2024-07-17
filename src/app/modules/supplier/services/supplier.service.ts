@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of } from 'rxjs';
 import { ISupplier } from '../interface/supplier.interface';
 import { IsupplierType } from '../interface/supplierType.interface';
+import { DataBank } from '../pages/supplier-add/supplier-add.component';
 
 @Injectable({
     providedIn: 'root'
@@ -35,8 +36,8 @@ import { IsupplierType } from '../interface/supplierType.interface';
       return this._http.get(`/Supplier/GetSupplierType`);
     }
 
-    addSupplierBank(supplierbank: any): Observable<any> {
-      return this._http.post(`/SupplierBank/AddSupplierBank`, supplierbank);
+    findSupplierBankBySupplierId(id: number): Observable<IsupplierType> {
+      return this._http.get<IsupplierType>(`/SupplierBank/FindSupplierBankBySupplierID?supplierid=${id}`);
     }
 
     getTopSupplierByType(supplier_type: string): Observable<{ supplier_num: string, code_from: string }> {
@@ -50,6 +51,14 @@ import { IsupplierType } from '../interface/supplierType.interface';
             }
           })
         );
+    }
+
+    addBankData(supplier: any): Observable<any> {
+      return this._http.post(`/SupplierBank/AddSupplierBank`, supplier);
+    }
+
+    updateBankData(supplierId: number, data: DataBank): Observable<any> {
+      return this._http.put(`/SupplierBank/UpdateSupplierBank/${supplierId}`, data);
     }
 
   }

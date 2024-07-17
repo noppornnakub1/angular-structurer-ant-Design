@@ -87,7 +87,7 @@
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Supplier Number</nz-form-label>
         <nz-input-group nzPrefixIcon="number" class="form-input">
-          <input nz-input placeholder="Customer Number" formControlName="supplier_num" />
+          <input nz-input placeholder="Supplier Number" formControlName="supplier_num" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
@@ -107,9 +107,12 @@
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon>Bank Name</nz-form-label>
-            <nz-form-control [nzSpan]="24">
-              <input nz-input id="bankName" placeholder="Bank Name" formControlName="bankName" class="form-input" />
-            </nz-form-control>
+
+            <nz-select formControlName="name_bank" nzPlaceHolder="Select bankName" class="custom-select"
+              (ngModelChange)="onBankNameChange($event)">
+              <nz-option *ngFor="let type of listOfBank" [nzLabel]="type.short_bank_name"
+                [nzValue]="type.short_bank_name"></nz-option>
+            </nz-select>
           </nz-form-item>
         </div>
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
@@ -150,10 +153,14 @@
     </div>
     <div class="mt-5 display-flex justify-center ">
       <button nz-button nzType="default" class="mr-2" (click)="backClicked()">ย้อนกลับ</button>
-      <button *ngIf="!isViewMode || isUser || isAdmin" class="mr-2 button-yellow" nz-button nzType="primary" (click)="onSubmit()">บันทึก</button>
-      <button *ngIf="!isViewMode || isUser || isAdmin" class="mr-2 green-button" nz-button nzType="primary" (click)="backClicked()">Submit</button>
-      <button *ngIf="isViewMode && (isApproved || isAdmin) " class="mr-2" nz-button nzType="primary" (click)="approveCustomer()">Approve</button>
-      <button *ngIf="isViewMode && (isApproved || isAdmin)" nz-button nzType="primary" nzDanger (click)="rejectCustomer()">Reject</button>
+      <button *ngIf="!isViewMode || isUser || isAdmin" class="mr-2 button-yellow" nz-button nzType="primary"
+        (click)="onSubmit()">บันทึก</button>
+      <button *ngIf="!isViewMode || isUser || isAdmin" class="mr-2 green-button" nz-button nzType="primary"
+        (click)="backClicked()">Submit</button>
+      <button *ngIf="isViewMode && (isApproved || isAdmin) " class="mr-2" nz-button nzType="primary"
+        (click)="approveCustomer()">Approve</button>
+      <button *ngIf="isViewMode && (isApproved || isAdmin)" nz-button nzType="primary" nzDanger
+        (click)="rejectCustomer()">Reject</button>
     </div>
   </div>
 </form>

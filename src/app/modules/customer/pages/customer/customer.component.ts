@@ -22,10 +22,12 @@ export class CustomerComponent implements OnInit {
   isAdmin = false;
   isApproved = false;
   isUser = false;
-
+  displayData: ICustomer[] = [];
   listOfData: ICustomer[] = [];
   filteredData: ICustomer[] = [];
   filters = { name: '', customer_num: '', tax_Id: '', status: '' };
+  pageIndex: number = 1;
+  pageSize: number = 10;
 
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -53,7 +55,8 @@ export class CustomerComponent implements OnInit {
     this.customerService.getData().subscribe({
       next: (response: any) => {
         this.listOfData = response;
-        this.filteredData = response;
+        this.applyFilters();
+        // this.filteredData = response;
         this._cdr.markForCheck();
       },
       error: () => {
@@ -61,7 +64,6 @@ export class CustomerComponent implements OnInit {
       }
     });
   }
-
 
   applyFilters(): void {
     const { name, customer_num, tax_Id, status } = this.filters;
@@ -71,6 +73,29 @@ export class CustomerComponent implements OnInit {
       (data.tax_Id?.includes(tax_Id) ?? true) &&
       (data.status?.includes(status) ?? true)
     );
+    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อมีการกรองข้อมูลใหม่
+    this.updateDisplayData();
+  }
+
+  onPageIndexChange(pageIndex: number): void {
+    this.pageIndex = pageIndex;
+    this.updateDisplayData();
+    console.log(pageIndex);
+    
+  }
+
+  onPageSizeChange(pageSize: number): void {
+    this.pageSize = pageSize;
+    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อเปลี่ยนขนาดหน้า
+    this.updateDisplayData();
+    console.log('pageSize',pageSize);
+  }
+
+  updateDisplayData(): void {
+    const startIndex = (this.pageIndex - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.displayData = this.filteredData.slice(startIndex, endIndex);
+    this._cdr.markForCheck();
   }
 
 

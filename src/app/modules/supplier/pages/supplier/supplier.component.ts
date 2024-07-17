@@ -44,6 +44,8 @@ export class SupplierComponent implements OnInit {
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
+      console.log(user);
+      
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
@@ -56,6 +58,8 @@ export class SupplierComponent implements OnInit {
     this.supplierService.getData().subscribe({
       next: (response: any) => {
         this.listOfData = response;
+        console.log(response);
+        
         this.applyFilters();
         // this.filteredData = response;
         // this.total = response.length;

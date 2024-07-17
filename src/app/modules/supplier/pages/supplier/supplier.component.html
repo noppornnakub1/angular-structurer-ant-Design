@@ -60,8 +60,7 @@
             (click)="viewCustomer(data.id)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
           <button *ngIf="isUser || isAdmin" nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round"
             (click)="editCustomer(data.id)"><span nz-icon nzType="edit" nzTheme="outline"></span>Edit</button>
-          <button *ngIf="isUser || isAdmin" nz-button nzType="primary" nzDanger class="mr-1" nzShape="round"><span
-              nz-icon nzType="close" nzTheme="outline"></span>Cancel</button>
+          
         </td>
       </tr>
     </tbody>

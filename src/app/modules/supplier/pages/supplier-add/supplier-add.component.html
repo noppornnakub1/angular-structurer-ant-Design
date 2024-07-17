@@ -153,20 +153,25 @@
     </div>
     <div class="mt-5 display-flex justify-center ">
       <button nz-button nzType="default" class="mr-2" (click)="backClicked()">ย้อนกลับ</button>
+      <button *ngIf="!isViewMode ||isUser || isAdmin" nz-button nzType="primary" nzDanger class="mr-1" (click)="cancel()"><span nz-icon
+          nzType="close" nzTheme="outline" (click)="cancel()"></span>Cancel</button>
       <button *ngIf="!isViewMode || isUser || isAdmin" class="mr-2 button-yellow" nz-button nzType="primary"
-        (click)="onSubmit()">บันทึก</button>
+        (click)="save()">บันทึก</button>
       <button *ngIf="!isViewMode || isUser || isAdmin" class="mr-2 green-button" nz-button nzType="primary"
-        (click)="backClicked()">Submit</button>
+        (click)="submit()">Submit</button>
       <button *ngIf="isViewMode && (isApproved || isAdmin) " class="mr-2" nz-button nzType="primary"
-        (click)="approveCustomer()">Approve</button>
+        (click)="approve()">Approve</button>
       <button *ngIf="isViewMode && (isApproved || isAdmin)" nz-button nzType="primary" nzDanger
-        (click)="rejectCustomer()">Reject</button>
+        (click)="reject()">Reject</button>
     </div>
   </div>
 </form>
 <div *ngIf="isViewMode" class="content-card mt-3">
-  <nz-divider nzText="Approved Info"></nz-divider>
-  <p>Approve By : ทดสอบ ทดสอบ</p>
-  <p>Status : Approve</p>
-  <p>Time : เวลา</p>
+  <nz-divider nzText="History Info"></nz-divider>
+  <div *ngFor="let log of logs">
+    <p>Approve By: {{ log.username }}</p>
+    <p>Status: {{ log.status }}</p>
+    <p>Time: {{ log.time | date:'short' }}</p>
+    <br>
+  </div>
 </div>

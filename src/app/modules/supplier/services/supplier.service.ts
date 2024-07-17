@@ -61,4 +61,12 @@ import { DataBank } from '../pages/supplier-add/supplier-add.component';
       return this._http.put(`/SupplierBank/UpdateSupplierBank/${supplierId}`, data);
     }
 
+    insertLog(log: any): Observable<any> {
+      return this._http.post(`/EventLog/InsertLog`, log);
+    }
+
+    getLogTop3(supplierId: number):Observable<any[]>{
+      return this._http.get<any[]>(`/EventLog/FindLogBySupplierID?supplierId=${supplierId}`);
+    }
+
   }

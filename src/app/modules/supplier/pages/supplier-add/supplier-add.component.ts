@@ -62,6 +62,7 @@ export class SupplierAddComponent {
   filteredDataBank: DataBank[] = [];
   items_provinces: DataLocation[] = [];
   filteredItemsProvince: DataLocation[] = [];
+  logs: any[] = [];
   supplierForm!: FormGroup;
   supplierBankForm!: FormGroup;
   suppilerId: number | null = null;
@@ -79,12 +80,12 @@ export class SupplierAddComponent {
     private route: ActivatedRoute,
     private postCodeService: PostCodeService,
     private cdr: ChangeDetectorRef,
-    private bankMasterService: BankMasterService) { }
+    private bankMasterService: BankMasterService  ) { }
 
   ngOnInit(): void {
     this.supplierForm = this.fb.group({
       id: [0],
-      name: ['', Validators.required],
+      name: ['คุณ', Validators.required],
       tax_Id: ['', Validators.required],
       address_sup: ['', Validators.required],
       district: ['', Validators.required],
@@ -97,6 +98,7 @@ export class SupplierAddComponent {
       supplier_type: ['', Validators.required],
       site: ['00000', Validators.required],
       supplier_group: ['', Validators.required],
+      status: ['Draft', Validators.required],
     });
     this.supplierBankForm = this.fb.group({
       supbank_id: [0],
@@ -174,6 +176,7 @@ export class SupplierAddComponent {
       );
     });
     this.loadSupplierBank(id);
+    this.getEventLogs(id)
   }
 
   loadSupplierBank(id: number): void {
@@ -187,7 +190,7 @@ export class SupplierAddComponent {
         account_num: data.account_num,
         vat: data.vat,
         account_name: data.account_name
-    });
+      });
     });
   }
 
@@ -279,11 +282,12 @@ export class SupplierAddComponent {
         this.supplierService.addData(formValue).subscribe({
           next: (response) => {
             console.log('Data added successfully', response);
-  
+
             if (response && response.supplier_id) {
               this.supplierBankForm.patchValue({ supplier_id: response.supplier_id });
               this.addBankData();
               console.log('Data Bank added successfully', response);
+              this.insertLog();
               this.router.navigate(['/feature/supplier']);
             } else {
               console.error('Response does not contain supplier_id', response);
@@ -305,6 +309,8 @@ export class SupplierAddComponent {
         next: (response) => {
           console.log('Data updated successfully', response);
           this.onUpdateSupplierBank();
+          this.insertLog();
+          console.log('Update func UpdateLog updated successfully', response);
           this.router.navigate(['/feature/supplier']);
         },
         error: (err) => {
@@ -316,9 +322,10 @@ export class SupplierAddComponent {
       this.supplierBankForm.markAllAsTouched();
       console.log('Form is not valid');
     }
+
   }
 
-  
+
   prepareFormData(): any {
     const formValue = { ...this.supplierForm.value };
     const selectedPostItem = this.items_provinces.find(item => {
@@ -345,6 +352,18 @@ export class SupplierAddComponent {
         // Handle error
       }
     });
+  }
+
+  getEventLogs(SupplierId: number): void {
+    this.supplierService.getLogTop3(SupplierId).subscribe(
+      (data) => {
+        this.logs = data;
+        console.log(this.logs);
+      },
+      (error) => {
+        console.error('Error fetching logs', error);
+      }
+    );
   }
 
   getDataBank(): void {
@@ -381,7 +400,7 @@ export class SupplierAddComponent {
       this.supplierService.updateBankData(this.suppilerId, this.supplierBankForm.value).subscribe({
         next: (response) => {
           console.log('Data bank updated successfully', response);
-          
+
           this.router.navigate(['/feature/supplier']);
         },
         error: (err) => {
@@ -395,17 +414,62 @@ export class SupplierAddComponent {
     }
   }
 
+  insertLog(): void {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
-  approveCustomer(): void {
-    console.log('supplier approved');
-    this.router.navigate(['/feature/supplier']);
+    if (!currentUser) {
+      console.error('Current user is not available in local storage');
+      return;
+    }
+    if (this.supplierBankForm.valid && this.supplierForm.valid) {
+      const log = {
+        id: 0,
+        user_id: currentUser.user_id || 0,
+        username: currentUser.username || 'string',
+        email: currentUser.email || 'string',
+        status: this.supplierForm.get('status')?.value || 'Draft',
+        customer_id: 0, // ถ้ามีค่า customer_id สามารถใส่ได้
+        supplier_id: this.supplierBankForm.get('supplier_id')?.value || 0, // อ้างอิง id จาก supplierForm
+        time: new Date().toISOString() // หรือใส่เวลาที่คุณต้องการ
+      };
+      this.supplierService.insertLog(log).subscribe({
+        next: (response) => {
+          console.log('log data added successfully', response);
+        },
+        error: (err) => {
+          console.error('Error adding log data', err);
+        }
+      });
+    } else {
+      console.error('Supplier form or supplier bank form is not valid');
+    }
   }
 
-  rejectCustomer(): void {
-    console.log('supplier rejected');
-    this.router.navigate(['/feature/supplier']);
+  cancel(): void {
+    this.setStatusAndSubmit('Cancel');
   }
 
+  save(): void {
+    this.setStatusAndSubmit('Draft');
+  }
+
+  submit(): void {
+    this.setStatusAndSubmit('Pending Approve');
+  }
+
+  approve(): void {
+    this.setStatusAndSubmit('Approved');
+  }
+
+  reject(): void {
+    this.setStatusAndSubmit('Reject');
+  }
+
+  setStatusAndSubmit(status: string): void {
+    this.supplierForm.patchValue({ status });
+    console.log('Setting status to', status); // ตรวจสอบการตั้งค่าสถานะ
+    this.onSubmit();
+  }
 
   backClicked() {
     this._location.back();

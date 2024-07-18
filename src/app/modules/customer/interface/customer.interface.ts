@@ -11,11 +11,11 @@ export interface ICustomer {
     status:string,
     tel: string,
     email: string,
-    customer_id: number,
     customer_num: string,
     customer_type: string,
     site: string,
-    tax:string
+    tax:string,
+
   }
   
   

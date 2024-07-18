@@ -48,6 +48,14 @@ export class CustomerService {
         })
       );
   }
+
+  insertLog(log: any): Observable<any> {
+    return this._http.post(`/EventLog/InsertLog`, log);
+  }
+
+  getLog(customerId: number):Observable<any[]>{
+    return this._http.get<any[]>(`/EventLog/FindLogByCustomnerID?customerId=${customerId}`);
+  }
   // approveCustomer(id: number): Observable<any> {
   //   return this._http.post<any>(`${this.apiUrl}/ApproveCustomer`, { id });
   // }

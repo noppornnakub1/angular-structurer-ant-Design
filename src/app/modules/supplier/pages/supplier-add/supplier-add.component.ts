@@ -98,7 +98,7 @@ export class SupplierAddComponent {
       supplier_type: ['', Validators.required],
       site: ['00000', Validators.required],
       supplier_group: ['', Validators.required],
-      status: ['Draft', Validators.required],
+      status: ['', Validators.required],
     });
     this.supplierBankForm = this.fb.group({
       supbank_id: [0],
@@ -118,7 +118,8 @@ export class SupplierAddComponent {
     });
     if (this.router.url.includes('/view/')) {
       this.isViewMode = true;
-      this.supplierForm.disable(); // ทำให้ฟอร์มไม่สามารถแก้ไขได้
+      this.supplierForm.disable();
+      this.supplierBankForm.disable(); // ทำให้ฟอร์มไม่สามารถแก้ไขได้
     }
     this.postCodeService.getPostCodes().subscribe(data => {
       console.log(data)
@@ -270,6 +271,9 @@ export class SupplierAddComponent {
   }
 
   onSubmit(): void {
+    if (this.isViewMode) {
+      this.supplierForm.enable(); // Enable form temporariliy for validation
+    }
     if (this.supplierForm.valid) {
       const formValue = this.prepareFormData();
       const selectedPostItem = this.items_provinces.find(item => item.postalCode === formValue.postalCode && this.isSubdistrictMatching(item));
@@ -301,8 +305,11 @@ export class SupplierAddComponent {
     } else {
       this.supplierForm.markAllAsTouched();
       console.log('Form is not valid');
+      
     }
   }
+
+  
   onUpdate(formValue: any): void {
     if (this.supplierForm.valid && this.suppilerId) {
       this.supplierService.updateData(this.suppilerId, formValue).subscribe({
@@ -355,7 +362,7 @@ export class SupplierAddComponent {
   }
 
   getEventLogs(SupplierId: number): void {
-    this.supplierService.getLogTop3(SupplierId).subscribe(
+    this.supplierService.getLog(SupplierId).subscribe(
       (data) => {
         this.logs = data;
         console.log(this.logs);

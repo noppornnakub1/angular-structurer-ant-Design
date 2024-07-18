@@ -28,12 +28,13 @@ export class CustomerAddComponent implements OnInit {
   items_provinces: DataLocation[] = [];
   filteredItemsProvince: DataLocation[] = [];
   customerForm!: FormGroup;
-  customerBankForm!: FormGroup;
   customerId: number | null = null;
   isViewMode: boolean = false;
   isAdmin = false;
   isApproved = false;
   isUser = false;
+  isSubmitting: boolean = false;
+  logs: any[] = [];
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService)
   private _cdr = inject(ChangeDetectorRef);
@@ -60,10 +61,11 @@ export class CustomerAddComponent implements OnInit {
       postalCode: ['', Validators.required],
       tel: ['', Validators.required],
       email: ['', Validators.required],
-      customer_id: ['1', Validators.required],
+      customer_id: ['0', Validators.required],
       customer_num: ['', Validators.required],
       customer_type: ['', Validators.required],
       site: ['00000', Validators.required],
+      status: ['', Validators.required],
     });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -122,6 +124,8 @@ export class CustomerAddComponent implements OnInit {
         ...data,
         postalCode: postalCodeCombination
       });
+      console.log(this.customerForm);
+      this.getEventLogs(id)
 
     });
   }
@@ -186,6 +190,14 @@ export class CustomerAddComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.isViewMode) {
+      this.customerForm.enable(); // Enable form temporariliy for validation
+    }
+    if (this.isSubmitting) {
+      return; // ป้องกันการ submit ซ้ำ
+    }
+
+    this.isSubmitting = true;
     if (this.customerForm.valid) {
       const formValue = this.prepareFormData();
       const selectedPostItem = this.items_provinces.find(item => item.postalCode === formValue.postalCode && this.isSubdistrictMatching(item));
@@ -195,27 +207,38 @@ export class CustomerAddComponent implements OnInit {
       if (this.customerId) {
         this.onUpdate(formValue);  // Call update function if customerId exists
       } else {
-        this.customerService.addData(this.customerForm.value).subscribe({
+        this.customerService.addData(formValue).subscribe({
           next: (response) => {
             console.log('Data added successfully', response);
+            this.customerForm.patchValue({ customer_id: response.customer_id });
+            this.insertLog();
             this.router.navigate(['/feature/customer']);
           },
           error: (err) => {
             console.error('Error adding data', err);
+          },
+          complete: () => {
+            this.isSubmitting = false; // รีเซ็ตค่าหลังจาก submit เสร็จ
           }
         });
       }
     } else {
       this.customerForm.markAllAsTouched();
       console.log('Form is not valid');
+      this.isSubmitting = false;
+      
     }
   }
-
+  
+  
   onUpdate(formValue: any): void {
     if (this.customerForm.valid && this.customerId) {
       this.customerService.updateData(this.customerId, formValue).subscribe({
         next: (response) => {
+          this.customerForm.patchValue({ customer_id: this.customerId });
           console.log('Data updated successfully', response);
+          this.insertLog();
+          console.log('Update func UpdateLog updated successfully', response);
           this.router.navigate(['/feature/customer']);
         },
         error: (err) => {
@@ -254,42 +277,76 @@ export class CustomerAddComponent implements OnInit {
       }
     });
   }
-  // คอมเม้นไว้ก่อนยังไม่ได้ทำ API
-  // approveCustomer(): void {
-  //   if (this.customerId !== null) {
-  //     this.customerService.approveCustomer(this.customerId).subscribe({
-  //       next: (response) => {
-  //         console.log('Customer approved successfully', response);
-  //         this.router.navigate(['/feature/customer']);
-  //       },
-  //       error: (err) => {
-  //         console.error('Error approving customer', err);
-  //       }
-  //     });
-  //   }
-  // }
 
-  // rejectCustomer(): void {
-  //   if (this.customerId !== null) {
-  //     this.customerService.rejectCustomer(this.customerId).subscribe({
-  //       next: (response) => {
-  //         console.log('Customer rejected successfully', response);
-  //         this.router.navigate(['/feature/customer']);
-  //       },
-  //       error: (err) => {
-  //         console.error('Error rejecting customer', err);
-  //       }
-  //     });
-  //   }
-  // }
-  approveCustomer(): void {
-    console.log('Customer approved');
-    this.router.navigate(['/feature/customer']);
+  insertLog(): void {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const customerId = this.customerForm.get('customer_id')?.value || this.customerId || 0;
+    console.log(customerId);
+    
+    if (!currentUser) {
+      console.error('Current user is not available in local storage');
+      return;
+    }
+    if (this.customerForm.valid) {
+      const log = {
+        id: 0,
+        user_id: currentUser.user_id || 0,
+        username: currentUser.username || 'string',
+        email: currentUser.email || 'string',
+        status: this.customerForm.get('status')?.value || 'Draft',
+        customer_id: customerId,
+        supplier_id:  0,// อ้างอิง id จาก supplierForm
+        time: new Date().toISOString() // หรือใส่เวลาที่คุณต้องการ
+      };
+      this.customerService.insertLog(log).subscribe({
+        next: (response) => {
+          console.log('log data added successfully', response);
+        },
+        error: (err) => {
+          console.error('Error adding log data', err);
+        }
+      });
+    } else {
+      console.error('Supplier form or supplier bank form is not valid');
+    }
   }
 
-  rejectCustomer(): void {
-    console.log('Customer rejected');
-    this.router.navigate(['/feature/customer']);
+  getEventLogs(customerId: number): void {
+    this.customerService.getLog(customerId).subscribe(
+      (data) => {
+        this.logs = data;
+        console.log(this.logs);
+      },
+      (error) => {
+        console.error('Error fetching logs', error);
+      }
+    );
+  }
+
+  cancel(): void {
+    this.setStatusAndSubmit('Cancel');
+  }
+
+  save(): void {
+    this.setStatusAndSubmit('Draft');
+  }
+
+  submit(): void {
+    this.setStatusAndSubmit('Pending Approve');
+  }
+
+  approve(): void {
+    this.setStatusAndSubmit('Approved');
+  }
+
+  reject(): void {
+    this.setStatusAndSubmit('Reject');
+  }
+
+  setStatusAndSubmit(status: string): void {
+    this.customerForm.patchValue({ status });
+    console.log('Setting status to', status); // ตรวจสอบการตั้งค่าสถานะ
+    this.onSubmit();
   }
 
   backClicked(): void {

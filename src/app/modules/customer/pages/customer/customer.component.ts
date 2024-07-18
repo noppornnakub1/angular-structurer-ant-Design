@@ -55,6 +55,8 @@ export class CustomerComponent implements OnInit {
     this.customerService.getData().subscribe({
       next: (response: any) => {
         this.listOfData = response;
+        console.log(this.listOfData);
+        
         this.applyFilters();
         // this.filteredData = response;
         this._cdr.markForCheck();

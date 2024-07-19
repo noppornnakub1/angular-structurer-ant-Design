@@ -55,20 +55,45 @@ export class SupplierComponent implements OnInit {
   }
 
   getData(): void {
-    this.supplierService.getData().subscribe({
-      next: (response: any) => {
-        this.listOfData = response;
-        console.log(response);
-        
-        this.applyFilters();
-        // this.filteredData = response;
-        // this.total = response.length;
-        this._cdr.markForCheck();
-      },
-      error: () => {
-        // Handle error
-      }
-    });
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    console.log('map ข้อมูล user', currentUser);
+    if (!currentUser) {
+      console.error('Current user is not available in local storage');
+      return;
+    }
+    if (currentUser.user_id == 1) {
+      this.supplierService.getData().subscribe({
+        next: (response: any) => {
+          this.listOfData = response;
+          console.log(response);
+          
+          this.applyFilters();
+          // this.filteredData = response;
+          // this.total = response.length;
+          this._cdr.markForCheck();
+        },
+        error: () => {
+          // Handle error
+        }
+      });
+    }
+    else{
+      this.supplierService.findDataByUserId(currentUser.user_id).subscribe({
+        next: (response: any) => {
+          this.listOfData = response;
+          console.log(response);
+          
+          this.applyFilters();
+          // this.filteredData = response;
+          // this.total = response.length;
+          this._cdr.markForCheck();
+        },
+        error: () => {
+          // Handle error
+        }
+      });
+    }
+    
   }
 
 

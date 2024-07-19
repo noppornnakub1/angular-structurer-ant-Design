@@ -11,6 +11,7 @@ import { AuthService } from '../../../authentication/services/auth.service';
 import { IRole } from '../../../user-manager/interface/role.interface';
 import { ICustomerType } from '../../interface/customerType.interface';
 import { DataLocation } from '../../../supplier/pages/supplier-add/supplier-add.component';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -50,6 +51,9 @@ export class CustomerAddComponent implements OnInit {
   }
 
   ngOnInit(): void {
+   
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    console.log('map ข้อมูล user',currentUser);
     this.customerForm = this.fb.group({
       id: [0],
       name: ['คุณ', Validators.required],
@@ -66,6 +70,7 @@ export class CustomerAddComponent implements OnInit {
       customer_type: ['', Validators.required],
       site: ['00000', Validators.required],
       status: ['', Validators.required],
+      user_id: currentUser.user_id
     });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -132,22 +137,22 @@ export class CustomerAddComponent implements OnInit {
 
   loadCustomerType(id: number): void {
     this.customerService.findCustomerTypeById(id).subscribe((data: any) => {
-        const customerNumPrefix = data.code_from;
-        this.customerService.getTopCustomerByType(data.code).subscribe(topCustomerData => {
-            let newCustomerNum: string;
+      const customerNumPrefix = data.code_from;
+      this.customerService.getTopCustomerByType(data.code).subscribe(topCustomerData => {
+        let newCustomerNum: string;
 
-            if (topCustomerData.customer_num === '000') {
-                // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
-                newCustomerNum = customerNumPrefix + '000';
-            } else {
-                // ถ้าเจอข้อมูล ใช้ค่า customer_num ที่ดึงมาแล้ว increment
-                newCustomerNum = this.incrementCustomerNum(topCustomerData.customer_num, customerNumPrefix);
-            }
+        if (topCustomerData.customer_num === '000') {
+          // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
+          newCustomerNum = customerNumPrefix + '000000';
+        } else {
+          // ถ้าเจอข้อมูล ใช้ค่า customer_num ที่ดึงมาแล้ว increment
+          newCustomerNum = this.incrementCustomerNum(topCustomerData.customer_num, customerNumPrefix);
+        }
 
-            this.customerForm.patchValue({ customer_num: newCustomerNum });
-        });
+        this.customerForm.patchValue({ customer_num: newCustomerNum });
+      });
     });
-}
+  }
   private incrementCustomerNum(customerNum: string, codeFrom: string): string {
     const numPart = customerNum.replace(codeFrom, '');
     const num = parseInt(numPart, 10) + 1;
@@ -212,6 +217,13 @@ export class CustomerAddComponent implements OnInit {
             console.log('Data added successfully', response);
             this.customerForm.patchValue({ customer_id: response.customer_id });
             this.insertLog();
+            Swal.fire({
+              icon: 'success',
+              title: 'Saved!',
+              text: 'Your data has been saved.',
+              showConfirmButton: false,
+              timer: 1500
+            });
             this.router.navigate(['/feature/customer']);
           },
           error: (err) => {
@@ -226,11 +238,11 @@ export class CustomerAddComponent implements OnInit {
       this.customerForm.markAllAsTouched();
       console.log('Form is not valid');
       this.isSubmitting = false;
-      
+
     }
   }
-  
-  
+
+
   onUpdate(formValue: any): void {
     if (this.customerForm.valid && this.customerId) {
       this.customerService.updateData(this.customerId, formValue).subscribe({
@@ -238,6 +250,13 @@ export class CustomerAddComponent implements OnInit {
           this.customerForm.patchValue({ customer_id: this.customerId });
           console.log('Data updated successfully', response);
           this.insertLog();
+          Swal.fire({
+            icon: 'success',
+            title: 'Updated!',
+            text: 'Your data has been updated.',
+            showConfirmButton: false,
+            timer: 1500
+          });
           console.log('Update func UpdateLog updated successfully', response);
           this.router.navigate(['/feature/customer']);
         },
@@ -262,6 +281,10 @@ export class CustomerAddComponent implements OnInit {
       formValue.postalCode = selectedPostItem.postalCode; // ใช้ค่า postalCode ที่ถูกต้อง
       formValue.post_id = selectedPostItem.post_id; // เพิ่ม post_id เข้าไปใน formValue
     }
+    if (!this.customerId) {
+      delete formValue.id;
+    }
+    
     return formValue;
   }
 
@@ -282,7 +305,7 @@ export class CustomerAddComponent implements OnInit {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     const customerId = this.customerForm.get('customer_id')?.value || this.customerId || 0;
     console.log(customerId);
-    
+
     if (!currentUser) {
       console.error('Current user is not available in local storage');
       return;
@@ -295,7 +318,7 @@ export class CustomerAddComponent implements OnInit {
         email: currentUser.email || 'string',
         status: this.customerForm.get('status')?.value || 'Draft',
         customer_id: customerId,
-        supplier_id:  0,// อ้างอิง id จาก supplierForm
+        supplier_id: 0,// อ้างอิง id จาก supplierForm
         time: new Date().toISOString() // หรือใส่เวลาที่คุณต้องการ
       };
       this.customerService.insertLog(log).subscribe({
@@ -324,29 +347,118 @@ export class CustomerAddComponent implements OnInit {
   }
 
   cancel(): void {
-    this.setStatusAndSubmit('Cancel');
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to save the changes?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.setStatusAndSubmit('Cancel');
+      }
+    });
+    
   }
 
-  save(): void {
-    this.setStatusAndSubmit('Draft');
+  save(event: Event): void {
+    event.preventDefault(); 
+    console.log('Save button clicked'); // ตรวจสอบว่าฟังก์ชัน save ถูกเรียก
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to save the changes?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.setStatusAndSubmit('Draft');
+      }
+    });
+    
   }
 
   submit(): void {
-    this.setStatusAndSubmit('Pending Approve');
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to save the changes?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.setStatusAndSubmit('Pending Approve');
+      }
+    });
+    
   }
 
   approve(): void {
-    this.setStatusAndSubmit('Approved');
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to save the changes?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.setStatusAndSubmit('Approved');
+      }
+    });
   }
 
   reject(): void {
-    this.setStatusAndSubmit('Reject');
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to save the changes?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.setStatusAndSubmit('Reject');
+      }
+    });
   }
 
   setStatusAndSubmit(status: string): void {
     this.customerForm.patchValue({ status });
-    console.log('Setting status to', status); // ตรวจสอบการตั้งค่าสถานะ
+    console.log('Setting status to', status); 
+     // ใช้ setTimeout เพื่อให้แน่ใจว่าข้อมูลถูกอัปเดตก่อนเรียก onSubmit
+  setTimeout(() => {
     this.onSubmit();
+  }, 100);// ตรวจสอบการตั้งค่าสถานะ
+    this.onSubmit();
+  }
+
+  getTaxIdData(): void {
+    const taxId = this.customerForm.get('tax_Id')?.value;
+
+    if (taxId) {
+      this.customerService.getDataByTaxId(taxId).subscribe({
+        next: (data) => {
+          console.log(data);
+          const postalCodeCombination = data.postalCode + '-' + data.subdistrict;
+          this.customerForm.patchValue({
+            ...data,
+            postalCode: postalCodeCombination,
+          });
+        },
+        error: (err) => {
+          console.error('Error fetching data by Tax ID', err);
+        }
+      });
+    }
   }
 
   backClicked(): void {

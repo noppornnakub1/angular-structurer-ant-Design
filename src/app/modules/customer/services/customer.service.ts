@@ -56,6 +56,14 @@ export class CustomerService {
   getLog(customerId: number):Observable<any[]>{
     return this._http.get<any[]>(`/EventLog/FindLogByCustomnerID?customerId=${customerId}`);
   }
+
+  getDataByTaxId(taxId: string): Observable<any> {
+    return this._http.get<any>(`/Customer/GetDataByTaxId?taxId=${taxId}`);
+  }
+
+  findDataByUserId(id: number): Observable<ICustomer> {
+    return this._http.get<ICustomer>(`/Customer/FindDataByUserID?userid=${id}`);
+  }
   // approveCustomer(id: number): Observable<any> {
   //   return this._http.post<any>(`${this.apiUrl}/ApproveCustomer`, { id });
   // }

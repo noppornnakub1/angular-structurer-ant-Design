@@ -69,4 +69,24 @@ import { DataBank } from '../pages/supplier-add/supplier-add.component';
       return this._http.get<any[]>(`/EventLog/FindLogBySupplierID?supplierId=${supplierId}`);
     }
 
+    getDataByTaxId(taxId: string): Observable<any> {
+      return this._http.get<any>(`/Supplier/GetDataByTaxId?taxId=${taxId}`);
+    }
+
+    getDataPaymentMethod() {
+      return this._http.get(`/Supplier/PaymentMethodInfo`);
+    }
+
+    getDataVat() {
+      return this._http.get(`/Supplier/VatInfo`);
+    }
+
+    getDataCompany() {
+      return this._http.get(`/Supplier/CompanyInfo`);
+    }
+
+    findDataByUserId(id: number): Observable<ISupplier> {
+      return this._http.get<ISupplier>(`/Supplier/FindDataByUserID?userid=${id}`);
+    }
+
   }

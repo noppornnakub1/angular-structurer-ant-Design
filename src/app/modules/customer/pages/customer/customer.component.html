@@ -34,8 +34,8 @@
 
 <div class="content-data-table mt-3">
   <nz-table #datatable nzBordered [nzData]="displayData" [nzFrontPagination]="false" [nzTotal]="filteredData.length"
-  [nzPageIndex]="pageIndex" [nzPageSize]="pageSize" (nzPageIndexChange)="onPageIndexChange($event)"
-  (nzPageSizeChange)="onPageSizeChange($event)"> 
+    [nzPageIndex]="pageIndex" [nzPageSize]="pageSize" (nzPageIndexChange)="onPageIndexChange($event)"
+    (nzPageSizeChange)="onPageSizeChange($event)"> 
     <thead>
       <tr>
         <th>No.</th>
@@ -47,7 +47,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of filteredData; let i = index">
+      <tr *ngFor="let data of displayData; let i = index">
         <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
         <td>{{ data.name }}</td>
         <td>{{ data.customer_num }}</td>
@@ -56,10 +56,6 @@
         <td class="text-center">
           <button *ngIf="isApproved || isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round" (click)="viewCustomer(data.id)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
           <button *ngIf="isAdmin || (isUser && !['Pending Approve', 'Cancel', 'Approved'].includes(data.status))" nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round" (click)="editCustomer(data.id)"><span nz-icon nzType="edit" nzTheme="outline"></span>Edit</button>
-          <!-- <button *ngIf="isUser || isAdmin" nz-button nzType="primary" nzDanger class="mr-1" nzShape="round"><span nz-icon nzType="close" nzTheme="outline"></span>Cancel</button> -->
-          <!-- <button *ngIf="isUser || isAdmin" nz-button nzType="default" class="mr-1" nzShape="round">Submit</button> -->
-          <!-- <button *ngIf="isApproved || isAdmin" nz-button nzType="default" class="mr-1" nzShape="round">Reject</button>
-          <button *ngIf="isApproved || isAdmin" nz-button nzType="default" nzShape="round">Approve</button> -->
         </td>
       </tr>
     </tbody>
@@ -68,3 +64,4 @@
     [nzShowSizeChanger]="true" [nzPageSizeOptions]="[10, 20, 50]" (nzPageSizeChange)="onPageSizeChange($event)"
     (nzPageIndexChange)="onPageIndexChange($event)"></nz-pagination>
 </div>
+

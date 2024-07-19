@@ -19,9 +19,9 @@ import { IRole } from '../../../user-manager/interface/role.interface';
 })
 export class CustomerComponent implements OnInit {
   currentUser!: IRole | null;
-  isAdmin = false;
-  isApproved = false;
-  isUser = false;
+  isAdmin: boolean = false;
+  isApproved: boolean = false;
+  isUser: boolean = false;
   displayData: ICustomer[] = [];
   listOfData: ICustomer[] = [];
   filteredData: ICustomer[] = [];
@@ -52,19 +52,43 @@ export class CustomerComponent implements OnInit {
   }
 
   getData(): void {
-    this.customerService.getData().subscribe({
-      next: (response: any) => {
-        this.listOfData = response;
-        console.log(this.listOfData);
-        
-        this.applyFilters();
-        // this.filteredData = response;
-        this._cdr.markForCheck();
-      },
-      error: () => {
-        // Handle error
-      }
-    });
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    console.log('map ข้อมูล user', currentUser);
+
+    if (!currentUser) {
+      console.error('Current user is not available in local storage');
+      return;
+    }
+    if (currentUser.user_id == 1) {
+      this.customerService.getData().subscribe({
+        next: (response: any) => {
+          this.listOfData = response;
+          console.log(this.listOfData);
+
+          this.applyFilters();
+          // this.filteredData = response;
+          this._cdr.markForCheck();
+        },
+        error: () => {
+          // Handle error
+        }
+      });
+    }
+    else {
+      this.customerService.findDataByUserId(currentUser.user_id).subscribe({
+        next: (response: any) => {
+          this.listOfData = response;
+          console.log(this.listOfData);
+
+          this.applyFilters();
+          // this.filteredData = response;
+          this._cdr.markForCheck();
+        },
+        error: () => {
+          // Handle error
+        }
+      });
+    }
   }
 
   applyFilters(): void {
@@ -82,15 +106,12 @@ export class CustomerComponent implements OnInit {
   onPageIndexChange(pageIndex: number): void {
     this.pageIndex = pageIndex;
     this.updateDisplayData();
-    console.log(pageIndex);
-    
   }
 
   onPageSizeChange(pageSize: number): void {
     this.pageSize = pageSize;
     this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อเปลี่ยนขนาดหน้า
     this.updateDisplayData();
-    console.log('pageSize',pageSize);
   }
 
   updateDisplayData(): void {

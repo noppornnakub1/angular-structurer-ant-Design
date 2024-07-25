@@ -61,6 +61,15 @@
     background: #001529;
     transition: all .3s;
 }
+.sidebar-logo-close{
+    position: relative;
+    height: 64px;
+    padding-left: 5px;
+    overflow: hidden;
+    line-height: 64px;
+    background: #001529;
+    transition: all .3s; 
+}
 
 .sidebar-logo img {
     display: inline-block;

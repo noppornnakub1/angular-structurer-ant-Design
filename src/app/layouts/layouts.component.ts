@@ -7,20 +7,21 @@ import { AuthMockupService } from '../core/mockup-api/auth-mockup.service';
 import { IUser } from '../modules/user-manager/interface/user.interface';
 import { IRole } from '../modules/user-manager/interface/role.interface';
 import { AuthService } from '../modules/authentication/services/auth.service';
+import { SharedModule } from '../shared/shared.module';
 
 
-export interface MenuItem {
+interface MenuItem {
   title: string;
   icon: string;
   label: string;
-  route: string;
+  route?: string;
   roles?: string[];
+  children?: MenuItem[];
 }
-
 @Component({
   selector: 'app-layouts',
   standalone: true,
-  imports: [NgZorroAntdModule, RouterOutlet],
+  imports: [NgZorroAntdModule,SharedModule, RouterOutlet],
   templateUrl: './layouts.component.html',
   styleUrl: './layouts.component.scss'
 })
@@ -51,17 +52,26 @@ export class LayoutsComponent {
     });
   }
 
+  // menuItems: MenuItem[] = [
+  //   { title: 'Customer', icon: 'user', label: 'Customer', route: '/feature/customer' },
+  //   { title: 'Supplier', icon: 'shop', label: 'Supplier', route: '/feature/supplier' },
+  //   { title: 'User', icon: 'team', label: 'User', route: '/feature/user-manager/user', roles: ['admin']},
+  //   { title: 'Role', icon: 'solution', label: 'Role', route: '/feature/user-manager/role',roles: ['admin'] }
+  // ];
+
   menuItems: MenuItem[] = [
-    // { title: 'Dashboard', icon: 'dashboard', label: 'Dashboard', route: '/feature/dashboard' },
     { title: 'Customer', icon: 'user', label: 'Customer', route: '/feature/customer' },
     { title: 'Supplier', icon: 'shop', label: 'Supplier', route: '/feature/supplier' },
-    { title: 'User', icon: 'team', label: 'User', route: '/feature/user-manager/user', roles: ['admin']},
-    { title: 'Role', icon: 'solution', label: 'Role', route: '/feature/user-manager/role',roles: ['admin'] }
+    { 
+      title: 'User Manager', icon: 'team', label: 'User Manager', 
+      children: [
+        { title: 'User', icon: 'user', label: 'User', route: '/feature/user-manager/user', roles: ['admin'] },
+        { title: 'Role', icon: 'solution', label: 'Role', route: '/feature/user-manager/role', roles: ['admin'] }
+      ]
+    }
   ];
   
   filterMenuItemsByRole(): void {
-    console.log("this.currentRole!.action" , this.currentRole!.action);
-    
     if (this.currentRole && this.currentRole.action) {
       this.filteredMenuItems = this.menuItems.filter(item => {
         if (item.roles) {

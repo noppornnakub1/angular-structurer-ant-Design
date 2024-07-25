@@ -8,16 +8,45 @@
       </a>
     </div>
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
-      @for (item of menuItems;track item) {
-      <li nz-menu-item  (click)="navigateTo(item.route)" [class.active]="isActive(item.route)" >
-        <span nz-icon [nzType]="item.icon"></span>
-        <span>{{ item.label }}</span>
+      <ng-container *ngFor="let item of filteredMenuItems">
+        <li nz-menu-item *ngIf="!item.children">
+          <a [routerLink]="item.route">
+            <span nz-icon [nzType]="item.icon"></span>
+            <span>{{ item.label }}</span>
+          </a>
+        </li>
+        <li nz-submenu *ngIf="item.children" [nzTitle]="item.label" [nzIcon]="item.icon">
+          <ul>
+            <ng-container *ngFor="let subItem of item.children">
+              <li nz-menu-item *ngIf="!subItem.children">
+                <a [routerLink]="subItem.route" >
+                  <span nz-icon [nzType]="subItem.icon"></span>
+                  <span>{{ subItem.label }}</span>
+                </a>
+              </li>
+              <li nz-submenu *ngIf="subItem.children" [nzTitle]="subItem.label" [nzIcon]="subItem.icon">
+                <ul>
+                  <li nz-menu-item *ngFor="let nestedItem of subItem.children">
+                    <a [routerLink]="nestedItem.route">
+                      <span nz-icon [nzType]="nestedItem.icon"></span>
+                      <span>{{ nestedItem.label }}</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ng-container>
+          </ul>
+        </li>
+      </ng-container>
+      <li nz-menu-item>
+        <a [routerLink]="'/auth'">
+          <span nz-icon [nzType]="'login'"></span>
+          <span>ออกจากระบบ</span>
+        </a>
       </li>
-      }
-      <li nz-menu-item (click)="navigateTo('/auth')">
-        <span nz-icon [nzType]="'login'"></span>
-        <span>ออกจากระบบ</span>
     </ul>
+    
+    
 
   </nz-sider>
   <nz-layout>

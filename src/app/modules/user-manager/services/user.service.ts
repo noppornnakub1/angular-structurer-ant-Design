@@ -28,4 +28,6 @@ export class UserService {
     updateUser(user_id: number, data: IUser): Observable<any> {
       return this._http.put(`/User/UpdateUser?user_id=${user_id}`, data);
     }
+
+    
   }

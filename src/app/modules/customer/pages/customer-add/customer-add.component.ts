@@ -38,6 +38,7 @@ export class CustomerAddComponent implements OnInit {
   isUser = false;
   isSubmitting: boolean = false;
   logs: any[] = [];
+  reasonTemp: string = '';
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService)
   private _cdr = inject(ChangeDetectorRef);
@@ -336,7 +337,8 @@ export class CustomerAddComponent implements OnInit {
         status: this.customerForm.get('status')?.value || 'Draft',
         customer_id: customerId,
         supplier_id: 0,// อ้างอิง id จาก supplierForm
-        time: new Date().toISOString() // หรือใส่เวลาที่คุณต้องการ
+        time: new Date().toISOString(), // หรือใส่เวลาที่คุณต้องการ
+        reject_reason: this.reasonTemp
       };
       this.customerService.insertLog(log).subscribe({
         next: (response) => {
@@ -442,22 +444,44 @@ export class CustomerAddComponent implements OnInit {
 
   reject(event: Event): void {
     event.preventDefault();
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "Do you want to save the changes?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const currentStatus = this.customerForm.get('status')?.value;
-        const newStatus = currentStatus === 'Approved By ACC' ? 'Reject By FN' : 'Reject By ACC';
-        this.setStatusAndSubmit(newStatus);
+    this.showRejectPopup().then((rejectReason) => {
+      if (rejectReason !== undefined) {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "Do you want to save the changes?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, save it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const currentStatus = this.customerForm.get('status')?.value;
+            const newStatus = currentStatus === 'Approved By ACC' ? 'Reject By FN' : 'Reject By ACC';
+            this.reasonTemp = rejectReason;
+            this.setStatusAndSubmit(newStatus); // ส่งเหตุผลไปด้วย
+          }
+        });
       }
     });
   }
+  showRejectPopup(): Promise<string | undefined> {
+    return Swal.fire({
+      title: 'Reject Reason',
+      input: 'textarea',
+      inputLabel: 'Please provide a reason for rejection',
+      inputPlaceholder: 'Enter your reason here...',
+      showCancelButton: true,
+      confirmButtonText: 'Submit',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        return result.value;
+      }
+      return undefined;
+    });
+  }
+  
 
   setStatusAndSubmit(status: string): void {
     this.customerForm.patchValue({ status });

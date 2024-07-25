@@ -229,6 +229,7 @@
       <tr>
         <th>Approve By</th>
         <th>Status</th>
+        <th>Reject_Reason</th>
         <th>Time</th>
       </tr>
     </thead>
@@ -236,6 +237,7 @@
       <tr *ngFor="let log of logs">
         <td>{{ log.username }}</td>
         <td>{{ log.status }}</td>
+        <td>{{ log.reject_reason }}</td>
         <td>{{ log.time | date:'short' }}</td>
       </tr>
     </tbody>

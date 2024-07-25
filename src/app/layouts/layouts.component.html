@@ -8,7 +8,7 @@
       </a>
     </div>
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
-      @for (item of filteredMenuItems;track item) {
+      @for (item of menuItems;track item) {
       <li nz-menu-item  (click)="navigateTo(item.route)" [class.active]="isActive(item.route)" >
         <span nz-icon [nzType]="item.icon"></span>
         <span>{{ item.label }}</span>
@@ -49,7 +49,7 @@
       
       </div>
     </nz-header>
-    <nz-content>
+    <nz-content class="scroll">
       <div class="inner-content">
         <router-outlet></router-outlet>
       </div>

@@ -24,9 +24,10 @@
     <thead>
       <tr>
         <th>ลำดับที่</th>
-        <th>ชื่อ</th>
+        <th>name</th>
         <th>username</th>
         <th>role</th>
+        <th>company</th>
         <th>action</th>
       </tr>
     </thead>
@@ -35,9 +36,10 @@
         <td>{{ i + 1 }}</td>
         <td>{{ data.firstname }}</td>
         <td>{{ data.username }}</td>
-        <td>{{ data.role }}</td>
+        <td>{{ getRoleName(data.role) }}</td>
+        <td>{{ data.company }}</td>
         <td class="text-center">
-          <button nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round" ><span nz-icon nzType="edit" nzTheme="outline"></span>Edit</button>
+          <button nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round" (click)="editUser(data.user_id)" ><span nz-icon nzType="edit" nzTheme="outline"></span>Edit</button>
           <button nz-button nzType="default" class="mr-1" nzShape="round">Delete</button>
         </td>
       </tr>

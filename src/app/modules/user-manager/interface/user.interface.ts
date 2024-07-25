@@ -3,10 +3,11 @@
   firstname: string;
   lastname: string;
   email: string;
-  role: string;
-  status: boolean;
+  role: number;
+  status: number;
   create_date: string;
   update_date: string;
   username: string;
   password: string;
+  company:string;
   }

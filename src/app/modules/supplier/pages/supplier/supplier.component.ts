@@ -12,7 +12,7 @@ import { IRole } from '../../../user-manager/interface/role.interface';
 @Component({
   selector: 'app-supplier',
   standalone: true,
-  imports: [SharedModule,NgZorroAntdModule],
+  imports: [SharedModule, NgZorroAntdModule],
   templateUrl: './supplier.component.html',
   styleUrl: './supplier.component.scss'
 })
@@ -32,20 +32,20 @@ export class SupplierComponent implements OnInit {
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
-  
-  constructor(private supplierService: SupplierService) {}
+
+  constructor(private supplierService: SupplierService) { }
 
   ngOnInit(): void {
-  
+
     this.checkRole();
     this.getData();
-  
+
   }
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
       console.log(user);
-      
+
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
@@ -65,11 +65,10 @@ export class SupplierComponent implements OnInit {
       this.supplierService.getData().subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(response);
-          
+          console.log(this.listOfData);
+          this.changeStatusIfNeeded();
           this.applyFilters();
           // this.filteredData = response;
-          // this.total = response.length;
           this._cdr.markForCheck();
         },
         error: () => {
@@ -77,12 +76,11 @@ export class SupplierComponent implements OnInit {
         }
       });
     }
-    else{
+    else {
       this.supplierService.findDataByUserId(currentUser.user_id).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(response);
-          
+          this.changeStatusIfNeeded();
           this.applyFilters();
           // this.filteredData = response;
           // this.total = response.length;
@@ -93,7 +91,18 @@ export class SupplierComponent implements OnInit {
         }
       });
     }
-    
+  }
+
+  changeStatusIfNeeded(): void {
+    this.listOfData = this.listOfData.map(item => {
+      if (item.status === 'Approved By ACC') {
+        return { ...item, status: 'Pending Approved By FN' };
+      }
+      if (item.status === 'Approved By FN') {
+        return { ...item, status: 'Pending Sync.' };
+      }
+      return item;
+    });
   }
 
 
@@ -113,14 +122,14 @@ export class SupplierComponent implements OnInit {
     this.pageIndex = pageIndex;
     this.updateDisplayData();
     console.log(pageIndex);
-    
+
   }
 
   onPageSizeChange(pageSize: number): void {
     this.pageSize = pageSize;
     this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อเปลี่ยนขนาดหน้า
     this.updateDisplayData();
-    console.log('pageSize',pageSize);
+    console.log('pageSize', pageSize);
   }
 
   updateDisplayData(): void {

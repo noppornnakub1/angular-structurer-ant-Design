@@ -16,6 +16,8 @@ import { AuthService } from '../../services/auth.service';
 export class SignInComponent {
   loginForm: FormGroup;
   errorMessage: string = '';
+  passwordFieldType: string = 'password';
+  isPasswordVisible = false;
 
   constructor(
     private fb: FormBuilder,
@@ -38,7 +40,7 @@ export class SignInComponent {
           console.log("authService == " , response);
           
           if (response) {
-            this.authService.getRole(response.user_id).subscribe(
+            this.authService.getRole(response.role).subscribe(
               responseRole => {
                 if (responseRole) {
                   this.router.navigate(['/feature/customer']);
@@ -64,6 +66,10 @@ export class SignInComponent {
     } else {
       this.errorMessage = 'Please fill out the form correctly.';
     }
+  }
+
+  togglePasswordVisibility(): void {
+    this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
   }
 
 }

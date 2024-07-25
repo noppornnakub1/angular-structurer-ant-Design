@@ -64,7 +64,22 @@ export class CustomerComponent implements OnInit {
         next: (response: any) => {
           this.listOfData = response;
           console.log(this.listOfData);
-
+          if (response.some((item: ICustomer) => item.status === 'Approved By ACC')) {
+            this.listOfData = this.listOfData.map(item => {
+              if (item.status === 'Approved By ACC') {
+                return { ...item, status: 'Pending Approved By FN' };
+              }
+              return item;
+            });
+          }
+          else if (response.some((item: ICustomer) => item.status === 'Approved By FN')) {
+            this.listOfData = this.listOfData.map(item => {
+              if (item.status === 'Approved By FN') {
+                return { ...item, status: 'Pending Sync.' };
+              }
+              return item;
+            });
+          }
           this.applyFilters();
           // this.filteredData = response;
           this._cdr.markForCheck();
@@ -78,6 +93,22 @@ export class CustomerComponent implements OnInit {
       this.customerService.findDataByUserId(currentUser.user_id).subscribe({
         next: (response: any) => {
           this.listOfData = response;
+          if (response.some((item: ICustomer) => item.status === 'Approved By ACC')) {
+            this.listOfData = this.listOfData.map(item => {
+              if (item.status === 'Approved By ACC') {
+                return { ...item, status: 'Pending Approved By FN' };
+              }
+              return item;
+            });
+          }
+          else if (response.some((item: ICustomer) => item.status === 'Approved By FN')) {
+            this.listOfData = this.listOfData.map(item => {
+              if (item.status === 'Approved By FN') {
+                return { ...item, status: 'Pending Sync.' };
+              }
+              return item;
+            });
+          }
           console.log(this.listOfData);
 
           this.applyFilters();

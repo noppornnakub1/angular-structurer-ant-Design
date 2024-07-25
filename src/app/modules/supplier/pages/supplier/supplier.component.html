@@ -14,7 +14,7 @@
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
-      <nz-form-label nzNoColon>Tax</nz-form-label>
+      <nz-form-label nzNoColon>TaxID</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
         <input nz-input placeholder="Tax" [(ngModel)]="filters.tax_Id" />
       </nz-input-group>
@@ -58,7 +58,7 @@
         <td class="text-center">
           <button *ngIf="isApproved || isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
             (click)="viewCustomer(data.id)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
-          <button *ngIf="isAdmin || (isUser && !['Pending Approve', 'Cancel', 'Approved'].includes(data.status))"
+          <button *ngIf="isAdmin || (isUser && !['Pending Approve', 'Cancel', 'Pending Approved By ACC','Pending Sync.'].includes(data.status))"
             nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round" (click)="editCustomer(data.id)"><span
               nz-icon nzType="edit" nzTheme="outline"></span>Edit</button>
 

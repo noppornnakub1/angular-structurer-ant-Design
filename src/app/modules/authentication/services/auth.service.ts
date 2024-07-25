@@ -38,7 +38,7 @@ export class AuthService {
       map(response => {
         console.log("'/Login/signIn'" , response);
         
-         if (response && response.status === true) { // ตรวจสอบค่า status เป็น true
+         if (response && response.status == 1) { // ตรวจสอบค่า status เป็น true
         this.setUser(response);
         return response;
       }

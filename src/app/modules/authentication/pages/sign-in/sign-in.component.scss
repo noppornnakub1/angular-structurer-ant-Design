@@ -6,7 +6,8 @@
 
 .login-form {
     flex: 1;
-    padding: 100px;
+    padding: 120px;
+    padding-left: 15px;
     max-width: 40%;
 }
 
@@ -52,11 +53,23 @@ p {
 }
 
 .login-background {
-    flex: 1;
-    background: url('/assets/images/background/One-Opacity.jpg') no-repeat center center;
+    flex: .5;
+    background: url('/assets/images/background/Bg.png') no-repeat center center;
     background-size: cover;
 }
 
 .error-message {
     color: red;
 }
+
+.input-group-field {
+    position: relative;
+  }
+  
+  .password-toggle-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }

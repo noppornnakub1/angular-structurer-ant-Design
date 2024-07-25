@@ -16,4 +16,16 @@ export class UserService {
     getUser() {
       return this._http.get(`/User/UserInfo`);
     }
+
+    addData(user: any): Observable<any> {
+      return this._http.post(`/User/AddUser`, user);
+    }
+
+    findUserById(id: number): Observable<IUser> {
+      return this._http.get<IUser>(`/User/${id}`);
+    }
+
+    updateUser(user_id: number, data: IUser): Observable<any> {
+      return this._http.put(`/User/UpdateUser?user_id=${user_id}`, data);
+    }
   }

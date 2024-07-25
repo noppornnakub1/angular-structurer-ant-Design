@@ -15,8 +15,11 @@ import { IRole } from "../interface/role.interface";
     //   return this.http.get<IRole[]>(this.rolesUrl);
     // }
 
-    getRoles() {
-      return this._http.get(`/Role/RoleList`);
+    // getRoles() {
+    //   return this._http.get(`/Role/RoleList`);
+    // }
+    getRoles(): Observable<IRole[]> {
+      return this._http.get<IRole[]>('/Role/RoleList');
     }
 
   }

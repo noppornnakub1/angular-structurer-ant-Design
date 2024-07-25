@@ -1,13 +1,15 @@
-<form nz-form [formGroup]="validateForm" class="ant-form ant-form-horizontal" style="padding: 20px;">
+<form nz-form [formGroup]="validateForm" class="ant-form ant-form-horizontal" style="padding: 15px;">
     <div nz-row>
         <div nz-col nzSpan="24">
             <div nz-form-item nz-row>
                 <div nz-col nzSpan="8" nz-form-label>
                     <label for="username">Username:</label>
                 </div>
-                <div nz-col nzSpan="16" nz-form-control [ngClass]="{'has-error': validateForm.get('username')?.invalid && validateForm.get('username')?.touched}">
+                <div nz-col nzSpan="16" nz-form-control
+                    [ngClass]="{'has-error': validateForm.get('username')?.invalid && validateForm.get('username')?.touched}">
                     <input nz-input id="username" formControlName="username" />
-                    <div nz-form-explain *ngIf="validateForm.get('username')?.invalid && validateForm.get('username')?.touched">
+                    <div nz-form-explain
+                        *ngIf="validateForm.get('username')?.invalid && validateForm.get('username')?.touched">
                         Username is required
                     </div>
                 </div>
@@ -16,31 +18,37 @@
                 <div nz-col nzSpan="8" nz-form-label>
                     <label for="password">Password:</label>
                 </div>
-                <div nz-col nzSpan="16" nz-form-control [ngClass]="{'has-error': validateForm.get('password')?.invalid && validateForm.get('password')?.touched}">
+                <div nz-col nzSpan="16" nz-form-control
+                    [ngClass]="{'has-error': validateForm.get('password')?.invalid && validateForm.get('password')?.touched}">
                     <input nz-input id="password" formControlName="password" />
-                    <div nz-form-explain *ngIf="validateForm.get('password')?.invalid && validateForm.get('password')?.touched">
+                    <div nz-form-explain
+                        *ngIf="validateForm.get('password')?.invalid && validateForm.get('password')?.touched">
                         Password is required
                     </div>
                 </div>
             </div>
             <div nz-form-item nz-row class="mt-2">
                 <div nz-col nzSpan="8" nz-form-label>
-                    <label for="firstname">First Name:</label>
+                    <label for="firstname">FirstName:</label>
                 </div>
-                <div nz-col nzSpan="16" nz-form-control [ngClass]="{'has-error': validateForm.get('firstname')?.invalid && validateForm.get('firstname')?.touched}">
+                <div nz-col nzSpan="16" nz-form-control
+                    [ngClass]="{'has-error': validateForm.get('firstname')?.invalid && validateForm.get('firstname')?.touched}">
                     <input nz-input id="firstname" formControlName="firstname" />
-                    <div nz-form-explain *ngIf="validateForm.get('firstname')?.invalid && validateForm.get('firstname')?.touched">
+                    <div nz-form-explain
+                        *ngIf="validateForm.get('firstname')?.invalid && validateForm.get('firstname')?.touched">
                         First name is required
                     </div>
                 </div>
             </div>
             <div nz-form-item nz-row class="mt-2">
                 <div nz-col nzSpan="8" nz-form-label>
-                    <label for="lastname">Last Name:</label>
+                    <label for="lastname">LastName:</label>
                 </div>
-                <div nz-col nzSpan="16" nz-form-control [ngClass]="{'has-error': validateForm.get('lastname')?.invalid && validateForm.get('lastname')?.touched}">
+                <div nz-col nzSpan="16" nz-form-control
+                    [ngClass]="{'has-error': validateForm.get('lastname')?.invalid && validateForm.get('lastname')?.touched}">
                     <input nz-input id="lastname" formControlName="lastname" />
-                    <div nz-form-explain *ngIf="validateForm.get('lastname')?.invalid && validateForm.get('lastname')?.touched">
+                    <div nz-form-explain
+                        *ngIf="validateForm.get('lastname')?.invalid && validateForm.get('lastname')?.touched">
                         Last name is required
                     </div>
                 </div>
@@ -49,9 +57,11 @@
                 <div nz-col nzSpan="8" nz-form-label>
                     <label for="email">Email:</label>
                 </div>
-                <div nz-col nzSpan="16" nz-form-control [ngClass]="{'has-error': validateForm.get('email')?.invalid && validateForm.get('email')?.touched}">
+                <div nz-col nzSpan="16" nz-form-control
+                    [ngClass]="{'has-error': validateForm.get('email')?.invalid && validateForm.get('email')?.touched}">
                     <input nz-input id="email" formControlName="email" />
-                    <div nz-form-explain *ngIf="validateForm.get('email')?.invalid && validateForm.get('email')?.touched">
+                    <div nz-form-explain
+                        *ngIf="validateForm.get('email')?.invalid && validateForm.get('email')?.touched">
                         Email is required
                     </div>
                 </div>
@@ -60,35 +70,42 @@
                 <div nz-col nzSpan="8" nz-form-label>
                     <label for="role">Role:</label>
                 </div>
-                <div nz-col nzSpan="16" nz-form-control [ngClass]="{'has-error': validateForm.get('role')?.invalid && validateForm.get('role')?.touched}">
-                    <nz-select id="role" formControlName="role" class="custom-select">
-                        <nz-option nzValue="admin" nzLabel="Admin"></nz-option>
-                        <nz-option nzValue="user" nzLabel="User"></nz-option>
-                        <nz-option nzValue="approver" nzLabel="Approver"></nz-option>
+                <div nz-col nzSpan="16" nz-form-control
+                    [ngClass]="{'has-error': validateForm.get('role')?.invalid && validateForm.get('role')?.touched}">
+                    <nz-select formControlName="role" nzPlaceHolder="Select role" class="custom-select" >
+                        <nz-option *ngFor="let type of listOfRole"
+                            [nzLabel]="type.role_name"
+                            [nzValue]="type.id"></nz-option>
                     </nz-select>
                     <div nz-form-explain *ngIf="validateForm.get('role')?.invalid && validateForm.get('role')?.touched">
                         Role is required
                     </div>
                 </div>
             </div>
-            <!-- <div nz-form-item nz-row class="mt-2">
+            <div nz-form-item nz-row class="mt-2 mb-4">
                 <div nz-col nzSpan="8" nz-form-label>
-                    <label for="action">Action:</label>
+                    <label for="role">Company:</label>
                 </div>
-                <div nz-col nzSpan="16" nz-form-control>
-                    <nz-select id="action" formControlName="action" nzMode="multiple" nzPlaceHolder="Select actions" class="custom-select">
-                        <nz-option nzValue="admin" nzLabel="Admin,user,approved"></nz-option>
-                        <nz-option nzValue="user" nzLabel="User"></nz-option>
-                        <nz-option nzValue="approved" nzLabel="Approved"></nz-option>
+                <div nz-col nzSpan="16" nz-form-control
+                    [ngClass]="{'has-error': validateForm.get('role')?.invalid && validateForm.get('role')?.touched}">
+                    <nz-select formControlName="company" nzPlaceHolder="Select Company" class="custom-select" nzMode="multiple">
+                        <nz-option *ngFor="let type of listOfCompany"
+                            [nzLabel]="type.abbreviation"
+                            [nzValue]="type.abbreviation"></nz-option>
                     </nz-select>
+                    <div nz-form-explain *ngIf="validateForm.get('role')?.invalid && validateForm.get('role')?.touched">
+                        Company is required
+                    </div>
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
-    <div nz-row class="modal-footer mt-4" style="text-align: right;">
+    <div nz-row class="modal-footer mt-4" style="text-align: left;">
         <div nz-col nzSpan="24" class="text-right">
-            <button nz-button nzType="default" class="red-button mr-2" style="border-radius: 10px;" (click)="handleCancelClick()">Cancel</button>
-            <button nz-button nzType="primary" class="green-button" style="border-radius: 10px;" (click)="submitForm()">Save</button>
+            <button nz-button nzType="primary" nzDanger class="red-button mr-1" style="border-radius: 10px;"
+                (click)="handleCancelClick()">Cancel</button>
+            <button nz-button nzType="primary" class="green-button" style="border-radius: 10px;"
+                (click)="submitForm()">Save</button>
         </div>
     </div>
 </form>

@@ -18,6 +18,7 @@ import { AuthService } from '../../../authentication/services/auth.service';
 import { IRole } from '../../../user-manager/interface/role.interface';
 import { BankMasterService } from '../../../../shared/constants/bank-master.service';
 import Swal from 'sweetalert2';
+import { EmailService } from '../../../../shared/constants/email.service';
 
 export interface DataLocation {
   post_id: number,
@@ -115,7 +116,9 @@ export class SupplierAddComponent {
     private route: ActivatedRoute,
     private postCodeService: PostCodeService,
     private cdr: ChangeDetectorRef,
-    private bankMasterService: BankMasterService) { }
+    private bankMasterService: BankMasterService,
+    private emailService: EmailService
+  ) { }
 
   ngOnInit(): void {
     this.supplierForm = this.fb.group({
@@ -141,7 +144,7 @@ export class SupplierAddComponent {
       supplier_id: [, Validators.required],
       name_bank: ['', Validators.required],
       branch: ['', Validators.required],
-      account_num: ['', Validators.required],
+      account_num: ['คุณ', Validators.required],
       supplier_group: ['', Validators.required],
       account_name: ['', Validators.required],
       company: ['', Validators.required],
@@ -170,6 +173,8 @@ export class SupplierAddComponent {
     this.getDataPaymentMethod();
     this.getDataVAT();
     this.getDataCompany();
+
+
     // Subscribe to customer_type changes
     this.supplierForm.get('supplier_type')!.valueChanges.subscribe(value => {
       const supplierTypeId = this.getSupplierTypeId(value);
@@ -388,7 +393,7 @@ export class SupplierAddComponent {
       this.supplierService.updateData(this.suppilerId, formValue).subscribe({
         next: (response) => {
           console.log('Data updated successfully', response);
-          if (this.showSupplierBankForm = true) { 
+          if (this.showSupplierBankForm = true) {
             this.insertLog();
             Swal.fire({
               icon: 'success',
@@ -397,8 +402,9 @@ export class SupplierAddComponent {
               showConfirmButton: false,
               timer: 1500
             });
+            this.sendEmailNotification();
           }
-          else{
+          else {
             this.onUpdateSupplierBank();
             this.insertLog();
             Swal.fire({
@@ -409,6 +415,7 @@ export class SupplierAddComponent {
               timer: 1500
             });
             console.log('Update func UpdateLog updated successfully', response);
+            this.sendEmailNotification();
           }
           this.router.navigate(['/feature/supplier']);
         },
@@ -521,7 +528,7 @@ export class SupplierAddComponent {
       return;
     }
     if (this.showSupplierBankForm = true) {
-      console.log('log เขา If ซ่อนการ์ด',this.isIDTemp);
+      console.log('log เขา If ซ่อนการ์ด', this.isIDTemp);
       if (this.supplierForm.valid) {
         const log = {
           id: 0,
@@ -625,13 +632,25 @@ export class SupplierAddComponent {
   }
 
   getDataCompany(): void {
+    const CheckcurrentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const userCompanies = CheckcurrentUser.company ? CheckcurrentUser.company.split(',') : [];
+
+    if (userCompanies.length === 0) {
+      console.error('No company information found in local storage');
+      return;
+    }
+
     this.supplierService.getDataCompany().subscribe({
       next: (response: any) => {
-        console.log(response)
-        this.listOfCompany = response;
-        console.log();
-        
-        this.filteredDataVat = response;
+        console.log(response);
+        if (CheckcurrentUser.company === 'ALL') {
+          this.listOfCompany = response;
+          this.filteredDataompany = response;
+        } else {
+          // Filter the company list based on the user's companies
+          this.listOfCompany = response.filter((company: DataCompany) => userCompanies.includes(company.abbreviation));
+          this.filteredDataompany = this.listOfCompany;
+        }
         this._cdr.markForCheck();
       },
       error: () => {
@@ -640,7 +659,8 @@ export class SupplierAddComponent {
     });
   }
 
-  cancel(): void {
+  cancel(event: Event): void {
+    event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -654,10 +674,11 @@ export class SupplierAddComponent {
         this.setStatusAndSubmit('Cancel');
       }
     });
-    
+
   }
 
-  save(): void {
+  save(event: Event): void {
+    event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -671,10 +692,11 @@ export class SupplierAddComponent {
         this.setStatusAndSubmit('Draft');
       }
     });
-    
+
   }
 
-  submit(): void {
+  submit(event: Event): void {
+    event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -685,13 +707,18 @@ export class SupplierAddComponent {
       confirmButtonText: 'Yes, save it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.setStatusAndSubmit('Pending Approve');
+        if (result.isConfirmed) {
+          const currentStatus = this.supplierForm.get('status')?.value;
+          const newStatus = currentStatus === 'Pending Approve By ACC' ? 'Pending Approve By FN' : 'Pending Approved By ACC';
+          this.setStatusAndSubmit(newStatus);
+        }
       }
     });
-    
+
   }
 
-  approve(): void {
+  approve(event: Event): void {
+    event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -702,12 +729,15 @@ export class SupplierAddComponent {
       confirmButtonText: 'Yes, save it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.setStatusAndSubmit('Approved');
+        const currentStatus = this.supplierForm.get('status')?.value;
+        const newStatus = currentStatus === 'Approved By ACC' ? 'Approved By FN' : 'Approved By ACC';
+        this.setStatusAndSubmit(newStatus);
       }
     });
   }
 
-  reject(): void {
+  reject(event: Event): void {
+    event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -718,7 +748,9 @@ export class SupplierAddComponent {
       confirmButtonText: 'Yes, save it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.setStatusAndSubmit('Reject');
+        const currentStatus = this.supplierForm.get('status')?.value;
+        const newStatus = currentStatus === 'Approved By ACC' ? 'Reject By FN' : 'Reject By ACC';
+        this.setStatusAndSubmit(newStatus);
       }
     });
   }
@@ -727,6 +759,21 @@ export class SupplierAddComponent {
     this.supplierForm.patchValue({ status });
     console.log('Setting status to', status); // ตรวจสอบการตั้งค่าสถานะ
     this.onSubmit();
+  }
+
+  sendEmailNotification(): void {
+    const to = 'flukelnw1142@gmail.com'; // ปรับให้เป็นอีเมลของผู้ที่ต้องการแจ้งเตือน
+    const subject = 'Approval Notification';
+    const body = `The status has been changed to ${this.supplierForm.get('status')?.value}`;
+
+    this.emailService.sendEmail(to, subject, body).subscribe(
+      (response) => {
+        console.log('Email sent successfully', response);
+      },
+      (error) => {
+        console.error('Error sending email', error);
+      }
+    );
   }
 
   backClicked() {

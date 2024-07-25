@@ -346,7 +346,8 @@ export class CustomerAddComponent implements OnInit {
     );
   }
 
-  cancel(): void {
+  cancel(event : Event): void {
+    event.preventDefault(); 
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -382,7 +383,8 @@ export class CustomerAddComponent implements OnInit {
     
   }
 
-  submit(): void {
+  submit(event : Event): void {
+    event.preventDefault(); 
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -393,13 +395,19 @@ export class CustomerAddComponent implements OnInit {
       confirmButtonText: 'Yes, save it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.setStatusAndSubmit('Pending Approve');
+        const currentStatus = this.customerForm.get('status')?.value;
+          if (currentStatus === 'Pending Approve By ACC') {
+            this.setStatusAndSubmit('Pending Approve By FN');
+          } else {
+            this.setStatusAndSubmit('Pending Approved By ACC');
+          }
       }
     });
     
   }
 
-  approve(): void {
+  approve(event : Event): void {
+    event.preventDefault(); 
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -410,12 +418,18 @@ export class CustomerAddComponent implements OnInit {
       confirmButtonText: 'Yes, save it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.setStatusAndSubmit('Approved');
+        const currentStatus = this.customerForm.get('status')?.value;
+        if (currentStatus === 'Approved By ACC') {
+          this.setStatusAndSubmit('Approved By FN');
+        } else {
+          this.setStatusAndSubmit('Approved By ACC');
+        }
       }
     });
   }
 
-  reject(): void {
+  reject(event : Event): void {
+    event.preventDefault(); 
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",

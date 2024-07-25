@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { IUser } from '../../user-manager/interface/user.interface';
 import { IRole } from '../../user-manager/interface/role.interface';
+import { Router } from '@angular/router';
 
 export interface LoginResponse {
   user: IUser;
@@ -19,7 +20,7 @@ export class AuthService {
   private currentRoleubject: BehaviorSubject<IRole | null>;
   public currenttRole: Observable<IRole | null>;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,private router: Router) {
 
     const storedUser = localStorage.getItem('currentUser');
     this.currentUserSubject = new BehaviorSubject<IUser | null>(storedUser ? JSON.parse(storedUser) : null);
@@ -78,5 +79,15 @@ export class AuthService {
       console.error(error);
       return of(result as T);
     };
+  }
+
+  isLoggedIn(): boolean {
+    const currentUser = localStorage.getItem('currentUser');
+    return !!currentUser;
+  }
+
+  logout(): void {
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('currentRole');
   }
 }

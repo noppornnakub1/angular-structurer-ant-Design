@@ -21,7 +21,7 @@ interface MenuItem {
 @Component({
   selector: 'app-layouts',
   standalone: true,
-  imports: [NgZorroAntdModule,SharedModule, RouterOutlet],
+  imports: [NgZorroAntdModule, SharedModule, RouterOutlet],
   templateUrl: './layouts.component.html',
   styleUrl: './layouts.component.scss'
 })
@@ -42,13 +42,13 @@ export class LayoutsComponent {
     });
     this.authService.currentUser.subscribe(user => {
       this.currentUser = user;
-      
+
     });
     this.authService.currenttRole.subscribe(user => {
       this.currentRole = user;
-      
       this.filterMenuItemsByRole();
-     
+
+
     });
   }
 
@@ -60,32 +60,61 @@ export class LayoutsComponent {
   // ];
 
   menuItems: MenuItem[] = [
-    { title: 'Customer', icon: 'user', label: 'Customer', route: '/feature/customer' },
-    { title: 'Supplier', icon: 'shop', label: 'Supplier', route: '/feature/supplier' },
-    { 
-      title: 'User Manager', icon: 'team', label: 'User Manager', 
+    {
+      title: 'Master Data', icon: 'shop', label: 'Master Data',
+      children: [
+        { title: 'Customer', icon: 'user', label: 'Customer', route: '/feature/customer' },
+        { title: 'Supplier', icon: 'shop', label: 'Supplier', route: '/feature/supplier' },
+      ]
+    },
+    {
+      title: 'User Manager', icon: 'team', label: 'User Manager',
       children: [
         { title: 'User', icon: 'user', label: 'User', route: '/feature/user-manager/user', roles: ['admin'] },
         { title: 'Role', icon: 'solution', label: 'Role', route: '/feature/user-manager/role', roles: ['admin'] }
       ]
     }
   ];
-  
-  filterMenuItemsByRole(): void {
-    if (this.currentRole && this.currentRole.action) {
+
+  // filterMenuItemsByRole(): void {
+  //   if (this.currentRole && this.currentRole.action) {
+  //     this.filteredMenuItems = this.menuItems.filter(item => {
+  //       if (item.roles) {
+  //         return item.roles.some(role => this.hasRole(this.currentRole!.action, role));
+  //       }
+  //       return true;
+  //     });
+  //   }
+  // }
+  // Function to filter menu items by role
+filterMenuItemsByRole(): void {
+  if (this.currentRole && this.currentRole.action) {
       this.filteredMenuItems = this.menuItems.filter(item => {
-        if (item.roles) {
-          return item.roles.some(role => this.hasRole(this.currentRole!.action, role));
-        }
-        return true;
+          // If item has children, filter its children based on roles
+          if (item.children) {
+              item.children = item.children.filter(child => {
+                  if (child.roles) {
+                      return child.roles.some(role => this.hasRole(this.currentRole!.action, role));
+                  }
+                  return true;
+              });
+              // Return item if it has visible children
+              return item.children.length > 0;
+          }
+          // If item does not have children, filter based on roles
+          if (item.roles) {
+              return item.roles.some(role => this.hasRole(this.currentRole!.action, role));
+          }
+          return true;
       });
-    }
   }
-  
-  hasRole(roleString: string, roleToCheck: string): boolean {
-    const roleArray = roleString.split(',');
-    return roleArray.includes(roleToCheck);
-  }
+}
+
+// Function to check if user has a specific role
+hasRole(roleString: string, roleToCheck: string): boolean {
+  const roleArray = roleString.split(',');
+  return roleArray.includes(roleToCheck);
+}
 
 
 
@@ -97,6 +126,11 @@ export class LayoutsComponent {
   isActive(route: string): boolean {
     const currentRoute = this._router.url;
     return currentRoute.startsWith(route);
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this._router.navigate(['/auth']);
   }
 
 

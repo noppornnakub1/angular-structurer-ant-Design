@@ -12,6 +12,7 @@ import { IRole } from '../../../user-manager/interface/role.interface';
 import { ICustomerType } from '../../interface/customerType.interface';
 import { DataLocation } from '../../../supplier/pages/supplier-add/supplier-add.component';
 import Swal from 'sweetalert2';
+import { EmailService } from '../../../../shared/constants/email.service';
 
 
 @Component({
@@ -33,6 +34,7 @@ export class CustomerAddComponent implements OnInit {
   isViewMode: boolean = false;
   isAdmin = false;
   isApproved = false;
+  isApprovedFN = false;
   isUser = false;
   isSubmitting: boolean = false;
   logs: any[] = [];
@@ -45,15 +47,13 @@ export class CustomerAddComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private postCodeService: PostCodeService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private emailService: EmailService
   ) {
 
   }
 
   ngOnInit(): void {
-   
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log('map ข้อมูล user',currentUser);
     this.customerForm = this.fb.group({
       id: [0],
       name: ['คุณ', Validators.required],
@@ -70,7 +70,7 @@ export class CustomerAddComponent implements OnInit {
       customer_type: ['', Validators.required],
       site: ['00000', Validators.required],
       status: ['', Validators.required],
-      user_id: currentUser.user_id
+      company: ['', Validators.required],
     });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -115,6 +115,7 @@ export class CustomerAddComponent implements OnInit {
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
+        this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
         console.log(`isAdmin: ${this.isAdmin}, isApproved: ${this.isApproved}, isUser: ${this.isUser}`); // Log ค่าเพื่อเช็ค
       }
@@ -195,6 +196,8 @@ export class CustomerAddComponent implements OnInit {
   }
 
   onSubmit(): void {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    console.log('map ข้อมูล user',currentUser);
     if (this.isViewMode) {
       this.customerForm.enable(); // Enable form temporariliy for validation
     }
@@ -203,15 +206,20 @@ export class CustomerAddComponent implements OnInit {
     }
 
     this.isSubmitting = true;
+    if(!this.customerId){
+      this.customerForm.patchValue({ company: currentUser.company });
+    }
     if (this.customerForm.valid) {
       const formValue = this.prepareFormData();
       const selectedPostItem = this.items_provinces.find(item => item.postalCode === formValue.postalCode && this.isSubdistrictMatching(item));
       if (selectedPostItem) {
         formValue.post_id = selectedPostItem.post_id;
       }
+      console.log('Form',formValue);
+      
       if (this.customerId) {
         this.onUpdate(formValue);  // Call update function if customerId exists
-      } else {
+      } else { 
         this.customerService.addData(formValue).subscribe({
           next: (response) => {
             console.log('Data added successfully', response);
@@ -236,6 +244,8 @@ export class CustomerAddComponent implements OnInit {
       }
     } else {
       this.customerForm.markAllAsTouched();
+      console.log(this.customerForm.value);
+      
       console.log('Form is not valid');
       this.isSubmitting = false;
 
@@ -257,6 +267,7 @@ export class CustomerAddComponent implements OnInit {
             showConfirmButton: false,
             timer: 1500
           });
+          this.sendEmailNotification();
           console.log('Update func UpdateLog updated successfully', response);
           this.router.navigate(['/feature/customer']);
         },
@@ -271,6 +282,12 @@ export class CustomerAddComponent implements OnInit {
   }
 
   prepareFormData(): any {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    if (!currentUser) {
+      console.error('Current user is not available in local storage');
+      return;
+    }
     const formValue = { ...this.customerForm.value };
     const selectedPostItem = this.items_provinces.find(item => {
       const postalCode = formValue.postalCode.split('-')[0];
@@ -284,7 +301,7 @@ export class CustomerAddComponent implements OnInit {
     if (!this.customerId) {
       delete formValue.id;
     }
-    
+    formValue.user_id = currentUser.user_id;
     return formValue;
   }
 
@@ -346,8 +363,8 @@ export class CustomerAddComponent implements OnInit {
     );
   }
 
-  cancel(event : Event): void {
-    event.preventDefault(); 
+  cancel(event: Event): void {
+    event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -361,12 +378,11 @@ export class CustomerAddComponent implements OnInit {
         this.setStatusAndSubmit('Cancel');
       }
     });
-    
+
   }
 
   save(event: Event): void {
-    event.preventDefault(); 
-    console.log('Save button clicked'); // ตรวจสอบว่าฟังก์ชัน save ถูกเรียก
+    event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -380,11 +396,11 @@ export class CustomerAddComponent implements OnInit {
         this.setStatusAndSubmit('Draft');
       }
     });
-    
+
   }
 
-  submit(event : Event): void {
-    event.preventDefault(); 
+  submit(event: Event): void {
+    event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -395,41 +411,18 @@ export class CustomerAddComponent implements OnInit {
       confirmButtonText: 'Yes, save it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        const currentStatus = this.customerForm.get('status')?.value;
-          if (currentStatus === 'Pending Approve By ACC') {
-            this.setStatusAndSubmit('Pending Approve By FN');
-          } else {
-            this.setStatusAndSubmit('Pending Approved By ACC');
-          }
-      }
-    });
-    
-  }
-
-  approve(event : Event): void {
-    event.preventDefault(); 
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "Do you want to save the changes?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const currentStatus = this.customerForm.get('status')?.value;
-        if (currentStatus === 'Approved By ACC') {
-          this.setStatusAndSubmit('Approved By FN');
-        } else {
-          this.setStatusAndSubmit('Approved By ACC');
+        if (result.isConfirmed) {
+          const currentStatus = this.customerForm.get('status')?.value;
+          const newStatus = currentStatus === 'Pending Approve By ACC' ? 'Pending Approve By FN' : 'Pending Approved By ACC';
+          this.setStatusAndSubmit(newStatus);
         }
       }
     });
+
   }
 
-  reject(event : Event): void {
-    event.preventDefault(); 
+  approve(event: Event): void {
+    event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -440,18 +433,35 @@ export class CustomerAddComponent implements OnInit {
       confirmButtonText: 'Yes, save it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.setStatusAndSubmit('Reject');
+        const currentStatus = this.customerForm.get('status')?.value;
+        const newStatus = currentStatus === 'Approved By ACC' ? 'Approved By FN' : 'Approved By ACC';
+        this.setStatusAndSubmit(newStatus);
+      }
+    });
+  }
+
+  reject(event: Event): void {
+    event.preventDefault();
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to save the changes?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const currentStatus = this.customerForm.get('status')?.value;
+        const newStatus = currentStatus === 'Approved By ACC' ? 'Reject By FN' : 'Reject By ACC';
+        this.setStatusAndSubmit(newStatus);
       }
     });
   }
 
   setStatusAndSubmit(status: string): void {
     this.customerForm.patchValue({ status });
-    console.log('Setting status to', status); 
-     // ใช้ setTimeout เพื่อให้แน่ใจว่าข้อมูลถูกอัปเดตก่อนเรียก onSubmit
-  setTimeout(() => {
-    this.onSubmit();
-  }, 100);// ตรวจสอบการตั้งค่าสถานะ
+    console.log('Setting status to', status); // ตรวจสอบการตั้งค่าสถานะ
     this.onSubmit();
   }
 
@@ -475,7 +485,40 @@ export class CustomerAddComponent implements OnInit {
     }
   }
 
-  backClicked(): void {
+  sendEmailNotification(): void {
+    console.log( 'log ทฟรส',this.customerForm.get('status')?.value,this.customerForm.valid);
+    
+    if (this.customerForm.get('status')?.value === 'Pending Approved By ACC' && this.customerForm.valid) {
+      const company = this.customerForm.get('company')?.value;
+      // เรียกใช้ฟังก์ชันเพื่อค้นหาผู้ใช้งาน
+      this.customerService.findApproversByCompany(company).subscribe(
+        (approvers) => {
+          approvers.forEach((approver: any) => {
+            const to = approver.email;
+            const subject = 'Approval Notification';
+            const body = `สถานะของ Customer Number:${this.customerForm.get('customer_num')?.value} 
+            ได้เปลี่ยนเป็น ${this.customerForm.get('status')?.value} 
+            รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป`;
+
+            this.emailService.sendEmail(to, subject, body).subscribe(
+              (response) => {
+                console.log('Email sent successfully', response);
+              },
+              (error) => {
+                console.error('Error sending email', error);
+              }
+            );
+          });
+        },
+        (error) => {
+          console.error('Error finding approvers', error);
+        }
+      );
+    }
+  }
+
+  backClicked(event: Event): void {
+    event.preventDefault();
     this._location.back();
   }
 }

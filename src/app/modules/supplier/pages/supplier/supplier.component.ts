@@ -61,8 +61,38 @@ export class SupplierComponent implements OnInit {
       console.error('Current user is not available in local storage');
       return;
     }
-    if (currentUser.user_id == 1) {
+    if (currentUser.role == 1) {
       this.supplierService.getData().subscribe({
+        next: (response: any) => {
+          this.listOfData = response;
+          console.log(this.listOfData);
+          this.changeStatusIfNeeded();
+          this.applyFilters();
+          // this.filteredData = response;
+          this._cdr.markForCheck();
+        },
+        error: () => {
+          // Handle error
+        }
+      });
+    }
+    else if (currentUser.role == 3) {
+      this.supplierService.findDataByUserCompanyACC(currentUser.company).subscribe({
+        next: (response: any) => {
+          this.listOfData = response;
+          console.log(this.listOfData);
+          this.changeStatusIfNeeded();
+          this.applyFilters();
+          // this.filteredData = response;
+          this._cdr.markForCheck();
+        },
+        error: () => {
+          // Handle error
+        }
+      });
+    }
+    else if (currentUser.role == 4) {
+      this.supplierService.findDataByUserCompanyFN(currentUser.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
           console.log(this.listOfData);
@@ -95,8 +125,11 @@ export class SupplierComponent implements OnInit {
 
   changeStatusIfNeeded(): void {
     this.listOfData = this.listOfData.map(item => {
-      if (item.status === 'Approved By ACC') {
+      if (item.status === 'Approved By ACC' && (item.payment_method === 'Transfer' || item.payment_method === 'Transfer_Employee')) {
         return { ...item, status: 'Pending Approved By FN' };
+      }
+      else if(item.status === 'Approved By ACC' && item.payment_method !== 'Transfer' && item.payment_method !== 'Transfer_Employee'){
+        return { ...item, status: 'Pending Sync.' };
       }
       if (item.status === 'Approved By FN') {
         return { ...item, status: 'Pending Sync.' };

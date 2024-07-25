@@ -15,6 +15,8 @@ export interface ISupplier {
     supplier_num: string,
     supplier_type: string,
     site: string,
-    tax:string
+    tax:string,
+    payment_method:string,
+    company:string
   }
   

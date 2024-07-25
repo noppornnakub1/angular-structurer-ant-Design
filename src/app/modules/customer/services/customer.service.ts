@@ -64,12 +64,15 @@ export class CustomerService {
   findDataByUserId(id: number): Observable<ICustomer> {
     return this._http.get<ICustomer>(`/Customer/FindDataByUserID?userid=${id}`);
   }
-  // approveCustomer(id: number): Observable<any> {
-  //   return this._http.post<any>(`${this.apiUrl}/ApproveCustomer`, { id });
-  // }
+  findDataByUserCompanyACC(company: string): Observable<ICustomer> {
+    return this._http.get<ICustomer>(`/Customer/GetDataByUserCompanyACC?company=${company}`);
+  }
 
-  // rejectCustomer(id: number): Observable<any> {
-  //   return this._http.post<any>(`${this.apiUrl}/RejectCustomer`, { id });
-  // }
+  findDataByUserCompanyFN(company: string): Observable<ICustomer> {
+    return this._http.get<ICustomer>(`/Customer/GetDataByUserCompanyFN?company=${company}`);
+  }
 
+  findApproversByCompany(company: string): Observable<any> {
+    return this._http.get(`/User/findApproversByCompany?company=${company}`);
+  }
 }

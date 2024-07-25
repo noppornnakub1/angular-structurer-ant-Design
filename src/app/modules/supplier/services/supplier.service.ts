@@ -89,4 +89,19 @@ import { DataBank } from '../pages/supplier-add/supplier-add.component';
       return this._http.get<ISupplier>(`/Supplier/FindDataByUserID?userid=${id}`);
     }
 
+    findDataByUserCompanyACC(company: string): Observable<ISupplier> {
+      return this._http.get<ISupplier>(`/Supplier/GetDataByUserCompanyACC?company=${company}`);
+    }
+
+    findDataByUserCompanyFN(company: string): Observable<ISupplier> {
+      return this._http.get<ISupplier>(`/Supplier/GetDataByUserCompanyFN?company=${company}`);
+    }
+
+    findApproversByCompany(company: string): Observable<any> {
+      return this._http.get(`/User/findApproversByCompany?company=${company}`);
+    }
+    findApproversFNByCompany(company: string): Observable<any> {
+      return this._http.get(`/User/findApproversFNByCompany?company=${company}`);
+    }
+
   }

@@ -15,6 +15,7 @@ export interface ICustomer {
     customer_type: string,
     site: string,
     tax:string,
+    company: string
 
   }
   

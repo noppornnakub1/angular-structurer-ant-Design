@@ -54,32 +54,46 @@ export class CustomerComponent implements OnInit {
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     console.log('map ข้อมูล user', currentUser);
-
     if (!currentUser) {
       console.error('Current user is not available in local storage');
       return;
     }
-    if (currentUser.user_id == 1) {
+    if (currentUser.role == 1) {
       this.customerService.getData().subscribe({
         next: (response: any) => {
           this.listOfData = response;
           console.log(this.listOfData);
-          if (response.some((item: ICustomer) => item.status === 'Approved By ACC')) {
-            this.listOfData = this.listOfData.map(item => {
-              if (item.status === 'Approved By ACC') {
-                return { ...item, status: 'Pending Approved By FN' };
-              }
-              return item;
-            });
-          }
-          else if (response.some((item: ICustomer) => item.status === 'Approved By FN')) {
-            this.listOfData = this.listOfData.map(item => {
-              if (item.status === 'Approved By FN') {
-                return { ...item, status: 'Pending Sync.' };
-              }
-              return item;
-            });
-          }
+          this.changeStatusIfNeeded();
+          this.applyFilters();
+          // this.filteredData = response;
+          this._cdr.markForCheck();
+        },
+        error: () => {
+          // Handle error
+        }
+      });
+    }
+    else if (currentUser.role == 3) {
+      this.customerService.findDataByUserCompanyACC(currentUser.company).subscribe({
+        next: (response: any) => {
+          this.listOfData = response;
+          console.log(this.listOfData);
+          this.changeStatusIfNeeded();
+          this.applyFilters();
+          // this.filteredData = response;
+          this._cdr.markForCheck();
+        },
+        error: () => {
+          // Handle error
+        }
+      });
+    }
+    else if (currentUser.role == 4) {
+      this.customerService.findDataByUserCompanyFN(currentUser.company).subscribe({
+        next: (response: any) => {
+          this.listOfData = response;
+          console.log(this.listOfData);
+          this.changeStatusIfNeeded();
           this.applyFilters();
           // this.filteredData = response;
           this._cdr.markForCheck();
@@ -93,26 +107,10 @@ export class CustomerComponent implements OnInit {
       this.customerService.findDataByUserId(currentUser.user_id).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          if (response.some((item: ICustomer) => item.status === 'Approved By ACC')) {
-            this.listOfData = this.listOfData.map(item => {
-              if (item.status === 'Approved By ACC') {
-                return { ...item, status: 'Pending Approved By FN' };
-              }
-              return item;
-            });
-          }
-          else if (response.some((item: ICustomer) => item.status === 'Approved By FN')) {
-            this.listOfData = this.listOfData.map(item => {
-              if (item.status === 'Approved By FN') {
-                return { ...item, status: 'Pending Sync.' };
-              }
-              return item;
-            });
-          }
-          console.log(this.listOfData);
-
+          this.changeStatusIfNeeded();
           this.applyFilters();
           // this.filteredData = response;
+          // this.total = response.length;
           this._cdr.markForCheck();
         },
         error: () => {
@@ -120,6 +118,18 @@ export class CustomerComponent implements OnInit {
         }
       });
     }
+  }
+
+  changeStatusIfNeeded(): void {
+    this.listOfData = this.listOfData.map(item => {
+      if (item.status === 'Approved By ACC') {
+        return { ...item, status: 'Pending Sync.' };
+      }
+      if (item.status === 'Approved By FN') {
+        return { ...item, status: 'Pending Sync.' };
+      }
+      return item;
+    });
   }
 
   applyFilters(): void {

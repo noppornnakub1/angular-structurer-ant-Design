@@ -100,6 +100,7 @@ export class SupplierAddComponent {
   isViewMode: boolean = false;
   isAdmin = false;
   isApproved = false;
+  isApprovedFN = false;
   isUser = false;
   isSubmitting: boolean = false;
   showSupplierBankForm = false;
@@ -138,15 +139,16 @@ export class SupplierAddComponent {
       vat: ['', Validators.required],
       status: ['', Validators.required],
       payment_method: ['', Validators.required],
+      company: ['', Validators.required],
     });
     this.supplierBankForm = this.fb.group({
       // supbank_id: [0],
       supplier_id: [, Validators.required],
       name_bank: ['', Validators.required],
       branch: ['', Validators.required],
-      account_num: ['คุณ', Validators.required],
+      account_num: ['', Validators.required],
       supplier_group: ['', Validators.required],
-      account_name: ['', Validators.required],
+      account_name: ['คุณ', Validators.required],
       company: ['', Validators.required],
     });
     this.route.paramMap.subscribe(params => {
@@ -218,6 +220,7 @@ export class SupplierAddComponent {
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
+        this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
         console.log(`isAdmin: ${this.isAdmin}, isApproved: ${this.isApproved}, isUser: ${this.isUser}`); // Log ค่าเพื่อเช็ค
       }
@@ -338,7 +341,6 @@ export class SupplierAddComponent {
     if (this.isSubmitting) {
       return; // ป้องกันการ submit ซ้ำ
     }
-
     this.isSubmitting = true;
     if (this.supplierForm.valid) {
       const formValue = this.prepareFormData();
@@ -354,8 +356,9 @@ export class SupplierAddComponent {
             console.log('Data added successfully', response);
 
             if (response && response.supplier_id) {
-              this.supplierBankForm.patchValue({ supplier_id: response.supplier_id });
+              this.supplierBankForm.patchValue({ supplier_id: response.supplier_id , company: response.company});
               this.isIDTemp = response.supplier_id
+              console.log('หลังจาก map supplier_id , company', this.supplierBankForm);
               console.log('หลังจาก map supplier_id', this.isIDTemp);
 
               if (this.showSupplierBankForm = true) {
@@ -433,6 +436,12 @@ export class SupplierAddComponent {
 
 
   prepareFormData(): any {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    if (!currentUser) {
+      console.error('Current user is not available in local storage');
+      return;
+    }
     const formValue = { ...this.supplierForm.value };
     const selectedPostItem = this.items_provinces.find(item => {
       const postalCode = formValue.postalCode.split('-')[0];
@@ -443,6 +452,7 @@ export class SupplierAddComponent {
       formValue.postalCode = selectedPostItem.postalCode; // ใช้ค่า postalCode ที่ถูกต้อง
       formValue.post_id = selectedPostItem.post_id; // เพิ่ม post_id เข้าไปใน formValue
     }
+    formValue.user_id = currentUser.user_id;
     return formValue;
   }
 
@@ -762,21 +772,67 @@ export class SupplierAddComponent {
   }
 
   sendEmailNotification(): void {
-    const to = 'flukelnw1142@gmail.com'; // ปรับให้เป็นอีเมลของผู้ที่ต้องการแจ้งเตือน
-    const subject = 'Approval Notification';
-    const body = `The status has been changed to ${this.supplierForm.get('status')?.value}`;
+    console.log( 'log ทฟรส',this.supplierForm.get('status')?.value,this.supplierBankForm.valid);
+    
+    if (this.supplierForm.get('status')?.value === 'Pending Approved By ACC' && this.supplierBankForm.valid == false) {
+      const company = this.supplierForm.get('company')?.value;
+      // เรียกใช้ฟังก์ชันเพื่อค้นหาผู้ใช้งาน
+      this.supplierService.findApproversByCompany(company).subscribe(
+        (approvers) => {
+          approvers.forEach((approver: any) => {
+            const to = approver.email;
+            const subject = 'Approval Notification';
+            const body = `สถานะของ Supplier Number:${this.supplierForm.get('supplier_num')?.value} 
+            ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} 
+            รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป`;
 
-    this.emailService.sendEmail(to, subject, body).subscribe(
-      (response) => {
-        console.log('Email sent successfully', response);
-      },
-      (error) => {
-        console.error('Error sending email', error);
-      }
-    );
+            this.emailService.sendEmail(to, subject, body).subscribe(
+              (response) => {
+                console.log('Email sent successfully', response);
+              },
+              (error) => {
+                console.error('Error sending email', error);
+              }
+            );
+          });
+        },
+        (error) => {
+          console.error('Error finding approvers', error);
+        }
+      );
+    }
+    else if (this.supplierForm.get('status')?.value === 'Approved By ACC' && !this.supplierBankForm.valid) {
+      const company = this.supplierForm.get('company')?.value;
+      // เรียกใช้ฟังก์ชันเพื่อค้นหาผู้ใช้งาน
+      this.supplierService.findApproversFNByCompany(company).subscribe(
+        (approvers) => {
+          approvers.forEach((approver: any) => {
+            const to = approver.email;
+            const subject = 'Approval Notification';
+            const body = `สถานะของ Supplier Number:${this.supplierForm.get('supplier_num')?.value} 
+            ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} 
+            รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป`;
+
+            this.emailService.sendEmail(to, subject, body).subscribe(
+              (response) => {
+                console.log('Email sent successfully', response);
+              },
+              (error) => {
+                console.error('Error sending email', error);
+              }
+            );
+          });
+        },
+        (error) => {
+          console.error('Error finding approvers', error);
+        }
+      );
+    }
   }
+  
 
-  backClicked() {
+  backClicked(event: Event) {
+    event.preventDefault();
     this._location.back();
   }
 }

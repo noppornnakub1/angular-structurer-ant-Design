@@ -26,3 +26,27 @@
     color: black; /* สีตัวอักษรเมื่อชี้ */
     border: 2px solid #4CAF50; /* ขอบเมื่อชี้ */
   }
+
+  .content-card-search {
+    margin-bottom: 20px;
+  }
+  
+  .content-card-search nz-select {
+    width: 100%;
+  }
+  
+  .content-card-search .form-input {
+    width: 100%;
+  }
+
+  ::ng-deep .ant-select-single .ant-select-selector {
+    height: 2.5rem !important;
+    display: flex;
+    align-items: center;
+    width: 100% !important;
+  }
+  
+  ::ng-deep .ant-select-top-control {
+    height: 2.5rem !important;
+    width: 100% !important;
+  }

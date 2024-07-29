@@ -21,16 +21,16 @@
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
       <nz-form-label nzNoColon>Status</nz-form-label>
-      <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="สถานะ" [(ngModel)]="filters.status" />
-      </nz-input-group>
+      <nz-select [(ngModel)]="selectedStatus" (ngModelChange)="applyFilters()">
+        <nz-option *ngFor="let status of statusOptions" [nzValue]="status" [nzLabel]="status"></nz-option>
+      </nz-select>
     </div>
 
   </div>
   <div class="mt-5 display-flex justify-center ">
     <button nz-button nzType="primary" class="mr-2" (click)="applyFilters()"><span nz-icon nzType="search"
         nzTheme="outline"></span>ค้นหา</button>
-    <button nz-button class="add-user-button" nzType="default" (click)="addData()"><span nz-icon nzType="user-add"
+    <button *ngIf="isUser || isAdmin" nz-button class="add-user-button" nzType="default" (click)="addData()"><span nz-icon nzType="user-add"
         nzTheme="outline"></span>เพิ่มข้อมูล</button>
   </div>
 </div>
@@ -58,9 +58,9 @@
         <td class="text-center">
           <button *ngIf="isApproved || isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
             (click)="viewCustomer(data.id)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
-          <button *ngIf="isAdmin || (isUser && !['Pending Approve', 'Cancel', 'Pending Approved By ACC','Pending Sync.'].includes(data.status))"
-            nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round" (click)="editCustomer(data.id)"><span
-              nz-icon nzType="edit" nzTheme="outline"></span>Edit</button>
+          <button *ngIf="isAdmin || (isUser && data.status === 'Draft')" nz-button nzType="primary"
+            class="mr-1 button-yellow" nzShape="round" (click)="editCustomer(data.id)"><span nz-icon nzType="edit"
+              nzTheme="outline"></span>Edit</button>
 
         </td>
       </tr>

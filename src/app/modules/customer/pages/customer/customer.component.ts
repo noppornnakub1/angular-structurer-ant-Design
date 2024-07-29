@@ -28,6 +28,8 @@ export class CustomerComponent implements OnInit {
   filters = { name: '', customer_num: '', tax_Id: '', status: '' };
   pageIndex: number = 1;
   pageSize: number = 10;
+  statusOptions: string[] = ['All', 'Draft', 'Cancel','Pending Approved By ACC','Pending Approved By FN', 'Approved By ACC', 'Approve By FN','Reject By ACC','Reject By FN','Pending Sync.'];
+  selectedStatus: string = 'All';
 
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -138,10 +140,16 @@ export class CustomerComponent implements OnInit {
       (data.name?.includes(name) ?? true) &&
       (data.customer_num?.includes(customer_num) ?? true) &&
       (data.tax_Id?.includes(tax_Id) ?? true) &&
-      (data.status?.includes(status) ?? true)
+      // (data.status?.includes(status) ?? true)
+      (this.selectedStatus === 'All' || data.status === this.selectedStatus)
     );
     this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อมีการกรองข้อมูลใหม่
     this.updateDisplayData();
+  }
+  
+  onStatusChange(status: string): void {
+    this.selectedStatus = status;
+    this.applyFilters();
   }
 
   onPageIndexChange(pageIndex: number): void {

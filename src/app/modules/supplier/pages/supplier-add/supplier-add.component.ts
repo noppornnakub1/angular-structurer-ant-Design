@@ -97,6 +97,7 @@ export class SupplierAddComponent {
   reasonTemp:string = '';
   supplierForm!: FormGroup;
   supplierBankForm!: FormGroup;
+
   suppilerId: number | null = null;
   isViewMode: boolean = false;
   isAdmin = false;
@@ -107,6 +108,7 @@ export class SupplierAddComponent {
   showSupplierBankForm = false;
   paymentMethods = ['Transfer', 'Transfer_Employee'];
   isIDTemp = 0;
+  isNameTemp = '';
 
   private _cdr = inject(ChangeDetectorRef);
   private readonly _router = inject(Router);
@@ -125,7 +127,7 @@ export class SupplierAddComponent {
   ngOnInit(): void {
     this.supplierForm = this.fb.group({
       id: [0],
-      name: ['คุณ', Validators.required],
+      name: ['', Validators.required],
       tax_Id: ['', Validators.required],
       address_sup: ['', Validators.required],
       district: ['', Validators.required],
@@ -137,7 +139,7 @@ export class SupplierAddComponent {
       supplier_num: ['', Validators.required],
       supplier_type: ['', Validators.required],
       site: ['00000', Validators.required],
-      vat: ['', Validators.required],
+      vat: [''],
       status: ['', Validators.required],
       payment_method: ['', Validators.required],
       company: ['', Validators.required],
@@ -149,9 +151,12 @@ export class SupplierAddComponent {
       branch: ['', Validators.required],
       account_num: ['', Validators.required],
       supplier_group: ['', Validators.required],
-      account_name: ['คุณ', Validators.required],
+      account_name: ['', Validators.required],
       company: ['', Validators.required],
     });
+
+
+
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
@@ -196,17 +201,14 @@ export class SupplierAddComponent {
     this.checkRole();
   }
 
-  // onBankNameChange(value: string): void {
-  //   const selectedBank = this.listOfBank.find(bank => bank.short_bank_name === value);
-  //   if (selectedBank) {
-  //     this.supplierBankForm.patchValue({ account_num: selectedBank.bank_number });
-  //   } else {
-  //     this.supplierBankForm.patchValue({ account_num: '' });
-  //   }
-  // }
+
 
   toggleSupplierBankForm(value: string): void {
     this.showSupplierBankForm = this.paymentMethods.includes(value);
+    if (this.showSupplierBankForm) {
+      this.supplierBankForm.patchValue({ account_name: this.supplierForm.get('name')?.value });
+    }
+    this._cdr
     this._cdr.detectChanges();
   }
 
@@ -380,13 +382,13 @@ export class SupplierAddComponent {
             }
           },
           error: (err) => {
-            console.error('Error adding data', err);
+            Swal.fire('Error!', 'There was an error saving your data.', 'error');
           }
         });
       }
     } else {
       this.supplierForm.markAllAsTouched();
-      console.log('Form is not valid');
+      Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน.', 'error');
 
     }
   }
@@ -424,13 +426,13 @@ export class SupplierAddComponent {
           this.router.navigate(['/feature/supplier']);
         },
         error: (err) => {
-          console.error('Error updating data', err);
+          Swal.fire('Error!', 'There was an error saving your data.', 'error');
         }
       });
     } else {
       this.supplierForm.markAllAsTouched();
       this.supplierBankForm.markAllAsTouched();
-      console.log('Form is not valid');
+      Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
     }
 
   }
@@ -527,7 +529,7 @@ export class SupplierAddComponent {
     } else {
       this.supplierForm.markAllAsTouched();
       this.supplierBankForm.markAllAsTouched();
-      console.log('Form is not valid');
+      Swal.fire('Error!', 'There was an error saving your data.', 'error');
     }
   }
 
@@ -768,9 +770,12 @@ export class SupplierAddComponent {
             this.setStatusAndSubmit(newStatus); // ส่งเหตุผลไปด้วย
           }
         });
+      } else {
+        Swal.fire('Error!', 'กรุณากรอกเหตุผล', 'error');
       }
     });
   }
+  
   showRejectPopup(): Promise<string | undefined> {
     return Swal.fire({
       title: 'Reject Reason',
@@ -779,7 +784,13 @@ export class SupplierAddComponent {
       inputPlaceholder: 'Enter your reason here...',
       showCancelButton: true,
       confirmButtonText: 'Submit',
-      cancelButtonText: 'Cancel'
+      cancelButtonText: 'Cancel',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'You need to write something!'
+        }
+        return null;
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         return result.value;
@@ -787,6 +798,7 @@ export class SupplierAddComponent {
       return undefined;
     });
   }
+  
 
   setStatusAndSubmit(status: string): void {
     this.supplierForm.patchValue({ status });

@@ -57,7 +57,7 @@ export class CustomerAddComponent implements OnInit {
   ngOnInit(): void {
     this.customerForm = this.fb.group({
       id: [0],
-      name: ['คุณ', Validators.required],
+      name: ['', Validators.required],
       tax_Id: ['', Validators.required],
       address_sup: ['', Validators.required],
       district: ['', Validators.required],
@@ -247,7 +247,7 @@ export class CustomerAddComponent implements OnInit {
       this.customerForm.markAllAsTouched();
       console.log(this.customerForm.value);
       
-      console.log('Form is not valid');
+      Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
       this.isSubmitting = false;
 
     }
@@ -278,7 +278,7 @@ export class CustomerAddComponent implements OnInit {
       });
     } else {
       this.customerForm.markAllAsTouched();
-      console.log('Form is not valid');
+      Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
     }
   }
 
@@ -462,9 +462,12 @@ export class CustomerAddComponent implements OnInit {
             this.setStatusAndSubmit(newStatus); // ส่งเหตุผลไปด้วย
           }
         });
+      } else {
+        Swal.fire('Error!', 'กรุณากรอกเหตุผล', 'error');
       }
     });
   }
+  
   showRejectPopup(): Promise<string | undefined> {
     return Swal.fire({
       title: 'Reject Reason',
@@ -473,7 +476,13 @@ export class CustomerAddComponent implements OnInit {
       inputPlaceholder: 'Enter your reason here...',
       showCancelButton: true,
       confirmButtonText: 'Submit',
-      cancelButtonText: 'Cancel'
+      cancelButtonText: 'Cancel',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'You need to write something!'
+        }
+        return null;
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         return result.value;

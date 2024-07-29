@@ -28,6 +28,8 @@ export class SupplierComponent implements OnInit {
   filters = { name: '', supplier_num: '', tax_Id: '', status: '' };
   pageIndex: number = 1;
   pageSize: number = 10;
+  statusOptions: string[] = ['All', 'Draft', 'Cancel','Pending Approved By ACC','Pending Approved By FN', 'Approved By ACC', 'Approve By FN','Reject By ACC','Reject By FN','Pending Sync.'];
+  selectedStatus: string = 'All';
 
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -110,6 +112,8 @@ export class SupplierComponent implements OnInit {
       this.supplierService.findDataByUserId(currentUser.user_id).subscribe({
         next: (response: any) => {
           this.listOfData = response;
+          console.log(response);
+          
           this.changeStatusIfNeeded();
           this.applyFilters();
           // this.filteredData = response;
@@ -145,10 +149,16 @@ export class SupplierComponent implements OnInit {
       (data.name?.includes(name) ?? true) &&
       (data.supplier_num?.includes(supplier_num) ?? true) &&
       (data.tax_Id?.includes(tax_Id) ?? true) &&
-      (data.status?.includes(status) ?? true)
+      // (data.status?.includes(status) ?? true)
+      (this.selectedStatus === 'All' || data.status === this.selectedStatus)
     );
     this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อมีการกรองข้อมูลใหม่
     this.updateDisplayData();
+  }
+
+  onStatusChange(status: string): void {
+    this.selectedStatus = status;
+    this.applyFilters();
   }
 
   onPageIndexChange(pageIndex: number): void {

@@ -76,7 +76,7 @@
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Customer Type</nz-form-label>
         <nz-select formControlName="customer_type" nzPlaceHolder="Select customer_type" class="custom-select">
-          <nz-option *ngFor="let type of listOfType" [nzLabel]="type.code+' ('+type.code_from+')'"
+          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.code_from+')'+' '+' '+type.meaning"
             [nzValue]="type.code"></nz-option>
         </nz-select>
       </div>

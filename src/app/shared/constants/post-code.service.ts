@@ -7,7 +7,8 @@ import { DataLocation } from '../../modules/supplier/pages/supplier-add/supplier
   providedIn: 'root'
 })
 export class PostCodeService {
-    private apiUrl = 'http://10.10.0.28:8088/api/PostCode/PostCodeInfo';
+    // private apiUrl = 'http://10.10.0.28:8088/api/PostCode/PostCodeInfo';
+    private apiUrl = 'https://localhost:7126/api/PostCode/PostCodeInfo';
   
     constructor(private http: HttpClient) { }
   

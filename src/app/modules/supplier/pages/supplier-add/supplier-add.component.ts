@@ -6,7 +6,7 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { SupplierService } from '../../services/supplier.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostCodeService } from '../../../../shared/constants/post-code.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpParams } from '@angular/common/http';
 import { IsupplierType } from '../../interface/supplierType.interface';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -19,6 +19,9 @@ import { IRole } from '../../../user-manager/interface/role.interface';
 import { BankMasterService } from '../../../../shared/constants/bank-master.service';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
+import { SupplierComponent } from '../supplier/supplier.component';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 export interface DataLocation {
   post_id: number,
@@ -56,6 +59,10 @@ export interface DataCompany {
   com_code: number,
   full_name: string,
   abbreviation: string,
+  group_name: string
+}
+
+export interface DataGroup {
   group_name: string
 }
 
@@ -97,6 +104,7 @@ export class SupplierAddComponent {
   reasonTemp:string = '';
   supplierForm!: FormGroup;
   supplierBankForm!: FormGroup;
+  supplierBankFormAdd!: FormGroup;
 
   suppilerId: number | null = null;
   isViewMode: boolean = false;
@@ -105,11 +113,17 @@ export class SupplierAddComponent {
   isApprovedFN = false;
   isUser = false;
   isSubmitting: boolean = false;
-  showSupplierBankForm = false;
+  showSupplierBankForm: boolean = false;
+  showSupplierBankFormAdd: boolean = false;
+  isBankFormVisible: boolean = false;
   paymentMethods = ['Transfer', 'Transfer_Employee'];
   isIDTemp = 0;
   isNameTemp = '';
-
+  isLength = false;
+  listOfGroup: DataGroup[] = [];
+  selectedSupplierGroup: string | null = null;
+  selectedSupplierGroupAdd: string | null = null;
+  
   private _cdr = inject(ChangeDetectorRef);
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService)
@@ -121,7 +135,8 @@ export class SupplierAddComponent {
     private postCodeService: PostCodeService,
     private cdr: ChangeDetectorRef,
     private bankMasterService: BankMasterService,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private modal: NzModalService
   ) { }
 
   ngOnInit(): void {
@@ -145,7 +160,7 @@ export class SupplierAddComponent {
       company: ['', Validators.required],
     });
     this.supplierBankForm = this.fb.group({
-      // supbank_id: [0],
+      supbank_id: [0],
       supplier_id: [, Validators.required],
       name_bank: ['', Validators.required],
       branch: ['', Validators.required],
@@ -154,8 +169,17 @@ export class SupplierAddComponent {
       account_name: ['', Validators.required],
       company: ['', Validators.required],
     });
-
-
+    this.supplierBankFormAdd = this.fb.group({
+      supbank_id: [0],
+      supplier_id: [, Validators.required],
+      name_bank: ['', Validators.required],
+      branch: ['', Validators.required],
+      account_num: ['', Validators.required],
+      supplier_group: ['', Validators.required],
+      account_name: ['', Validators.required],
+      company: ['', Validators.required],
+    });
+  
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -168,20 +192,21 @@ export class SupplierAddComponent {
     if (this.router.url.includes('/view/')) {
       this.isViewMode = true;
       this.supplierForm.disable();
-      this.supplierBankForm.disable(); // ทำให้ฟอร์มไม่สามารถแก้ไขได้
+      this.supplierBankForm.disable();
+      this.supplierBankFormAdd.disable();  // ทำให้ฟอร์มไม่สามารถแก้ไขได้
     }
     this.postCodeService.getPostCodes().subscribe(data => {
       console.log(data)
       this.items_provinces = data;
       this.filteredItemsProvince = data;
     });
-
+    console.log('Initial isLength: ', this.isLength);
+    console.log('Initial isViewMode: ',   this.isViewMode);
     this.getSupplierType();
     this.getDataBank();
     this.getDataPaymentMethod();
     this.getDataVAT();
     this.getDataCompany();
-
 
     // Subscribe to customer_type changes
     this.supplierForm.get('supplier_type')!.valueChanges.subscribe(value => {
@@ -201,9 +226,13 @@ export class SupplierAddComponent {
     this.checkRole();
   }
 
-
-
   toggleSupplierBankForm(value: string): void {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (!currentUser) {
+      console.error('Current user is not available in local storage');
+      return;
+    }
+    this.getGruopName(currentUser.company);
     this.showSupplierBankForm = this.paymentMethods.includes(value);
     if (this.showSupplierBankForm) {
       this.supplierBankForm.patchValue({ account_name: this.supplierForm.get('name')?.value });
@@ -211,6 +240,14 @@ export class SupplierAddComponent {
     this._cdr
     this._cdr.detectChanges();
   }
+
+  showBankCopy(){
+    this.showSupplierBankFormAdd = true;
+    if (this.showSupplierBankFormAdd) {
+      this.supplierBankFormAdd.patchValue({ account_name: this.supplierForm.get('name')?.value });
+    }
+  }
+  
 
   onPaymentMethodChange(value: string): void {
     this.toggleSupplierBankForm(value);
@@ -246,23 +283,47 @@ export class SupplierAddComponent {
   }
 
   loadSupplierBank(id: number): void {
-    this.supplierService.findSupplierBankBySupplierId(id).subscribe((data: any) => {
-      console.log('dataload supplier bank', data)
-      this.supplierBankForm.patchValue({
-        supbank_id: data.supbank_id,
-        supplier_id: data.supplier_id,
-        name_bank: data.name_bank,
-        branch: data.branch,
-        account_num: data.account_num,
-        supplier_group: data.supplier_group,
-        account_name: data.account_name,
-        company: data.company
-      });
+    this.supplierService.findSupplierBankBySupplierId(id).subscribe((data: any[]) => {
+      this._cdr.detectChanges();
+      console.log("loadsupbank",data);
+      if (data.length > 0) {
+        if (!this.listOfGroup.some(group => group.group_name === data[0].supplier_group)) {
+          this.listOfGroup.push({ group_name: data[0].supplier_group });
+        }
+        this.supplierBankForm.patchValue({
+          supbank_id: data[0].supbank_id,
+          supplier_id: data[0].supplier_id,
+          name_bank: data[0].name_bank,
+          branch: data[0].branch,
+          account_num: data[0].account_num,
+          supplier_group: data[0].supplier_group,
+          account_name: data[0].account_name,
+          company: data[0].company
+        });
+        if (data.length > 1) {
+          if (!this.listOfGroup.some(group => group.group_name === data[1].supplier_group)) {
+            this.listOfGroup.push({ group_name: data[1].supplier_group });
+          }
+          this.supplierBankFormAdd.patchValue({
+            supbank_id: data[1].supbank_id,
+            supplier_id: data[1].supplier_id,
+            name_bank: data[1].name_bank,
+            branch: data[1].branch,
+            account_num: data[1].account_num,
+            supplier_group: data[1].supplier_group,
+            account_name: data[1].account_name,
+            company: data[1].company
+          });
+          this.selectedSupplierGroupAdd = data[1].supplier_group;
+          this.showSupplierBankFormAdd = true; // แสดงฟอร์มที่สอง
+          
+        }
+      }
     });
   }
 
   loadSupplierType(id: number): void {
-    this.supplierService.findSupplierTypeById(id).subscribe((data: any) => {
+    this.supplierService.findSupplierTypeById(id).pipe(debounceTime(300),distinctUntilChanged()).subscribe((data: any) => {
       const SupplierNumPrefix = data.code_from;
       this.supplierService.getTopSupplierByType(data.code).subscribe(topSupplierData => {
         let newSupplierNum: string;
@@ -368,6 +429,10 @@ export class SupplierAddComponent {
                 this.addBankData();
                 console.log('Data Bank added successfully', response);
               }
+              if (this.showSupplierBankFormAdd = true) {
+                this.addBankData();
+                console.log('Data Bank added successfully', response);
+              }
               this.insertLog();
               Swal.fire({
                 icon: 'success',
@@ -399,7 +464,7 @@ export class SupplierAddComponent {
       this.supplierService.updateData(this.suppilerId, formValue).subscribe({
         next: (response) => {
           console.log('Data updated successfully', response);
-          if (this.showSupplierBankForm = true) {
+          if (this.showSupplierBankForm = false) {
             this.insertLog();
             Swal.fire({
               icon: 'success',
@@ -512,11 +577,41 @@ export class SupplierAddComponent {
         }
       });
     }
+    if(this.supplierBankFormAdd){
+      const bankFormValue = this.supplierBankFormAdd.value;
+    console.log('Bank form value before submitting:', bankFormValue);  // Add logging here
+    if (this.supplierBankFormAdd.valid) {
+      this.supplierService.addBankData(bankFormValue).subscribe({
+        next: (response) => {
+          console.log('Bank data added successfully', response);
+        },
+        error: (err) => {
+          console.error('Error adding bank data', err);
+        }
+      });
+    }
+    }
   }
 
   onUpdateSupplierBank(): void {
+    const bankId = this.supplierBankForm.get('supbank_id')?.value;
+    console.log("bankid",bankId)
     if (this.supplierBankForm.valid && this.suppilerId) {
-      this.supplierService.updateBankData(this.suppilerId, this.supplierBankForm.value).subscribe({
+      this.supplierService.updateBankData(bankId, this.supplierBankForm.value).subscribe({
+        next: (response) => {
+          console.log('Data bank updated successfully', response);
+
+          this.router.navigate(['/feature/supplier']);
+        },
+        error: (err) => {
+          console.error('Error updating data', err);
+        }
+      });
+    }
+    if (this.supplierBankFormAdd.valid && this.suppilerId) {
+      const bankId = this.supplierBankFormAdd.get('supbank_id')?.value;
+      console.log("bankid If2",bankId)
+      this.supplierService.updateBankData(bankId, this.supplierBankFormAdd.value).subscribe({
         next: (response) => {
           console.log('Data bank updated successfully', response);
 
@@ -604,7 +699,8 @@ export class SupplierAddComponent {
           const postalCodeCombination = data.postalCode + '-' + data.subdistrict;
           this.supplierForm.patchValue({
             ...data,
-            postalCode: postalCodeCombination
+            postalCode: postalCodeCombination,
+            status: ''
           });
           this.loadSupplierBank(data.id);
 
@@ -637,6 +733,20 @@ export class SupplierAddComponent {
         console.log('Vat', this.listOfVat);
 
         this.filteredDataVat = response;
+        this._cdr.markForCheck();
+      },
+      error: () => {
+        // Handle error
+      }
+    });
+  }
+
+  getGruopName(company:string): void {
+    this.supplierService.GetGroupNames(company).subscribe({
+      next: (response: any) => {
+        this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
+        console.log("Group",this.listOfGroup);
+        // this.filteredData = response;
         this._cdr.markForCheck();
       },
       error: () => {
@@ -771,7 +881,7 @@ export class SupplierAddComponent {
           }
         });
       } else {
-        Swal.fire('Error!', 'กรุณากรอกเหตุผล', 'error');
+        // Swal.fire('Error!', 'กรุณากรอกเหตุผล', 'error');
       }
     });
   }
@@ -787,7 +897,7 @@ export class SupplierAddComponent {
       cancelButtonText: 'Cancel',
       inputValidator: (value) => {
         if (!value) {
-          return 'You need to write something!'
+          return 'กรุณากรอกเหตุผล'
         }
         return null;
       }
@@ -864,7 +974,8 @@ export class SupplierAddComponent {
       );
     }
   }
-  
+
+
 
   backClicked(event: Event) {
     event.preventDefault();

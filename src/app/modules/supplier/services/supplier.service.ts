@@ -36,8 +36,8 @@ import { DataBank } from '../pages/supplier-add/supplier-add.component';
       return this._http.get(`/Supplier/GetSupplierType`);
     }
 
-    findSupplierBankBySupplierId(id: number): Observable<IsupplierType> {
-      return this._http.get<IsupplierType>(`/SupplierBank/FindSupplierBankBySupplierID?supplierid=${id}`);
+    findSupplierBankBySupplierId(id: number): Observable<IsupplierType[]> {
+      return this._http.get<IsupplierType[]>(`/SupplierBank/FindSupplierBankBySupplierID?supplierid=${id}`);
     }
 
     getTopSupplierByType(supplier_type: string): Observable<{ supplier_num: string, code_from: string }> {
@@ -57,8 +57,8 @@ import { DataBank } from '../pages/supplier-add/supplier-add.component';
       return this._http.post(`/SupplierBank/AddSupplierBank`, supplier);
     }
 
-    updateBankData(supplierId: number, data: DataBank): Observable<any> {
-      return this._http.put(`/SupplierBank/UpdateSupplierBank/${supplierId}`, data);
+    updateBankData(id: number, data: DataBank): Observable<any> {
+      return this._http.put(`/SupplierBank/UpdateSupplierBank/${id}`, data);
     }
 
     insertLog(log: any): Observable<any> {
@@ -104,4 +104,7 @@ import { DataBank } from '../pages/supplier-add/supplier-add.component';
       return this._http.get(`/User/findApproversFNByCompany?company=${company}`);
     }
 
+    GetGroupNames(company: string): Observable<any> {
+      return this._http.get(`/Supplier/GetGroupNames?company=${company}`);
+    }
   }

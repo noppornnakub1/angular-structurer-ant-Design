@@ -73,7 +73,7 @@
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Supplier Type</nz-form-label>
         <nz-select formControlName="supplier_type" nzPlaceHolder="Select supplier_type" class="custom-select">
-          <nz-option *ngFor="let type of listOfType" [nzLabel]="type.code+' ('+type.code_from+')'"
+          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.code_from+')'+' '+' '+type.meaning"
             [nzValue]="type.code"></nz-option>
         </nz-select>
       </div>
@@ -155,23 +155,21 @@
 
 <form [formGroup]="supplierBankForm" *ngIf="showSupplierBankForm">
   <div class="content-card mt-3">
+    <ng-container *ngIf="!isViewMode">
+      <button class="mr-2" nz-button nzType="primary" (click)="showBankCopy()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>เพิ่ม Bank
+      </button>
+    </ng-container>
     <nz-divider nzText="Supplier Bank"></nz-divider>
     <div nz-row nzGutter="16">
       <div nz-row nzGutter="16">
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-label nzNoColon>Supplier Group</nz-form-label>
-          <nz-select formControlName="supplier_group" nzPlaceHolder="Select Supplier Group" class="custom-select">
-            <nz-option nzValue="GCH Group" nzLabel="GCH Group"></nz-option>
-            <nz-option nzValue="ONE Group" nzLabel="ONE Group"></nz-option>
-          </nz-select>
+          <nz-select [(ngModel)]="selectedSupplierGroup" formControlName="supplier_group" nzPlaceHolder="Select Supplier Group" class="custom-select">
+            <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
+                [nzValue]="type.group_name"></nz-option>
+            </nz-select>
         </div>
-        <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-          <nz-form-label nzNoColon>Company</nz-form-label>
-          <nz-select formControlName="company" nzPlaceHolder="Select Company" class="custom-select" >
-            <nz-option *ngFor="let type of filteredDataompany" [nzLabel]="type.abbreviation+' : '+type.full_name"
-                [nzValue]="type.abbreviation"></nz-option>
-          </nz-select>
-        </div> -->
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name</nz-form-label>
@@ -211,6 +209,59 @@
         </div>
       </div>
     </div>
+    <form [formGroup]="supplierBankFormAdd" *ngIf="showSupplierBankFormAdd">
+      <div class="content-card" style="padding: 0px;">
+        <nz-divider nzText="Supplier Bank"></nz-divider>
+        <div nz-row nzGutter="16">
+          <div nz-row nzGutter="16">
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <nz-form-label nzNoColon>Supplier Group</nz-form-label>
+              <nz-select [(ngModel)]="selectedSupplierGroupAdd" formControlName="supplier_group" nzPlaceHolder="Select Supplier Group" class="custom-select">
+                <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
+                    [nzValue]="type.group_name"></nz-option>
+                </nz-select>
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <nz-form-item>
+                <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name</nz-form-label>
+                <nz-select formControlName="name_bank" nzPlaceHolder="Select bankName" class="custom-select">
+                  <nz-option *ngFor="let type of listOfBank" [nzLabel]="type.short_bank_name+' : '+type.alternate_bank_name"
+                    [nzValue]="type.short_bank_name"></nz-option>
+                </nz-select>
+              </nz-form-item>
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <nz-form-item>
+                <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch</nz-form-label>
+                <nz-form-control [nzSpan]="24">
+                  <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <nz-form-item>
+                <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon style="padding: 0px;">Account
+                  Number</nz-form-label>
+                <nz-form-control [nzSpan]="24">
+                  <input nz-input id="accountNumber" placeholder="Account Number" formControlName="account_num"
+                    class="form-input" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <nz-form-item>
+                <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon style="padding: 0px;">Account
+                  Name</nz-form-label>
+                <nz-form-control [nzSpan]="24">
+                  <input nz-input id="accountName" placeholder="Account Name" formControlName="account_name"
+                    class="form-input" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
     <div class="mt-5 display-flex justify-center ">
       <button nz-button nzType="default" class="mr-2" (click)="backClicked($event)"><span nz-icon nzType="rollback"
           nzTheme="outline"></span>ย้อนกลับ</button>
@@ -222,8 +273,7 @@
         class="mr-2 button-yellow" nz-button nzType="primary" (click)="save($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>บันทึก
       </button>
-      <button
-        *ngIf="isViewMode && (isUser && (supplierForm.get('status')?.value === 'Draft') || isAdmin)"
+      <button *ngIf="isViewMode && (isUser && (supplierForm.get('status')?.value === 'Draft') || isAdmin)"
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit
       </button>

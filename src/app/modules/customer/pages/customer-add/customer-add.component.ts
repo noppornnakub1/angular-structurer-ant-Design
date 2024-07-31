@@ -13,6 +13,7 @@ import { ICustomerType } from '../../interface/customerType.interface';
 import { DataLocation } from '../../../supplier/pages/supplier-add/supplier-add.component';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 
 @Component({
@@ -138,11 +139,12 @@ export class CustomerAddComponent implements OnInit {
   }
 
   loadCustomerType(id: number): void {
-    this.customerService.findCustomerTypeById(id).subscribe((data: any) => {
+    this.customerService.findCustomerTypeById(id).pipe(debounceTime(300),distinctUntilChanged()).subscribe((data: any) => {
       const customerNumPrefix = data.code_from;
       this.customerService.getTopCustomerByType(data.code).subscribe(topCustomerData => {
         let newCustomerNum: string;
-
+        console.log("Group",topCustomerData);
+        
         if (topCustomerData.customer_num === '000') {
           // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
           newCustomerNum = customerNumPrefix + '000000';
@@ -463,7 +465,7 @@ export class CustomerAddComponent implements OnInit {
           }
         });
       } else {
-        Swal.fire('Error!', 'กรุณากรอกเหตุผล', 'error');
+        // Swal.fire('Error!', 'กรุณากรอกเหตุผล', 'error');
       }
     });
   }
@@ -479,7 +481,7 @@ export class CustomerAddComponent implements OnInit {
       cancelButtonText: 'Cancel',
       inputValidator: (value) => {
         if (!value) {
-          return 'You need to write something!'
+          return 'กรุณากรอกเหตุผล'
         }
         return null;
       }
@@ -509,6 +511,7 @@ export class CustomerAddComponent implements OnInit {
           this.customerForm.patchValue({
             ...data,
             postalCode: postalCodeCombination,
+            status: ''
           });
         },
         error: (err) => {

@@ -37,13 +37,13 @@
     [nzPageIndex]="pageIndex" [nzPageSize]="pageSize" (nzPageIndexChange)="onPageIndexChange($event)"
     (nzPageSizeChange)="onPageSizeChange($event)"> 
     <thead>
-      <tr>
-        <th>No.</th>
-        <th nzShowSort nzSortKey="name" (nzSortChange)="sortData($event)">Name</th>
+      <tr >
+        <th *ngFor="let column of listOfColumn" [nzSortFn]="column.compare" [nzSortPriority]="column.priority">No.</th>
+        <!-- <th nzShowSort nzSortKey="name" (nzSortChange)="sortData($event)">Name</th>
         <th nzShowSort nzSortKey="customer_num" (nzSortChange)="sortData($event)">Customer Number</th>
         <th nzShowSort nzSortKey="tax_Id" (nzSortChange)="sortData($event)">Tax</th>
         <th nzShowSort nzSortKey="status" (nzSortChange)="sortData($event)">Status</th>
-        <th>Action</th>
+        <th>Action</th> -->
       </tr>
     </thead>
     <tbody>

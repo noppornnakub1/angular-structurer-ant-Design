@@ -47,7 +47,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of displayData; let i = index">
+      <tr *ngFor="let data of datatable.data; let i = index">
         <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
         <td>{{ data.name }}</td>
         <td>{{ data.customer_num }}</td>

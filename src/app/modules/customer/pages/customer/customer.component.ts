@@ -31,6 +31,41 @@ export class CustomerComponent implements OnInit {
   statusOptions: string[] = ['All', 'Draft', 'Cancel','Pending Approved By ACC','Pending Approved By FN', 'Approved By ACC', 'Approve By FN','Reject By ACC','Reject By FN','Pending Sync.'];
   selectedStatus: string = 'All';
 
+
+
+  listOfColumn = [
+    {
+      title: 'No.',
+      compare: null,
+      priority: false
+    },
+    {
+      title: 'Name',
+      compare: (a: ICustomer, b: ICustomer) => a.name.localeCompare(b.name),
+      priority: false
+    },
+    {
+      title: 'Customer Number',
+      compare: (a: ICustomer, b: ICustomer) =>  a.customer_num.localeCompare(b.customer_num),
+      priority: 3
+    },
+    {
+      title: 'Tax',
+      compare: (a: ICustomer, b: ICustomer) => a.tax_Id.localeCompare(b.tax_Id),
+      priority: 2
+    },
+    {
+      title: 'Status',
+      compare: (a: ICustomer, b: ICustomer) => a.status.localeCompare(b.status),
+      priority: 1
+    },
+    {
+      title: 'Action',
+      compare: null,
+      priority: 1
+    }
+  ];
+
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);

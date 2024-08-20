@@ -43,7 +43,10 @@ export class CustomerAddComponent implements OnInit {
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService)
   private _cdr = inject(ChangeDetectorRef);
-
+  emailError: string = '';
+  originalData: any;
+  listDataByTaxId: any[] = [];
+  isDupplicate: boolean = false;
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -132,6 +135,7 @@ export class CustomerAddComponent implements OnInit {
         ...data,
         postalCode: postalCodeCombination
       });
+      this.originalData = { ...data };
       console.log(this.customerForm);
       this.getEventLogs(id)
 
@@ -139,15 +143,14 @@ export class CustomerAddComponent implements OnInit {
   }
 
   loadCustomerType(id: number): void {
-    this.customerService.findCustomerTypeById(id).pipe(debounceTime(300),distinctUntilChanged()).subscribe((data: any) => {
+    this.customerService.findCustomerTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
       const customerNumPrefix = data.code_from;
       this.customerService.getTopCustomerByType(data.code).subscribe(topCustomerData => {
         let newCustomerNum: string;
-        console.log("Group",topCustomerData);
-        
+
         if (topCustomerData.customer_num === '000') {
           // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
-          newCustomerNum = customerNumPrefix + '000000';
+          newCustomerNum = customerNumPrefix + '000001';
         } else {
           // ถ้าเจอข้อมูล ใช้ค่า customer_num ที่ดึงมาแล้ว increment
           newCustomerNum = this.incrementCustomerNum(topCustomerData.customer_num, customerNumPrefix);
@@ -200,7 +203,7 @@ export class CustomerAddComponent implements OnInit {
 
   onSubmit(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log('map ข้อมูล user',currentUser);
+    console.log('map ข้อมูล user', currentUser);
     if (this.isViewMode) {
       this.customerForm.enable(); // Enable form temporariliy for validation
     }
@@ -209,7 +212,7 @@ export class CustomerAddComponent implements OnInit {
     }
 
     this.isSubmitting = true;
-    if(!this.customerId){
+    if (!this.customerId) {
       this.customerForm.patchValue({ company: currentUser.company });
     }
     if (this.customerForm.valid) {
@@ -218,11 +221,11 @@ export class CustomerAddComponent implements OnInit {
       if (selectedPostItem) {
         formValue.post_id = selectedPostItem.post_id;
       }
-      console.log('Form',formValue);
-      
+      console.log('Form', formValue);
+
       if (this.customerId) {
         this.onUpdate(formValue);  // Call update function if customerId exists
-      } else { 
+      } else {
         this.customerService.addData(formValue).subscribe({
           next: (response) => {
             console.log('Data added successfully', response);
@@ -248,7 +251,7 @@ export class CustomerAddComponent implements OnInit {
     } else {
       this.customerForm.markAllAsTouched();
       console.log(this.customerForm.value);
-      
+
       Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
       this.isSubmitting = false;
 
@@ -367,11 +370,27 @@ export class CustomerAddComponent implements OnInit {
     );
   }
 
+  validateEmail() {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+    if (!this.customerForm.value.email) {
+      this.emailError = 'Email is required';
+      console.log("email ว่าง");
+
+    } else if (!emailPattern.test(this.customerForm.value.email)) {
+      this.emailError = 'Email is wrong emailPattern';
+      console.log("email ผิด");
+    } else {
+      this.emailError = '';
+    }
+    this.cdr.detectChanges();
+  }
+
   cancel(event: Event): void {
     event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
-      text: "Do you want to save the changes?",
+      text: "Do you want to cancel ?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -403,7 +422,36 @@ export class CustomerAddComponent implements OnInit {
 
   }
 
+  checkSave(event: Event) {
+    this.validateEmail();
+    if (this.emailError != '') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Email ไม่ถูกต้อง',
+        text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
+        confirmButtonText: 'ปิด'
+      });
+      return;
+    }
+    this.isDupplicate = this.compareWithExistingData(this.listDataByTaxId, this.customerForm.value);
+    if (this.isDupplicate) {
+      Swal.fire({
+        icon: 'error',
+        title: 'ข้อมูลซ้ำ',
+        text: 'โปรดตรวจสอบให้แน่ใจว่าข้อมูลของคุณถูกต้อง',
+        confirmButtonText: 'ปิด'
+      });
+      return;
+    }
+    else {
+      console.log('Proceeding to save.');
+      this.save(event);
+    }
+  }
+
   submit(event: Event): void {
+    console.log("เข้า save");
+
     event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
@@ -429,7 +477,7 @@ export class CustomerAddComponent implements OnInit {
     event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
-      text: "Do you want to save the changes?",
+      text: "Do you want to Approve?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -450,7 +498,7 @@ export class CustomerAddComponent implements OnInit {
       if (rejectReason !== undefined) {
         Swal.fire({
           title: 'Are you sure?',
-          text: "Do you want to save the changes?",
+          text: "Do you want to Reject?",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
@@ -469,7 +517,7 @@ export class CustomerAddComponent implements OnInit {
       }
     });
   }
-  
+
   showRejectPopup(): Promise<string | undefined> {
     return Swal.fire({
       title: 'Reject Reason',
@@ -492,7 +540,7 @@ export class CustomerAddComponent implements OnInit {
       return undefined;
     });
   }
-  
+
 
   setStatusAndSubmit(status: string): void {
     this.customerForm.patchValue({ status });
@@ -505,14 +553,24 @@ export class CustomerAddComponent implements OnInit {
 
     if (taxId) {
       this.customerService.getDataByTaxId(taxId).subscribe({
-        next: (data) => {
-          console.log(data);
-          const postalCodeCombination = data.postalCode + '-' + data.subdistrict;
-          this.customerForm.patchValue({
-            ...data,
-            postalCode: postalCodeCombination,
-            status: ''
-          });
+        next: (dataList: any[]) => {
+          if (dataList.length > 0) {
+            this.listDataByTaxId = dataList
+            console.log("this.listDataByTaxId",this.listDataByTaxId);
+            
+            // สมมติว่าเลือกแถวที่มี Id สูงสุด
+            const latestData = dataList.reduce((prev, current) => (prev.id > current.id) ? prev : current);
+
+            const postalCodeCombination = latestData.postalCode + '-' + latestData.subdistrict;
+            this.customerForm.patchValue({
+              ...latestData,
+              postalCode: postalCodeCombination,
+              status: ''
+            });
+            this.originalData = { ...latestData };
+          } else {
+            console.log('No data found for the given Tax ID');
+          }
         },
         error: (err) => {
           console.error('Error fetching data by Tax ID', err);
@@ -522,17 +580,19 @@ export class CustomerAddComponent implements OnInit {
   }
 
   sendEmailNotification(): void {
-    console.log( 'log ทฟรส',this.customerForm.get('status')?.value,this.customerForm.valid);
-    
+    console.log('log mail', this.customerForm.get('customer_num')?.value, this.customerForm.valid);
+
     if (this.customerForm.get('status')?.value === 'Pending Approved By ACC' && this.customerForm.valid) {
       const company = this.customerForm.get('company')?.value;
+      const customerNum = this.customerForm.get('customer_num')?.value;
       // เรียกใช้ฟังก์ชันเพื่อค้นหาผู้ใช้งาน
       this.customerService.findApproversByCompany(company).subscribe(
         (approvers) => {
           approvers.forEach((approver: any) => {
+            console.log('log mail', this.customerForm.get('customer_num')?.value);
             const to = approver.email;
             const subject = 'Approval Notification';
-            const body = `สถานะของ Customer Number:${this.customerForm.get('customer_num')?.value} 
+            const body = `สถานะของ Customer Number:${customerNum} 
             ได้เปลี่ยนเป็น ${this.customerForm.get('status')?.value} 
             รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป`;
 
@@ -551,6 +611,39 @@ export class CustomerAddComponent implements OnInit {
         }
       );
     }
+  }
+
+  isDataUnchanged(existingData: any, newData: any): boolean {
+    const fieldsToCompare = ['name', 'tax_Id', 'address_sup', 'district', 'subdistrict', 'province', 'tel', 'email', 'customer_num', 'customer_type', 'site'];
+    
+    
+    const existingPostalCode = existingData.postalCode.split('-')[0];
+    const newPostalCode = newData.postalCode.split('-')[0];
+
+    for (const field of fieldsToCompare) {
+      console.log("existingData",existingData);
+    console.log("newData",newData);
+      if (existingData[field] !== newData[field]) {
+        return false;
+      }
+    }
+
+    if (existingPostalCode !== newPostalCode) {
+      return false;
+    }
+
+    return true; // ข้อมูลตรงกัน
+  }
+
+  compareWithExistingData(existingDataList: any[], newData: any): boolean {
+    for (let existingData of existingDataList) {
+      if (this.isDataUnchanged(existingData, newData)) {
+        console.log('Data is unchanged, found duplicate.');
+        return true; // เจอข้อมูลซ้ำ
+      }
+    }
+    console.log('No duplicate found.');
+    return false; // ไม่มีข้อมูลซ้ำ
   }
 
   backClicked(event: Event): void {

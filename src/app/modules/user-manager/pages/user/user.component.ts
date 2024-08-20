@@ -30,6 +30,7 @@ import { ModalDataService } from '../../../../shared/constants/ModalDataService'
     NzFormModule,
     NzInputModule,
     ReactiveFormsModule,
+    NgZorroAntdModule
   ],
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss']
@@ -41,12 +42,13 @@ export class UserComponent implements OnInit {
   isAdmin: boolean = false;
   isApproved: boolean = false;
   isUser: boolean = false;
-
+  displayData: IUser[] = [];
   listOfDataRole: IRole[] = [];
   listOfData: IUser[] = [];
   filteredData: IUser[] = [];
   filters = { name: '', username: '' };
-
+  pageIndex: number = 1;
+  pageSize: number = 10;
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
@@ -83,9 +85,8 @@ export class UserComponent implements OnInit {
       next: (response: any) => {
         
         this.listOfData = response
-        
-        
         this.filteredData = [...this.listOfData];
+        this.updateDisplayData(); 
         this._cdr.markForCheck();
       },
       error: () => {
@@ -117,6 +118,7 @@ export class UserComponent implements OnInit {
       (data.firstname?.includes(name) ?? true) &&
       (data.username?.includes(username) ?? true)
     );
+    this.updateDisplayData();
   }
 
   showAddRoleModal(): void {
@@ -145,4 +147,22 @@ export class UserComponent implements OnInit {
       instance.ngOnInit();
     });
   }
+
+  onPageIndexChange(pageIndex: number): void {
+    this.pageIndex = pageIndex;
+    this.updateDisplayData();
+  }
+
+  onPageSizeChange(pageSize: number): void {
+    this.pageSize = pageSize;
+    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อเปลี่ยนขนาดหน้า
+    this.updateDisplayData();
+  }
+
+  updateDisplayData(): void {
+    const startIndex = (this.pageIndex - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.displayData = this.filteredData.slice(startIndex, endIndex);
+    this._cdr.markForCheck();
+}
 }

@@ -33,7 +33,7 @@ export class LayoutsComponent {
   currentRoute!: string;
   private readonly authService = inject(AuthService);
 
-  constructor(private _router: Router) {
+  constructor(private _router: Router, public router: Router) {
     this.currentRoute = this._router.url;  // Initialize currentRoute
     this._router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -71,7 +71,7 @@ export class LayoutsComponent {
       title: 'User Manager', icon: 'team', label: 'User Manager',
       children: [
         { title: 'User', icon: 'user', label: 'User', route: '/feature/user-manager/user', roles: ['admin'] },
-        { title: 'Role', icon: 'solution', label: 'Role', route: '/feature/user-manager/role', roles: ['admin'] }
+        // { title: 'Role', icon: 'solution', label: 'Role', route: '/feature/user-manager/role', roles: ['admin'] }
       ]
     }
   ];
@@ -130,7 +130,9 @@ hasRole(roleString: string, roleToCheck: string): boolean {
 
   logout(): void {
     this.authService.logout();
-    this._router.navigate(['/auth']);
+    this.router.navigateByUrl('/authentication').then(() => {
+      window.location.reload();
+  });
   }
 
 

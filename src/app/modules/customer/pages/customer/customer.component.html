@@ -39,10 +39,10 @@
     <thead>
       <tr>
         <th>No.</th>
-        <th>Name</th>
-        <th>Customer Number</th>
-        <th>Tax</th>
-        <th>Status</th>
+        <th nzShowSort nzSortKey="name" (nzSortChange)="sortData($event)">Name</th>
+        <th nzShowSort nzSortKey="customer_num" (nzSortChange)="sortData($event)">Customer Number</th>
+        <th nzShowSort nzSortKey="tax_Id" (nzSortChange)="sortData($event)">Tax</th>
+        <th nzShowSort nzSortKey="status" (nzSortChange)="sortData($event)">Status</th>
         <th>Action</th>
       </tr>
     </thead>

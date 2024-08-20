@@ -35,7 +35,7 @@ export class CustomerComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
 
-  constructor(private customerService: CustomerService) { }
+  constructor(private customerService: CustomerService,private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.checkRole();
@@ -168,6 +168,22 @@ export class CustomerComponent implements OnInit {
     const endIndex = startIndex + this.pageSize;
     this.displayData = this.filteredData.slice(startIndex, endIndex);
     this._cdr.markForCheck();
+  }
+
+  sortData(event: any): void {
+    console.log('Sort event:', event);
+    const sortField = event.key as keyof ICustomer;
+    const sortOrder = event.value;
+  
+    if (sortField && sortOrder) {
+      this.displayData = this.filteredData.sort((a, b) => {
+        const comparison = a[sortField] > b[sortField] ? 1 : -1;
+        return sortOrder === 'ascend' ? comparison : -comparison;
+      });
+    } else {
+      this.displayData = [...this.filteredData]; // Reset to original data if no sorting is applied
+    }
+    this.cdr.detectChanges();
   }
 
 

@@ -23,7 +23,7 @@
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Email</nz-form-label>
         <nz-input-group nzPrefixIcon="mail" class="form-input">
-          <input nz-input placeholder="Email" formControlName="email" />
+          <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()"/>
         </nz-input-group>
       </div>
       <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
@@ -89,7 +89,7 @@
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Customer Number</nz-form-label>
         <nz-input-group nzPrefixIcon="number" class="form-input">
-          <input nz-input placeholder="Customer Number" formControlName="customer_num" readonly />
+          <input nz-input placeholder="Customer Number" formControlName="customer_num"  readonly/>
         </nz-input-group>
       </div>
 
@@ -109,7 +109,7 @@
           nzTheme="outline"></span>Cancel</button>
       <button
         *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(customerForm.get('status')?.value)) || isAdmin"
-        class="mr-2 button-yellow" nz-button nzType="primary" (click)="save($event)">
+        class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>บันทึก
       </button>
       <button

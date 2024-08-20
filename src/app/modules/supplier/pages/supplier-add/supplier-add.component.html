@@ -23,7 +23,7 @@
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Email</nz-form-label>
         <nz-input-group nzPrefixIcon="mail" class="form-input">
-          <input nz-input placeholder="Email" formControlName="email" />
+          <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3 mt-3">
@@ -119,7 +119,7 @@
           nzTheme="outline"></span>Cancel</button>
       <button
         *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(supplierForm.get('status')?.value)) || isAdmin"
-        class="mr-2 button-yellow" nz-button nzType="primary" (click)="save($event)">
+        class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>บันทึก
       </button>
       <button *ngIf="isViewMode && ((isUser && supplierForm.get('status')?.value === 'Draft') || isAdmin)"
@@ -203,7 +203,7 @@
               Name</nz-form-label>
             <nz-form-control [nzSpan]="24">
               <input nz-input id="accountName" placeholder="Account Name" formControlName="account_name"
-                class="form-input" />
+                class="form-input" readonly/>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -254,7 +254,7 @@
                   Name</nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input nz-input id="accountName" placeholder="Account Name" formControlName="account_name"
-                    class="form-input" />
+                    class="form-input" readonly/>
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -270,7 +270,7 @@
           nzTheme="outline"></span>Cancel</button>
       <button
         *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(supplierForm.get('status')?.value)) || isAdmin"
-        class="mr-2 button-yellow" nz-button nzType="primary" (click)="save($event)">
+        class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>บันทึก
       </button>
       <button *ngIf="isViewMode && (isUser && (supplierForm.get('status')?.value === 'Draft') || isAdmin)"

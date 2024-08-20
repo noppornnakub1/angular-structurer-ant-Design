@@ -20,29 +20,34 @@
   </div>
 </div>
 <div class="content-data-table mt-3">
-  <nz-table #basicTable nzBordered [nzData]="filteredData">
+  <nz-table #datatable nzBordered [nzData]="displayData" [nzFrontPagination]="false" [nzTotal]="filteredData.length"
+    [nzPageIndex]="pageIndex" [nzPageSize]="pageSize" (nzPageIndexChange)="onPageIndexChange($event)"
+    (nzPageSizeChange)="onPageSizeChange($event)">
     <thead>
       <tr>
-        <th>ลำดับที่</th>
-        <th>name</th>
-        <th>username</th>
-        <th>role</th>
-        <th>company</th>
-        <th>action</th>
+        <th>No.</th>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Role</th>
+        <th>Company</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of filteredData; let i = index">
-        <td>{{ i + 1 }}</td>
+      <tr *ngFor="let data of displayData; let i = index">
+        <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
         <td>{{ data.firstname }}</td>
         <td>{{ data.username }}</td>
         <td>{{ getRoleName(data.role) }}</td>
         <td>{{ data.company }}</td>
         <td class="text-center">
-          <button nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round" (click)="editUser(data.user_id)" ><span nz-icon nzType="edit" nzTheme="outline"></span>Edit</button>
+          <button nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round" (click)="editUser(data.user_id)"><span nz-icon nzType="edit" nzTheme="outline"></span>Edit</button>
           <button nz-button nzType="default" class="mr-1" nzShape="round">Delete</button>
         </td>
       </tr>
     </tbody>
   </nz-table>
+  <nz-pagination [nzPageSize]="pageSize" [nzTotal]="filteredData.length" [(nzPageIndex)]="pageIndex"
+    [nzShowSizeChanger]="true" [nzPageSizeOptions]="[10, 20, 50]" (nzPageSizeChange)="onPageSizeChange($event)"
+    (nzPageIndexChange)="onPageIndexChange($event)"></nz-pagination>
 </div>

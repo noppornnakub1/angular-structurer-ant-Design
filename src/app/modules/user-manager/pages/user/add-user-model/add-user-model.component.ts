@@ -85,6 +85,23 @@ export class AddUserModelComponent implements OnInit {
     return now.toISOString(); // ใช้ ISO string เพื่อให้ตรงกับรูปแบบที่ต้องการ
   }
 
+  save(): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to save the changes?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.submitForm();
+      }
+    });
+
+  }
+
   submitForm(): void {
     if (this.validateForm.valid) {
       // const formData = this.validateForm.value;

@@ -133,7 +133,8 @@
     (isApproved && supplierForm.get('status')?.value === 'Pending Approved By ACC') ||
     (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
     isAdmin
-  ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)"
+  ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)
+  &&(supplierForm.get('payment_method')?.value === 'Transfer' || supplierForm.get('payment_method')?.value === 'Transfer_Employee')"
         class="mr-2" nz-button nzType="primary" (click)="approve($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
@@ -141,11 +142,13 @@
       <!-- Reject Button -->
       <button
         *ngIf="isViewMode && 
-  (
-    (isApproved && supplierForm.get('status')?.value === 'Pending Approved By ACC') ||
-    (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
-    isAdmin
-  ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)"
+      (
+        (isApproved && supplierForm.get('status')?.value === 'Pending Approved By ACC') ||
+        (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
+        isAdmin
+      ) && 
+      !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value) 
+      &&(supplierForm.get('payment_method')?.value === 'Transfer' || supplierForm.get('payment_method')?.value === 'Transfer_Employee')"
         nz-button nzType="primary" nzDanger (click)="reject($event)">
         <span nz-icon nzType="close" nzTheme="outline"></span>Reject
       </button>
@@ -165,10 +168,11 @@
       <div nz-row nzGutter="16">
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-label nzNoColon>Supplier Group</nz-form-label>
-          <nz-select [(ngModel)]="selectedSupplierGroup" formControlName="supplier_group" nzPlaceHolder="Select Supplier Group" class="custom-select">
+          <nz-select [(ngModel)]="selectedSupplierGroup" formControlName="supplier_group"
+            nzPlaceHolder="Select Supplier Group" class="custom-select">
             <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
-                [nzValue]="type.group_name"></nz-option>
-            </nz-select>
+              [nzValue]="type.group_name"></nz-option>
+          </nz-select>
         </div>
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-item>
@@ -203,7 +207,7 @@
               Name</nz-form-label>
             <nz-form-control [nzSpan]="24">
               <input nz-input id="accountName" placeholder="Account Name" formControlName="account_name"
-                class="form-input" readonly/>
+                class="form-input" readonly />
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -216,16 +220,18 @@
           <div nz-row nzGutter="16">
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <nz-form-label nzNoColon>Supplier Group</nz-form-label>
-              <nz-select [(ngModel)]="selectedSupplierGroupAdd" formControlName="supplier_group" nzPlaceHolder="Select Supplier Group" class="custom-select">
+              <nz-select [(ngModel)]="selectedSupplierGroupAdd" formControlName="supplier_group"
+                nzPlaceHolder="Select Supplier Group" class="custom-select">
                 <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
-                    [nzValue]="type.group_name"></nz-option>
-                </nz-select>
+                  [nzValue]="type.group_name"></nz-option>
+              </nz-select>
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name</nz-form-label>
                 <nz-select formControlName="name_bank" nzPlaceHolder="Select bankName" class="custom-select">
-                  <nz-option *ngFor="let type of listOfBank" [nzLabel]="type.short_bank_name+' : '+type.alternate_bank_name"
+                  <nz-option *ngFor="let type of listOfBank"
+                    [nzLabel]="type.short_bank_name+' : '+type.alternate_bank_name"
                     [nzValue]="type.short_bank_name"></nz-option>
                 </nz-select>
               </nz-form-item>
@@ -254,7 +260,7 @@
                   Name</nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input nz-input id="accountName" placeholder="Account Name" formControlName="account_name"
-                    class="form-input" readonly/>
+                    class="form-input" readonly />
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -284,7 +290,8 @@
     (isApproved && supplierForm.get('status')?.value === 'Pending Approved By ACC') ||
     (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
     isAdmin
-  ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)"
+  ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)
+  &&(supplierForm.get('payment_method')?.value === 'Transfer' || supplierForm.get('payment_method')?.value === 'Transfer_Employee')"
         class="mr-2" nz-button nzType="primary" (click)="approve($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
@@ -296,7 +303,8 @@
     (isApproved && supplierForm.get('status')?.value === 'Pending Approved By ACC') ||
     (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
     isAdmin
-  ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)"
+  ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)
+  &&(supplierForm.get('payment_method')?.value === 'Transfer' || supplierForm.get('payment_method')?.value === 'Transfer_Employee')"
         nz-button nzType="primary" nzDanger (click)="reject($event)">
         <span nz-icon nzType="close" nzTheme="outline"></span>Reject
       </button>

@@ -35,21 +35,21 @@
   </div>
 </div>
 <div class="content-data-table mt-3">
-  <nz-table #basicTable nzBordered [nzData]="displayData" [nzFrontPagination]="false" [nzTotal]="filteredData.length"
+  <nz-table #datatable nzBordered [nzData]="displayData" [nzFrontPagination]="false" [nzTotal]="filteredData.length"
     [nzPageIndex]="pageIndex" [nzPageSize]="pageSize" (nzPageIndexChange)="onPageIndexChange($event)"
     (nzPageSizeChange)="onPageSizeChange($event)">
     <thead>
       <tr>
-        <th>No.</th>
-        <th>Name</th>
+        <th *ngFor="let column of listOfColumn" [nzSortFn]="column.compare" [nzSortPriority]="column.priority">No.</th>
+        <!-- <th>Name</th>
         <th>Supplier Number</th>
         <th>Tax</th>
         <th>Status</th>
-        <th>Action</th>
+        <th>Action</th> -->
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of displayData; let i = index">
+      <tr *ngFor="let data of datatable.data; let i = index">
         <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
         <td>{{ data.name }}</td>
         <td>{{ data.supplier_num }}</td>

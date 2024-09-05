@@ -31,11 +31,44 @@ export class SupplierComponent implements OnInit {
   statusOptions: string[] = ['All', 'Draft', 'Cancel','Pending Approved By ACC','Pending Approved By FN', 'Approved By ACC', 'Approve By FN','Reject By ACC','Reject By FN','Pending Sync.'];
   selectedStatus: string = 'All';
 
+  listOfColumn = [
+    {
+      title: 'No.',
+      compare: null,
+      priority: false
+    },
+    {
+      title: 'Name',
+      compare: (a: ISupplier, b: ISupplier) => a.name.localeCompare(b.name),
+      priority: false
+    },
+    {
+      title: 'Customer Number',
+      compare: (a: ISupplier, b: ISupplier) =>  a.supplier_num.localeCompare(b.supplier_num),
+      priority: 3
+    },
+    {
+      title: 'Tax',
+      compare: (a: ISupplier, b: ISupplier) => a.tax_Id.localeCompare(b.tax_Id),
+      priority: 2
+    },
+    {
+      title: 'Status',
+      compare: (a: ISupplier, b: ISupplier) => a.status.localeCompare(b.status),
+      priority: 1
+    },
+    {
+      title: 'Action',
+      compare: null,
+      priority: 1
+    }
+  ];
+
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
 
-  constructor(private supplierService: SupplierService) { }
+  constructor(private supplierService: SupplierService,private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
 
@@ -191,5 +224,21 @@ export class SupplierComponent implements OnInit {
   }
   viewCustomer(id: number): void {
     this._router.navigate(['/feature/supplier/view', id]);
+  }
+
+  sortData(event: any): void {
+    console.log('Sort event:', event);
+    const sortField = event.key as keyof ISupplier;
+    const sortOrder = event.value;
+  
+    if (sortField && sortOrder) {
+      this.displayData = this.filteredData.sort((a, b) => {
+        const comparison = a[sortField] > b[sortField] ? 1 : -1;
+        return sortOrder === 'ascend' ? comparison : -comparison;
+      });
+    } else {
+      this.displayData = [...this.filteredData]; // Reset to original data if no sorting is applied
+    }
+    this.cdr.detectChanges();
   }
 }

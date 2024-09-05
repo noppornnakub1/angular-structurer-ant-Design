@@ -200,8 +200,8 @@ export class SupplierAddComponent {
       this.items_provinces = data;
       this.filteredItemsProvince = data;
     });
-    console.log('Initial isLength: ', this.isLength);
-    console.log('Initial isViewMode: ', this.isViewMode);
+    this.showSupplierBankForm = false;
+    this.showSupplierBankFormAdd = false;
     this.getSupplierType();
     this.getDataBank();
     this.getDataPaymentMethod();
@@ -237,7 +237,6 @@ export class SupplierAddComponent {
     if (this.showSupplierBankForm) {
       this.supplierBankForm.patchValue({ account_name: this.supplierForm.get('name')?.value });
     }
-    this._cdr
     this._cdr.detectChanges();
   }
 
@@ -430,7 +429,7 @@ export class SupplierAddComponent {
                 this.addBankData();
                 console.log('Data Bank added successfully', response);
               }
-              if (this.showSupplierBankFormAdd = true) {
+              else if (this.showSupplierBankFormAdd = true) {
                 this.addBankData();
                 console.log('Data Bank added successfully', response);
               }

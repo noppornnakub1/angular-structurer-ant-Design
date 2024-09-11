@@ -40,6 +40,7 @@ export class CustomerAddComponent implements OnInit {
   isSubmitting: boolean = false;
   logs: any[] = [];
   reasonTemp: string = '';
+  selectType: string = '';
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService)
   private _cdr = inject(ChangeDetectorRef);
@@ -47,6 +48,7 @@ export class CustomerAddComponent implements OnInit {
   originalData: any;
   listDataByTaxId: any[] = [];
   isDupplicate: boolean = false;
+  
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -145,19 +147,36 @@ export class CustomerAddComponent implements OnInit {
   loadCustomerType(id: number): void {
     this.customerService.findCustomerTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
       const customerNumPrefix = data.code_from;
-      this.customerService.getTopCustomerByType(data.code).subscribe(topCustomerData => {
-        let newCustomerNum: string;
-
-        if (topCustomerData.customer_num === '000') {
-          // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
-          newCustomerNum = customerNumPrefix + '000001';
-        } else {
-          // ถ้าเจอข้อมูล ใช้ค่า customer_num ที่ดึงมาแล้ว increment
-          newCustomerNum = this.incrementCustomerNum(topCustomerData.customer_num, customerNumPrefix);
-        }
-
-        this.customerForm.patchValue({ customer_num: newCustomerNum });
-      });
+      console.log("customerNumPrefix",customerNumPrefix);
+      if (customerNumPrefix === '1F') {
+        // Default customer_num เป็น "-" และซ่อนฟิลด์อื่นๆ
+        this.customerForm.patchValue({
+          customer_num: '-',
+          postalCode: '-',
+          province: '-',
+          district: '-',
+          subdistrict: '-',
+          site: 'Head Office'
+          
+        });
+      } 
+      else{
+        this.customerService.getTopCustomerByType(data.code).subscribe(topCustomerData => {
+          let newCustomerNum: string;
+  
+          if (topCustomerData.customer_num === '000') {
+            // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
+            newCustomerNum = customerNumPrefix + '000001';
+          } else {
+            // ถ้าเจอข้อมูล ใช้ค่า customer_num ที่ดึงมาแล้ว increment
+            newCustomerNum = this.incrementCustomerNum(topCustomerData.customer_num, customerNumPrefix);
+          }
+  
+          this.customerForm.patchValue({ customer_num: newCustomerNum });
+          this.customerForm.patchValue({ site: '00000' });
+          
+        });
+      }
     });
   }
   private incrementCustomerNum(customerNum: string, codeFrom: string): string {
@@ -649,5 +668,14 @@ export class CustomerAddComponent implements OnInit {
   backClicked(event: Event): void {
     event.preventDefault();
     this._location.back();
+  }
+
+  onCustomerTypeChange(value: string): void {
+    this.selectType = value;
+    console.log('Selected Customer Type: ', value);
+  }
+
+  isOverseaCustomer(): boolean {
+    return this.selectType === 'OSEA';  // ตรวจสอบค่าซึ่งหมายถึง OSEA - ลูกหนี้ต่างประเทศ
   }
 }

@@ -66,6 +66,8 @@ export interface DataGroup {
   group_name: string
 }
 
+
+
 @Component({
   selector: 'app-supplier-add',
   standalone: true,
@@ -120,6 +122,7 @@ export class SupplierAddComponent {
   isIDTemp = 0;
   isNameTemp = '';
   isLength = false;
+  selectType: string = '';
   listOfGroup: DataGroup[] = [];
   selectedSupplierGroup: string | null = null;
   selectedSupplierGroupAdd: string | null = null;
@@ -127,7 +130,14 @@ export class SupplierAddComponent {
   private _cdr = inject(ChangeDetectorRef);
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService)
-
+  listOfTypeVendor = [
+    {
+      title: 'Vendor',
+    },
+    {
+      title: 'One Time',
+    },
+  ];
   constructor(private _location: Location, private fb: FormBuilder
     , private supplierService: SupplierService,
     private router: Router,
@@ -158,6 +168,7 @@ export class SupplierAddComponent {
       status: ['', Validators.required],
       payment_method: ['', Validators.required],
       company: ['', Validators.required],
+      type:['', Validators.required],
     });
     this.supplierBankForm = this.fb.group({
       supbank_id: [0],
@@ -324,22 +335,38 @@ export class SupplierAddComponent {
   loadSupplierType(id: number): void {
     this.supplierService.findSupplierTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
       const SupplierNumPrefix = data.code_from;
-      this.supplierService.getTopSupplierByType(data.code).subscribe(topSupplierData => {
-        let newSupplierNum: string;
-        console.log('before', topSupplierData.supplier_num);
+      console.log("customerNumPrefix", SupplierNumPrefix);
+      if (SupplierNumPrefix === '2F') {
+        // Default customer_num เป็น "-" และซ่อนฟิลด์อื่นๆ
+        this.supplierForm.patchValue({
+          supplier_num: '-',
+          postalCode: '-',
+          province: '-',
+          district: '-',
+          subdistrict: '-',
+          site: 'Head Office',
+          vat: '-',
+          company: '-',
+          payment_method: '-'
+        });
+      }
+      else {
+        this.supplierService.getTopSupplierByType(data.code).subscribe(topSupplierData => {
+          let newSupplierNum: string;
+          if (topSupplierData.supplier_num === '000') {
+            // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
+            newSupplierNum = SupplierNumPrefix + '000001';
+          } else {
+            // ถ้าเจอข้อมูล ใช้ค่า supplier_num ที่ดึงมาแล้ว increment
+            newSupplierNum = this.incrementSupplierNum(topSupplierData.supplier_num, SupplierNumPrefix);
+          }
 
-        if (topSupplierData.supplier_num === '000') {
-          // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
-          newSupplierNum = SupplierNumPrefix + '000001';
-        } else {
-          // ถ้าเจอข้อมูล ใช้ค่า supplier_num ที่ดึงมาแล้ว increment
-          newSupplierNum = this.incrementSupplierNum(topSupplierData.supplier_num, SupplierNumPrefix);
-        }
-
-        this.supplierForm.patchValue({ supplier_num: newSupplierNum });
-        this.supplierForm.patchValue({ id: 0 });
-        console.log('after', newSupplierNum);
-      });
+          this.supplierForm.patchValue({ supplier_num: newSupplierNum });
+          this.supplierForm.patchValue({ site: '00000' });
+          this.supplierForm.patchValue({ id: 0 });
+          console.log('after', newSupplierNum);
+        });
+      }
     });
   }
 
@@ -398,7 +425,7 @@ export class SupplierAddComponent {
   }
 
   onSubmit(): void {
-   
+
     if (this.isViewMode) {
       this.supplierForm.enable(); // Enable form temporariliy for validation
     }
@@ -803,7 +830,7 @@ export class SupplierAddComponent {
     this.cdr.detectChanges();
   }
 
-  checkSave(event: Event){
+  checkSave(event: Event) {
     if (this.emailError != '') {
       Swal.fire({
         icon: 'error',
@@ -813,7 +840,7 @@ export class SupplierAddComponent {
       });
       return;
     }
-    else{
+    else {
       this.save(event)
     }
   }
@@ -965,7 +992,7 @@ export class SupplierAddComponent {
     const supplierNum = this.supplierForm.get('supplier_num')?.value;
     if (this.supplierForm.get('status')?.value === 'Pending Approved By ACC' && this.supplierBankForm.valid == false) {
       const company = this.supplierForm.get('company')?.value;
-      
+
       // เรียกใช้ฟังก์ชันเพื่อค้นหาผู้ใช้งาน
       this.supplierService.findApproversByCompany(company).subscribe(
         (approvers) => {
@@ -1025,5 +1052,14 @@ export class SupplierAddComponent {
   backClicked(event: Event) {
     event.preventDefault();
     this._location.back();
+  }
+
+  onSupplierTypeChange(value: string): void {
+    this.selectType = value;
+    console.log('Selected Supplier Type: ', value);
+  }
+
+  isOverseaSupplier(): boolean {
+    return this.selectType === 'OSEA';  // ตรวจสอบค่าซึ่งหมายถึง OSEA - ลูกหนี้ต่างประเทศ
   }
 }

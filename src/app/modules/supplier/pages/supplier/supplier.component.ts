@@ -43,7 +43,7 @@ export class SupplierComponent implements OnInit {
       priority: false
     },
     {
-      title: 'Customer Number',
+      title: 'Supplier Number',
       compare: (a: ISupplier, b: ISupplier) =>  a.supplier_num.localeCompare(b.supplier_num),
       priority: 3
     },

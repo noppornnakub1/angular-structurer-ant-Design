@@ -2,109 +2,122 @@
   <div class="content-card">
     <nz-divider nzText="Supplier Info"></nz-divider>
     <div nz-row nzGutter="16" class="mt-2">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
+        <nz-form-label nzNoColon>Supplier Type<span style="color: red;">*</span></nz-form-label>
+        <nz-select formControlName="type" nzPlaceHolder="Select type" class="custom-select" >
+          <nz-option *ngFor="let type of listOfTypeVendor" [nzLabel]="type.title"
+            [nzValue]="type.title"></nz-option>
+        </nz-select>
+      </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Tax ID</nz-form-label>
+        <nz-form-label nzNoColon>Supplier Type<span style="color: red;">*</span></nz-form-label>
+        <nz-select formControlName="supplier_type" nzPlaceHolder="Select supplier_type" class="custom-select" (ngModelChange)="onSupplierTypeChange($event)">
+          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.code_from+')'+' '+' '+type.meaning"
+            [nzValue]="type.code"></nz-option>
+        </nz-select>
+      </div>
+      <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        <nz-form-label nzNoColon>Supplier Number<span style="color: red;">*</span></nz-form-label>
+        <nz-input-group nzPrefixIcon="number" class="form-input">
+          <input nz-input placeholder="Supplier Number" formControlName="supplier_num" readonly />
+        </nz-input-group>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
+        <nz-form-label nzNoColon>Site<span style="color: red;">*</span></nz-form-label>
+        <nz-input-group nzPrefixIcon="global" class="form-input">
+          <input nz-input placeholder="Site" maxlength="5" formControlName="site" />
+        </nz-input-group>
+      </div>
+      <div *ngIf="isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Tax ID<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="idcard" class="form-input">
           <input nz-input placeholder="Tax ID" maxlength="13" formControlName="tax_Id" (blur)="getTaxIdData()" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Name</nz-form-label>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Name<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="user" class="form-input">
           <input nz-input placeholder="Name" formControlName="name" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Telephone</nz-form-label>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Telephone<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="phone" class="form-input">
           <input nz-input placeholder="Telephone" maxlength="10" formControlName="tel" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Email</nz-form-label>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Email<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="mail" class="form-input">
           <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Address</nz-form-label>
+        <nz-form-label nzNoColon>Address<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
           <input nz-input placeholder="Address" formControlName="address_sup" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+      <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Postal Code<span style="color: red;">*</span></nz-form-label>
         <nz-form-item>
           <nz-form-control nzErrorTip="Please select postal code!">
             <nz-select nzShowSearch nzServerSearch nzPlaceHolder="Postal Code" (nzOnSearch)="onSearch($event)"
               formControlName="postalCode" (ngModelChange)="onPostalCodeChange($event)">
               <nz-option *ngFor="let item of filteredItemsProvince"
-                [nzLabel]="item.subdistrict + ' ' + item.district + ' ' + item.province + ' ' + item.postalCode"
+                [nzLabel]="item.postalCode + ' '+ item.subdistrict + ' ' + item.district + ' ' + item.province"
                 [nzValue]="item.postalCode + '-' + item.subdistrict">
               </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Subdistrict</nz-form-label>
-        <nz-input-group nzPrefixIcon="environment" class="form-input">
-          <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>District</nz-form-label>
-        <nz-input-group nzPrefixIcon="cluster" class="form-input">
-          <input nz-input placeholder="District" formControlName="district" />
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Province</nz-form-label>
+      <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Province<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="global" class="form-input">
           <input nz-input placeholder="Province" formControlName="province" />
         </nz-input-group>
       </div>
+      <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>District<span style="color: red;">*</span></nz-form-label>
+        <nz-input-group nzPrefixIcon="cluster" class="form-input">
+          <input nz-input placeholder="District" formControlName="district" />
+        </nz-input-group>
+      </div>
+      <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Subdistrict<span style="color: red;">*</span></nz-form-label>
+        <nz-input-group nzPrefixIcon="environment" class="form-input">
+          <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
+        </nz-input-group>
+      </div>
+      
+      
       <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
         <nz-form-label nzNoColon>Customer Type</nz-form-label>
         <nz-input-group nzPrefixIcon="team" class="form-input">
           <input nz-input placeholder="Customer Type" formControlName="supplier_type" />
         </nz-input-group>
       </div> -->
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Supplier Type</nz-form-label>
-        <nz-select formControlName="supplier_type" nzPlaceHolder="Select supplier_type" class="custom-select">
-          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.code_from+')'+' '+' '+type.meaning"
-            [nzValue]="type.code"></nz-option>
-        </nz-select>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Supplier Number</nz-form-label>
-        <nz-input-group nzPrefixIcon="number" class="form-input">
-          <input nz-input placeholder="Supplier Number" formControlName="supplier_num" readonly />
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
-        <nz-form-label nzNoColon>Site</nz-form-label>
-        <nz-input-group nzPrefixIcon="global" class="form-input">
-          <input nz-input placeholder="Site" maxlength="5" formControlName="site" />
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Payment Method</nz-form-label>
+      
+      <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        <nz-form-label nzNoColon>Payment Method<span style="color: red;">*</span></nz-form-label>
         <nz-select formControlName="payment_method" nzPlaceHolder="Select Payment Method" class="custom-select">
           <nz-option *ngFor="let type of listOfPaymentMethod" [nzLabel]="type.paymentMethodName"
             [nzValue]="type.paymentMethodName"></nz-option>
         </nz-select>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Vat</nz-form-label>
         <nz-select formControlName="vat" nzPlaceHolder="Select Vat" class="custom-select">
           <nz-option *ngFor="let type of listOfVat" [nzLabel]="type.inputTaxCode"
             [nzValue]="type.inputTaxCode"></nz-option>
         </nz-select>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Company</nz-form-label>
+      <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        <nz-form-label nzNoColon>Company<span style="color: red;">*</span></nz-form-label>
         <nz-select formControlName="company" nzPlaceHolder="Select Company" class="custom-select">
           <nz-option *ngFor="let type of filteredDataompany" [nzLabel]="type.abbreviation+' : '+type.full_name"
             [nzValue]="type.abbreviation"></nz-option>
@@ -167,7 +180,7 @@
     <div nz-row nzGutter="16">
       <div nz-row nzGutter="16">
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-          <nz-form-label nzNoColon>Supplier Group</nz-form-label>
+          <nz-form-label nzNoColon>Supplier Group<span style="color: red;">*</span></nz-form-label>
           <nz-select [(ngModel)]="selectedSupplierGroup" formControlName="supplier_group"
             nzPlaceHolder="Select Supplier Group" class="custom-select">
             <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
@@ -176,7 +189,7 @@
         </div>
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-item>
-            <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name</nz-form-label>
+            <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name<span style="color: red;">*</span></nz-form-label>
             <nz-select formControlName="name_bank" nzPlaceHolder="Select bankName" class="custom-select">
               <nz-option *ngFor="let type of listOfBank" [nzLabel]="type.short_bank_name+' : '+type.alternate_bank_name"
                 [nzValue]="type.short_bank_name"></nz-option>
@@ -185,7 +198,7 @@
         </div>
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-item>
-            <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch</nz-form-label>
+            <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch<span style="color: red;">*</span></nz-form-label>
             <nz-form-control [nzSpan]="24">
               <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input" />
             </nz-form-control>
@@ -194,7 +207,7 @@
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon style="padding: 0px;">Account
-              Number</nz-form-label>
+              Number<span style="color: red;">*</span></nz-form-label>
             <nz-form-control [nzSpan]="24">
               <input nz-input id="accountNumber" placeholder="Account Number" formControlName="account_num"
                 class="form-input" />
@@ -204,7 +217,7 @@
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon style="padding: 0px;">Account
-              Name</nz-form-label>
+              Name<span style="color: red;">*</span></nz-form-label>
             <nz-form-control [nzSpan]="24">
               <input nz-input id="accountName" placeholder="Account Name" formControlName="account_name"
                 class="form-input" readonly />
@@ -219,7 +232,7 @@
         <div nz-row nzGutter="16">
           <div nz-row nzGutter="16">
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-              <nz-form-label nzNoColon>Supplier Group</nz-form-label>
+              <nz-form-label nzNoColon>Supplier Group<span style="color: red;">*</span></nz-form-label>
               <nz-select [(ngModel)]="selectedSupplierGroupAdd" formControlName="supplier_group"
                 nzPlaceHolder="Select Supplier Group" class="custom-select">
                 <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
@@ -228,7 +241,7 @@
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <nz-form-item>
-                <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name</nz-form-label>
+                <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name<span style="color: red;">*</span></nz-form-label>
                 <nz-select formControlName="name_bank" nzPlaceHolder="Select bankName" class="custom-select">
                   <nz-option *ngFor="let type of listOfBank"
                     [nzLabel]="type.short_bank_name+' : '+type.alternate_bank_name"
@@ -238,7 +251,7 @@
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <nz-form-item>
-                <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch</nz-form-label>
+                <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch<span style="color: red;">*</span></nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input" />
                 </nz-form-control>
@@ -247,7 +260,7 @@
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon style="padding: 0px;">Account
-                  Number</nz-form-label>
+                  Number<span style="color: red;">*</span></nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input nz-input id="accountNumber" placeholder="Account Number" formControlName="account_num"
                     class="form-input" />
@@ -257,7 +270,7 @@
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon style="padding: 0px;">Account
-                  Name</nz-form-label>
+                  Name<span style="color: red;">*</span></nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input nz-input id="accountName" placeholder="Account Name" formControlName="account_name"
                     class="form-input" readonly />

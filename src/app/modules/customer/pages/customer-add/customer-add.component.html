@@ -3,117 +3,109 @@
     <nz-divider nzText="Customer Info"></nz-divider>
     <div nz-row nzGutter="16" class="mt-2">
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Tax ID</nz-form-label>
+        <nz-form-label nzNoColon>Customer Type<span style="color: red;">*</span></nz-form-label>
+        <nz-select formControlName="customer_type" nzPlaceHolder="Select customer_type" class="custom-select" (ngModelChange)="onCustomerTypeChange($event)">
+          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.code_from+')'+' '+' '+type.meaning"
+            [nzValue]="type.code"></nz-option>
+        </nz-select>
+      </div>
+
+      <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        <nz-form-label nzNoColon>Customer Number<span style="color: red;">*</span></nz-form-label>
+        <nz-input-group nzPrefixIcon="number" class="form-input">
+          <input nz-input placeholder="Customer Number" formControlName="customer_num" readonly />
+        </nz-input-group>
+      </div>
+
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
+        <nz-form-label nzNoColon>Site<span style="color: red;">*</span></nz-form-label>
+        <nz-input-group nzPrefixIcon="global" class="form-input">
+          <input nz-input placeholder="Site" maxlength="5" formControlName="site" />
+        </nz-input-group>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        
+      </div>
+      <div *ngIf="isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Tax ID<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="idcard" class="form-input">
           <input nz-input placeholder="Tax ID" maxlength="13" formControlName="tax_Id" (blur)="getTaxIdData()" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Name</nz-form-label>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Name<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="user" class="form-input">
           <input nz-input placeholder="Name" formControlName="name" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Telephone</nz-form-label>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Telephone<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="phone" class="form-input">
           <input nz-input placeholder="Telephone" maxlength="10" formControlName="tel" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Email</nz-form-label>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Email<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="mail" class="form-input">
-          <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()"/>
+          <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" />
         </nz-input-group>
       </div>
-      <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-      <nz-form-label nzNoColon>Last Name</nz-form-label>
-      <nz-input-group nzPrefixIcon="user" class="form-input">
-        <input nz-input placeholder="Last Name" formControlName="lastName" />
-      </nz-input-group>
-    </div> -->
-
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Address</nz-form-label>
+        <nz-form-label nzNoColon>Address<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
           <input nz-input placeholder="Address" formControlName="address_sup" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+      <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Postal Code<span style="color: red;">*</span></nz-form-label>
         <nz-form-item>
           <nz-form-control nzErrorTip="Please select postal code!">
             <nz-select nzShowSearch nzServerSearch nzPlaceHolder="Postal Code" (nzOnSearch)="onSearch($event)"
               formControlName="postalCode" (ngModelChange)="onPostalCodeChange($event)">
               <nz-option *ngFor="let item of filteredItemsProvince"
-                [nzLabel]="item.subdistrict + ' ' + item.district + ' ' + item.province + ' ' + item.postalCode"
+                [nzLabel]="item.postalCode + ' ' + item.subdistrict + ' ' + item.district + ' ' + item.province"
                 [nzValue]="item.postalCode + '-' + item.subdistrict">
               </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Subdistrict</nz-form-label>
-        <nz-input-group nzPrefixIcon="environment" class="form-input">
-          <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>District</nz-form-label>
-        <nz-input-group nzPrefixIcon="cluster" class="form-input">
-          <input nz-input placeholder="District" formControlName="district" />
-        </nz-input-group>
-      </div>
-
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Province</nz-form-label>
+      <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Province<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="global" class="form-input">
           <input nz-input placeholder="Province" formControlName="province" />
         </nz-input-group>
       </div>
-
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Customer Type</nz-form-label>
-        <nz-select formControlName="customer_type" nzPlaceHolder="Select customer_type" class="custom-select">
-          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.code_from+')'+' '+' '+type.meaning"
-            [nzValue]="type.code"></nz-option>
-        </nz-select>
-      </div>
-      <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Customer Type</nz-form-label>
-        <nz-input-group nzPrefixIcon="team" class="form-input">
-          <input nz-input placeholder="Customer Type" formControlName="customer_type" />
+      <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>District<span style="color: red;">*</span></nz-form-label>
+        <nz-input-group nzPrefixIcon="cluster" class="form-input">
+          <input nz-input placeholder="District" formControlName="district" />
         </nz-input-group>
-      </div> -->
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Customer Number</nz-form-label>
-        <nz-input-group nzPrefixIcon="number" class="form-input">
-          <input nz-input placeholder="Customer Number" formControlName="customer_num"  readonly/>
+      </div>
+      <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Subdistrict<span style="color: red;">*</span></nz-form-label>
+        <nz-input-group nzPrefixIcon="environment" class="form-input">
+          <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
         </nz-input-group>
       </div>
 
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
-        <nz-form-label nzNoColon>Site</nz-form-label>
-        <nz-input-group nzPrefixIcon="global" class="form-input">
-          <input nz-input placeholder="Site" maxlength="5" formControlName="site" />
-        </nz-input-group>
-      </div>
+      
     </div>
     <div class="mt-5 display-flex justify-center ">
       <button nz-button nzType="default" class="mr-2" (click)="backClicked($event)"><span nz-icon nzType="rollback"
           nzTheme="outline"></span>ย้อนกลับ</button>
-      <button
-        *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || isAdmin)"
-        nz-button nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
+      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || isAdmin)" nz-button
+        nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
           nzTheme="outline"></span>Cancel</button>
       <button
         *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(customerForm.get('status')?.value)) || isAdmin"
         class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>บันทึก
       </button>
-      <button
-        *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || isAdmin)"
+      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || isAdmin)"
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit
       </button>

@@ -44,6 +44,16 @@ export class AddUserModelComponent implements OnInit {
   listOfRole: IRole[] = [];
   filteredDataRole: IRole[] = [];
   validateForm!: FormGroup;
+  listOfActive = [
+    {
+      title: 'Active',
+      value: 1
+    },
+    {
+      title: 'InActive',
+      value: 0
+    },
+  ];
   private _cdr = inject(ChangeDetectorRef);
 
   constructor(private fb: FormBuilder,
@@ -69,7 +79,6 @@ export class AddUserModelComponent implements OnInit {
       company: [null, [Validators.required]],
     });
     this.userId = this.modalDataService.getUserId();
-    console.log("userID", this.userId);
 
     if (this.userId) {
       this.loadUserData(this.userId);
@@ -116,9 +125,9 @@ export class AddUserModelComponent implements OnInit {
       else {
         this.userService.addData(formData).subscribe({
           next: (response) => {
-            console.log('Data saved successfully', response);
             Swal.fire('Saved!', 'Your data has been saved.', 'success');
             this.handleCancelClick();
+            location.reload();
           },
           error: (error) => {
             console.error('Error saving data', error);
@@ -137,7 +146,6 @@ export class AddUserModelComponent implements OnInit {
     if (this.validateForm.valid && this.userId) {
       this.userService.updateUser(this.userId, formData).subscribe({
         next: (response) => {
-          console.log('Data updated successfully', response);
           Swal.fire({
             icon: 'success',
             title: 'Updated!',
@@ -165,7 +173,6 @@ export class AddUserModelComponent implements OnInit {
   getDataCompany(): void {
     this.supplierService.getDataCompany().subscribe({
       next: (response: any) => {
-        console.log(response);
         this.listOfCompany = response;
         this.filteredDataompany = [...this.listOfCompany];
         this._cdr.markForCheck();
@@ -179,7 +186,6 @@ export class AddUserModelComponent implements OnInit {
   getDataRole(): void {
     this.roleService.getRoles().subscribe({
       next: (response: any) => {
-        console.log(response);
         this.listOfRole = response;
         this.filteredDataRole = [...this.listOfRole];
         this._cdr.markForCheck();
@@ -192,7 +198,6 @@ export class AddUserModelComponent implements OnInit {
 
   loadUserData(id: number): void {
     this.userService.findUserById(id).subscribe((data: any) => {
-      console.log(data);
       // แปลง company จาก string เป็น array
       const companyArray = data.company.split(',');
       this.validateForm.patchValue({
@@ -208,6 +213,8 @@ export class AddUserModelComponent implements OnInit {
         password: data.password,
         company: companyArray // ใช้ array แทน string
       });
+      console.log(this.validateForm.value);
+      
       this._cdr.markForCheck();
     });
   }

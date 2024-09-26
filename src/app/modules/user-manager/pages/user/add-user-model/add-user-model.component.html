@@ -98,6 +98,22 @@
                     </div>
                 </div>
             </div>
+            <div nz-form-item nz-row class="mt-2">
+                <div nz-col nzSpan="8" nz-form-label>
+                    <label for="status">Status:</label>
+                </div>
+                <div nz-col nzSpan="16" nz-form-control
+                    [ngClass]="{'has-error': validateForm.get('status')?.invalid && validateForm.get('status')?.touched}">
+                    <nz-select formControlName="status" nzPlaceHolder="Select status" class="custom-select" >
+                        <nz-option *ngFor="let type of listOfActive"
+                            [nzLabel]="type.title"
+                            [nzValue]="type.value"></nz-option>
+                    </nz-select>
+                    <div nz-form-explain *ngIf="validateForm.get('status')?.invalid && validateForm.get('status')?.touched">
+                        Role is required
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div nz-row class="modal-footer mt-4" style="text-align: left;">

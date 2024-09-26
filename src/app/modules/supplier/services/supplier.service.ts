@@ -107,4 +107,11 @@ import { DataBank } from '../pages/supplier-add/supplier-add.component';
     GetGroupNames(company: string): Observable<any> {
       return this._http.get(`/Supplier/GetGroupNames?company=${company}`);
     }
+
+    CheckDupplicateSupplier(key: string): Observable<any> {
+      return this._http.get(`/BankMasterData/CHECK_KEY_SUPPLIER?key=${key}`);
+    }
+    GetNumMaxSupplier(num: string): Observable<any> {
+      return this._http.get(`/BankMasterData/Get_Num_KEY_SUPPLIER?num=${num}`);
+    }
   }

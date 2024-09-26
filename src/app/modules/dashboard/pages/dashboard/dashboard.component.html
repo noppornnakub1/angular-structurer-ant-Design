@@ -1,55 +1,145 @@
 <div class="content-card-search">
-  <h2>Dashboard</h2>
-  <div nz-row >
-      <div nz-col [nzXs]="24" [nzMd]="24" [nzLg]="5" class="pr-3">
-        <nz-form-label nzNoColon>ชื่อ</nz-form-label>
-        <nz-input-group nzPrefixIcon="search" class="form-input">
-          <input nz-input  placeholder="ชื่อ"
-            />
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
-        <nz-form-label nzNoColon>สกุล</nz-form-label>
-        <nz-input-group nzPrefixIcon="search" class="form-input">
-          <input nz-input  placeholder="สกุล"
-      />
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
-        <nz-form-label nzNoColon>สถานะ</nz-form-label>
-        <nz-input-group nzPrefixIcon="search" class="form-input">
-          <input nz-input  placeholder="สถานะ"  />
-        </nz-input-group>
-      </div>
-     
+  <h2>Master Data</h2>
+  <div nz-row *ngIf="selectedTabIndex === 0"> <!-- เงื่อนไขเพื่อแสดงฟิลด์สำหรับแท็บ History -->
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>Type</nz-form-label>
+      <nz-select [(ngModel)]="selectedType" (ngModelChange)="applyFilters()">
+        <nz-option *ngFor="let source of sourceOptions" [nzValue]="source" [nzLabel]="source"></nz-option>
+      </nz-select>
     </div>
-    <div class="mt-5 display-flex justify-center ">
-      <button nz-button nzType="primary" class="mr-2">ค้นหา</button>
-      <button nz-button nzType="default" >ล้างการค้นหา</button>
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>Customer & Supplier / Number</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="Customer & Supplier / Number" [(ngModel)]="filters.num" (input)="applyFilters()" />
+      </nz-input-group>
     </div>
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>TaxID</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="Tax" [(ngModel)]="filters.tax_Id" (input)="applyFilters()" />
+      </nz-input-group>
+    </div>
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>Name</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="ชื่อ" [(ngModel)]="filters.name" (input)="applyFilters()" />
+      </nz-input-group>
+    </div>
+  </div>
+
+  <!-- เงื่อนไขฟิลด์สำหรับแท็บ Old Data -->
+  <div nz-row *ngIf="selectedTabIndex === 1">
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>Type <span style="color: red;">*</span></nz-form-label>
+      <nz-select [(ngModel)]="selectedTypeOld" (ngModelChange)="applyFilters()" nzPlaceHolder="Select Type">
+        <nz-option *ngFor="let source of sourceOptionsOld" [nzValue]="source" [nzLabel]="source"></nz-option>
+      </nz-select>
+    </div>
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>Customer & Supplier / Number</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="Customer & Supplier / Number" [(ngModel)]="filtersOld.num"
+          (input)="applyFilters()" />
+      </nz-input-group>
+    </div>
+    <div *ngIf="selectedTypeOld !== 'Customer'" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>TaxID</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="Tax" [(ngModel)]="filtersOld.tax_Id" (input)="applyFilters()" />
+      </nz-input-group>
+    </div>
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>Name</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="ชื่อ" [(ngModel)]="filtersOld.name" (input)="applyFilters()" />
+      </nz-input-group>
+    </div>
+    <div *ngIf="selectedTypeOld === 'Customer'" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <nz-form-label nzNoColon>Site</nz-form-label>
+      <nz-input-group nzPrefixIcon="search" class="form-input">
+        <input nz-input placeholder="Site" [(ngModel)]="filtersOld.site" (input)="applyFilters()" />
+      </nz-input-group>
+    </div>
+  </div>
+
+  <div *ngIf="selectedTabIndex === 0" class="mt-5 display-flex justify-center">
+    <button nz-button nzType="primary" class="mr-2" (click)="applyFilters()"><span nz-icon nzType="search"
+        nzTheme="outline"></span>ค้นหา</button>
+    <!-- <button nz-button class="add-user-button" nzType="default"><span nz-icon nzType="clear"
+        nzTheme="outline"></span>ล้างการค้นหา</button> -->
+  </div>
+
+  <div *ngIf="selectedTabIndex === 1" class="mt-5 display-flex justify-center">
+    <button nz-button nzType="primary" class="mr-2" (click)="searchDataOld()"><span nz-icon nzType="search"
+        nzTheme="outline"></span>ค้นหา</button>
+    <!-- <button nz-button class="add-user-button" nzType="default"><span nz-icon nzType="clear"
+        nzTheme="outline"></span>ล้างการค้นหา</button> -->
+  </div>
 </div>
-<div class="content-data-table mt-3">
-  <nz-table #basicTable  nzBordered [nzData]="listOfData">
-      <thead>
-        <tr>
-          <th>No.</th>
-          <th>Name</th>
-          <th>Customer Number</th>
-          <th>Tax</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of basicTable.data; let i = index">
-          <td>{{ i + 1 }}</td>
-        <td>{{ data.name }}</td>
-        <td>{{ data.customer_num }}</td>
-        <td>{{ data.tax }}</td>
-        <td>{{ data.status }}</td>
-        </tr>
-      </tbody>
-    </nz-table>
-    
-</div>
+<nz-tabset [nzSelectedIndex]="selectedTabIndex" (nzSelectedIndexChange)="onTabChange($event)" class=" mt-3">
+  <nz-tab nzTitle="History">
+    <div class="content-data-table">
+      <nz-table #datatable nzBordered [nzData]="displayData" [nzFrontPagination]="false" [nzTotal]="filteredData.length"
+        [nzPageIndex]="pageIndex" [nzPageSize]="pageSize" (nzPageIndexChange)="onPageIndexChange($event)"
+        (nzPageSizeChange)="onPageSizeChange($event)">
+        <thead>
+          <tr>
+            <th *ngFor="let column of listOfColumnCustomer" [nzSortFn]="column.compare"
+              [nzSortPriority]="column.priority">
+              {{ column.title }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of displayData; let i = index">
+            <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+            <td>{{ data.name }}</td>
+            <td>{{ data.num }}</td>
+            <td>{{ data.tax_Id }}</td>
+            <td>{{ data.payment_Method }}</td>
+            <td>{{ data.source }}</td>
+            <td class="text-center">
+              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"><span
+                  nz-icon nzType="eye" nzTheme="outline"></span>View</button>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+      <nz-pagination [nzPageSize]="pageSize" [nzTotal]="filteredData.length" [(nzPageIndex)]="pageIndex"
+        [nzShowSizeChanger]="true" [nzPageSizeOptions]="[10, 20, 50]" (nzPageSizeChange)="onPageSizeChange($event)"
+        (nzPageIndexChange)="onPageIndexChange($event)"></nz-pagination>
+    </div>
+  </nz-tab>
+  <nz-tab nzTitle="Old Data">
+    <div class="content-data-table">
+      <nz-table #datatable nzBordered [nzData]="displayDataOld" [nzFrontPagination]="false"
+        [nzTotal]="filteredDataOld.length" [nzPageIndex]="pageIndex" [nzPageSize]="pageSize"
+        (nzPageIndexChange)="onPageIndexChangeOld($event)" (nzPageSizeChange)="onPageSizeChangeOld($event)">
+        <thead>
+          <tr>
+            <th *ngFor="let column of listOfColumnOld">
+              {{ column.title }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of displayDataOld; let i = index">
+            <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+            <td>{{ data.NAME }}</td>
+            <td>{{ data.NUM }}</td>
+            <td>{{ data.TAX }}</td>
+            <!-- <td>{{ data.source }}</td> -->
+            <td class="text-center">
+              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"><span
+                  nz-icon nzType="eye" nzTheme="outline"></span>View</button>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+      <nz-pagination [nzPageSize]="pageSize" [nzTotal]="filteredDataOld.length" [(nzPageIndex)]="pageIndex"
+        [nzShowSizeChanger]="true" [nzPageSizeOptions]="[10, 20, 50]" (nzPageSizeChange)="onPageSizeChangeOld($event)"
+        (nzPageIndexChange)="onPageIndexChangeOld($event)"></nz-pagination>
+    </div>
+  </nz-tab>
+</nz-tabset>
 

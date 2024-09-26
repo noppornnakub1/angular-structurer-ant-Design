@@ -35,6 +35,11 @@ export const routes: Routes = [
         loadChildren: () => import('./modules/user-manager/user-manager.routes').then(m => m.default),
         canActivate: [AuthGuard]
       },
+      {
+        path: 'download-from',
+        loadChildren: () => import('./modules/dashboard/download-from.routes').then(m => m.default),
+        canActivate: [AuthGuard]
+      },
     ]
   }
 ];

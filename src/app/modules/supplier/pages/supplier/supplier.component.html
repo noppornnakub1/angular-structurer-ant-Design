@@ -1,25 +1,25 @@
 <div class="content-card-search">
   <h2>Supplier</h2>
   <div nz-row>
-    <div nz-col [nzXs]="24" [nzMd]="24" [nzLg]="5" class="pr-3">
+    <div nz-col [nzXs]="24" [nzMd]="24" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Name</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
         <input nz-input placeholder="ชื่อ" [(ngModel)]="filters.name" (input)="applyFilters()" />
       </nz-input-group>
     </div>
-    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Supplier Number</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
         <input nz-input placeholder="Supplier Number" [(ngModel)]="filters.supplier_num" />
       </nz-input-group>
     </div>
-    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>TaxID</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
         <input nz-input placeholder="Tax" [(ngModel)]="filters.tax_Id" />
       </nz-input-group>
     </div>
-    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
+    <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Status</nz-form-label>
       <nz-select [(ngModel)]="selectedStatus" (ngModelChange)="applyFilters()">
         <nz-option *ngFor="let status of statusOptions" [nzValue]="status" [nzLabel]="status"></nz-option>
@@ -60,7 +60,7 @@
         <td class="text-center">
           <button *ngIf="isApproved || isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
             (click)="viewCustomer(data.id)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
-          <button *ngIf="isAdmin || (isUser && data.status === 'Draft')" nz-button nzType="primary"
+          <button *ngIf="isAdmin || (isUser && (data.status === 'Draft' || data.status === 'Reject By ACC' || data.status === 'Reject By FN'))" nz-button nzType="primary"
             class="mr-1 button-yellow" nzShape="round" (click)="editCustomer(data.id)"><span nz-icon nzType="edit"
               nzTheme="outline"></span>Edit</button>
 

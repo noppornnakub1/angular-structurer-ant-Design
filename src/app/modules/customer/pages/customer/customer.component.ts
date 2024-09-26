@@ -90,7 +90,6 @@ export class CustomerComponent implements OnInit {
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log('map ข้อมูล user', currentUser);
     if (!currentUser) {
       console.error('Current user is not available in local storage');
       return;
@@ -99,7 +98,6 @@ export class CustomerComponent implements OnInit {
       this.customerService.getData().subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(this.listOfData);
           this.changeStatusIfNeeded();
           this.applyFilters();
           // this.filteredData = response;
@@ -114,7 +112,6 @@ export class CustomerComponent implements OnInit {
       this.customerService.findDataByUserCompanyACC(currentUser.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(this.listOfData);
           this.changeStatusIfNeeded();
           this.applyFilters();
           // this.filteredData = response;
@@ -129,7 +126,6 @@ export class CustomerComponent implements OnInit {
       this.customerService.findDataByUserCompanyFN(currentUser.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(this.listOfData);
           this.changeStatusIfNeeded();
           this.applyFilters();
           // this.filteredData = response;
@@ -206,7 +202,6 @@ export class CustomerComponent implements OnInit {
   }
 
   sortData(event: any): void {
-    console.log('Sort event:', event);
     const sortField = event.key as keyof ICustomer;
     const sortOrder = event.value;
   

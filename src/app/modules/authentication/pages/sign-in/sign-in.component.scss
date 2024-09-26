@@ -1,15 +1,93 @@
 .login-container {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('/assets/images/background/Login.png') no-repeat center center;
+    background-size: cover;
     height: 100vh;
-
 }
 
-.login-form {
+.login-content {
+    display: flex;
+    max-width: 1200px;
+    height: 600px;
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    background: url('/assets/images/background/Log in1-2.png') no-repeat center center;
+  }
+
+  .login-form {
     flex: 1;
-    padding: 120px;
-    padding-left: 15px;
-    max-width: 40%;
-}
+    padding: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative; /* ทำให้ตำแหน่งของฟอร์มเป็น relative */
+    h1 {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 0;
+      text-align: center;
+    }
+    h4 {
+      font-size: 16px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .login-form-button {
+      width: 100%;
+      margin-top: 24px;
+      height: 40px;
+      font-size: 16px;
+      background-color: #6FCDC0;
+      border-color: #6FCDC0;
+    }
+    .forgot-password {
+      margin-top: 16px;
+      text-align: center;
+      a {
+        color: #6FCDC0;
+      }
+    }
+  }
+
+  .logo-top-left {
+    position: absolute;
+    top: 10px; /* ระยะห่างจากด้านบน */
+    left: 10px; /* ระยะห่างจากด้านซ้าย */
+    z-index: 10; /* ทำให้รูปภาพอยู่เหนือเนื้อหาอื่น */
+  }
+  
+  .logo-top-left img {
+    width: 70px; /* ปรับขนาดของโลโก้ตามต้องการ */
+  }
+
+  .logo-top-center {
+    display: flex;
+    justify-content: center; /* จัดโลโก้ให้อยู่ตรงกลาง */
+    margin-top: 0px;
+    margin-bottom: 20px; /* เพิ่มระยะห่างระหว่างโลโก้กับฟอร์ม */
+  }
+  
+  .logo-top-center img {
+    width: 100px; /* ปรับขนาดโลโก้ */
+  }
+  
+  .login-image {
+    flex: 1;
+    background-color: #e0f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      max-width: 100%;
+      height: auto;
+      padding: 20px;
+    }
+  }
 
 .logo {
     text-align: center;
@@ -54,7 +132,7 @@ p {
 
 .login-background {
     flex: .5;
-    background: url('/assets/images/background/Bg.png') no-repeat center center;
+    background: url('/assets/images/background/Login.png') no-repeat center center;
     background-size: cover;
 }
 
@@ -64,12 +142,76 @@ p {
 
 .input-group-field {
     position: relative;
-  }
-  
-  .password-toggle-icon {
+}
+
+.password-toggle-icon {
     position: absolute;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .login-content {
+    flex-direction: column;
+    height: auto;
   }
+
+  .logo-top-left {
+    display: none;
+  }
+
+  .logo-top-center {
+    display: flex;
+  }
+
+  .login-form {
+    padding: 30px;
+  }
+
+  .login-image {
+    display: none; /* ซ่อนภาพในหน้าจอเล็กเพื่อเพิ่มพื้นที่ */
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .login-form-button {
+    height: 50px;
+    font-size: 18px;
+  }
+}
+
+@media screen and (min-width: 769px) {
+
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .login-form-button {
+    height: 40px;
+    font-size: 16px;
+  }
+  .logo-top-left {
+    display: flex;
+    justify-content: center; /* จัดโลโก้ให้อยู่ตรงกลาง */
+    margin-bottom: 20px; /* เพิ่มระยะห่างระหว่างโลโก้กับฟอร์ม */
+  }
+
+  .logo-top-left img {
+    width: 80px; /* ปรับขนาดโลโก้ */
+  }
+  .logo-top-left {
+    display: flex;
+  }
+
+  .logo-top-center {
+    display: none;
+  }
+}
+
+

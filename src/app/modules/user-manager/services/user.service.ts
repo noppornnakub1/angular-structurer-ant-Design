@@ -29,5 +29,16 @@ export class UserService {
       return this._http.put(`/User/UpdateUser?user_id=${user_id}`, data);
     }
 
+    findUserByUsername(username: string): Observable<any> {
+      return this._http.get(`/User/find-user/${username}`);
+    }
+
+    updatePassword(username: string, newPassword: string): Observable<any> {
+      const data = {
+        Username: username,
+        NewPassword: newPassword
+      };
+      return this._http.post(`/User/update-password`, data);
+  }
     
   }

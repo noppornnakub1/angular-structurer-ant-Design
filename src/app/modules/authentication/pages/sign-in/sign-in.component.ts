@@ -5,6 +5,9 @@ import { AuthMockupService } from '../../../../core/mockup-api/auth-mockup.servi
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { SharedModule } from '../../../../shared/shared.module';
 import { AuthService } from '../../services/auth.service';
+import Swal from 'sweetalert2';
+import { UserService } from '../../../user-manager/services/user.service';
+import { EmailService } from '../../../../shared/constants/email.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -18,11 +21,14 @@ export class SignInComponent {
   errorMessage: string = '';
   passwordFieldType: string = 'password';
   isPasswordVisible = false;
-
+  isForgotPasswordModalVisible = false;
+  forgotPasswordUsername = '';
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private userService: UserService,
+    private emailService: EmailService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
@@ -31,20 +37,25 @@ export class SignInComponent {
   }
 
   ngOnInit(): void { }
-  
+
   login(): void {
     if (this.loginForm.valid) {
       const { username, password } = this.loginForm.value;
       this.authService.login(username, password).subscribe(
         response => {
-          console.log("authService == " , response);
-          
+
           if (response) {
             this.authService.getRole(response.role).subscribe(
               responseRole => {
                 if (responseRole) {
-                  this.router.navigate(['/feature/customer']);
-                } 
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'เข้าสู่ระบบสำเร็จ',
+                    showConfirmButton: false,
+                    timer: 1500
+                  });
+                  this.router.navigate(['/feature/dashboard']);
+                }
               },
               error => {
                 console.error('Login failed', error);
@@ -52,10 +63,12 @@ export class SignInComponent {
               }
             );
 
-            this.router.navigate(['/feature/customer']);
-            console.log('Login successful', response);
+            this.router.navigate(['/feature/dashboard']);
           } else {
             this.errorMessage = 'Invalid username or password';
+
+            Swal.fire('Error!', 'กรุณาตรวจสอบ Username และ Password ให้ถูกต้อง', 'error');
+
           }
         },
         error => {
@@ -70,6 +83,54 @@ export class SignInComponent {
 
   togglePasswordVisibility(): void {
     this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
+  }
+
+  // เปิด modal
+  openForgotPasswordModal(): void {
+    this.isForgotPasswordModalVisible = true;
+  }
+
+  // ปิด modal
+  handleCancel(): void {
+    this.isForgotPasswordModalVisible = false;
+  }
+
+  async handleOk(): Promise<void> {
+    if (this.forgotPasswordUsername.trim() === '') {
+      Swal.fire('Error', 'Please enter a username', 'error');
+      return;
+    }
+
+    try {
+      const user = await this.userService.findUserByUsername(this.forgotPasswordUsername).toPromise();
+      if (user) {
+        const newPassword = this.generateRandomPassword();
+    
+        // อัปเดตรหัสผ่านก่อน
+        await this.userService.updatePassword(user.username, newPassword).toPromise();
+    
+        // หลังจากอัปเดตรหัสผ่านแล้ว ส่งอีเมล
+        const to = user.email;
+        const subject = 'Password Reset';
+        const body = `รหัสผ่านใหม่ของคุณคือ: ${newPassword}`; 
+        await this.emailService.sendEmail(to, subject, body).toPromise();
+    
+        Swal.fire('Success', 'A new password has been sent to your email.', 'success');
+        
+      } else {
+        Swal.fire('Not Found', 'User not found. Please contact IT.', 'error');
+      }
+    } catch (error) {
+      // จัดการข้อผิดพลาดทั้งหมดที่เกิดขึ้น
+      console.error('Error:', error);
+      Swal.fire('Error', 'An error occurred. Please try again later.', 'error');
+    } finally {
+      this.isForgotPasswordModalVisible = false; // ปิด modal
+    }
+  }
+
+  generateRandomPassword(): string {
+    return Math.random().toString(36).slice(-8); // รหัสผ่านแบบสุ่ม 8 ตัวอักษร
   }
 
 }

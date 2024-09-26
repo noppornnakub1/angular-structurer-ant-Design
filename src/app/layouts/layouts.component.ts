@@ -60,22 +60,26 @@ export class LayoutsComponent {
   // ];
 
   menuItems: MenuItem[] = [
+    // {
+    //   title: 'Dashboard', icon: 'dashboard', label: 'Dashboard', route: '/feature/dashboard'
+    // },
     {
-      title: 'Master Data', icon: 'shop', label: 'Master Data',
+      title: 'Master Data', icon: 'home', label: 'Master Data', route: '/feature/dashboard',
       children: [
-        { title: 'Customer', icon: 'user', label: 'Customer', route: '/feature/customer' },
-        { title: 'Supplier', icon: 'shop', label: 'Supplier', route: '/feature/supplier' },
+        { title: 'Customer', icon: 'group_add', label: 'Customer', route: '/feature/customer' },
+        { title: 'Supplier', icon: 'box_add', label: 'Supplier', route: '/feature/supplier' },
       ]
     },
     {
-      title: 'User Manager', icon: 'team', label: 'User Manager',
+      title: 'User Manager', icon: 'manage_accounts', label: 'User Manager',
       children: [
-        { title: 'User', icon: 'user', label: 'User', route: '/feature/user-manager/user', roles: ['admin'] },
-        // { title: 'Role', icon: 'solution', label: 'Role', route: '/feature/user-manager/role', roles: ['admin'] }
+        { title: 'User', icon: 'manage_accounts', label: 'User', route: '/feature/user-manager/user', roles: ['admin'] },
       ]
-    }
+    },
+    {
+      title: 'Download Form', icon: 'download', label: 'Download Form', route: '/feature/download-from'
+    },
   ];
-
   // filterMenuItemsByRole(): void {
   //   if (this.currentRole && this.currentRole.action) {
   //     this.filteredMenuItems = this.menuItems.filter(item => {
@@ -134,6 +138,7 @@ hasRole(roleString: string, roleToCheck: string): boolean {
       window.location.reload();
   });
   }
+  
 
 
 }

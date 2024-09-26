@@ -50,3 +50,14 @@
       border-color: darkgoldenrod;
     }
   }
+  .input-with-prefix {
+    display: flex;
+    align-items: center;
+}
+
+.name-prefix {
+    border-right: none; /* เอาขอบด้านขวาของ span ออกเพื่อให้ดูติดกับ input */
+    height: 38px; /* ความสูงของคำนำหน้าต้องตรงกับ input */
+    line-height: 38px; /* จัดให้อยู่ตรงกลางแนวตั้ง */
+}
+

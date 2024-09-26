@@ -37,7 +37,6 @@ export class AuthService {
 
     return this.http.post<IUser>('/Login/signIn', loginRequest).pipe(
       map(response => {
-        console.log("'/Login/signIn'" , response);
         
          if (response && response.status == 1) { // ตรวจสอบค่า status เป็น true
         this.setUser(response);

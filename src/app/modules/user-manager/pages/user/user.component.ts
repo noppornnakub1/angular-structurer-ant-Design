@@ -98,7 +98,6 @@ export class UserComponent implements OnInit {
   loadRoles() {
     this.roleService.getRoles().subscribe(data => {
       this.listOfDataRole = data;
-      console.log('Log',data);
     });
   }
 

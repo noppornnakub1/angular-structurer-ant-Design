@@ -48,7 +48,9 @@ export class CustomerAddComponent implements OnInit {
   originalData: any;
   listDataByTaxId: any[] = [];
   isDupplicate: boolean = false;
-  
+  typeCode: string = '';
+  newCusnum : string = '';
+  tempCusForm: any;
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -75,9 +77,10 @@ export class CustomerAddComponent implements OnInit {
       customer_id: ['0', Validators.required],
       customer_num: ['', Validators.required],
       customer_type: ['', Validators.required],
-      site: ['00000', Validators.required],
+      site: ['', Validators.required],
       status: ['', Validators.required],
       company: ['', Validators.required],
+      user_id: [''],
     });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -91,7 +94,6 @@ export class CustomerAddComponent implements OnInit {
       this.customerForm.disable(); // ทำให้ฟอร์มไม่สามารถแก้ไขได้
     }
     this.postCodeService.getPostCodes().subscribe(data => {
-      console.log(data)
       this.items_provinces = data;
       this.filteredItemsProvince = data;
     });
@@ -113,18 +115,69 @@ export class CustomerAddComponent implements OnInit {
     this.checkRole();
   }
 
+  validateTaxId(event: any): void {
+    const input = event.target.value;
 
+    // ลบตัวอักษรที่ไม่ใช่ตัวเลขหรือตัวอักษร '-'
+    let numericValue = input.replace(/[^0-9-]/g, '');
+
+    // จำกัดจำนวนเครื่องหมาย '-' ให้มีเพียงตัวเดียว
+    const hyphenCount = (numericValue.match(/-/g) || []).length;
+
+    if (hyphenCount > 1) {
+      // ถ้ามี '-' มากกว่า 1 ตัว ให้ลบตัวถัดไปทั้งหมด
+      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
+    }
+
+    // อัปเดตค่าใน form control
+    this.customerForm.patchValue({ tax_Id: numericValue });
+    event.target.value = numericValue;
+  }
+
+  validateTel(event: any): void {
+    const input = event.target.value;
+
+    // ลบตัวอักษรที่ไม่ใช่ตัวเลขหรือตัวอักษร '-'
+    let numericValue = input.replace(/[^0-9-]/g, '');
+
+    // จำกัดจำนวนเครื่องหมาย '-' ให้มีเพียงตัวเดียว
+    const hyphenCount = (numericValue.match(/-/g) || []).length;
+
+    if (hyphenCount > 1) {
+      // ถ้ามี '-' มากกว่า 1 ตัว ให้ลบตัวถัดไปทั้งหมด
+      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
+    }
+
+    // จำกัดจำนวนตัวเลขไม่เกิน 10 และต้องใส่ '-' ได้เพียงตัวเดียว
+    if (numericValue.replace(/-/g, '').length > 10) {
+      numericValue = numericValue.slice(0, 10) + (hyphenCount ? '-' : '');
+    }
+
+    event.target.value = numericValue;
+
+    // อัปเดตค่าใน form control
+    this.customerForm.patchValue({ tel: event.target.value });
+  }
+
+  validateSite(event: any): void {
+    const input = event.target.value;
+
+    // ลบตัวอักษรที่ไม่ใช่ตัวเลขออก
+    const numericValue = input.replace(/\D/g, '');
+
+    // อัปเดตค่าใน form control
+    this.customerForm.patchValue({ site: numericValue });
+    event.target.value = numericValue;
+  }
 
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
-      console.log(this.currentUser);
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
-        console.log(`isAdmin: ${this.isAdmin}, isApproved: ${this.isApproved}, isUser: ${this.isUser}`); // Log ค่าเพื่อเช็ค
       }
 
     });
@@ -138,7 +191,6 @@ export class CustomerAddComponent implements OnInit {
         postalCode: postalCodeCombination
       });
       this.originalData = { ...data };
-      console.log(this.customerForm);
       this.getEventLogs(id)
 
     });
@@ -147,7 +199,7 @@ export class CustomerAddComponent implements OnInit {
   loadCustomerType(id: number): void {
     this.customerService.findCustomerTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
       const customerNumPrefix = data.code_from;
-      console.log("customerNumPrefix",customerNumPrefix);
+      this.typeCode = customerNumPrefix;
       if (customerNumPrefix === '1F') {
         // Default customer_num เป็น "-" และซ่อนฟิลด์อื่นๆ
         this.customerForm.patchValue({
@@ -157,26 +209,37 @@ export class CustomerAddComponent implements OnInit {
           district: '-',
           subdistrict: '-',
           site: 'Head Office'
-          
-        });
-      } 
-      else{
-        this.customerService.getTopCustomerByType(data.code).subscribe(topCustomerData => {
-          let newCustomerNum: string;
-  
-          if (topCustomerData.customer_num === '000') {
-            // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
-            newCustomerNum = customerNumPrefix + '000001';
-          } else {
-            // ถ้าเจอข้อมูล ใช้ค่า customer_num ที่ดึงมาแล้ว increment
-            newCustomerNum = this.incrementCustomerNum(topCustomerData.customer_num, customerNumPrefix);
-          }
-  
-          this.customerForm.patchValue({ customer_num: newCustomerNum });
-          this.customerForm.patchValue({ site: '00000' });
-          
+
         });
       }
+      else {
+        this.customerForm.patchValue({
+          customer_num: '',
+          postalCode: '',
+          province: '',
+          district: '',
+          subdistrict: '',
+          site: ''
+
+        });
+      }
+      // else {
+      //   this.customerService.getTopCustomerByType(data.code).subscribe(topCustomerData => {
+      //     let newCustomerNum: string;
+
+      //     if (topCustomerData.customer_num === '000') {
+      //       // ถ้าไม่เจอข้อมูล ให้ใช้ค่า default
+      //       newCustomerNum = customerNumPrefix + '000001';
+      //     } else {
+      //       // ถ้าเจอข้อมูล ใช้ค่า customer_num ที่ดึงมาแล้ว increment
+      //       newCustomerNum = this.incrementCustomerNum(topCustomerData.customer_num, customerNumPrefix);
+      //     }
+
+      //     this.customerForm.patchValue({ customer_num: newCustomerNum });
+      //     this.customerForm.patchValue({ site: '00000' });
+
+      //   });
+      // }
     });
   }
   private incrementCustomerNum(customerNum: string, codeFrom: string): string {
@@ -201,7 +264,6 @@ export class CustomerAddComponent implements OnInit {
   }
 
   onPostalCodeChange(value: any): void {
-    console.log('Selected Postal Code: ', value);
     // หา selected item โดยใช้ทั้ง postalCode และบางค่าเฉพาะ เช่น subdistrict
     const [postalCode, subdistrict] = value.split('-');
     const selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
@@ -222,32 +284,35 @@ export class CustomerAddComponent implements OnInit {
 
   onSubmit(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log('map ข้อมูล user', currentUser);
     if (this.isViewMode) {
       this.customerForm.enable(); // Enable form temporariliy for validation
     }
-    if (this.isSubmitting) {
-      return; // ป้องกันการ submit ซ้ำ
-    }
-
+    // if (this.isSubmitting) {
+    //   return; // ป้องกันการ submit ซ้ำ
+    // }
+    
     this.isSubmitting = true;
     if (!this.customerId) {
       this.customerForm.patchValue({ company: currentUser.company });
+      console.log("!this.customerId");
+      
     }
+    this.CheckDupplicateData();
+    console.log(this.customerForm.valid, this.customerForm.value);
+    
     if (this.customerForm.valid) {
       const formValue = this.prepareFormData();
       const selectedPostItem = this.items_provinces.find(item => item.postalCode === formValue.postalCode && this.isSubdistrictMatching(item));
       if (selectedPostItem) {
         formValue.post_id = selectedPostItem.post_id;
       }
-      console.log('Form', formValue);
-
+      console.log(selectedPostItem, formValue);
+      this.tempCusForm = formValue;
       if (this.customerId) {
         this.onUpdate(formValue);  // Call update function if customerId exists
       } else {
         this.customerService.addData(formValue).subscribe({
           next: (response) => {
-            console.log('Data added successfully', response);
             this.customerForm.patchValue({ customer_id: response.customer_id });
             this.insertLog();
             Swal.fire({
@@ -269,9 +334,18 @@ export class CustomerAddComponent implements OnInit {
       }
     } else {
       this.customerForm.markAllAsTouched();
-      console.log(this.customerForm.value);
-
-      Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+      if (this.emailError !== '') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Email ไม่ถูกต้อง',
+          text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
+          confirmButtonText: 'ปิด'
+        });
+        return;
+      }
+      else {
+        Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+      }
       this.isSubmitting = false;
 
     }
@@ -283,7 +357,6 @@ export class CustomerAddComponent implements OnInit {
       this.customerService.updateData(this.customerId, formValue).subscribe({
         next: (response) => {
           this.customerForm.patchValue({ customer_id: this.customerId });
-          console.log('Data updated successfully', response);
           this.insertLog();
           Swal.fire({
             icon: 'success',
@@ -293,7 +366,6 @@ export class CustomerAddComponent implements OnInit {
             timer: 1500
           });
           this.sendEmailNotification();
-          console.log('Update func UpdateLog updated successfully', response);
           this.router.navigate(['/feature/customer']);
         },
         error: (err) => {
@@ -334,6 +406,8 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.getCustomerType().subscribe({
       next: (response: any) => {
         this.listOfType = response;
+        console.log(this.listOfType);
+
         this.filteredDataType = response;
         this._cdr.markForCheck();
       },
@@ -346,8 +420,10 @@ export class CustomerAddComponent implements OnInit {
   insertLog(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     const customerId = this.customerForm.get('customer_id')?.value || this.customerId || 0;
-    console.log(customerId);
-
+    delete this.tempCusForm.post_id;
+    this.customerForm.setValue(this.tempCusForm);
+    console.log(this.customerForm);
+    
     if (!currentUser) {
       console.error('Current user is not available in local storage');
       return;
@@ -366,7 +442,6 @@ export class CustomerAddComponent implements OnInit {
       };
       this.customerService.insertLog(log).subscribe({
         next: (response) => {
-          console.log('log data added successfully', response);
         },
         error: (err) => {
           console.error('Error adding log data', err);
@@ -381,7 +456,6 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.getLog(customerId).subscribe(
       (data) => {
         this.logs = data;
-        console.log(this.logs);
       },
       (error) => {
         console.error('Error fetching logs', error);
@@ -390,15 +464,16 @@ export class CustomerAddComponent implements OnInit {
   }
 
   validateEmail() {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,4}){1,2}$/;
     if (!this.customerForm.value.email) {
       this.emailError = 'Email is required';
-      console.log("email ว่าง");
-
     } else if (!emailPattern.test(this.customerForm.value.email)) {
-      this.emailError = 'Email is wrong emailPattern';
-      console.log("email ผิด");
+      if (this.customerForm.value.email === '-') {
+        this.emailError = '';
+      }
+      else {
+        this.emailError = 'Email is wrong emailPattern';
+      }
     } else {
       this.emailError = '';
     }
@@ -443,7 +518,8 @@ export class CustomerAddComponent implements OnInit {
 
   checkSave(event: Event) {
     this.validateEmail();
-    if (this.emailError != '') {
+    if (this.emailError && this.emailError.trim() !== '') {
+      console.log('Swal should be fired');
       Swal.fire({
         icon: 'error',
         title: 'Email ไม่ถูกต้อง',
@@ -452,24 +528,13 @@ export class CustomerAddComponent implements OnInit {
       });
       return;
     }
-    this.isDupplicate = this.compareWithExistingData(this.listDataByTaxId, this.customerForm.value);
-    if (this.isDupplicate) {
-      Swal.fire({
-        icon: 'error',
-        title: 'ข้อมูลซ้ำ',
-        text: 'โปรดตรวจสอบให้แน่ใจว่าข้อมูลของคุณถูกต้อง',
-        confirmButtonText: 'ปิด'
-      });
-      return;
-    }
     else {
-      console.log('Proceeding to save.');
+      this.CheckDupplicateData();
       this.save(event);
     }
   }
 
   submit(event: Event): void {
-    console.log("เข้า save");
 
     event.preventDefault();
     Swal.fire({
@@ -563,7 +628,12 @@ export class CustomerAddComponent implements OnInit {
 
   setStatusAndSubmit(status: string): void {
     this.customerForm.patchValue({ status });
-    console.log('Setting status to', status); // ตรวจสอบการตั้งค่าสถานะ
+    if(!this.customerId){
+      this.customerForm.patchValue({ customer_num: this.newCusnum });
+      console.log("625", this.customerForm.value);
+    }
+    
+    
     this.onSubmit();
   }
 
@@ -575,8 +645,7 @@ export class CustomerAddComponent implements OnInit {
         next: (dataList: any[]) => {
           if (dataList.length > 0) {
             this.listDataByTaxId = dataList
-            console.log("this.listDataByTaxId",this.listDataByTaxId);
-            
+
             // สมมติว่าเลือกแถวที่มี Id สูงสุด
             const latestData = dataList.reduce((prev, current) => (prev.id > current.id) ? prev : current);
 
@@ -588,7 +657,6 @@ export class CustomerAddComponent implements OnInit {
             });
             this.originalData = { ...latestData };
           } else {
-            console.log('No data found for the given Tax ID');
           }
         },
         error: (err) => {
@@ -599,8 +667,6 @@ export class CustomerAddComponent implements OnInit {
   }
 
   sendEmailNotification(): void {
-    console.log('log mail', this.customerForm.get('customer_num')?.value, this.customerForm.valid);
-
     if (this.customerForm.get('status')?.value === 'Pending Approved By ACC' && this.customerForm.valid) {
       const company = this.customerForm.get('company')?.value;
       const customerNum = this.customerForm.get('customer_num')?.value;
@@ -608,7 +674,6 @@ export class CustomerAddComponent implements OnInit {
       this.customerService.findApproversByCompany(company).subscribe(
         (approvers) => {
           approvers.forEach((approver: any) => {
-            console.log('log mail', this.customerForm.get('customer_num')?.value);
             const to = approver.email;
             const subject = 'Approval Notification';
             const body = `สถานะของ Customer Number:${customerNum} 
@@ -617,7 +682,7 @@ export class CustomerAddComponent implements OnInit {
 
             this.emailService.sendEmail(to, subject, body).subscribe(
               (response) => {
-                console.log('Email sent successfully', response);
+
               },
               (error) => {
                 console.error('Error sending email', error);
@@ -634,14 +699,13 @@ export class CustomerAddComponent implements OnInit {
 
   isDataUnchanged(existingData: any, newData: any): boolean {
     const fieldsToCompare = ['name', 'tax_Id', 'address_sup', 'district', 'subdistrict', 'province', 'tel', 'email', 'customer_num', 'customer_type', 'site'];
-    
-    
+
+
     const existingPostalCode = existingData.postalCode.split('-')[0];
     const newPostalCode = newData.postalCode.split('-')[0];
 
     for (const field of fieldsToCompare) {
-      console.log("existingData",existingData);
-    console.log("newData",newData);
+
       if (existingData[field] !== newData[field]) {
         return false;
       }
@@ -657,11 +721,11 @@ export class CustomerAddComponent implements OnInit {
   compareWithExistingData(existingDataList: any[], newData: any): boolean {
     for (let existingData of existingDataList) {
       if (this.isDataUnchanged(existingData, newData)) {
-        console.log('Data is unchanged, found duplicate.');
+
         return true; // เจอข้อมูลซ้ำ
       }
     }
-    console.log('No duplicate found.');
+
     return false; // ไม่มีข้อมูลซ้ำ
   }
 
@@ -672,10 +736,89 @@ export class CustomerAddComponent implements OnInit {
 
   onCustomerTypeChange(value: string): void {
     this.selectType = value;
-    console.log('Selected Customer Type: ', value);
   }
 
   isOverseaCustomer(): boolean {
     return this.selectType === 'OSEA';  // ตรวจสอบค่าซึ่งหมายถึง OSEA - ลูกหนี้ต่างประเทศ
+  }
+
+  CheckDupplicateData(){
+    if (this.customerForm.value.customer_num === '') {
+      const name = this.customerForm.value.name.trim(); // ตัดช่องว่างต้นและท้าย
+      const site = this.customerForm.value.site.trim(); // ตัดช่องว่างต้นและท้าย
+    
+      // ตรวจสอบว่า name เป็นภาษาอังกฤษหรือไม่
+      const isEnglish = /^[A-Za-z\s]+$/.test(name);
+      const cleanedName = isEnglish ? name.replace(/\s+/g, '').toUpperCase() : name.replace(/\s+/g, '');
+      const key = site + cleanedName;
+    
+      console.log("Generated key for CheckDupplicateCustomer:", key);
+    
+      this.customerService.CheckDupplicateCustomer(key).subscribe({
+        next: (response: any) => {
+          console.log("Response from CheckDupplicateCustomer:", response);
+    
+          if (response && response.length > 0) {
+            Swal.fire({
+              icon: 'error',
+              title: 'ข้อมูลซ้ำ',
+              text: 'มีข้อมูล Customer นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ Name และ Site อีกครั้ง',
+              confirmButtonText: 'ปิด'
+            });
+            return;
+          }
+        },
+        error: (err) => {
+          if (err === 'No customers found.') {
+            console.log("ไม่พบข้อมูลซ้ำ, ดำเนินการหาข้อมูลเลขล่าสุด...");
+    
+            // เมื่อไม่พบข้อมูลซ้ำ ให้เรียก GetNumMaxCustomer
+            this.customerService.GetNumMaxCustomer(this.typeCode).subscribe({
+              next: (response: any) => {
+                console.log("Response from GetNumMaxCustomer:", response);
+            
+                if (!response || response.length === 0 || response[0]["MAX(NUM)"] === null) {
+                  this.customerForm.patchValue({ customer_num: '' });
+                  console.log("No customers found, setting customer_num to empty.");
+                } else {
+                  const max = response[0]["MAX(NUM)"];
+                  const maxStr = String(max);
+                  console.log("Max Customer Num String:", maxStr);
+            
+                  // แยกตัวอักษรและตัวเลข โดยให้แน่ใจว่าตัวอักษรอยู่ข้างหน้า และตัวเลขอยู่ข้างหลัง
+                  const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
+                  const prefix = matchResult ? matchResult[1] : ''; // ตัวอักษรที่รวมตัวเลขแรกด้วย เช่น "1A"
+                  const numPart = matchResult ? matchResult[2] : '0'; // เลขส่วนท้าย เช่น "007447"
+            
+                  // แสดงค่า prefix และ numPart เพื่อให้แน่ใจว่าถูกต้อง
+                  console.log("Prefix:", prefix); // ควรจะเป็น "1A"
+                  console.log("NumPart:", numPart); // ควรจะเป็น "007447"
+            
+                  // แปลง numPart เป็นตัวเลข บวก 1
+                  const nextNum = String(parseInt(numPart, 10) + 1).padStart(numPart.length, '0');
+                  console.log("Next Num after increment:", nextNum); // ควรจะเป็น "007448"
+            
+                  // ประกอบ prefix และเลขใหม่เข้าด้วยกัน
+                  const newCustomerNum = `${prefix}${nextNum}`;
+                  this.newCusnum = newCustomerNum;
+                  // อัปเดตค่าใน form
+                  this.customerForm.setValue({ ...this.customerForm.value, customer_num: newCustomerNum });
+                  console.log("New Customer Num:", newCustomerNum);
+                  console.log("New Customer Num:", this.customerForm.value);
+                  this._cdr.markForCheck();
+                }
+            
+                this._cdr.markForCheck();
+              },
+              error: (err) => {
+                console.error('Error while fetching max customer number', err);
+              }
+            });
+          } else {
+            console.error("Error occurred during CheckDupplicateCustomer:", err);
+          }
+        }
+      });
+    }
   }
 }

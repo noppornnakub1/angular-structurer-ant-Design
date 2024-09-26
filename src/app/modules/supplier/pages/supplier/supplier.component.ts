@@ -79,8 +79,6 @@ export class SupplierComponent implements OnInit {
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
-      console.log(user);
-
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
@@ -91,7 +89,6 @@ export class SupplierComponent implements OnInit {
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log('map ข้อมูล user', currentUser);
     if (!currentUser) {
       console.error('Current user is not available in local storage');
       return;
@@ -100,7 +97,6 @@ export class SupplierComponent implements OnInit {
       this.supplierService.getData().subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(this.listOfData);
           this.changeStatusIfNeeded();
           this.applyFilters();
           // this.filteredData = response;
@@ -115,7 +111,6 @@ export class SupplierComponent implements OnInit {
       this.supplierService.findDataByUserCompanyACC(currentUser.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(this.listOfData);
           this.changeStatusIfNeeded();
           this.applyFilters();
           // this.filteredData = response;
@@ -130,7 +125,6 @@ export class SupplierComponent implements OnInit {
       this.supplierService.findDataByUserCompanyFN(currentUser.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(this.listOfData);
           this.changeStatusIfNeeded();
           this.applyFilters();
           // this.filteredData = response;
@@ -145,7 +139,6 @@ export class SupplierComponent implements OnInit {
       this.supplierService.findDataByUserId(currentUser.user_id).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(response);
           
           this.changeStatusIfNeeded();
           this.applyFilters();
@@ -197,7 +190,6 @@ export class SupplierComponent implements OnInit {
   onPageIndexChange(pageIndex: number): void {
     this.pageIndex = pageIndex;
     this.updateDisplayData();
-    console.log(pageIndex);
 
   }
 
@@ -205,7 +197,6 @@ export class SupplierComponent implements OnInit {
     this.pageSize = pageSize;
     this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อเปลี่ยนขนาดหน้า
     this.updateDisplayData();
-    console.log('pageSize', pageSize);
   }
 
   updateDisplayData(): void {
@@ -227,7 +218,6 @@ export class SupplierComponent implements OnInit {
   }
 
   sortData(event: any): void {
-    console.log('Sort event:', event);
     const sortField = event.key as keyof ISupplier;
     const sortOrder = event.value;
   

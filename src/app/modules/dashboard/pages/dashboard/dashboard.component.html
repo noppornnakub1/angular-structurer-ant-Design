@@ -1,6 +1,6 @@
 <div class="content-card-search">
   <h2>Master Data</h2>
-  <div nz-row *ngIf="selectedTabIndex === 0"> <!-- เงื่อนไขเพื่อแสดงฟิลด์สำหรับแท็บ History -->
+  <div nz-row *ngIf="selectedTabIndex === 0">
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Type</nz-form-label>
       <nz-select [(ngModel)]="selectedType" (ngModelChange)="applyFilters()">
@@ -26,8 +26,6 @@
       </nz-input-group>
     </div>
   </div>
-
-  <!-- เงื่อนไขฟิลด์สำหรับแท็บ Old Data -->
   <div nz-row *ngIf="selectedTabIndex === 1">
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Type <span style="color: red;">*</span></nz-form-label>
@@ -65,15 +63,11 @@
   <div *ngIf="selectedTabIndex === 0" class="mt-5 display-flex justify-center">
     <button nz-button nzType="primary" class="mr-2" (click)="applyFilters()"><span nz-icon nzType="search"
         nzTheme="outline"></span>ค้นหา</button>
-    <!-- <button nz-button class="add-user-button" nzType="default"><span nz-icon nzType="clear"
-        nzTheme="outline"></span>ล้างการค้นหา</button> -->
   </div>
 
   <div *ngIf="selectedTabIndex === 1" class="mt-5 display-flex justify-center">
     <button nz-button nzType="primary" class="mr-2" (click)="searchDataOld()"><span nz-icon nzType="search"
         nzTheme="outline"></span>ค้นหา</button>
-    <!-- <button nz-button class="add-user-button" nzType="default"><span nz-icon nzType="clear"
-        nzTheme="outline"></span>ล้างการค้นหา</button> -->
   </div>
 </div>
 <nz-tabset [nzSelectedIndex]="selectedTabIndex" (nzSelectedIndexChange)="onTabChange($event)" class=" mt-3">
@@ -113,8 +107,12 @@
   <nz-tab nzTitle="Old Data">
     <div class="content-data-table">
       <nz-table #datatable nzBordered [nzData]="displayDataOld" [nzFrontPagination]="false"
-        [nzTotal]="filteredDataOld.length" [nzPageIndex]="pageIndex" [nzPageSize]="pageSize"
-        (nzPageIndexChange)="onPageIndexChangeOld($event)" (nzPageSizeChange)="onPageSizeChangeOld($event)">
+      [nzTotal]="filteredDataOld.length"
+      [nzPageIndex]="pageIndexOld"
+      [nzPageSize]="pageSizeOld"
+      (nzPageIndexChange)="onPageIndexChangeOld($event)"
+      (nzPageSizeChange)="onPageSizeChangeOld($event)"
+      >
         <thead>
           <tr>
             <th *ngFor="let column of listOfColumnOld">
@@ -124,7 +122,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let data of displayDataOld; let i = index">
-            <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+            <td style="text-align: center;">{{ (pageIndexOld - 1) * pageSizeOld + i + 1 }}</td>
             <td>{{ data.NAME }}</td>
             <td>{{ data.NUM }}</td>
             <td>{{ data.TAX }}</td>
@@ -136,9 +134,6 @@
           </tr>
         </tbody>
       </nz-table>
-      <nz-pagination [nzPageSize]="pageSize" [nzTotal]="filteredDataOld.length" [(nzPageIndex)]="pageIndex"
-        [nzShowSizeChanger]="true" [nzPageSizeOptions]="[10, 20, 50]" (nzPageSizeChange)="onPageSizeChangeOld($event)"
-        (nzPageIndexChange)="onPageIndexChangeOld($event)"></nz-pagination>
     </div>
   </nz-tab>
 </nz-tabset>

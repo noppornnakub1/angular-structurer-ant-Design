@@ -22,6 +22,7 @@ import { EmailService } from '../../../../shared/constants/email.service';
 import { SupplierComponent } from '../supplier/supplier.component';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { prefixService } from '../../../../shared/constants/prefix.service';
 
 export interface DataLocation {
   post_id: number,
@@ -67,6 +68,12 @@ export interface DataGroup {
 }
 
 
+export interface prefix {
+  id: number,
+  name: string;
+  format: string;
+}
+
 
 @Component({
   selector: 'app-supplier-add',
@@ -102,6 +109,8 @@ export class SupplierAddComponent {
   filteredDataompany: DataCompany[] = [];
   items_provinces: DataLocation[] = [];
   filteredItemsProvince: DataLocation[] = [];
+  item_prefix: prefix[] = [];
+  filteredItemsPrefix: prefix[] = [];
   logs: any[] = [];
   reasonTemp: string = '';
   supplierForm!: FormGroup;
@@ -152,7 +161,8 @@ export class SupplierAddComponent {
     private cdr: ChangeDetectorRef,
     private bankMasterService: BankMasterService,
     private emailService: EmailService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private prefixService : prefixService
   ) { }
 
   ngOnInit(): void {
@@ -169,7 +179,7 @@ export class SupplierAddComponent {
       email: ['', Validators.required],
       supplier_num: ['', Validators.required],
       supplier_type: ['', Validators.required],
-      site: ['', Validators.required],
+      site: ['00000', Validators.required],
       vat: [''],
       status: ['', Validators.required],
       payment_method: ['', Validators.required],
@@ -219,6 +229,10 @@ export class SupplierAddComponent {
       this.items_provinces = data;
       this.filteredItemsProvince = data;
     });
+    this.prefixService.getPrefix().subscribe(data => {
+      this.item_prefix = data;
+      this.filteredItemsPrefix = data;
+    });
     this.showSupplierBankForm = false;
     this.showSupplierBankFormAdd = false;
     this.getSupplierType();
@@ -243,11 +257,60 @@ export class SupplierAddComponent {
       this.supplierBankForm.patchValue({ account_name: value });
       this._cdr.detectChanges();
     });
+
+    this.supplierForm.get('prefix')?.valueChanges.subscribe((prefix: string) => {
+      this.selectedPrefix = prefix;
+      this.updateNameWithPrefixChange();
+    });
     // this.supplierBankForm.get('name_bank')!.valueChanges.subscribe(value => {
     //   this.onBankNameChange(value);
     // });
 
     this.checkRole();
+  }
+
+  onNameBlur(): void {
+    const nameControl = this.supplierForm.get('name');
+    let nameValue = nameControl?.value || '';
+  
+    // ตรวจสอบว่า name ถูกกรอกหรือไม่ ถ้าไม่ถูกกรอกก็ไม่ต้องทำอะไร
+    if (!nameValue) {
+      return;
+    }
+  
+    // ถ้ามีคำว่า "จำกัด" หรือ "จำกัด (มหาชน)" ต่อท้ายอยู่แล้ว ไม่ต้องเพิ่มอะไร
+    if (nameValue.endsWith(' จำกัด') || nameValue.endsWith(' จำกัด (มหาชน)')) {
+      return;
+    }
+  
+    // เพิ่มข้อความต่อท้ายตาม prefix ที่เลือก
+    if (this.selectedPrefix === 'บริษัทจำกัด') {
+      nameControl?.setValue(`${nameValue} จำกัด`);
+    } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
+      nameControl?.setValue(`${nameValue} จำกัด (มหาชน)`);
+    }
+  }
+  
+  updateNameWithPrefixChange(): void {
+    const nameControl = this.supplierForm.get('name');
+    let nameValue = nameControl?.value || '';
+  
+    // ตรวจสอบว่า name ถูกกรอกหรือไม่ ถ้าไม่ถูกกรอกก็ไม่ต้องทำอะไร
+    if (!nameValue) {
+      return;
+    }
+  
+    // ลบ " จำกัด" หรือ " จำกัด (มหาชน)" ออกก่อน
+    nameValue = nameValue.replace(/ จำกัด \(มหาชน\)$/, '').replace(/ จำกัด$/, '');
+  
+    // เพิ่มข้อความต่อท้ายใหม่ตาม prefix ที่เลือก
+    if (this.selectedPrefix === 'บริษัทจำกัด') {
+      nameControl?.setValue(`${nameValue} จำกัด`);
+    } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
+      nameControl?.setValue(`${nameValue} จำกัด (มหาชน)`);
+    } else {
+      nameControl?.setValue(nameValue); // กรณีเลือก prefix อื่นๆ จะไม่ต่อข้อความใดๆ
+    }
   }
 
   validateTaxId(event: any): void {
@@ -330,6 +393,78 @@ export class SupplierAddComponent {
     event.target.value = numericValue;
   }
 
+  validateBranch(event: any): void {
+    const input = event.target.value;
+
+    // ลบตัวอักษรที่ไม่ใช่ตัวเลขหรือตัวอักษร '-'
+    let numericValue = input.replace(/[^0-9-]/g, '');
+
+    // จำกัดจำนวนเครื่องหมาย '-' ให้มีเพียงตัวเดียว
+    const hyphenCount = (numericValue.match(/-/g) || []).length;
+
+    if (hyphenCount > 1) {
+      // ถ้ามี '-' มากกว่า 1 ตัว ให้ลบตัวถัดไปทั้งหมด
+      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
+    }
+
+    // จำกัดจำนวนตัวเลขไม่เกิน 10 และต้องใส่ '-' ได้เพียงตัวเดียว
+    if (numericValue.replace(/-/g, '').length > 10) {
+      numericValue = numericValue.slice(0, 10) + (hyphenCount ? '-' : '');
+    }
+
+    event.target.value = numericValue;
+
+    // อัปเดตค่าใน form control
+    this.supplierBankForm.patchValue({ branch: event.target.value });
+  }
+
+  validateBranchAdd(event: any): void {
+    const input = event.target.value;
+
+    // ลบตัวอักษรที่ไม่ใช่ตัวเลขหรือตัวอักษร '-'
+    let numericValue = input.replace(/[^0-9-]/g, '');
+
+    // จำกัดจำนวนเครื่องหมาย '-' ให้มีเพียงตัวเดียว
+    const hyphenCount = (numericValue.match(/-/g) || []).length;
+
+    if (hyphenCount > 1) {
+      // ถ้ามี '-' มากกว่า 1 ตัว ให้ลบตัวถัดไปทั้งหมด
+      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
+    }
+
+    // จำกัดจำนวนตัวเลขไม่เกิน 10 และต้องใส่ '-' ได้เพียงตัวเดียว
+    if (numericValue.replace(/-/g, '').length > 10) {
+      numericValue = numericValue.slice(0, 10) + (hyphenCount ? '-' : '');
+    }
+
+    event.target.value = numericValue;
+
+    // อัปเดตค่าใน form control
+    this.supplierBankFormAdd.patchValue({ branch: event.target.value });
+  }
+
+  validateAccountNum(event: any): void {
+    const input = event.target.value;
+
+    // ลบตัวอักษรที่ไม่ใช่ตัวเลขออก
+    const numericValue = input.replace(/\D/g, '');
+
+    // อัปเดตค่าใน form control
+    this.supplierBankForm.patchValue({ account_num: numericValue });
+    event.target.value = numericValue;
+  }
+
+  validateAccountNumAdd(event: any): void {
+    const input = event.target.value;
+
+    // ลบตัวอักษรที่ไม่ใช่ตัวเลขออก
+    const numericValue = input.replace(/\D/g, '');
+
+    // อัปเดตค่าใน form control
+    this.supplierBankFormAdd.patchValue({ account_num : numericValue });
+    event.target.value = numericValue;
+  }
+
   toggleSupplierBankForm(value: string): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     if (!currentUser) {
@@ -353,6 +488,13 @@ export class SupplierAddComponent {
     }
   }
 
+  hideBankCopy() {
+    this.showSupplierBankFormAdd = false;
+    if (this.showSupplierBankFormAdd) {
+      this.supplierBankFormAdd.patchValue({ account_name: this.supplierForm.get('name')?.value });
+    }
+  }
+
 
   onPaymentMethodChange(value: string): void {
     this.toggleSupplierBankForm(value);
@@ -361,6 +503,8 @@ export class SupplierAddComponent {
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
+      console.log(this.currentUser);
+      
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
@@ -379,6 +523,9 @@ export class SupplierAddComponent {
         ...data,
         postalCode: postalCodeCombination
       });
+
+      console.log("527",this.supplierForm.value);
+      
       // เรียกฟังก์ชันอื่นหลังจากการอัปเดตฟอร์มเสร็จสิ้น
       this.loadSupplierBank(id);
       this.getEventLogs(id);
@@ -437,23 +584,10 @@ export class SupplierAddComponent {
           province: '-',
           district: '-',
           subdistrict: '-',
-          site: 'Head Office',
+          site: '',
           vat: '-',
           company: '-',
           payment_method: '-'
-        });
-      }
-      else {
-        this.supplierForm.patchValue({
-          supplier_num: '',
-          postalCode: '',
-          province: '',
-          district: '',
-          subdistrict: '',
-          site: '',
-          vat: '',
-          company: '',
-          payment_method: ''
         });
       }
       // else {
@@ -673,7 +807,14 @@ export class SupplierAddComponent {
     this.supplierService.getSupplierType().subscribe({
       next: (response: any) => {
         this.listOfType = response;
-        this.filteredDataType = response;
+        if (this.isUser) {
+          // กรองข้อมูลและเก็บผลลัพธ์ไว้ในตัวแปร
+          this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));
+        } else {
+          // ถ้าไม่ใช่ role user ให้แสดงทั้งหมด
+          this.filteredDataType = this.listOfType;
+        }
+        console.log("758", this.filteredDataType);
         this._cdr.markForCheck();
       },
       error: () => {
@@ -863,7 +1004,15 @@ export class SupplierAddComponent {
     this.supplierService.getDataPaymentMethod().subscribe({
       next: (response: any) => {
         this.listOfPaymentMethod = response;
-        this.filteredDataPaymentMethod = response;
+        console.log(this.listOfPaymentMethod);
+        
+        if (this.isUser) {
+          // กรองข้อมูลและเก็บผลลัพธ์ไว้ในตัวแปร
+          this.filteredDataPaymentMethod = this.listOfPaymentMethod.filter(type => ['Cheque', 'Transfer'].includes(type.paymentMethodName));
+        } else {
+          // ถ้าไม่ใช่ role user ให้แสดงทั้งหมด
+          this.filteredDataPaymentMethod = this.listOfPaymentMethod;
+        }
         this._cdr.markForCheck();
       },
       error: () => {
@@ -988,6 +1137,8 @@ export class SupplierAddComponent {
   }
 
   save(event: Event): void {
+    console.log(this.suppilerId);
+    
     if (this.emailError != '') {
       Swal.fire({
         icon: 'error',
@@ -1008,7 +1159,19 @@ export class SupplierAddComponent {
       confirmButtonText: 'Yes, save it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.setStatusAndSubmit('Draft');
+
+        if(this.suppilerId == null){
+          this.setStatusAndSubmit('Draft');
+        }
+        else{
+          if(this.isApproved){
+            this.setStatusAndSubmit('Pending Approved By ACC');
+            console.log("เข้า approve");
+          }
+          else{
+            this.setStatusAndSubmit('Draft');
+          }
+        }
       }
     });
 
@@ -1028,7 +1191,7 @@ export class SupplierAddComponent {
       if (result.isConfirmed) {
         if (result.isConfirmed) {
           const currentStatus = this.supplierForm.get('status')?.value;
-          const newStatus = currentStatus === 'Pending Approve By ACC' ? 'Pending Approve By FN' : 'Pending Approved By ACC';
+          const newStatus = currentStatus === 'Pending Approved By ACC' ? 'Pending Approve By FN' : 'Pending Approved By ACC';
           this.setStatusAndSubmit(newStatus);
         }
       }
@@ -1107,10 +1270,12 @@ export class SupplierAddComponent {
 
   setStatusAndSubmit(status: string): void {
     this.supplierForm.patchValue({ status });
-    if (!this.suppilerId) {
+    if (this.suppilerId == null) {
       this.supplierForm.patchValue({ supplier_num: this.newSupnum });
-      console.log("1043", this.supplierForm.value);
+      this.supplierForm.patchValue({ user_id: this.currentUser?.id });
     }
+    console.log("1170",this.supplierForm.value);
+    
     this.onSubmit();
   }
 
@@ -1223,6 +1388,8 @@ export class SupplierAddComponent {
             this.supplierService.GetNumMaxSupplier(this.typeCode).subscribe({
               next: (response: any) => {
                 if (!response || response.length === 0 || response[0]["MAX(NUM)"] === null) {
+                  console.log("1391",response);
+                  
                   this.supplierForm.patchValue({ supplier_num: '' });
                 } else {
                   const max = response[0]["MAX(NUM)"];

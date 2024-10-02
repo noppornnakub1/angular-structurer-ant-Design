@@ -1,63 +1,73 @@
 .custom-select .ant-select-selector {
-    height: 32px; /* กำหนดความสูง */
-    display: flex;
-    align-items: center;
-  }
-  
-  .custom-input {
-    height: 32px; /* กำหนดความสูง */
-    width: 100%;
-  }
+  height: 32px;
+  /* กำหนดความสูง */
+  display: flex;
+  align-items: center;
+}
 
-  ::ng-deep .ant-select-single .ant-select-selector {
-    height: 2.5rem !important;
-    display: flex;
-    align-items: center;
-    width: 100% !important;
-  }
-  
-  ::ng-deep .ant-select-top-control {
-    height: 2.5rem !important;
-    width: 100% !important;
-  }
-  .custom-select {
-    width: 100%;
-  }
-  
-  .nz-input-group .ant-select {
-    width: 100%;
-  }
-  
-  .green-button {
-    background-color: yellowgreen;
-    color: white;
-    border-color: yellowgreen;
-  
-    &:hover {
-      background-color: darkgreen;
-      border-color: darkgreen;
-    }
-  }
+.custom-input {
+  height: 32px;
+  /* กำหนดความสูง */
+  width: 100%;
+}
 
-  .button-yellow{
-    background-color: #ffc107;
-    color: white;
-    border-color: #ffc107;
-    color: black;
-  
-    &:hover {
-      background-color: darkgoldenrod;
-      border-color: darkgoldenrod;
-    }
+::ng-deep .ant-select-single .ant-select-selector {
+  height: 2.5rem !important;
+  display: flex;
+  align-items: center;
+  width: 100% !important;
+}
+
+::ng-deep .ant-select-top-control {
+  height: 2.5rem !important;
+  width: 100% !important;
+}
+
+.custom-select {
+  width: 100%;
+}
+
+.nz-input-group .ant-select {
+  width: 100%;
+}
+
+.green-button {
+  background-color: yellowgreen;
+  color: white;
+  border-color: yellowgreen;
+
+  &:hover {
+    background-color: darkgreen;
+    border-color: darkgreen;
   }
-  .input-with-prefix {
-    display: flex;
-    align-items: center;
+}
+
+.button-yellow {
+  background-color: #ffc107;
+  color: white;
+  border-color: #ffc107;
+  color: black;
+
+  &:hover {
+    background-color: darkgoldenrod;
+    border-color: darkgoldenrod;
+  }
+}
+
+.input-with-prefix {
+  display: flex;
+  align-items: center;
 }
 
 .name-prefix {
-    border-right: none; /* เอาขอบด้านขวาของ span ออกเพื่อให้ดูติดกับ input */
-    height: 38px; /* ความสูงของคำนำหน้าต้องตรงกับ input */
-    line-height: 38px; /* จัดให้อยู่ตรงกลางแนวตั้ง */
+  border-right: none;
+  /* เอาขอบด้านขวาของ span ออกเพื่อให้ดูติดกับ input */
+  height: 38px;
+  /* ความสูงของคำนำหน้าต้องตรงกับ input */
+  line-height: 38px;
+  /* จัดให้อยู่ตรงกลางแนวตั้ง */
 }
 
+.prefix-dropdown {
+  min-width: 150px; /* ปรับค่านี้ตามความต้องการ */
+}

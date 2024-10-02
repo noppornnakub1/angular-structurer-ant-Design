@@ -26,6 +26,7 @@ export class DashboardComponent {
   currentUser!: IRole | null;
   isAdmin: boolean = false;
   isApproved: boolean = false;
+  isApprovedFN = false;
   isUser: boolean = false;
   displayData: CustomerSupplier[] = [];
   listOfData: CustomerSupplier[] = [];
@@ -122,6 +123,11 @@ export class DashboardComponent {
       priority: 2
     },
     {
+      title: 'Payment Method',
+      compare: (a: DataOld, b: DataOld) => a.PAYMENT_MEDTHOD??''.localeCompare(b.PAYMENT_MEDTHOD ?? ''),
+      priority: 2
+    },
+    {
       title: 'Action',
       compare: null,
       priority: 1
@@ -148,16 +154,25 @@ export class DashboardComponent {
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
+      console.log("151",this.currentUser);
+      
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
+        this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
+        console.log("this.isAdmin",this.isAdmin);
+        console.log("this.isApproved",this.isApproved);
+        console.log("this.isUser",this.isUser);
+        console.log("this.isApprovedFN",this.isApprovedFN);
       }
     });
   }
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    console.log("169",currentUser);
+    
     if (!currentUser) {
       console.error('Current user is not available in local storage');
       return;
@@ -181,7 +196,7 @@ export class DashboardComponent {
       });
     }
     else if (currentUser.role == 3) {
-      const userId = undefined;
+      const userId = currentUser.user_id;
       const company = currentUser.company;
       this.customerService.FindDataHistoryByApprover(userId, company,'Pending Approved By ACC').subscribe({
         next: (response: any) => {
@@ -197,7 +212,7 @@ export class DashboardComponent {
       });
     }
     else if (currentUser.role == 4) {
-      const userId = undefined;
+      const userId = currentUser.user_id;
       const company = currentUser.company;
       this.customerService.FindDataHistoryByApproverFN(userId, company,'Approved By ACC').subscribe({
         next: (response: any) => {
@@ -233,16 +248,18 @@ export class DashboardComponent {
 
   searchDataOld(): void {
     if (this.selectedTypeOld === 'Customer') {
-      this.customerService.findDataOldCustomer(this.filtersOld.num, this.filtersOld.name, this.filtersOld.tax_Id, this.filtersOld.site).subscribe({
+      this.customerService.findDataOldCustomer(this.filtersOld.num, this.filtersOld.name, this.filtersOld.site).subscribe({
         next: (response: any) => {
-          this.listOfDataOld = response.map((item: any) => {
-            // ตรวจสอบว่า TAX เป็น object หรือไม่
-            if (typeof item.TAX === 'object') {
-              // แปลง TAX object เป็น string
-              item.TAX = JSON.stringify(item.TAX);
-            }
-            return item;
-          });
+          // this.listOfDataOld = response.map((item: any) => {
+          //   // ตรวจสอบว่า TAX เป็น object หรือไม่
+          //   if (typeof item.TAX === 'object') {
+          //     // แปลง TAX object เป็น string
+          //     item.TAX = JSON.stringify(item.TAX);
+          //   }
+          //   return item;
+          // });
+          console.log(response);
+          
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
 
@@ -257,16 +274,11 @@ export class DashboardComponent {
       });
     }
     else if (this.selectedTypeOld === 'Supplier') {
-      this.customerService.findDataOldSupplier(this.filtersOld.num, this.filtersOld.name, this.filtersOld.tax_Id, this.filtersOld.site).subscribe({
+      this.customerService.findDataOldSupplier(this.filtersOld.num, this.filtersOld.name, this.filtersOld.tax_Id).subscribe({
         next: (response: any) => {
-          this.listOfDataOld = response.map((item: any) => {
-            // ตรวจสอบว่า TAX เป็น object หรือไม่
-            if (typeof item.TAX === 'object') {
-              // แปลง TAX object เป็น string
-              item.TAX = JSON.stringify(item.TAX);
-            }
-            return item;
-          });
+          this.listOfDataOld = response
+          console.log(this.listOfDataOld);
+          
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
           this.updateDisplayDataOld();

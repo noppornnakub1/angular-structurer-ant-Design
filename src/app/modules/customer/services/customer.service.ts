@@ -91,7 +91,7 @@ export class CustomerService {
     return this._http.get<CustomerSupplier>(`/Customer/FindDataHistoryByUserID${params}`);
   }
 
-  findDataOldCustomer(num?: string, name?: string, tax?: string, site?: string): Observable<DataOld> {
+  findDataOldCustomer(num?: string, name?: string, site?: string): Observable<DataOld> {
     // สร้าง query string ตามพารามิเตอร์ที่มีค่า
     let params = new HttpParams();
   
@@ -100,9 +100,6 @@ export class CustomerService {
     }
     if (name) {
       params = params.set('name', name);
-    }
-    if (tax) {
-      params = params.set('tax', tax); // กำหนดชื่อพารามิเตอร์ให้ตรงกับใน backend
     }
     if (site) {
       params = params.set('site', site);
@@ -112,7 +109,7 @@ export class CustomerService {
     return this._http.get<DataOld>('/BankMasterData/KEY_CUSTOMER', { params });
   }
 
-  findDataOldSupplier(num?: string, name?: string, tax?: string, site?: string): Observable<DataOld> {
+  findDataOldSupplier(num?: string, name?: string, tax?: string): Observable<DataOld> {
     // สร้าง query string ตามพารามิเตอร์ที่มีค่า
     let params = new HttpParams();
   
@@ -125,12 +122,9 @@ export class CustomerService {
     if (tax) {
       params = params.set('tax', tax); // กำหนดชื่อพารามิเตอร์ให้ตรงกับใน backend
     }
-    if (site) {
-      params = params.set('site', site);
-    }
   
     // ส่ง request ไปยัง backend พร้อมพารามิเตอร์
-    return this._http.get<DataOld>('/BankMasterData/KEY_SUPPPLIER', { params });
+    return this._http.get<DataOld>('/BankMasterData/KEY_SUPPLIER', { params });
   }
 
   CheckDupplicateCustomer(key: string): Observable<any> {
@@ -156,7 +150,7 @@ export class CustomerService {
       params += params ? `&status=${status}` : `?status=${status}`;
     }
   
-    return this._http.get<CustomerSupplier>(`/Customer/FindDataHistoryByUserID${params}`);
+    return this._http.get<CustomerSupplier>(`/Customer/FindDataHistoryByApprover${params}`);
   }
 
   FindDataHistoryByApproverFN(id?: number, company?: string,status?: string): Observable<CustomerSupplier> {
@@ -176,5 +170,9 @@ export class CustomerService {
     }
   
     return this._http.get<CustomerSupplier>(`/Customer/FindDataHistoryByApproverFN${params}`);
+  }
+
+  uploadFile(file: any): Observable<any> {
+    return this._http.post(`/Customer/upload`, file);
   }
 }

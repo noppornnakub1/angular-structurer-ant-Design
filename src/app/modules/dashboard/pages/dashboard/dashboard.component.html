@@ -128,7 +128,7 @@
             <td>{{ data.NAME }}</td>
             <td>{{ data.NUM }}</td>
             <td>{{ data.TAX }}</td>
-            <!-- <td>{{ data.source }}</td> -->
+            <td>{{ data.PAYMENT_MEDTHOD }}</td>
             <td class="text-center">
               <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"><span
                   nz-icon nzType="eye" nzTheme="outline"></span>View</button>
@@ -142,4 +142,3 @@
     </div>
   </nz-tab>
 </nz-tabset>
-

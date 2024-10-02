@@ -18,7 +18,7 @@
         </nz-form-label>
         <nz-select formControlName="supplier_type" nzPlaceHolder="Select supplier_type" class="custom-select"
           (ngModelChange)="onSupplierTypeChange($event)">
-          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.code_from+')'+' '+' '+type.meaning"
+          <nz-option *ngFor="let type of filteredDataType" [nzLabel]="'('+type.code_from+')'+' '+' '+type.meaning"
             [nzValue]="type.code"></nz-option>
         </nz-select>
       </div>
@@ -56,9 +56,13 @@
             info
           </span>
         </nz-form-label>
-        <nz-input-group nzPrefixIcon="idcard" class="form-input">
+        <!-- <nz-input-group nzPrefixIcon="idcard" class="form-input">
           <input nz-input type="text" placeholder="Tax ID" formControlName="tax_Id" (input)="validateTaxId($event)"
             (blur)="getTaxIdData()" />
+        </nz-input-group> -->
+        <nz-input-group nzPrefixIcon="idcard" class="form-input">
+          <input nz-input type="text" placeholder="Tax ID" formControlName="tax_Id" (input)="validateTaxId($event)"
+           />
         </nz-input-group>
       </div>
       <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
@@ -85,18 +89,14 @@
         </nz-form-label>
 
         <div class="input-with-prefix">
-          <nz-select formControlName="prefix" nzPlaceHolder="Prefix" class="customize-input">
-              <nz-option nzValue="คุณ" nzLabel="คุณ"></nz-option>
-              <nz-option nzValue="นาย" nzLabel="นาย"></nz-option>
-              <nz-option nzValue="นาง" nzLabel="นาง"></nz-option>
-              <nz-option nzValue="นางสาว" nzLabel="นางสาว"></nz-option>
-              <nz-option nzValue="บริษัท" nzLabel="บริษัท"></nz-option>
+          <nz-select formControlName="prefix" nzPlaceHolder="Prefix" class="customize-input prefix-dropdown">
+            <nz-option *ngFor="let type of item_prefix" [nzLabel]="type.name" [nzValue]="type.name"></nz-option>
           </nz-select>
-      
+
           <nz-input-group nzPrefixIcon="user" class="form-input">
-              <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" />
+            <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()"/>
           </nz-input-group>
-      </div>
+        </div>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="3" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Telephone<span style="color: red;">*</span>
@@ -202,11 +202,11 @@
           </span>
         </nz-form-label>
         <nz-select formControlName="payment_method" nzPlaceHolder="Select Payment Method" class="custom-select">
-          <nz-option *ngFor="let type of listOfPaymentMethod" [nzLabel]="type.paymentMethodName"
+          <nz-option *ngFor="let type of filteredDataPaymentMethod" [nzLabel]="type.paymentMethodName"
             [nzValue]="type.paymentMethodName"></nz-option>
         </nz-select>
       </div>
-      <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <div *ngIf="!isOverseaSupplier()  && !isUser" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Vat</nz-form-label>
         <nz-select formControlName="vat" nzPlaceHolder="Select Vat" class="custom-select">
           <nz-option *ngFor="let type of listOfVat" [nzLabel]="type.inputTaxCode"
@@ -233,7 +233,7 @@
         nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
           nzTheme="outline"></span>Cancel</button>
       <button nz-tooltip nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
-        *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(supplierForm.get('status')?.value)) || isAdmin"
+        *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(supplierForm.get('status')?.value)) || isAdmin || isApproved"
         class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft
       </button>
@@ -274,8 +274,11 @@
 <form [formGroup]="supplierBankForm" *ngIf="showSupplierBankForm">
   <div class="content-card mt-3">
     <ng-container *ngIf="!isViewMode">
-      <button class="mr-2" nz-button nzType="primary" (click)="showBankCopy()">
+      <button *ngIf="!showSupplierBankFormAdd" class="mr-2" nz-button nzType="primary" (click)="showBankCopy()">
         <span nz-icon nzType="plus" nzTheme="outline"></span>เพิ่ม Bank
+      </button>
+      <button *ngIf="showSupplierBankFormAdd" class="mr-2" nz-button type="primary" danger (click)="hideBankCopy()">
+        <span nz-icon nzType="close" nzTheme="outline"></span>ลบ bank
       </button>
     </ng-container>
     <nz-divider nzText="Supplier Bank"></nz-divider>
@@ -304,7 +307,8 @@
             <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch<span
                 style="color: red;">*</span></nz-form-label>
             <nz-form-control [nzSpan]="24">
-              <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input" />
+              <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input"
+                (input)="validateBranch($event)" />
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -314,7 +318,7 @@
               Number<span style="color: red;">*</span></nz-form-label>
             <nz-form-control [nzSpan]="24">
               <input nz-input id="accountNumber" placeholder="Account Number" formControlName="account_num"
-                class="form-input" />
+                class="form-input" (input)="validateAccountNum($event)" />
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -359,7 +363,8 @@
                 <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch<span
                     style="color: red;">*</span></nz-form-label>
                 <nz-form-control [nzSpan]="24">
-                  <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input" />
+                  <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input"
+                    (input)="validateBranchAdd($event)" />
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -369,7 +374,7 @@
                   Number<span style="color: red;">*</span></nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input nz-input id="accountNumber" placeholder="Account Number" formControlName="account_num"
-                    class="form-input" />
+                    class="form-input" (input)="validateAccountNumAdd($event)" />
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -394,7 +399,7 @@
         nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
           nzTheme="outline"></span>Cancel</button>
       <button nz-tooltip nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
-        *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(supplierForm.get('status')?.value)) || isAdmin"
+        *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(supplierForm.get('status')?.value)) || isAdmin || isApproved"
         class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft
       </button>

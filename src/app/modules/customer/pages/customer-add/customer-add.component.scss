@@ -1,81 +1,100 @@
-
 .custom-select .ant-select-selector {
-    height: 32px; /* กำหนดความสูง */
-    display: flex;
-    align-items: center;
-  }
-  
-  .custom-input {
-    height: 32px; /* กำหนดความสูง */
-    width: 100%;
-  }
+  height: 32px;
+  /* กำหนดความสูง */
+  display: flex;
+  align-items: center;
+}
 
-  ::ng-deep .ant-select-single .ant-select-selector {
-    height: 2.5rem !important;
-    display: flex;
-    align-items: center;
-    width: 100% !important;
-  }
-  
-  ::ng-deep .ant-select-top-control {
-    height: 2.5rem !important;
-    width: 100% !important;
-  }
-  .custom-select {
-    width: 100%;
-  }
-  
-  .nz-input-group .ant-select {
-    width: 100%;
-  }
+.custom-input {
+  height: 32px;
+  /* กำหนดความสูง */
+  width: 100%;
+}
 
-  .green-button {
-    background-color: yellowgreen;
-    color: white;
-    border-color: yellowgreen;
-  
-    &:hover {
-      background-color: darkgreen;
-      border-color: darkgreen;
-    }
-  }
+::ng-deep .ant-select-single .ant-select-selector {
+  height: 2.5rem !important;
+  display: flex;
+  align-items: center;
+  width: 100% !important;
+}
 
-  .button-yellow{
-    background-color: #ffc107;
-    color: white;
-    border-color: #ffc107;
-    color: black;
-  
-    &:hover {
-      background-color: darkgoldenrod;
-      border-color: darkgoldenrod;
-    }
-  }
+::ng-deep .ant-select-top-control {
+  height: 2.5rem !important;
+  width: 100% !important;
+}
 
-  .content-card-search {
-    margin-bottom: 20px;
-  }
-  
-  .content-card-search nz-select {
-    width: 100%;
-  }
-  
-  .content-card-search .form-input {
-    width: 100%;
-  }
+.custom-select {
+  width: 100%;
+}
 
-  ::ng-deep .ant-select-single .ant-select-selector {
-    height: 2.5rem !important;
-    display: flex;
-    align-items: center;
-    width: 100% !important;
-  }
-  
-  ::ng-deep .ant-select-top-control {
-    height: 2.5rem !important;
-    width: 100% !important;
-  }
+.nz-input-group .ant-select {
+  width: 100%;
+}
 
-  .swal2-container {
-    display: block !important;
+.green-button {
+  background-color: yellowgreen;
+  color: white;
+  border-color: yellowgreen;
+
+  &:hover {
+    background-color: darkgreen;
+    border-color: darkgreen;
   }
+}
+
+.button-yellow {
+  background-color: #ffc107;
+  color: white;
+  border-color: #ffc107;
+  color: black;
+
+  &:hover {
+    background-color: darkgoldenrod;
+    border-color: darkgoldenrod;
+  }
+}
+
+.content-card-search {
+  margin-bottom: 20px;
+}
+
+.content-card-search nz-select {
+  width: 100%;
+}
+
+.content-card-search .form-input {
+  width: 100%;
+}
+
+::ng-deep .ant-select-single .ant-select-selector {
+  height: 2.5rem !important;
+  display: flex;
+  align-items: center;
+  width: 100% !important;
+}
+
+::ng-deep .ant-select-top-control {
+  height: 2.5rem !important;
+  width: 100% !important;
+}
+
+.swal2-container {
+  display: block !important;
+}
+
+.apply-btn:hover {
+  background-color: #0056b3;
+}
+
+.choose::-webkit-file-upload-button {
+  color: white;
+  display: inline-block;
+  background: #1CB6E0;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 10pt;
+}
+

@@ -4,10 +4,8 @@
     <div nz-row nzGutter="16" class="mt-2">
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Customer Type<span style="color: red;">*</span>
-          <span nz-tooltip 
-          nzTooltipTitle="Customer Type = ประเภทของ Customer ที่ต้องการสร้าง 
-          สามารถเลือก Dropdown ลงมาดูข้อมูลได้"
-          class="material-symbols-outlined ml-1" style="font-size: 18px;" >
+          <span nz-tooltip nzTooltipTitle="Customer Type = ประเภทของ Customer ที่ต้องการสร้าง 
+          สามารถเลือก Dropdown ลงมาดูข้อมูลได้" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -20,10 +18,8 @@
 
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Customer Number<span style="color: red;">*</span>
-          <span nz-tooltip 
-          nzTooltipTitle="Customer Number = ระบบจะ running number 
-          ให้ตามประเภทของ Customer"
-          class="material-symbols-outlined ml-1" style="font-size: 18px;" >
+          <span nz-tooltip nzTooltipTitle="Customer Number = ระบบจะ running number 
+          ให้ตามประเภทของ Customer" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -34,10 +30,9 @@
 
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
         <nz-form-label nzNoColon>Site<span style="color: red;">*</span>
-          <span nz-tooltip 
-          nzTooltipTitle="Site = สำนักงานใหญ่ คือ 00000 , สาขาย่อยจะ running ตามสาขา 
-          เช่น สาขาที่ 1 คือ 00001, สาขาที่ 10 คือ 00010"
-          class="material-symbols-outlined ml-1" style="font-size: 18px;" >
+          <span nz-tooltip nzTooltipTitle="Site = สำนักงานใหญ่ คือ 00000 , สาขาย่อยจะ running ตามสาขา 
+          เช่น สาขาที่ 1 คือ 00001, สาขาที่ 10 คือ 00010" class="material-symbols-outlined ml-1"
+            style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -53,10 +48,8 @@
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Tax ID<span style="color: red;">*</span>
-          <span nz-tooltip 
-          nzTooltipTitle="TAX ID : กรุณากรอกตัวเลข 13 หลัก ติดกัน โดยไม่ต้องมี -
-          หากเป็นลูกค้าที่ไม่มี TAX ID ให้กรอก “-”"
-          class="material-symbols-outlined ml-1" style="font-size: 18px;" >
+          <span nz-tooltip nzTooltipTitle="TAX ID : กรุณากรอกตัวเลข 13 หลัก ติดกัน โดยไม่ต้องมี -
+          หากเป็นลูกค้าที่ไม่มี TAX ID ให้กรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -67,11 +60,9 @@
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Name<span style="color: red;">*</span>
-          <span nz-tooltip 
-          nzTooltipTitle="Name : ชื่อ Customer กรุณา กรอกข้อมูลตาม Format
+          <span nz-tooltip nzTooltipTitle="Name : ชื่อ Customer กรุณา กรอกข้อมูลตาม Format
           กรณีบุคคลธรรมดา : คุณ ชื่อ นามสกุล [ช่องว่าง คือ เว้นวรรค]
-          กรณีนิติบุคคล : บริษัท ......... จำกัด "
-          class="material-symbols-outlined ml-1" style="font-size: 18px;" >
+          กรณีนิติบุคคล : บริษัท ......... จำกัด " class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -81,11 +72,9 @@
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Telephone<span style="color: red;">*</span>
-          <span nz-tooltip 
-          nzTooltipTitle="Tel : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
+          <span nz-tooltip nzTooltipTitle="Tel : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
           เช่น 063-259-1642 กรุณากรอก 0692591642
-          หาก ไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”"
-          class="material-symbols-outlined ml-1" style="font-size: 18px;" >
+          หาก ไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -96,9 +85,8 @@
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Email<span style="color: red;">*</span>
-          <span nz-tooltip 
-          nzTooltipTitle="Email : ของ Customer ถ้าไม่มีให้ระบุเป็น “-”"
-          class="material-symbols-outlined ml-1" style="font-size: 18px;" >
+          <span nz-tooltip nzTooltipTitle="Email : ของ Customer ถ้าไม่มีให้ระบุเป็น “-”"
+            class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -108,9 +96,9 @@
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Address<span style="color: red;">*</span>
-          <span nz-tooltip 
-          nzTooltipTitle="ADDRESS : ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูลตั้งแต่ บ้านเลขที่,อาคาร(ถ้ามี),ชั้น(ถ้ามี), เลขที่ห้อง(ถ้ามี),หมู่(ถ้ามี),หมู่บ้าน(ถ้ามี),ถนน(ถ้ามี),ซอย(ถ้ามี),ตรอก(ถ้ามี) และอื่นๆ"
-          class="material-symbols-outlined ml-1" style="font-size: 18px;" >
+          <span nz-tooltip
+            nzTooltipTitle="ADDRESS : ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูลตั้งแต่ บ้านเลขที่,อาคาร(ถ้ามี),ชั้น(ถ้ามี), เลขที่ห้อง(ถ้ามี),หมู่(ถ้ามี),หมู่บ้าน(ถ้ามี),ถนน(ถ้ามี),ซอย(ถ้ามี),ตรอก(ถ้ามี) และอื่นๆ"
+            class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -120,10 +108,8 @@
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Postal Code<span style="color: red;">*</span>
-          <span nz-tooltip 
-          nzTooltipTitle="Portal Code : เสริช รหัสไปรษณีย์ ระบบจะขึ้น Dropdown 
-          มาให้เลือก ตำบล,อำเภอ,จังหวัด"
-          class="material-symbols-outlined ml-1" style="font-size: 18px;" >
+          <span nz-tooltip nzTooltipTitle="Portal Code : เสริช รหัสไปรษณีย์ ระบบจะขึ้น Dropdown 
+          มาให้เลือก ตำบล,อำเภอ,จังหวัด" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -157,18 +143,39 @@
           <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
         </nz-input-group>
       </div>
-
-
     </div>
+    <nz-divider nzText="Upload file"></nz-divider>
+    <nz-table #basicTable nzBordered [nzData]="files">
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th *ngIf="!isViewMode">Upload</th>
+          <th>Download File</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let file of files">
+          <td>{{ file.fileName }}</td>
+          <td *ngIf="!isViewMode">
+            <input class="choose" type="file" (change)="onFileSelected($event, file)" />
+            <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
+            <!-- <input class="upload-button" type="file" (change)="onFileSelected($event, file)" /> -->
+          </td>
+          <td class="text-center">
+            <span class="material-symbols-outlined">
+              description
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
     <div class="mt-5 display-flex justify-center ">
       <button nz-button nzType="default" class="mr-2" (click)="backClicked($event)"><span nz-icon nzType="rollback"
           nzTheme="outline"></span>ย้อนกลับ</button>
       <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || isAdmin)" nz-button
         nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
           nzTheme="outline"></span>Cancel</button>
-      <button 
-          nz-tooltip 
-          nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
+      <button nz-tooltip nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
         *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(customerForm.get('status')?.value)) || isAdmin"
         class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft

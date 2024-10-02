@@ -49,8 +49,15 @@ export class CustomerAddComponent implements OnInit {
   listDataByTaxId: any[] = [];
   isDupplicate: boolean = false;
   typeCode: string = '';
-  newCusnum : string = '';
+  newCusnum: string = '';
   tempCusForm: any;
+  files = [
+    { fileName: 'ใบขอเปิด Customer', status: null },
+    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', status: null },
+  ];
+  file: any;
+  listfile: File[] = [];
+  uploadedFiles: any[] = [];
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -81,6 +88,9 @@ export class CustomerAddComponent implements OnInit {
       status: ['', Validators.required],
       company: ['', Validators.required],
       user_id: [''],
+      file_req: [''],
+      file_certificate: [''],
+      path: ['']
     });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -208,21 +218,21 @@ export class CustomerAddComponent implements OnInit {
           province: '-',
           district: '-',
           subdistrict: '-',
-          site: 'Head Office'
-
-        });
-      }
-      else {
-        this.customerForm.patchValue({
-          customer_num: '',
-          postalCode: '',
-          province: '',
-          district: '',
-          subdistrict: '',
           site: ''
 
         });
       }
+      // else {
+      //   this.customerForm.patchValue({
+      //     customer_num: '',
+      //     postalCode: '',
+      //     province: '',
+      //     district: '',
+      //     subdistrict: '',
+      //     site: ''
+
+      //   });
+      // }
       // else {
       //   this.customerService.getTopCustomerByType(data.code).subscribe(topCustomerData => {
       //     let newCustomerNum: string;
@@ -290,16 +300,16 @@ export class CustomerAddComponent implements OnInit {
     // if (this.isSubmitting) {
     //   return; // ป้องกันการ submit ซ้ำ
     // }
-    
+
     this.isSubmitting = true;
     if (!this.customerId) {
       this.customerForm.patchValue({ company: currentUser.company });
       console.log("!this.customerId");
-      
+
     }
     this.CheckDupplicateData();
     console.log(this.customerForm.valid, this.customerForm.value);
-    
+
     if (this.customerForm.valid) {
       const formValue = this.prepareFormData();
       const selectedPostItem = this.items_provinces.find(item => item.postalCode === formValue.postalCode && this.isSubdistrictMatching(item));
@@ -315,6 +325,8 @@ export class CustomerAddComponent implements OnInit {
           next: (response) => {
             this.customerForm.patchValue({ customer_id: response.customer_id });
             this.insertLog();
+            this.UploadFile()
+            // this.UpdatePath(customer_id)
             Swal.fire({
               icon: 'success',
               title: 'Saved!',
@@ -353,7 +365,11 @@ export class CustomerAddComponent implements OnInit {
 
 
   onUpdate(formValue: any): void {
+    if(this.customerId){
+      formValue.id = this.customerId;
+    }
     if (this.customerForm.valid && this.customerId) {
+      this.UploadFile()
       this.customerService.updateData(this.customerId, formValue).subscribe({
         next: (response) => {
           this.customerForm.patchValue({ customer_id: this.customerId });
@@ -395,7 +411,10 @@ export class CustomerAddComponent implements OnInit {
       formValue.postalCode = selectedPostItem.postalCode; // ใช้ค่า postalCode ที่ถูกต้อง
       formValue.post_id = selectedPostItem.post_id; // เพิ่ม post_id เข้าไปใน formValue
     }
-    if (!this.customerId) {
+    if (this.listDataByTaxId) {
+      formValue.id = 0
+    }
+    else if (!this.customerId) {
       delete formValue.id;
     }
     formValue.user_id = currentUser.user_id;
@@ -423,7 +442,7 @@ export class CustomerAddComponent implements OnInit {
     delete this.tempCusForm.post_id;
     this.customerForm.setValue(this.tempCusForm);
     console.log(this.customerForm);
-    
+
     if (!currentUser) {
       console.error('Current user is not available in local storage');
       return;
@@ -549,7 +568,7 @@ export class CustomerAddComponent implements OnInit {
       if (result.isConfirmed) {
         if (result.isConfirmed) {
           const currentStatus = this.customerForm.get('status')?.value;
-          const newStatus = currentStatus === 'Pending Approve By ACC' ? 'Pending Approve By FN' : 'Pending Approved By ACC';
+          const newStatus = currentStatus === 'Pending Approved By ACC' ? 'Pending Approve By FN' : 'Pending Approved By ACC';
           this.setStatusAndSubmit(newStatus);
         }
       }
@@ -628,12 +647,12 @@ export class CustomerAddComponent implements OnInit {
 
   setStatusAndSubmit(status: string): void {
     this.customerForm.patchValue({ status });
-    if(!this.customerId){
+    if (!this.customerId) {
       this.customerForm.patchValue({ customer_num: this.newCusnum });
       console.log("625", this.customerForm.value);
     }
-    
-    
+
+
     this.onSubmit();
   }
 
@@ -742,22 +761,22 @@ export class CustomerAddComponent implements OnInit {
     return this.selectType === 'OSEA';  // ตรวจสอบค่าซึ่งหมายถึง OSEA - ลูกหนี้ต่างประเทศ
   }
 
-  CheckDupplicateData(){
+  CheckDupplicateData() {
     if (this.customerForm.value.customer_num === '') {
       const name = this.customerForm.value.name.trim(); // ตัดช่องว่างต้นและท้าย
       const site = this.customerForm.value.site.trim(); // ตัดช่องว่างต้นและท้าย
-    
+
       // ตรวจสอบว่า name เป็นภาษาอังกฤษหรือไม่
       const isEnglish = /^[A-Za-z\s]+$/.test(name);
       const cleanedName = isEnglish ? name.replace(/\s+/g, '').toUpperCase() : name.replace(/\s+/g, '');
       const key = site + cleanedName;
-    
+
       console.log("Generated key for CheckDupplicateCustomer:", key);
-    
+
       this.customerService.CheckDupplicateCustomer(key).subscribe({
         next: (response: any) => {
           console.log("Response from CheckDupplicateCustomer:", response);
-    
+
           if (response && response.length > 0) {
             Swal.fire({
               icon: 'error',
@@ -771,12 +790,12 @@ export class CustomerAddComponent implements OnInit {
         error: (err) => {
           if (err === 'No customers found.') {
             console.log("ไม่พบข้อมูลซ้ำ, ดำเนินการหาข้อมูลเลขล่าสุด...");
-    
+
             // เมื่อไม่พบข้อมูลซ้ำ ให้เรียก GetNumMaxCustomer
             this.customerService.GetNumMaxCustomer(this.typeCode).subscribe({
               next: (response: any) => {
                 console.log("Response from GetNumMaxCustomer:", response);
-            
+
                 if (!response || response.length === 0 || response[0]["MAX(NUM)"] === null) {
                   this.customerForm.patchValue({ customer_num: '' });
                   console.log("No customers found, setting customer_num to empty.");
@@ -784,20 +803,20 @@ export class CustomerAddComponent implements OnInit {
                   const max = response[0]["MAX(NUM)"];
                   const maxStr = String(max);
                   console.log("Max Customer Num String:", maxStr);
-            
+
                   // แยกตัวอักษรและตัวเลข โดยให้แน่ใจว่าตัวอักษรอยู่ข้างหน้า และตัวเลขอยู่ข้างหลัง
                   const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
                   const prefix = matchResult ? matchResult[1] : ''; // ตัวอักษรที่รวมตัวเลขแรกด้วย เช่น "1A"
                   const numPart = matchResult ? matchResult[2] : '0'; // เลขส่วนท้าย เช่น "007447"
-            
+
                   // แสดงค่า prefix และ numPart เพื่อให้แน่ใจว่าถูกต้อง
                   console.log("Prefix:", prefix); // ควรจะเป็น "1A"
                   console.log("NumPart:", numPart); // ควรจะเป็น "007447"
-            
+
                   // แปลง numPart เป็นตัวเลข บวก 1
                   const nextNum = String(parseInt(numPart, 10) + 1).padStart(numPart.length, '0');
                   console.log("Next Num after increment:", nextNum); // ควรจะเป็น "007448"
-            
+
                   // ประกอบ prefix และเลขใหม่เข้าด้วยกัน
                   const newCustomerNum = `${prefix}${nextNum}`;
                   this.newCusnum = newCustomerNum;
@@ -807,7 +826,7 @@ export class CustomerAddComponent implements OnInit {
                   console.log("New Customer Num:", this.customerForm.value);
                   this._cdr.markForCheck();
                 }
-            
+
                 this._cdr.markForCheck();
               },
               error: (err) => {
@@ -821,4 +840,81 @@ export class CustomerAddComponent implements OnInit {
       });
     }
   }
+
+  onFileSelected(event: Event, file: any): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const selectedFile = input.files[0];
+
+      // ตรวจสอบชนิดของไฟล์
+      const fileType = selectedFile.type;
+      if (fileType !== 'application/pdf') {
+        Swal.fire({
+          icon: 'error',
+          title: 'ชนิดของไฟล์ไม่ถูกต้อง',
+          text: 'ชนิดของไฟล์ต้องเป็น .PDF เท่านั้น',
+          confirmButtonText: 'ปิด'
+        });
+        input.value = ''; // รีเซ็ต input file
+        return;
+      }
+
+      // ตรวจสอบขนาดของไฟล์ (ขนาดไฟล์จะถูกวัดในหน่วย bytes, 1MB = 1,048,576 bytes)
+      const maxSizeInMB = 5;
+      const maxSizeInBytes = maxSizeInMB * 1048576; // 5MB in bytes
+      if (selectedFile.size > maxSizeInBytes) {
+        Swal.fire({
+          icon: 'error',
+          title: 'ขนาดของไฟล์ไม่ถูกต้อง',
+          text: 'ขนาดของไฟล์ต้องไม่เกิน 5 MB ',
+          confirmButtonText: 'ปิด'
+        });
+        input.value = ''; // รีเซ็ต input file
+        return;
+      }
+      // ถ้าไฟล์ผ่านการตรวจสอบทั้งชนิดและขนาด
+      this.listfile.push(selectedFile);
+      console.log('Selected file:', this.listfile);
+    }
+  }
+
+  UploadFile() {
+    this.listfile.forEach((file) => {
+      const formData = new FormData();
+      formData.append('file', file, file.name);
+      this.customerService.uploadFile(formData).subscribe({
+        next: (response: any) => {
+          this.uploadedFiles.push(response)
+          this.customerForm.value.path = response.filePath;
+          this.customerForm.value.file_req = this.uploadedFiles[0].fileName;
+          this.customerForm.value.file_certificate = this.uploadedFiles[1].fileName;
+          if(this.customerId === null && this.customerId === undefined){
+            this.customerService.updateData(this.customerId, this.customerForm.value).subscribe({
+              next: (response) => {
+              },
+              error: (err) => {
+                console.error('Error updating data', err);
+              }
+            });  
+          }
+        },
+        error: () => {
+          // Handle error
+        }
+      });
+    });
+    this.listfile = [];
+  }
+
+  // UpdatePath(id : number , value){
+  //   this.customerService.updateData(id, formValue).subscribe({
+  //     next: (response) => {
+  //     },
+  //     error: (err) => {
+  //       console.error('Error updating file', err);
+  //     }
+  //   });
+  // }
+
+
 }

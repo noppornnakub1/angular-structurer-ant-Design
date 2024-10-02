@@ -99,9 +99,6 @@
           </tr>
         </tbody>
       </nz-table>
-      <nz-pagination [nzPageSize]="pageSize" [nzTotal]="filteredData.length" [(nzPageIndex)]="pageIndex"
-        [nzShowSizeChanger]="true" [nzPageSizeOptions]="[10, 20, 50]" (nzPageSizeChange)="onPageSizeChange($event)"
-        (nzPageIndexChange)="onPageIndexChange($event)"></nz-pagination>
     </div>
   </nz-tab>
   <nz-tab nzTitle="Old Data">

@@ -144,6 +144,15 @@ export class DashboardComponent {
   ) { }
 
   ngOnInit(): void {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (currentUser) {
+      if (!localStorage.getItem('checkLogin')) {
+        localStorage.setItem('checkLogin', '1');
+        window.location.reload();
+      } else {
+        localStorage.removeItem('checkLogin');
+      }
+    }
     this.checkRole();
     this.getData();
   }

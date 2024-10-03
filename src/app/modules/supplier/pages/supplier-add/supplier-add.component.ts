@@ -58,7 +58,7 @@ export interface DataVat {
 
 export interface DataCompany {
   com_code: number,
-  full_name: string,
+  fullName: string,
   abbreviation: string,
   group_name: string
 }
@@ -1065,6 +1065,8 @@ export class SupplierAddComponent {
         if (CheckcurrentUser.company === 'ALL') {
           this.listOfCompany = response;
           this.filteredDataompany = response;
+          console.log(response);
+          
         } else {
           // Filter the company list based on the user's companies
           this.listOfCompany = response.filter((company: DataCompany) => userCompanies.includes(company.abbreviation));

@@ -8,7 +8,7 @@ import { prefix } from '../../modules/supplier/pages/supplier-add/supplier-add.c
   providedIn: 'root'
 })
 export class prefixService {
-    private apiUrl = '/PrefixMasterData/PrefixInfo';
+    private apiUrl = '/Prefix/getAllPrefixes';
     // private apiUrl = '/PrefixMasterData/PrefixInfo';
   
     constructor(private http: HttpClient) { }

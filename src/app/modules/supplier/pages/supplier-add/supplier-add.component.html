@@ -221,7 +221,7 @@
           </span>
         </nz-form-label>
         <nz-select formControlName="company" nzPlaceHolder="Select Company" class="custom-select">
-          <nz-option *ngFor="let type of filteredDataompany" [nzLabel]="type.abbreviation+' : '+type.full_name"
+          <nz-option *ngFor="let type of filteredDataompany" [nzLabel]="type.abbreviation+' : '+type.fullName"
             [nzValue]="type.abbreviation"></nz-option>
         </nz-select>
       </div>

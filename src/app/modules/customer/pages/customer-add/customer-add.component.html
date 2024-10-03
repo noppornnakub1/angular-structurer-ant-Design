@@ -11,7 +11,7 @@
         </nz-form-label>
         <nz-select formControlName="customer_type" nzPlaceHolder="Select customer_type" class="custom-select"
           (ngModelChange)="onCustomerTypeChange($event)">
-          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.code_from+')'+' '+' '+type.meaning"
+          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.codeFrom+')'+' '+' '+type.meaning"
             [nzValue]="type.code"></nz-option>
         </nz-select>
       </div>

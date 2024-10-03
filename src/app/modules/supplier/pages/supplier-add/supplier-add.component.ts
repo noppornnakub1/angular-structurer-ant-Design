@@ -33,11 +33,11 @@ export interface DataLocation {
 }
 
 export interface DataBank {
-  bank_id: number,
-  bank_name: string,
-  bank_number: string,
-  alternate_bank_name: string,
-  short_bank_name: string,
+  bankId: number,
+  bankName: string,
+  bankNumber: string,
+  alternateBankName: string,
+  shortBankName: string,
 }
 
 export interface DataPaymentMethod {

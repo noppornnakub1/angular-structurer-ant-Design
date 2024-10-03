@@ -799,7 +799,7 @@ export class SupplierAddComponent {
       formValue.postalCode = selectedPostItem.postalCode; // ใช้ค่า postalCode ที่ถูกต้อง
       formValue.post_id = selectedPostItem.post_id; // เพิ่ม post_id เข้าไปใน formValue
     }
-    formValue.user_id = currentUser.user_id;
+    formValue.user_id = currentUser.userId;
     return formValue;
   }
 

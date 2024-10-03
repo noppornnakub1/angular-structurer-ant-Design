@@ -201,7 +201,7 @@ export class AddUserModelComponent implements OnInit {
       // แปลง company จาก string เป็น array
       const companyArray = data.company.split(',');
       this.validateForm.patchValue({
-        user_id: data.user_id,
+        user_id: data.userId,
         firstname: data.firstname,
         lastname: data.lastname,
         email: data.email,

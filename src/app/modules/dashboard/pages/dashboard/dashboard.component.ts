@@ -189,7 +189,7 @@ export class DashboardComponent {
       });
     }
     else if (currentUser.role == 3) {
-      const userId = currentUser.user_id;
+      const userId = currentUser.userId;
       const company = currentUser.company;
       this.customerService.FindDataHistoryByApprover(userId, company,'Pending Approved By ACC').subscribe({
         next: (response: any) => {
@@ -202,7 +202,7 @@ export class DashboardComponent {
       });
     }
     else if (currentUser.role == 4) {
-      const userId = currentUser.user_id;
+      const userId = currentUser.userId;
       const company = currentUser.company;
       this.customerService.FindDataHistoryByApproverFN(userId, company,'Approved By ACC').subscribe({
         next: (response: any) => {
@@ -215,11 +215,15 @@ export class DashboardComponent {
       });
     }
     else {
-      const userId = currentUser.user_id;
+      const userId = currentUser.userId;
+      console.log(userId);
+      
       const company = undefined;
       this.customerService.findDataHistoryByUserId(userId, company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
+          console.log(this.listOfData);
+          
           this.applyFilters();
           this._cdr.markForCheck();
         },

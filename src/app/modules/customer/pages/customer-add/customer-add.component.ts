@@ -297,18 +297,22 @@ export class CustomerAddComponent implements OnInit {
     }
   }
 
-  onUpdate(): void {
-    this.UploadFile();
-    const formValue = this.prepareFormData();
-    console.log('Form value before update:', formValue);
-    // this.customerService.updateData(this.customerId!, formValue).subscribe({
-    //   next: (response) => {
-    //     console.log('Update response:', response);
-    //   },
-    //   error: (err) => {
-    //     console.error('Error updating data', err);
-    //   }
-    // });
+  async onUpdate(): Promise<void> {
+    try {
+      await this.UploadFile();
+      const formValue = this.prepareFormData();
+      console.log('Form value before update:', formValue);
+      this.customerService.updateData(this.customerId!, formValue).subscribe({
+        next: (response) => {
+          console.log('Update response:', response);
+        },
+        error: (err) => {
+          console.error('Error updating data', err);
+        }
+      });
+    } catch (error) {
+      console.error('Error during update process:', error);
+    }
   }
 
   prepareFormData(): any {
@@ -744,24 +748,24 @@ export class CustomerAddComponent implements OnInit {
     }
   }
 
-  UploadFile() {
-    this.listfile.forEach((file) => {
-      const formData = new FormData();
-      formData.append('file', file, file.name);
-      this.customerService.uploadFile(formData).subscribe({
-        next: (response: any) => {
-          this.uploadedFiles.push(response)
-          console.log(response.FilePath);
-          
-          this.customerForm.patchValue({ path: response.FilePath });
-          console.log(this.customerForm.value.path);
-          // this.customerForm.value.file_req = this.uploadedFiles[0].fileName;
-          // this.customerForm.value.file_certificate = this.uploadedFiles[1].fileName;
-        },
-        error: () => {
-        }
+  UploadFile(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.listfile.forEach((file) => {
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        this.customerService.uploadFile(formData).subscribe({
+          next: (response: any) => {
+            this.uploadedFiles.push(response);
+            this.customerForm.patchValue({ path: response.filePath });
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error uploading file:', err);
+            reject(err);
+          }
+        });
       });
+      this.listfile = [];
     });
-    this.listfile = [];
   }
 }

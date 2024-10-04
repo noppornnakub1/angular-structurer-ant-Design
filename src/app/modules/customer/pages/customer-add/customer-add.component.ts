@@ -87,7 +87,7 @@ export class CustomerAddComponent implements OnInit {
       company: ['', Validators.required],
       userId: [0],
       fileReq: [''],
-      file_certificate: [''],
+      fileCertificate: [''],
       path: ['']
     });
     this.route.paramMap.subscribe(params => {
@@ -298,16 +298,17 @@ export class CustomerAddComponent implements OnInit {
   }
 
   onUpdate(): void {
-    const formValue = this.customerForm.value;
+    this.UploadFile();
+    const formValue = this.prepareFormData();
     console.log('Form value before update:', formValue);
-    this.customerService.updateData(this.customerId!, formValue).subscribe({
-      next: (response) => {
-        console.log('Update response:', response);
-      },
-      error: (err) => {
-        console.error('Error updating data', err);
-      }
-    });
+    // this.customerService.updateData(this.customerId!, formValue).subscribe({
+    //   next: (response) => {
+    //     console.log('Update response:', response);
+    //   },
+    //   error: (err) => {
+    //     console.error('Error updating data', err);
+    //   }
+    // });
   }
 
   prepareFormData(): any {
@@ -732,7 +733,7 @@ export class CustomerAddComponent implements OnInit {
       const selectedFile = input.files[0];
       this.listfile.push(selectedFile);
       console.log('Selected file:', selectedFile.name);
-  
+      
       if (fileKey === 'file_req') {
         this.customerForm.patchValue({ fileReq: selectedFile.name });
       } else if (fileKey === 'file_certificate') {
@@ -750,18 +751,12 @@ export class CustomerAddComponent implements OnInit {
       this.customerService.uploadFile(formData).subscribe({
         next: (response: any) => {
           this.uploadedFiles.push(response)
-          this.customerForm.value.path = response.filePath;
-          this.customerForm.value.file_req = this.uploadedFiles[0].fileName;
-          this.customerForm.value.file_certificate = this.uploadedFiles[1].fileName;
-          if (this.customerId === null && this.customerId === undefined) {
-            this.customerService.updateData(this.customerId, this.customerForm.value).subscribe({
-              next: (response) => {
-              },
-              error: (err) => {
-                console.error('Error updating data', err);
-              }
-            });
-          }
+          console.log(response.FilePath);
+          
+          this.customerForm.patchValue({ path: response.FilePath });
+          console.log(this.customerForm.value.path);
+          // this.customerForm.value.file_req = this.uploadedFiles[0].fileName;
+          // this.customerForm.value.file_certificate = this.uploadedFiles[1].fileName;
         },
         error: () => {
         }

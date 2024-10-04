@@ -157,8 +157,9 @@
         <tr *ngFor="let file of files">
           <td>{{ file.fileName }}</td>
           <td *ngIf="!isViewMode">
-            <input class="choose" type="file" (change)="onFileSelected($event, 'file_req')" />
+            <input class="choose" type="file" (change)="onFileSelected($event, file)" />
             <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
+            <!-- <input class="upload-button" type="file" (change)="onFileSelected($event, file)" /> -->
           </td>
           <td class="text-center">
             <span class="material-symbols-outlined">
@@ -183,6 +184,7 @@
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit
       </button>
+      <!-- Approve Button -->
       <button
         *ngIf="isViewMode && 
      (
@@ -193,6 +195,8 @@
         class="mr-2" nz-button nzType="primary" (click)="approve($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
+
+      <!-- Reject Button -->
       <button
         *ngIf="isViewMode && 
      (
@@ -205,7 +209,9 @@
       </button>
     </div>
   </div>
+
 </form>
+
 
 <div *ngIf="isViewMode" class="content-card mt-3">
   <nz-divider nzText="History Info"></nz-divider>

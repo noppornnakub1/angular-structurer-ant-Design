@@ -114,4 +114,8 @@ import { DataBank } from '../pages/supplier-add/supplier-add.component';
     GetNumMaxSupplier(num: string): Observable<any> {
       return this._http.get(`/BankMasterData/Get_Num_KEY_SUPPLIER?num=${num}`);
     }
+
+    GetAllGroups() {
+      return this._http.get(`/Supplier/GetAllGroups`);
+    }
   }

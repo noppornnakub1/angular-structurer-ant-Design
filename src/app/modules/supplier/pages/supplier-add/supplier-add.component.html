@@ -144,7 +144,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Address" formControlName="address_sup" />
+          <input nz-input placeholder="Address" formControlName="addressSup" />
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
@@ -351,7 +351,7 @@
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name<span
                     style="color: red;">*</span></nz-form-label>
-                <nz-select formControlName="nameBank  " nzPlaceHolder="Select bankName" class="custom-select">
+                <nz-select formControlName="nameBank" nzPlaceHolder="Select bankName" class="custom-select">
                   <nz-option *ngFor="let type of listOfBank"
                     [nzLabel]="type.shortBankName+' : '+type.alternateBankName"
                     [nzValue]="type.shortBankName"></nz-option>
@@ -452,7 +452,7 @@
       <tr *ngFor="let log of logs">
         <td>{{ log.username }}</td>
         <td>{{ log.status }}</td>
-        <td>{{ log.reject_reason }}</td>
+        <td>{{ log.rejectReason }}</td>
         <td>{{ log.time | date:'short' }}</td>
       </tr>
     </tbody>

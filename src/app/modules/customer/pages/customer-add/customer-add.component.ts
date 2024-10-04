@@ -88,8 +88,8 @@ export class CustomerAddComponent implements OnInit {
       status: ['', Validators.required],
       company: ['', Validators.required],
       userId: [0],
-      file_req: [''],
-      file_certificate: [''],
+      fileReq: [''],
+      fileCertificate: [''],
       path: ['']
     });
     this.route.paramMap.subscribe(params => {
@@ -201,6 +201,7 @@ export class CustomerAddComponent implements OnInit {
         postalCode: postalCodeCombination
       });
       this.originalData = { ...data };
+      console.log(this.originalData);
       this.getEventLogs(id)
 
     });
@@ -886,10 +887,14 @@ export class CustomerAddComponent implements OnInit {
       formData.append('file', file, file.name);
       this.customerService.uploadFile(formData).subscribe({
         next: (response: any) => {
+          console.log(response)
           this.uploadedFiles.push(response)
-          this.customerForm.value.path = response.filePath;
-          this.customerForm.value.file_req = this.uploadedFiles[0].fileName;
-          this.customerForm.value.file_certificate = this.uploadedFiles[1].fileName;
+          console.log(this.uploadedFiles);
+          // this.customerForm.value.path = response.filePath;
+          // this.customerForm.value.fileReq = this.uploadedFiles[0].fileName;
+          // this.customerForm.value.fileCertificate = this.uploadedFiles[1].fileName;
+          console.log('895',this.customerForm.value);
+          
           if(this.customerId === null && this.customerId === undefined){
             this.customerService.updateData(this.customerId, this.customerForm.value).subscribe({
               next: (response) => {

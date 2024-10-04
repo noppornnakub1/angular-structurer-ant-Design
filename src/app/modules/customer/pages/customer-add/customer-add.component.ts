@@ -731,21 +731,60 @@ export class CustomerAddComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: Event, fileKey: string): void {
+  onFileSelected(event: Event, file: any): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
-      this.listfile.push(selectedFile);
-      console.log('Selected file:', selectedFile.name);
-      
-      if (fileKey === 'file_req') {
-        this.customerForm.patchValue({ fileReq: selectedFile.name });
-      } else if (fileKey === 'file_certificate') {
-        this.customerForm.patchValue({ fileCertificate: selectedFile.name });
+      // ตรวจสอบชนิดของไฟล์
+      const fileType = selectedFile.type;
+      if (fileType !== 'application/pdf') {
+        Swal.fire({
+          icon: 'error',
+          title: 'ชนิดของไฟล์ไม่ถูกต้อง',
+          text: 'ชนิดของไฟล์ต้องเป็น .PDF เท่านั้น',
+          confirmButtonText: 'ปิด'
+        });
+        input.value = ''; // รีเซ็ต input file
+        return;
       }
-  
-      console.log('Updated customerForm:', this.customerForm.value);
+
+      // ตรวจสอบขนาดของไฟล์ (ขนาดไฟล์จะถูกวัดในหน่วย bytes, 1MB = 1,048,576 bytes)
+      const maxSizeInMB = 5;
+      const maxSizeInBytes = maxSizeInMB * 1048576; // 5MB in bytes
+      if (selectedFile.size > maxSizeInBytes) {
+        Swal.fire({
+          icon: 'error',
+          title: 'ขนาดของไฟล์ไม่ถูกต้อง',
+          text: 'ขนาดของไฟล์ต้องไม่เกิน 5 MB ',
+          confirmButtonText: 'ปิด'
+        });
+        input.value = ''; // รีเซ็ต input file
+        return;
+      }
+      // ถ้าไฟล์ผ่านการตรวจสอบทั้งชนิดและขนาด
+      this.listfile.push(selectedFile);
+      console.log('Selected file:', this.listfile);
+      if (this.listfile.length > 0) {
+        this.customerForm.patchValue({ fileReq: this.listfile[0].name });
+      }
+      
+      if (this.listfile.length > 1) {
+        this.customerForm.patchValue({ fileCertificate: this.listfile[1].name });
+      }
     }
+    // if (input.files && input.files.length > 0) {
+    //   const selectedFile = input.files[0];
+    //   this.listfile.push(selectedFile);
+    //   console.log('Selected file:', selectedFile.name);
+
+    //   if (fileKey === 'file_req') {
+    //     this.customerForm.patchValue({ fileReq: selectedFile.name });
+    //   } else if (fileKey === 'file_certificate') {
+    //     this.customerForm.patchValue({ fileCertificate: selectedFile.name });
+    //   }
+
+    //   console.log('Updated customerForm:', this.customerForm.value);
+    // }
   }
 
   UploadFile(): Promise<void> {

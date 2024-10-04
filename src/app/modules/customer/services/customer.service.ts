@@ -25,6 +25,7 @@ export class CustomerService {
   }
 
   updateData(id: number, data: ICustomer): Observable<any> {
+    console.log(`Updating data for Customer ID: ${id}`, data);
     return this._http.put(`/Customer/UpdateCustomer?id=${id}`, data);
   }
 
@@ -53,7 +54,7 @@ export class CustomerService {
     return this._http.post(`/EventLog/InsertLog`, log);
   }
 
-  getLog(customerId: number):Observable<any[]>{
+  getLog(customerId: number): Observable<any[]> {
     return this._http.get<any[]>(`/EventLog/FindLogByCustomnerID?customerId=${customerId}`);
   }
 
@@ -79,22 +80,22 @@ export class CustomerService {
   findDataHistoryByUserId(id?: number, company?: string): Observable<CustomerSupplier> {
     // ตรวจสอบเงื่อนไขว่าเราจะส่งค่าอะไรบ้าง
     let params = '';
-  
+
     if (id) {
       params += `?userid=${id}`;
     }
-  
+
     if (company) {
       params += params ? `&company=${company}` : `?company=${company}`;
     }
-  
+
     return this._http.get<CustomerSupplier>(`/Customer/FindDataHistoryByUserID${params}`);
   }
 
   findDataOldCustomer(num?: string, name?: string, site?: string): Observable<DataOld> {
     // สร้าง query string ตามพารามิเตอร์ที่มีค่า
     let params = new HttpParams();
-  
+
     if (num) {
       params = params.set('num', num);
     }
@@ -104,7 +105,7 @@ export class CustomerService {
     if (site) {
       params = params.set('site', site);
     }
-  
+
     // ส่ง request ไปยัง backend พร้อมพารามิเตอร์
     return this._http.get<DataOld>('/BankMasterData/KEY_CUSTOMER', { params });
   }
@@ -112,7 +113,7 @@ export class CustomerService {
   findDataOldSupplier(num?: string, name?: string, tax?: string): Observable<DataOld> {
     // สร้าง query string ตามพารามิเตอร์ที่มีค่า
     let params = new HttpParams();
-  
+
     if (num) {
       params = params.set('num', num);
     }
@@ -122,7 +123,7 @@ export class CustomerService {
     if (tax) {
       params = params.set('tax', tax); // กำหนดชื่อพารามิเตอร์ให้ตรงกับใน backend
     }
-  
+
     // ส่ง request ไปยัง backend พร้อมพารามิเตอร์
     return this._http.get<DataOld>('/BankMasterData/KEY_SUPPLIER', { params });
   }
@@ -134,14 +135,14 @@ export class CustomerService {
     return this._http.get(`/BankMasterData/Get_Num_KEY_CUSTOMER?num=${num}`);
   }
 
-  FindDataHistoryByApprover(id?: number, company?: string,status?: string): Observable<CustomerSupplier> {
+  FindDataHistoryByApprover(id?: number, company?: string, status?: string): Observable<CustomerSupplier> {
     // ตรวจสอบเงื่อนไขว่าเราจะส่งค่าอะไรบ้าง
     let params = '';
-  
+
     if (id) {
       params += `?userid=${id}`;
     }
-  
+
     if (company) {
       params += params ? `&company=${company}` : `?company=${company}`;
     }
@@ -149,18 +150,18 @@ export class CustomerService {
     if (status) {
       params += params ? `&status=${status}` : `?status=${status}`;
     }
-  
+
     return this._http.get<CustomerSupplier>(`/Customer/FindDataHistoryByApprover${params}`);
   }
 
-  FindDataHistoryByApproverFN(id?: number, company?: string,status?: string): Observable<CustomerSupplier> {
+  FindDataHistoryByApproverFN(id?: number, company?: string, status?: string): Observable<CustomerSupplier> {
     // ตรวจสอบเงื่อนไขว่าเราจะส่งค่าอะไรบ้าง
     let params = '';
-  
+
     if (id) {
       params += `?userid=${id}`;
     }
-  
+
     if (company) {
       params += params ? `&company=${company}` : `?company=${company}`;
     }
@@ -168,7 +169,7 @@ export class CustomerService {
     if (status) {
       params += params ? `&status=${status}` : `?status=${status}`;
     }
-  
+
     return this._http.get<CustomerSupplier>(`/Customer/FindDataHistoryByApproverFN${params}`);
   }
 

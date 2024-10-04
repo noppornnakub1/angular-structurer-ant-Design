@@ -73,8 +73,8 @@ export class CustomerAddComponent implements OnInit {
     this.customerForm = this.fb.group({
       id: [0],
       name: ['', Validators.required],
-      tax_Id: ['', Validators.required],
-      address_sup: ['', Validators.required],
+      taxId: ['', Validators.required],
+      addressSup: ['', Validators.required],
       district: ['', Validators.required],
       subdistrict: ['', Validators.required],
       province: ['', Validators.required],
@@ -82,12 +82,12 @@ export class CustomerAddComponent implements OnInit {
       tel: ['', Validators.required],
       email: ['', Validators.required],
       customer_id: ['0', Validators.required],
-      customer_num: ['', Validators.required],
-      customer_type: ['', Validators.required],
+      customerNum: ['', Validators.required],
+      customerType: ['', Validators.required],
       site: ['', Validators.required],
       status: ['', Validators.required],
       company: ['', Validators.required],
-      user_id: [''],
+      userId: [0],
       file_req: [''],
       file_certificate: [''],
       path: ['']
@@ -103,14 +103,14 @@ export class CustomerAddComponent implements OnInit {
       this.isViewMode = true;
       this.customerForm.disable(); // ทำให้ฟอร์มไม่สามารถแก้ไขได้
     }
-    this.postCodeService.getPostCodes().subscribe(data => {
+    this.postCodeService.getPostCodes().subscribe(data => { 
       this.items_provinces = data;
       this.filteredItemsProvince = data;
     });
     this.getCustomerType();
 
     // Subscribe to customer_type changes
-    this.customerForm.get('customer_type')!.valueChanges.subscribe(value => {
+    this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
       const customerTypeId = this.getCustomerTypeId(value);
       if (customerTypeId) {
         this.loadCustomerType(customerTypeId); // เรียกใช้ฟังก์ชันนี้เมื่อมีการเปลี่ยนแปลงค่า customer_type
@@ -140,7 +140,7 @@ export class CustomerAddComponent implements OnInit {
     }
 
     // อัปเดตค่าใน form control
-    this.customerForm.patchValue({ tax_Id: numericValue });
+    this.customerForm.patchValue({ taxId: numericValue });
     event.target.value = numericValue;
   }
 
@@ -213,7 +213,7 @@ export class CustomerAddComponent implements OnInit {
       if (customerNumPrefix === '1F') {
         // Default customer_num เป็น "-" และซ่อนฟิลด์อื่นๆ
         this.customerForm.patchValue({
-          customer_num: '-',
+          customerNum: '-',
           postalCode: '-',
           province: '-',
           district: '-',
@@ -294,6 +294,8 @@ export class CustomerAddComponent implements OnInit {
 
   onSubmit(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    console.log(currentUser);
+    
     if (this.isViewMode) {
       this.customerForm.enable(); // Enable form temporariliy for validation
     }
@@ -324,8 +326,8 @@ export class CustomerAddComponent implements OnInit {
         this.customerService.addData(formValue).subscribe({
           next: (response) => {
             this.customerForm.patchValue({ customer_id: response.customer_id });
-            this.insertLog();
             this.UploadFile()
+            this.insertLog();
             // this.UpdatePath(customer_id)
             Swal.fire({
               icon: 'success',
@@ -372,7 +374,7 @@ export class CustomerAddComponent implements OnInit {
       this.UploadFile()
       this.customerService.updateData(this.customerId, formValue).subscribe({
         next: (response) => {
-          this.customerForm.patchValue({ customer_id: this.customerId });
+          this.customerForm.patchValue({ customerId: this.customerId });
           this.insertLog();
           Swal.fire({
             icon: 'success',
@@ -417,7 +419,7 @@ export class CustomerAddComponent implements OnInit {
     else if (!this.customerId) {
       delete formValue.id;
     }
-    formValue.user_id = currentUser.user_id;
+    formValue.userId = currentUser.userId;
     return formValue;
   }
 
@@ -449,15 +451,15 @@ export class CustomerAddComponent implements OnInit {
     }
     if (this.customerForm.valid) {
       const log = {
-        id: 0,
-        user_id: currentUser.user_id || 0,
-        username: currentUser.username || 'string',
-        email: currentUser.email || 'string',
-        status: this.customerForm.get('status')?.value || 'Draft',
-        customer_id: customerId,
-        supplier_id: 0,// อ้างอิง id จาก supplierForm
-        time: new Date().toISOString(), // หรือใส่เวลาที่คุณต้องการ
-        reject_reason: this.reasonTemp
+        Id: 0,
+        UserId: currentUser.userId || 0,
+        Username: currentUser.username || 'string',
+        Email: currentUser.email || 'string',
+        Status: this.customerForm.get('status')?.value || 'Draft',
+        CustomerId: customerId,
+        SupplierId: 0,// อ้างอิง id จาก supplierForm
+        Time: new Date().toISOString(), // หรือใส่เวลาที่คุณต้องการ
+        RejectReason: this.reasonTemp
       };
       this.customerService.insertLog(log).subscribe({
         next: (response) => {
@@ -648,7 +650,7 @@ export class CustomerAddComponent implements OnInit {
   setStatusAndSubmit(status: string): void {
     this.customerForm.patchValue({ status });
     if (!this.customerId) {
-      this.customerForm.patchValue({ customer_num: this.newCusnum });
+      this.customerForm.patchValue({ customerNum: this.newCusnum });
       console.log("625", this.customerForm.value);
     }
 
@@ -688,7 +690,7 @@ export class CustomerAddComponent implements OnInit {
   sendEmailNotification(): void {
     if (this.customerForm.get('status')?.value === 'Pending Approved By ACC' && this.customerForm.valid) {
       const company = this.customerForm.get('company')?.value;
-      const customerNum = this.customerForm.get('customer_num')?.value;
+      const customerNum = this.customerForm.get('customerNum')?.value;
       // เรียกใช้ฟังก์ชันเพื่อค้นหาผู้ใช้งาน
       this.customerService.findApproversByCompany(company).subscribe(
         (approvers) => {
@@ -717,7 +719,7 @@ export class CustomerAddComponent implements OnInit {
   }
 
   isDataUnchanged(existingData: any, newData: any): boolean {
-    const fieldsToCompare = ['name', 'tax_Id', 'address_sup', 'district', 'subdistrict', 'province', 'tel', 'email', 'customer_num', 'customer_type', 'site'];
+    const fieldsToCompare = ['name', 'tax_Id', 'address_sup', 'district', 'subdistrict', 'province', 'tel', 'email', 'customerNum', 'customerType', 'site'];
 
 
     const existingPostalCode = existingData.postalCode.split('-')[0];
@@ -762,7 +764,7 @@ export class CustomerAddComponent implements OnInit {
   }
 
   CheckDupplicateData() {
-    if (this.customerForm.value.customer_num === '') {
+    if (this.customerForm.value.customerNum === '') {
       const name = this.customerForm.value.name.trim(); // ตัดช่องว่างต้นและท้าย
       const site = this.customerForm.value.site.trim(); // ตัดช่องว่างต้นและท้าย
 
@@ -788,7 +790,7 @@ export class CustomerAddComponent implements OnInit {
           }
         },
         error: (err) => {
-          if (err === 'No customers found.') {
+          if (err === 'No data found.') {
             console.log("ไม่พบข้อมูลซ้ำ, ดำเนินการหาข้อมูลเลขล่าสุด...");
 
             // เมื่อไม่พบข้อมูลซ้ำ ให้เรียก GetNumMaxCustomer
@@ -797,7 +799,7 @@ export class CustomerAddComponent implements OnInit {
                 console.log("Response from GetNumMaxCustomer:", response);
 
                 if (!response || response.length === 0 || response[0]["MAX(NUM)"] === null) {
-                  this.customerForm.patchValue({ customer_num: '' });
+                  this.customerForm.patchValue({ customerNum: '' });
                   console.log("No customers found, setting customer_num to empty.");
                 } else {
                   const max = response[0]["MAX(NUM)"];
@@ -821,7 +823,7 @@ export class CustomerAddComponent implements OnInit {
                   const newCustomerNum = `${prefix}${nextNum}`;
                   this.newCusnum = newCustomerNum;
                   // อัปเดตค่าใน form
-                  this.customerForm.setValue({ ...this.customerForm.value, customer_num: newCustomerNum });
+                  this.customerForm.setValue({ ...this.customerForm.value, customerNum: newCustomerNum });
                   console.log("New Customer Num:", newCustomerNum);
                   console.log("New Customer Num:", this.customerForm.value);
                   this._cdr.markForCheck();

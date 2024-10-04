@@ -16,7 +16,7 @@
             info
           </span>
         </nz-form-label>
-        <nz-select formControlName="supplier_type" nzPlaceHolder="Select supplier_type" class="custom-select"
+        <nz-select formControlName="supplierType" nzPlaceHolder="Select supplier_type" class="custom-select"
           (ngModelChange)="onSupplierTypeChange($event)">
           <nz-option *ngFor="let type of filteredDataType" [nzLabel]="'('+type.codeFrom+')'+' '+' '+type.meaning"
             [nzValue]="type.code"></nz-option>
@@ -30,7 +30,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="number" class="form-input">
-          <input nz-input placeholder="Supplier Number" formControlName="supplier_num" readonly />
+          <input nz-input placeholder="Supplier Number" formControlName="supplierNum" readonly />
         </nz-input-group>
       </div>
       <div *ngIf="!isOneTime" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
@@ -201,7 +201,7 @@
             info
           </span>
         </nz-form-label>
-        <nz-select formControlName="payment_method" nzPlaceHolder="Select Payment Method" class="custom-select">
+        <nz-select formControlName="paymentMethod" nzPlaceHolder="Select Payment Method" class="custom-select">
           <nz-option *ngFor="let type of filteredDataPaymentMethod" [nzLabel]="type.paymentMethodName"
             [nzValue]="type.paymentMethodName"></nz-option>
         </nz-select>
@@ -286,7 +286,7 @@
       <div nz-row nzGutter="16">
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-label nzNoColon>Supplier Group<span style="color: red;">*</span></nz-form-label>
-          <nz-select [(ngModel)]="selectedSupplierGroup" formControlName="supplier_group"
+          <nz-select [(ngModel)]="selectedSupplierGroup" formControlName="supplierGroup"
             nzPlaceHolder="Select Supplier Group" class="custom-select">
             <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
               [nzValue]="type.group_name"></nz-option>
@@ -296,7 +296,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name<span
                 style="color: red;">*</span></nz-form-label>
-            <nz-select formControlName="name_bank" nzPlaceHolder="Select bankName" class="custom-select">
+            <nz-select formControlName="nameBank" nzPlaceHolder="Select bankName" class="custom-select">
               <nz-option *ngFor="let type of listOfBank" [nzLabel]="type.shortBankName+' : '+type.alternateBankName"
                 [nzValue]="type.shortBankName"></nz-option>
             </nz-select>
@@ -317,7 +317,7 @@
             <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon style="padding: 0px;">Account
               Number<span style="color: red;">*</span></nz-form-label>
             <nz-form-control [nzSpan]="24">
-              <input nz-input id="accountNumber" placeholder="Account Number" formControlName="account_num"
+              <input nz-input id="accountNumber" placeholder="Account Number" formControlName="accountNum"
                 class="form-input" (input)="validateAccountNum($event)" />
             </nz-form-control>
           </nz-form-item>
@@ -327,7 +327,7 @@
             <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon style="padding: 0px;">Account
               Name<span style="color: red;">*</span></nz-form-label>
             <nz-form-control [nzSpan]="24">
-              <input nz-input id="accountName" placeholder="Account Name" formControlName="account_name"
+              <input nz-input id="accountName" placeholder="Account Name" formControlName="accountName"
                 class="form-input" readonly />
             </nz-form-control>
           </nz-form-item>
@@ -341,7 +341,7 @@
           <div nz-row nzGutter="16">
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <nz-form-label nzNoColon>Supplier Group<span style="color: red;">*</span></nz-form-label>
-              <nz-select [(ngModel)]="selectedSupplierGroupAdd" formControlName="supplier_group"
+              <nz-select [(ngModel)]="selectedSupplierGroupAdd" formControlName="supplierGroup"
                 nzPlaceHolder="Select Supplier Group" class="custom-select">
                 <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
                   [nzValue]="type.group_name"></nz-option>
@@ -351,7 +351,7 @@
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name<span
                     style="color: red;">*</span></nz-form-label>
-                <nz-select formControlName="name_bank" nzPlaceHolder="Select bankName" class="custom-select">
+                <nz-select formControlName="nameBank  " nzPlaceHolder="Select bankName" class="custom-select">
                   <nz-option *ngFor="let type of listOfBank"
                     [nzLabel]="type.shortBankName+' : '+type.alternateBankName"
                     [nzValue]="type.shortBankName"></nz-option>
@@ -373,7 +373,7 @@
                 <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon style="padding: 0px;">Account
                   Number<span style="color: red;">*</span></nz-form-label>
                 <nz-form-control [nzSpan]="24">
-                  <input nz-input id="accountNumber" placeholder="Account Number" formControlName="account_num"
+                  <input nz-input id="accountNumber" placeholder="Account Number" formControlName="accountNum"
                     class="form-input" (input)="validateAccountNumAdd($event)" />
                 </nz-form-control>
               </nz-form-item>
@@ -383,7 +383,7 @@
                 <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon style="padding: 0px;">Account
                   Name<span style="color: red;">*</span></nz-form-label>
                 <nz-form-control [nzSpan]="24">
-                  <input nz-input id="accountName" placeholder="Account Name" formControlName="account_name"
+                  <input nz-input id="accountName" placeholder="Account Name" formControlName="accountName"
                     class="form-input" readonly />
                 </nz-form-control>
               </nz-form-item>

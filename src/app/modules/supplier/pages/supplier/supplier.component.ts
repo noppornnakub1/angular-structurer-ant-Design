@@ -136,7 +136,7 @@ export class SupplierComponent implements OnInit {
       });
     }
     else {
-      this.supplierService.findDataByUserId(currentUser.user_id).subscribe({
+      this.supplierService.findDataByUserId(currentUser.userId).subscribe({
         next: (response: any) => {
           this.listOfData = response;
           

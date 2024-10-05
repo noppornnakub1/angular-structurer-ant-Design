@@ -16,7 +16,9 @@ export interface ICustomer {
     site: string,
     tax:string,
     company: string,
-
+    fileReq: string,
+    fileCertificate: string,
+    path: string
   }
 
   export interface CustomerSupplier {

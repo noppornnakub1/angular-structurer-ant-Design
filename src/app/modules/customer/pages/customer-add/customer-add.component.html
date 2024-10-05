@@ -9,9 +9,9 @@
             info
           </span>
         </nz-form-label>
-        <nz-select formControlName="customer_type" nzPlaceHolder="Select customer_type" class="custom-select"
+        <nz-select formControlName="customerType" nzPlaceHolder="Select customer_type" class="custom-select"
           (ngModelChange)="onCustomerTypeChange($event)">
-          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.code_from+')'+' '+' '+type.meaning"
+          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.codeFrom+')'+' '+' '+type.meaning"
             [nzValue]="type.code"></nz-option>
         </nz-select>
       </div>
@@ -24,7 +24,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="number" class="form-input">
-          <input nz-input placeholder="Customer Number" formControlName="customer_num" readonly />
+          <input nz-input placeholder="Customer Number" formControlName="customerNum" readonly />
         </nz-input-group>
       </div>
 
@@ -54,7 +54,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="idcard" class="form-input">
-          <input nz-input type="text" placeholder="Tax ID" formControlName="tax_Id" (input)="validateTaxId($event)"
+          <input nz-input type="text" placeholder="Tax ID" formControlName="taxId" (input)="validateTaxId($event)"
             (blur)="getTaxIdData()" />
         </nz-input-group>
       </div>
@@ -103,7 +103,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Address" formControlName="address_sup" />
+          <input nz-input placeholder="Address" formControlName="addressSup" />
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">

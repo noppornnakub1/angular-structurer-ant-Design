@@ -137,7 +137,7 @@ export class CustomerComponent implements OnInit {
       });
     }
     else {
-      this.customerService.findDataByUserId(currentUser.user_id).subscribe({
+      this.customerService.findDataByUserId(currentUser.userId).subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.changeStatusIfNeeded();

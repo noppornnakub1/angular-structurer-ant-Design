@@ -32,11 +32,11 @@ export interface DataLocation {
 }
 
 export interface DataBank {
-  bank_id: number,
-  bank_name: string,
-  bank_number: string,
-  alternate_bank_name: string,
-  short_bank_name: string,
+  bankId: number,
+  bankName: string,
+  bankNumber: string,
+  alternateBankName: string,
+  shortBankName: string,
 }
 
 export interface DataPaymentMethod {
@@ -57,7 +57,7 @@ export interface DataVat {
 
 export interface DataCompany {
   com_code: number,
-  full_name: string,
+  fullName: string,
   abbreviation: string,
   group_name: string
 }
@@ -169,43 +169,43 @@ export class SupplierAddComponent {
       id: [0],
       name: ['', Validators.required],
       tax_Id: ['', Validators.required],
-      address_sup: ['', Validators.required],
+      addressSup: ['', Validators.required],
       district: ['', Validators.required],
       subdistrict: ['', Validators.required],
       province: ['', Validators.required],
       postalCode: ['', Validators.required],
       tel: ['', Validators.required],
       email: ['', Validators.required],
-      supplier_num: ['', Validators.required],
-      supplier_type: ['', Validators.required],
+      supplierNum: ['', Validators.required],
+      supplierType: ['', Validators.required],
       site: ['00000', Validators.required],
       vat: [''],
       status: ['', Validators.required],
-      payment_method: ['', Validators.required],
+      paymentMethod: ['', Validators.required],
       company: ['', Validators.required],
       type: ['Supplier', Validators.required],
-      user_id: [''],
-      prefix: [''],
+      userId: [''],
+      prefix:[''],
       mobile: ['', Validators.required],
     });
     this.supplierBankForm = this.fb.group({
-      supbank_id: [0],
-      supplier_id: [, Validators.required],
-      name_bank: ['', Validators.required],
+      supbankId: [0],
+      supplierId: [, Validators.required],
+      nameBank: ['', Validators.required],
       branch: ['', Validators.required],
-      account_num: ['', Validators.required],
-      supplier_group: ['', Validators.required],
-      account_name: ['', Validators.required],
+      accountNum: ['', Validators.required],
+      supplierGroup: ['', Validators.required],
+      accountName: ['', Validators.required],
       company: ['', Validators.required],
     });
     this.supplierBankFormAdd = this.fb.group({
-      supbank_id: [0],
-      supplier_id: [, Validators.required],
-      name_bank: ['', Validators.required],
+      supbankId: [0],
+      supplierId: [, Validators.required],
+      nameBank: ['', Validators.required],
       branch: ['', Validators.required],
-      account_num: ['', Validators.required],
-      supplier_group: ['', Validators.required],
-      account_name: ['', Validators.required],
+      accountNum: ['', Validators.required],
+      supplierGroup: ['', Validators.required],
+      accountName: ['', Validators.required],
       company: ['', Validators.required],
     });
 
@@ -239,6 +239,7 @@ export class SupplierAddComponent {
     this.getDataVAT();
     this.getDataCompany();
 
+    // Subscribe to customer_type changes
     this.supplierForm.get('supplier_type')!.valueChanges.subscribe(value => {
       const supplierTypeId = this.getSupplierTypeId(value);
       if (supplierTypeId) {
@@ -246,7 +247,7 @@ export class SupplierAddComponent {
       }
     });
 
-    this.supplierForm.get('payment_method')?.valueChanges.subscribe(value => {
+    this.supplierForm.get('paymentMethod')?.valueChanges.subscribe(value => {
       this.toggleSupplierBankForm(value);
     });
 
@@ -433,7 +434,7 @@ export class SupplierAddComponent {
     console.log("310", this.showSupplierBankForm);
 
     if (this.showSupplierBankForm) {
-      this.supplierBankForm.patchValue({ account_name: this.supplierForm.get('name')?.value });
+      this.supplierBankForm.patchValue({ accountName: this.supplierForm.get('name')?.value });
     }
     this._cdr.detectChanges();
   }
@@ -441,14 +442,14 @@ export class SupplierAddComponent {
   showBankCopy() {
     this.showSupplierBankFormAdd = true;
     if (this.showSupplierBankFormAdd) {
-      this.supplierBankFormAdd.patchValue({ account_name: this.supplierForm.get('name')?.value });
+      this.supplierBankFormAdd.patchValue({ accountName: this.supplierForm.get('name')?.value });
     }
   }
 
   hideBankCopy() {
     this.showSupplierBankFormAdd = false;
     if (this.showSupplierBankFormAdd) {
-      this.supplierBankFormAdd.patchValue({ account_name: this.supplierForm.get('name')?.value });
+      this.supplierBankFormAdd.patchValue({ accountName: this.supplierForm.get('name')?.value });
     }
   }
 
@@ -490,36 +491,36 @@ export class SupplierAddComponent {
     this.supplierService.findSupplierBankBySupplierId(id).subscribe((data: any[]) => {
       this._cdr.detectChanges();
       if (data.length > 0) {
-        if (!this.listOfGroup.some(group => group.group_name === data[0].supplier_group)) {
-          this.listOfGroup.push({ group_name: data[0].supplier_group });
+        if (!this.listOfGroup.some(group => group.group_name === data[0].supplierGroup)) {
+          this.listOfGroup.push({ group_name: data[0].supplierGroup });
         }
         this.supplierBankForm.patchValue({
-          supbank_id: data[0].supbank_id,
-          supplier_id: data[0].supplier_id,
-          name_bank: data[0].name_bank,
+          supbankId: data[0].supbankId,
+          supplierId: data[0].supplierId,
+          nameBank: data[0].nameBank,
           branch: data[0].branch,
-          account_num: data[0].account_num,
-          supplier_group: data[0].supplier_group,
-          account_name: data[0].account_name,
+          accountNum: data[0].accountNum,
+          supplierGroup: data[0].supplierGroup,
+          accountName: data[0].accountName,
           company: data[0].company
         });
         this.showSupplierBankForm = true
       }
       if (data.length > 1) {
-        if (!this.listOfGroup.some(group => group.group_name === data[1].supplier_group)) {
-          this.listOfGroup.push({ group_name: data[1].supplier_group });
+        if (!this.listOfGroup.some(group => group.group_name === data[1].supplierGroup)) {
+          this.listOfGroup.push({ group_name: data[1].supplierGroup });
         }
         this.supplierBankFormAdd.patchValue({
-          supbank_id: data[1].supbank_id,
-          supplier_id: data[1].supplier_id,
-          name_bank: data[1].name_bank,
+          supbankId: data[1].supbankId,
+          supplierId: data[1].supplierId,
+          nameBank: data[1].nameBank,
           branch: data[1].branch,
-          account_num: data[1].account_num,
-          supplier_group: data[1].supplier_group,
-          account_name: data[1].account_name,
+          accountNum: data[1].accountNum,
+          supplierGroup: data[1].supplierGroup,
+          accountName: data[1].accountName,
           company: data[1].company
         });
-        this.selectedSupplierGroupAdd = data[1].supplier_group;
+        this.selectedSupplierGroupAdd = data[1].supplierGroup;
         this.showSupplierBankForm = true
         this.showSupplierBankFormAdd = true;
       }
@@ -528,11 +529,11 @@ export class SupplierAddComponent {
 
   loadSupplierType(id: number): void {
     this.supplierService.findSupplierTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
-      const SupplierNumPrefix = data.code_from;
+      const SupplierNumPrefix = data.codeFrom;
       this.typeCode = SupplierNumPrefix;
       if (SupplierNumPrefix === '2F') {
         this.supplierForm.patchValue({
-          supplier_num: '-',
+          supplierNum: '-',
           postalCode: '-',
           province: '-',
           district: '-',
@@ -540,7 +541,7 @@ export class SupplierAddComponent {
           site: '',
           vat: '-',
           company: '-',
-          payment_method: '-'
+          paymentMethod: '-'
         });
       }
     });
@@ -590,7 +591,6 @@ export class SupplierAddComponent {
     if (this.supplierForm.value.email === '-') {
       this.emailError = '';
     }
-    console.log("504", this.supplierForm.value.email);
 
     this.isSubmitting = true;
     if (this.supplierForm.valid) {
@@ -606,8 +606,8 @@ export class SupplierAddComponent {
           next: (response) => {
 
             if (response && response.supplier_id) {
-              this.supplierBankForm.patchValue({ supplier_id: response.supplier_id, company: response.company });
-              this.isIDTemp = response.supplier_id
+              this.supplierBankForm.patchValue({ supplierId: response.supplierId, company: response.company });
+              this.isIDTemp = response.supplierId
               console.log("518", this.showSupplierBankFormAdd);
 
               if (this.showSupplierBankForm && this.supplierBankForm.valid) {
@@ -716,7 +716,7 @@ export class SupplierAddComponent {
       formValue.postalCode = selectedPostItem.postalCode;
       formValue.post_id = selectedPostItem.post_id;
     }
-    formValue.user_id = currentUser.user_id;
+    formValue.user_id = currentUser.userId;
     return formValue;
   }
 
@@ -862,14 +862,14 @@ export class SupplierAddComponent {
       if (this.supplierForm.valid) {
         const log = {
           id: 0,
-          user_id: currentUser.user_id || 0,
+          userId: currentUser.userId || 0,
           username: currentUser.username || 'string',
           email: currentUser.email || 'string',
           status: this.supplierForm.get('status')?.value || 'Draft',
-          customer_id: 0,
-          supplier_id: this.isIDTemp || 0,
+          customer_id: 0, // ถ้ามีค่า customer_id สามารถใส่ได้
+          supplier_id: this.isIDTemp || 0, // อ้างอิง id จาก supplierForm
           time: new Date().toISOString(),
-          reject_reason: this.reasonTemp
+          reject_reason: this.reasonTemp // หรือใส่เวลาที่คุณต้องการ
         };
         this.supplierService.insertLog(log).subscribe({
           next: (response) => {
@@ -888,13 +888,13 @@ export class SupplierAddComponent {
       if (this.supplierForm.valid && this.supplierBankForm.valid) {
         const log = {
           id: 0,
-          user_id: currentUser.user_id || 0,
+          userId: currentUser.userId || 0,
           username: currentUser.username || 'string',
           email: currentUser.email || 'string',
           status: this.supplierForm.get('status')?.value || 'Draft',
-          customer_id: 0,
-          supplier_id: this.supplierBankForm.get('supplier_id')?.value || 0,
-          time: new Date().toISOString()
+          customer_id: 0, // ถ้ามีค่า customer_id สามารถใส่ได้
+          supplier_id: this.supplierBankForm.get('supplier_id')?.value || 0, // อ้างอิง id จาก supplierForm
+          time: new Date().toISOString() // หรือใส่เวลาที่คุณต้องการ
         };
         this.supplierService.insertLog(log).subscribe({
           next: (response) => {
@@ -970,7 +970,7 @@ export class SupplierAddComponent {
   }
 
   getGruopName(company: string): void {
-    this.supplierService.GetGroupNames(company).subscribe({
+    this.supplierService.GetAllGroups().subscribe({
       next: (response: any) => {
         this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
         this._cdr.markForCheck();
@@ -995,6 +995,8 @@ export class SupplierAddComponent {
         if (CheckcurrentUser.company === 'ALL') {
           this.listOfCompany = response;
           this.filteredDataompany = response;
+          console.log(response);
+          
         } else {
           this.listOfCompany = response.filter((company: DataCompany) => userCompanies.includes(company.abbreviation));
           this.filteredDataompany = this.listOfCompany;
@@ -1192,8 +1194,8 @@ export class SupplierAddComponent {
   setStatusAndSubmit(status: string): void {
     this.supplierForm.patchValue({ status });
     if (this.suppilerId == null) {
-      this.supplierForm.patchValue({ supplier_num: this.newSupnum });
-      this.supplierForm.patchValue({ user_id: this.currentUser?.id });
+      this.supplierForm.patchValue({ supplierNum: this.newSupnum });
+      this.supplierForm.patchValue({ userId: this.currentUser?.id });
     }
     console.log("1170", this.supplierForm.value);
 
@@ -1201,7 +1203,7 @@ export class SupplierAddComponent {
   }
 
   sendEmailNotification(): void {
-    const supplierNum = this.supplierForm.get('supplier_num')?.value;
+    const supplierNum = this.supplierForm.get('supplierNum')?.value;
     if (this.supplierForm.get('status')?.value === 'Pending Approved By ACC' && this.supplierBankForm.valid == false) {
       const company = this.supplierForm.get('company')?.value;
 
@@ -1274,9 +1276,9 @@ export class SupplierAddComponent {
     if (value === 'One Time') {
       this.isOneTime = true;
       this.supplierForm.patchValue({
-        supplier_num: '-',
+        supplierNum: '-',
         site: '-',
-        supplier_type: '-'
+        supplierType: '-'
       });
     } else {
       this.isOneTime = false;
@@ -1285,8 +1287,9 @@ export class SupplierAddComponent {
 
   CheckDupplicateData() {
     if (this.supplierForm.value.supplier_num === '') {
-      const tax = this.supplierForm.value.tax_Id.trim();
-      const type = this.typeCode.trim();
+      const tax = this.supplierForm.value.tax_Id.trim(); // ลบช่องว่างที่ต้นและท้ายของ tax_Id
+      const type = this.typeCode.trim(); // ลบช่องว่างที่ต้นและท้ายของ typeCode
+      // สร้าง key โดยการรวม tax_Id และ typeCode
       const key = `${tax}-${type}`;
       this.supplierService.CheckDupplicateSupplier(key).subscribe({
         next: (response: any) => {
@@ -1305,8 +1308,8 @@ export class SupplierAddComponent {
             this.supplierService.GetNumMaxSupplier(this.typeCode).subscribe({
               next: (response: any) => {
                 if (!response || response.length === 0 || response[0]["MAX(NUM)"] === null) {
-                  console.log("1391", response);
-
+                  console.log("1391",response);
+                  
                   this.supplierForm.patchValue({ supplier_num: '' });
                 } else {
                   const max = response[0]["MAX(NUM)"];
@@ -1317,6 +1320,7 @@ export class SupplierAddComponent {
                   const nextNum = String(parseInt(numPart, 10) + 1).padStart(numPart.length, '0');
                   const newCustomerNum = `${prefix}${nextNum}`;
                   this.newSupnum = newCustomerNum;
+                  // อัปเดตค่าใน form
                   this.supplierForm.patchValue({ supplier_num: newCustomerNum });
                   console.log("New Customer Num:", this.supplierForm.value);
                   this._cdr.markForCheck();

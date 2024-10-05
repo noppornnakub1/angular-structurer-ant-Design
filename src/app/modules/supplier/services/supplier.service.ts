@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of } from 'rxjs';
@@ -45,7 +44,7 @@ import { DataBank } from '../pages/supplier-add/supplier-add.component';
         .pipe(
           catchError(error => {
             if (error.status === 404) {
-              return of({ supplier_num: '000', code_from: '' }); // ในกรณีที่ไม่พบข้อมูลให้ return ค่า default
+              return of({ supplier_num: '000', code_from: '' });
             } else {
               throw error;
             }
@@ -56,6 +55,10 @@ import { DataBank } from '../pages/supplier-add/supplier-add.component';
     addBankData(supplier: any): Observable<any> {
       return this._http.post(`/SupplierBank/AddSupplierBank`, supplier);
     }
+
+    addBankDataWithFiles(formData: FormData): Observable<any> {
+      return this._http.post(`/SupplierBank/AddSupplierBankWithFiles`, formData);
+    }    
 
     updateBankData(id: number, data: DataBank): Observable<any> {
       return this._http.put(`/SupplierBank/UpdateSupplierBank/${id}`, data);

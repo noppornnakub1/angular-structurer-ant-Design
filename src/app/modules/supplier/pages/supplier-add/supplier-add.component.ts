@@ -152,6 +152,7 @@ export class SupplierAddComponent {
   selectedPrefix: string = '';
   nameInput: string = '';
   fullName: string = '';
+  isCheckingDuplicate: boolean = false;
   constructor(private _location: Location, private fb: FormBuilder
     , private supplierService: SupplierService,
     private router: Router,
@@ -185,7 +186,7 @@ export class SupplierAddComponent {
       company: ['', Validators.required],
       type: ['Supplier', Validators.required],
       userId: [''],
-      prefix:[''],
+      prefix: [''],
       mobile: ['', Validators.required],
     });
     this.supplierBankForm = this.fb.group({
@@ -240,7 +241,7 @@ export class SupplierAddComponent {
     this.getDataCompany();
 
     // Subscribe to customer_type changes
-    this.supplierForm.get('supplier_type')!.valueChanges.subscribe(value => {
+    this.supplierForm.get('supplier_type')?.valueChanges.subscribe(value => {
       const supplierTypeId = this.getSupplierTypeId(value);
       if (supplierTypeId) {
         this.loadSupplierType(supplierTypeId);
@@ -277,7 +278,7 @@ export class SupplierAddComponent {
       this.selectedFileAdd = input.files[0];
       console.log(`File selected for ${fileType}:`, this.selectedFileAdd);
     }
-  }  
+  }
 
   onNameBlur(): void {
     const nameControl = this.supplierForm.get('name');
@@ -412,14 +413,18 @@ export class SupplierAddComponent {
   validateAccountNum(event: any): void {
     const input = event.target.value;
     const numericValue = input.replace(/\D/g, '');
-    this.supplierBankForm.patchValue({ account_num: numericValue });
+
+    // อัปเดตค่าใน form control
+    this.supplierBankForm.patchValue({ accountNum: numericValue });
     event.target.value = numericValue;
   }
 
   validateAccountNumAdd(event: any): void {
     const input = event.target.value;
     const numericValue = input.replace(/\D/g, '');
-    this.supplierBankFormAdd.patchValue({ account_num: numericValue });
+
+    // อัปเดตค่าใน form control
+    this.supplierBankFormAdd.patchValue({ accounNnum: numericValue });
     event.target.value = numericValue;
   }
 
@@ -581,7 +586,7 @@ export class SupplierAddComponent {
     return item.subdistrict === currentSubdistrict;
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.isViewMode) {
       this.supplierForm.enable();
       this.supplierBankForm.enable();
@@ -646,7 +651,9 @@ export class SupplierAddComponent {
         return;
       }
       else {
-        Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+        if (!this.isCheckingDuplicate) {
+          Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+        }
       }
 
     }
@@ -724,6 +731,8 @@ export class SupplierAddComponent {
     this.supplierService.getSupplierType().subscribe({
       next: (response: any) => {
         this.listOfType = response;
+        console.log(this.listOfType);
+        
         if (this.isUser) {
           this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));
         } else {
@@ -763,7 +772,7 @@ export class SupplierAddComponent {
   addBankData(): void {
     if (this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
-  
+
       const formData = new FormData();
       formData.append('SupplierId', bankFormValue.supplier_id);
       formData.append('NameBank', bankFormValue.name_bank);
@@ -772,11 +781,11 @@ export class SupplierAddComponent {
       formData.append('SupplierGroup', bankFormValue.supplier_group);
       formData.append('AccountName', bankFormValue.account_name);
       formData.append('Company', bankFormValue.company);
-  
+
       if (this.selectedFile) {
         formData.append('Files', this.selectedFile, this.selectedFile.name);
       }
-  
+
       this.supplierService.addBankDataWithFiles(formData).subscribe({
         next: (response) => {
           console.log('Bank data with files added successfully (Main form)');
@@ -786,10 +795,10 @@ export class SupplierAddComponent {
         }
       });
     }
-  
+
     if (this.supplierBankFormAdd && this.supplierBankFormAdd.valid) {
       const bankFormValueAdd = this.supplierBankFormAdd.value;
-  
+
       const formDataAdd = new FormData();
       formDataAdd.append('SupplierId', bankFormValueAdd.supplier_id);
       formDataAdd.append('NameBank', bankFormValueAdd.name_bank);
@@ -798,11 +807,11 @@ export class SupplierAddComponent {
       formDataAdd.append('SupplierGroup', bankFormValueAdd.supplier_group);
       formDataAdd.append('AccountName', bankFormValueAdd.account_name);
       formDataAdd.append('Company', bankFormValueAdd.company);
-  
+
       if (this.selectedFileAdd) {
         formDataAdd.append('Files', this.selectedFileAdd, this.selectedFileAdd.name);
       }
-  
+
       this.supplierService.addBankDataWithFiles(formDataAdd).subscribe({
         next: (response) => {
           console.log('Bank data with files added successfully (Add form)');
@@ -812,7 +821,7 @@ export class SupplierAddComponent {
         }
       });
     }
-  }  
+  }
 
   onUpdateSupplierBank(): void {
     const bankId = this.supplierBankForm.get('supbank_id')?.value;
@@ -996,7 +1005,7 @@ export class SupplierAddComponent {
           this.listOfCompany = response;
           this.filteredDataompany = response;
           console.log(response);
-          
+
         } else {
           this.listOfCompany = response.filter((company: DataCompany) => userCompanies.includes(company.abbreviation));
           this.filteredDataompany = this.listOfCompany;
@@ -1025,7 +1034,7 @@ export class SupplierAddComponent {
     this.cdr.detectChanges();
   }
 
-  checkSave(event: Event) {
+  async checkSave(event: Event) {
     console.log(this.nameInput)
     console.log(this.supplierForm.value.name);
     this.validateEmail()
@@ -1040,8 +1049,14 @@ export class SupplierAddComponent {
       return;
     }
     else {
-      this.CheckDupplicateData();
-      this.save(event)
+      try {
+        this.supplierForm.value.supplierNum = '-'
+        await this.CheckDupplicateData();
+
+        await this.save(event);
+      } catch (error) {
+        console.error('Error occurred:', error);
+      }
     }
   }
 
@@ -1062,7 +1077,7 @@ export class SupplierAddComponent {
     });
   }
 
-  save(event: Event): void {
+  async save(event: Event): Promise<void> {
     console.log(this.suppilerId);
 
     if (this.emailError != '') {
@@ -1075,31 +1090,30 @@ export class SupplierAddComponent {
       return;
     }
     event.preventDefault();
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "Do you want to save the changes?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
+   // รอให้ Swal ทำงานและรับค่าตอบสนองจากผู้ใช้
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you want to save the changes?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, save it!'
+  });
 
-        if (this.suppilerId == null) {
-          this.setStatusAndSubmit('Draft');
-        }
-        else {
-          if (this.isApproved) {
-            this.setStatusAndSubmit('Pending Approved By ACC');
-            console.log("เข้า approve");
-          }
-          else {
-            this.setStatusAndSubmit('Draft');
-          }
-        }
+  // ตรวจสอบการตอบสนองจาก Swal
+  if (result.isConfirmed) {
+    if (this.suppilerId == null) {
+      this.setStatusAndSubmit('Draft');
+    } else {
+      if (this.isApproved) {
+        this.setStatusAndSubmit('Pending Approved By ACC');
+        console.log("เข้า approve");
+      } else {
+        this.setStatusAndSubmit('Draft');
       }
-    });
+    }
+  }
   }
 
   submit(event: Event): void {
@@ -1191,7 +1205,7 @@ export class SupplierAddComponent {
   }
 
 
-  setStatusAndSubmit(status: string): void {
+  async setStatusAndSubmit(status: string): Promise<void> {
     this.supplierForm.patchValue({ status });
     if (this.suppilerId == null) {
       this.supplierForm.patchValue({ supplierNum: this.newSupnum });
@@ -1199,7 +1213,7 @@ export class SupplierAddComponent {
     }
     console.log("1170", this.supplierForm.value);
 
-    this.onSubmit();
+    await this.onSubmit();
   }
 
   sendEmailNotification(): void {
@@ -1285,58 +1299,98 @@ export class SupplierAddComponent {
     }
   }
 
-  CheckDupplicateData() {
-    if (this.supplierForm.value.supplier_num === '') {
-      const tax = this.supplierForm.value.tax_Id.trim(); // ลบช่องว่างที่ต้นและท้ายของ tax_Id
-      const type = this.typeCode.trim(); // ลบช่องว่างที่ต้นและท้ายของ typeCode
-      // สร้าง key โดยการรวม tax_Id และ typeCode
-      const key = `${tax}-${type}`;
-      this.supplierService.CheckDupplicateSupplier(key).subscribe({
-        next: (response: any) => {
-          if (response && response.length > 0) {
-            Swal.fire({
-              icon: 'error',
-              title: 'ข้อมูลซ้ำ',
-              text: 'มีข้อมูล Supplier นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ TaxID และ Type อีกครั้ง',
-              confirmButtonText: 'ปิด'
-            });
-            return;
+  CheckDupplicateData(): Promise<void> {
+    this.isCheckingDuplicate = true; // เริ่มกระบวนการตรวจสอบข้อมูลซ้ำ
+  
+    return new Promise((resolve, reject) => {
+      console.log('Inside CheckDupplicateData');
+      
+      const foundItem = this.filteredDataType.find(item => item.code === this.supplierForm.value.supplierType);
+      if (foundItem) {
+        this.typeCode = foundItem.codeFrom;
+        console.log('codeFrom:', this.typeCode);
+      }
+  
+      if (this.supplierForm.value.supplierNum === '-') {
+        const tax = this.supplierForm.value.tax_Id.trim();
+        const type = this.typeCode.trim();
+        const key = `${tax}-${type}`;
+        console.log(key);
+  
+        this.supplierService.CheckDupplicateSupplier(key).subscribe({
+          next: (response: any) => {
+            if (response && response.length > 0) {
+              Swal.fire({
+                icon: 'error',
+                title: 'ข้อมูลซ้ำ',
+                text: 'มีข้อมูล Supplier นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ TaxID และ Type อีกครั้ง',
+                confirmButtonText: 'ปิด'
+              });
+              this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+              reject('Duplicate data found'); // เรียก reject
+            } else {
+              this.getNumMaxSupplier().then(() => {
+                this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+                resolve();
+              }).catch(err => {
+                this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+                reject(err);
+              });
+            }
+          },
+          error: (err) => {
+            if (err === 'No data found.') {
+              this.getNumMaxSupplier().then(() => {
+                this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+                resolve();
+              }).catch(err => {
+                this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+                reject(err);
+              });
+            } else {
+              this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+              reject(err);
+            }
           }
+        });
+      } else {
+        this.isCheckingDuplicate = false; // ไม่ต้องทำการตรวจสอบข้อมูลซ้ำ
+        resolve();
+      }
+    });
+  }
+  
+  
+  // ฟังก์ชันใหม่เพื่อแยกการดึงข้อมูลหมายเลข
+  getNumMaxSupplier(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.supplierService.GetNumMaxSupplier(this.typeCode).subscribe({
+        next: (response: any) => {
+          if (!response || response.length === 0 || response[0]["MAX(NUM)"] === null) {
+            this.supplierForm.patchValue({ supplierNum: '' });
+          } else {
+            const max = response[0]["MAX(NUM)"];
+            const maxStr = String(max);
+            const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
+            const prefix = matchResult ? matchResult[1] : '';
+            const numPart = matchResult ? matchResult[2] : '0';
+            const nextNum = String(parseInt(numPart, 10) + 1).padStart(numPart.length, '0');
+            const newCustomerNum = `${prefix}${nextNum}`;
+            this.newSupnum = newCustomerNum;
+            this.supplierForm.patchValue({ supplierNum: newCustomerNum });
+            console.log("New Customer Num:", this.supplierForm.value);
+          }
+  
+          this._cdr.markForCheck();
+          resolve(); // เรียก resolve เมื่อเสร็จสิ้น
         },
         error: (err) => {
-          if (err === 'No Supplier found.') {
-            this.supplierService.GetNumMaxSupplier(this.typeCode).subscribe({
-              next: (response: any) => {
-                if (!response || response.length === 0 || response[0]["MAX(NUM)"] === null) {
-                  console.log("1391",response);
-                  
-                  this.supplierForm.patchValue({ supplier_num: '' });
-                } else {
-                  const max = response[0]["MAX(NUM)"];
-                  const maxStr = String(max);
-                  const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
-                  const prefix = matchResult ? matchResult[1] : '';
-                  const numPart = matchResult ? matchResult[2] : '0';
-                  const nextNum = String(parseInt(numPart, 10) + 1).padStart(numPart.length, '0');
-                  const newCustomerNum = `${prefix}${nextNum}`;
-                  this.newSupnum = newCustomerNum;
-                  // อัปเดตค่าใน form
-                  this.supplierForm.patchValue({ supplier_num: newCustomerNum });
-                  console.log("New Customer Num:", this.supplierForm.value);
-                  this._cdr.markForCheck();
-                }
-
-                this._cdr.markForCheck();
-              },
-              error: (err) => {
-                console.error('Error while fetching max customer number', err);
-              }
-            });
-          } else {
-            console.error("Error occurred during CheckDupplicateCustomer:", err);
-          }
+          console.error('Error while fetching max supplier number', err);
+          reject(err); // เรียก reject เมื่อเกิดข้อผิดพลาด
         }
       });
-    }
+    });
   }
+  
+
 }

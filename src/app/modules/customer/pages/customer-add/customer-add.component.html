@@ -154,7 +154,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let file of files">
+        <tr *ngFor="let file of filess">
           <td>{{ file.fileName }}</td>
           <td *ngIf="!isViewMode">
             <input class="choose" type="file" (change)="onFileSelected($event, file)" />
@@ -162,9 +162,9 @@
             <!-- <input class="upload-button" type="file" (change)="onFileSelected($event, file)" /> -->
           </td>
           <td class="text-center">
-            <span class="material-symbols-outlined">
-              description
-            </span>
+            <a *ngIf="file.filePath" [href]="getDownloadUrl(file.filePath)" target="_blank">
+              <span class="material-symbols-outlined">description</span>
+            </a>
           </td>
         </tr>
       </tbody>

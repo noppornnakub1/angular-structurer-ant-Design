@@ -56,6 +56,7 @@ export class CustomerAddComponent implements OnInit {
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', status: null },
   ];
   file: any;
+  filess: Array<{ fileName: string; fileType: string; filePath: string }> = [];
   listfile: File[] = [];
   uploadedFiles: any[] = [];
   constructor(private _location: Location, private fb: FormBuilder
@@ -177,6 +178,12 @@ export class CustomerAddComponent implements OnInit {
         postalCode: postalCodeCombination
       });
       this.originalData = { ...data };
+      console.log(this.originalData);
+      this.filess = [
+        { fileName: 'File Request', fileType: 'fileReq', filePath: this.customerForm.value.fileReq || '' },
+        { fileName: 'File Certificate', fileType: 'fileCertificate', filePath: this.customerForm.value.fileCertificate || '' }
+      ];
+      
       this.getEventLogs(id)
     });
   }
@@ -806,5 +813,12 @@ export class CustomerAddComponent implements OnInit {
       });
       this.listfile = [];
     });
+  }
+
+  getDownloadUrl(fileName: string): string {
+    // baseURL ควรชี้ไปยัง root ของเซิร์ฟเวอร์และโฟลเดอร์ 'uploads'
+    // const baseURL = 'http://localhost:7126/uploads';
+    const baseURL = 'http://10.10.0.28:8088/uploads';
+    return `${baseURL}/${fileName}`;
   }
 }

@@ -3,13 +3,7 @@
     <nz-divider nzText="Supplier Info"></nz-divider>
     <div nz-row nzGutter="16" class="mt-2">
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
-        <nz-form-label nzNoColon>Supplier/One Time<span style="color: red;">*</span>
-          <span nz-tooltip
-            nzTooltipTitle="ถ้าเป็นการเพิ่ม Supplier ที่ทำจ่าย แค่ครั้งเดียว ให้เพิ่มแบบ One Time, ระบบจะไม่ได้นำมา Running Number Supplier ให้"
-            class="material-symbols-outlined ml-1" style="font-size: 18px;">
-            info
-          </span>
-        </nz-form-label>
+        <nz-form-label nzNoColon>Supplier/One Time<span style="color: red;">*</span></nz-form-label>
         <nz-select formControlName="type" nzPlaceHolder="Select type" class="custom-select"
           (ngModelChange)="onSupplierTypeOneChange($event)">
           <nz-option *ngFor="let type of listOfTypeVendor" [nzLabel]="type.title" [nzValue]="type.title"></nz-option>
@@ -17,8 +11,8 @@
       </div>
       <div *ngIf="!isOneTime" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Supplier Type<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="ประเภทของ Supplier ที่ต้องการสร้าง สามารถเลือก Dropdown ลงมาดูข้อมูลได้"
-            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+          <span nz-tooltip nzTooltipTitle="Supplier Type = ประเภทของ Customer ที่ต้องการสร้าง 
+          สามารถเลือก Dropdown ลงมาดูข้อมูลได้" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -30,8 +24,8 @@
       </div>
       <div *ngIf="!isOverseaSupplier() && !isOneTime" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Supplier Number<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="ระบบจะ Running number ให้ตาม Supplier Type"
-            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+          <span nz-tooltip nzTooltipTitle="Supplier Number = ระบบจะ running number 
+          ให้ตามประเภทของ Supplier" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -41,9 +35,9 @@
       </div>
       <div *ngIf="!isOneTime" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
         <nz-form-label nzNoColon>Site<span style="color: red;">*</span>
-          <span nz-tooltip
-            nzTooltipTitle="สำนักงานใหญ่ กรอก 00000 , สาขาย่อยจะ running ตามสาขา เช่น สาขาที่ 1 คือ 00001, สาขาที่ 10 คือ 00010"
-            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+          <span nz-tooltip nzTooltipTitle="Site = สำนักงานใหญ่ คือ 00000 , สาขาย่อยจะ running ตามสาขา 
+          เช่น สาขาที่ 1 คือ 00001, สาขาที่ 10 คือ 00010" class="material-symbols-outlined ml-1"
+            style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -57,39 +51,19 @@
       <div *ngIf="isOneTime" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3"></div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Tax ID<span style="color: red;">*</span>
-          <span nz-tooltip
-            nzTooltipTitle="กรุณากรอกตัวเลข 13 หลัก ติดกัน โดยไม่ต้องมี - หากเป็นลูกค้าที่ไม่มี TAX ID ให้กรอก “-”"
-            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+          <span nz-tooltip nzTooltipTitle="TAX ID : กรุณากรอกตัวเลข 13 หลัก ติดกัน โดยไม่ต้องมี -
+          หากเป็นลูกค้าที่ไม่มี TAX ID ให้กรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
-        <!-- <nz-input-group nzPrefixIcon="idcard" class="form-input">
-          <input nz-input type="text" placeholder="Tax ID" formControlName="tax_Id" (input)="validateTaxId($event)"
-            (blur)="getTaxIdData()" />
-        </nz-input-group> -->
         <nz-input-group nzPrefixIcon="idcard" class="form-input">
           <input nz-input type="text" placeholder="Tax ID" formControlName="tax_Id" (input)="validateTaxId($event)" />
         </nz-input-group>
       </div>
-      <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Name<span style="color: red;">*</span>
-          <span nz-tooltip 
-          nzTooltipTitle="Name : ชื่อ Supplier กรุณา กรอกข้อมูลตาม Format
-          กรณีบุคคลธรรมดา : คุณ ชื่อ นามสกุล [ช่องว่าง คือ เว้นวรรค]
-          กรณีนิติบุคคล : บริษัท ......... จำกัด"
-          class="material-symbols-outlined ml-1" style="font-size: 18px;" >
-            info
-          </span>
-        </nz-form-label>
-        <nz-input-group nzPrefixIcon="user" class="form-input">
-          <input nz-input placeholder="คุณ ชื่อ นามสกุล" formControlName="name" />
-        </nz-input-group>
-      </div> -->
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>
           Name<span style="color: red;">*</span>
-          <span nz-tooltip
-            nzTooltipTitle="สามาถพิม ชื่อ สกุล ไม่ต้องพิมคำนำหน้า, กรณี ที่ คำนำหน้าไม่มีใน Dropdown ให้กรอกคำนำหน้า ไปในช่องชื่อ สกุล ได้เลย"
+          <span nz-tooltip nzTooltipTitle="Name : ชื่อ Supplier กรุณา กรอกข้อมูลตาม Format"
             class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
@@ -107,9 +81,9 @@
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="3" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Telephone<span style="color: red;">*</span>
-          <span nz-tooltip
-            nzTooltipTitle="กรอกข้อมูลเบอร์บ้าน/สำนักงาน โดยพิมตัวเลขติดกัน เช่น 02-291-3062 กรุณากรอก “022913062” หาก ไม่มี กรอก “-”"
-            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+          <span nz-tooltip nzTooltipTitle="Tel : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
+          เช่น 063-259-1642 กรุณากรอก 0692591642
+          หาก ไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -120,9 +94,9 @@
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="3" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Mobilephone<span style="color: red;">*</span>
-          <span nz-tooltip
-            nzTooltipTitle="กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน เช่น 063-259-1642 กรุณากรอก “0632591642” หาก ไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”"
-            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+          <span nz-tooltip nzTooltipTitle="mobile : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
+          เช่น 063-259-1642 กรุณากรอก 0692591642
+          หาก ไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -145,7 +119,7 @@
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Address<span style="color: red;">*</span>
           <span nz-tooltip
-            nzTooltipTitle="ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูลตั้งแต่ บ้านเลขที่,อาคาร(ถ้ามี),ชั้น(ถ้ามี), เลขที่ห้อง(ถ้ามี),หมู่(ถ้ามี),หมู่บ้าน(ถ้ามี),ถนน(ถ้ามี),ซอย(ถ้ามี),ตรอก(ถ้ามี) และอื่นๆ"
+            nzTooltipTitle="ADDRESS : ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูลตั้งแต่ บ้านเลขที่,อาคาร(ถ้ามี),ชั้น(ถ้ามี), เลขที่ห้อง(ถ้ามี),หมู่(ถ้ามี),หมู่บ้าน(ถ้ามี),ถนน(ถ้ามี),ซอย(ถ้ามี),ตรอก(ถ้ามี) และอื่นๆ"
             class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
@@ -156,8 +130,8 @@
       </div>
       <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Postal Code<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="เสริช รหัสไปรษณีย์ ระบบจะขึ้น Dropdown มาให้เลือก ตำบล,อำเภอ,จังหวัด"
-            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+          <span nz-tooltip nzTooltipTitle="Portal Code : เสริช รหัสไปรษณีย์ ระบบจะขึ้น Dropdown 
+          มาให้เลือก ตำบล,อำเภอ,จังหวัด" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -193,18 +167,10 @@
         </nz-input-group>
       </div>
 
-
-      <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
-        <nz-form-label nzNoColon>Customer Type</nz-form-label>
-        <nz-input-group nzPrefixIcon="team" class="form-input">
-          <input nz-input placeholder="Customer Type" formControlName="supplier_type" />
-        </nz-input-group>
-      </div> -->
-
       <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Payment Method<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="ช่องทางในการรับเงินของ Supplier สามารถเลือก Dropdown ดูข้อมูลได้"
-            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+          <span nz-tooltip nzTooltipTitle="Payment Method : ช่องทางในการรับเงินของ Supplier 
+          สามารถเลือก Dropdown ดูข้อมูลได้" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
@@ -222,7 +188,7 @@
       </div>
       <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Company<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="Request Supplier ผ่านบ้านอะไร" class="material-symbols-outlined ml-1"
+          <span nz-tooltip nzTooltipTitle="Company ; ท่าน Request ผ่านบ้านอะไร" class="material-symbols-outlined ml-1"
             style="font-size: 18px;">
             info
           </span>
@@ -248,7 +214,7 @@
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit
       </button>
-      <!-- Approve Button -->
+
       <button
         *ngIf="isViewMode && 
   (
@@ -261,7 +227,6 @@
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
 
-      <!-- Reject Button -->
       <button
         *ngIf="isViewMode && 
       (
@@ -281,13 +246,9 @@
 <form [formGroup]="supplierBankForm" *ngIf="showSupplierBankForm">
   <div class="content-card mt-3">
     <ng-container *ngIf="!isViewMode">
-      <button *ngIf="!showSupplierBankFormAdd" nz-button nzType="primary" (click)="showBankCopy()">
+      <button *ngIf="!showSupplierBankFormAdd" class="mr-2" nz-button nzType="primary" (click)="showBankCopy()">
         <span nz-icon nzType="plus" nzTheme="outline"></span>เพิ่ม Bank
       </button>
-      <span *ngIf="!showSupplierBankFormAdd" nz-tooltip nzTooltipTitle="Request Supplier ผ่านบ้านอะไร"
-        class="material-symbols-outlined ml-1" style="font-size: 18px;">
-        info
-      </span>
       <button *ngIf="showSupplierBankFormAdd" class="mr-2" nz-button type="primary" danger (click)="hideBankCopy()">
         <span nz-icon nzType="close" nzTheme="outline"></span>ลบ bank
       </button>
@@ -296,12 +257,7 @@
     <div nz-row nzGutter="16">
       <div nz-row nzGutter="16">
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-          <nz-form-label nzNoColon>Supplier Group<span style="color: red;">*</span>
-            <span nz-tooltip nzTooltipTitle="หาก เลือก ALL Group จะต้องแนบเอกสาร การยินยอมการโอนเงิน 2 กลุ่ม Company"
-              class="material-symbols-outlined ml-1" style="font-size: 18px;">
-              info
-            </span>
-          </nz-form-label>
+          <nz-form-label nzNoColon>Supplier Group<span style="color: red;">*</span></nz-form-label>
           <nz-select [(ngModel)]="selectedSupplierGroup" formControlName="supplierGroup"
             nzPlaceHolder="Select Supplier Group" class="custom-select">
             <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
@@ -321,12 +277,7 @@
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch<span
-                style="color: red;">*</span>
-              <span nz-tooltip nzTooltipTitle="เลขสาขา กรุณากรอก ตัวเลข เท่านั้น หากไม่มี กรอก “-”"
-                class="material-symbols-outlined ml-1" style="font-size: 18px;">
-                info
-              </span>
-            </nz-form-label>
+                style="color: red;">*</span></nz-form-label>
             <nz-form-control [nzSpan]="24">
               <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input"
                 (input)="validateBranch($event)" />
@@ -336,12 +287,7 @@
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon style="padding: 0px;">Account
-              Number<span style="color: red;">*</span>
-              <span nz-tooltip nzTooltipTitle="กรอกตัวเลขเท่านั้น เช่น เลขบัญชี 181-0-277-86-8 กรอก 1810277868 "
-                class="material-symbols-outlined ml-1" style="font-size: 18px;">
-                info
-              </span>
-            </nz-form-label>
+              Number<span style="color: red;">*</span></nz-form-label>
             <nz-form-control [nzSpan]="24">
               <input nz-input id="accountNumber" placeholder="Account Number" formControlName="accountNum"
                 class="form-input" (input)="validateAccountNum($event)" />
@@ -351,17 +297,83 @@
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon style="padding: 0px;">Account
-              Name<span style="color: red;">*</span>
-              <span nz-tooltip nzTooltipTitle="แก้ไขไม่ได้ เนื่องจาก ชื่อต้องตรงกับ Supplier Name เท่านั้น"
-                class="material-symbols-outlined ml-1" style="font-size: 18px;">
-                info
-              </span>
-            </nz-form-label>
+              Name<span style="color: red;">*</span></nz-form-label>
             <nz-form-control [nzSpan]="24">
               <input nz-input id="accountName" placeholder="Account Name" formControlName="accountName"
                 class="form-input" readonly />
             </nz-form-control>
           </nz-form-item>
+          <div *ngIf="selectedSupplierGroup === 'ONE GROUP'">
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>หนังสือยินยอมการโอนเงิน [ONE Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'oneGroupConsentFile')" />
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'oneGroupCertificationFile')" />
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>สำเนาหน้า Book Bank [ONE Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'oneGroupBookBankFile')" />
+            </div>
+          </div>
+
+          <div *ngIf="selectedSupplierGroup === 'GCH GROUP'">
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>หนังสือยินยอมการโอนเงิน [GCH Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'gchGroupConsentFile')" />
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'gchGroupCertificationFile')" />
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>สำเนาหน้า Book Bank [GCH Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'gchGroupBookBankFile')" />
+            </div>
+          </div>
+
+          <div *ngIf="selectedSupplierGroup === 'ACT'">
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>หนังสือยินยอมการโอนเงิน [ACT]</label>
+              <input type="file" (change)="onFileSelect($event, 'actConsentFile')" />
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]</label>
+              <input type="file" (change)="onFileSelect($event, 'actCertificationFile')" />
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>สำเนาหน้า Book Bank [ACT]</label>
+              <input type="file" (change)="onFileSelect($event, 'actBookBankFile')" />
+            </div>
+          </div>
+
+          <div *ngIf="selectedSupplierGroup === 'ALL Group'">
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>หนังสือยินยอมการโอนเงิน [ONE Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'oneGroupConsentFile')" />
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'oneGroupCertificationFile')" />
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>สำเนาหน้า Book Bank [ONE Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'oneGroupBookBankFile')" />
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>หนังสือยินยอมการโอนเงิน [GCH Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'gchGroupConsentFile')" />
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'gchGroupCertificationFile')" />
+            </div>
+            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+              <label>สำเนาหน้า Book Bank [GCH Group]</label>
+              <input type="file" (change)="onFileSelect($event, 'gchGroupBookBankFile')" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -371,13 +383,7 @@
         <div nz-row nzGutter="16">
           <div nz-row nzGutter="16">
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-              <nz-form-label nzNoColon>Supplier Group<span style="color: red;">*</span>
-                <span nz-tooltip
-                  nzTooltipTitle="หาก เลือก ALL Group จะต้องแนบเอกสาร การยินยอมการโอนเงิน 2 กลุ่ม Company"
-                  class="material-symbols-outlined ml-1" style="font-size: 18px;">
-                  info
-                </span>
-              </nz-form-label>
+              <nz-form-label nzNoColon>Supplier Group<span style="color: red;">*</span></nz-form-label>
               <nz-select [(ngModel)]="selectedSupplierGroupAdd" formControlName="supplierGroup"
                 nzPlaceHolder="Select Supplier Group" class="custom-select">
                 <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
@@ -389,7 +395,8 @@
                 <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name<span
                     style="color: red;">*</span></nz-form-label>
                 <nz-select formControlName="nameBank" nzPlaceHolder="Select bankName" class="custom-select">
-                  <nz-option *ngFor="let type of listOfBank" [nzLabel]="type.shortBankName+' : '+type.alternateBankName"
+                  <nz-option *ngFor="let type of listOfBank"
+                    [nzLabel]="type.shortBankName+' : '+type.alternateBankName"
                     [nzValue]="type.shortBankName"></nz-option>
                 </nz-select>
               </nz-form-item>
@@ -397,12 +404,7 @@
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch<span
-                    style="color: red;">*</span>
-                  <span nz-tooltip nzTooltipTitle="เลขสาขา กรุณากรอก ตัวเลข เท่านั้น หากไม่มี กรอก “-”"
-                    class="material-symbols-outlined ml-1" style="font-size: 18px;">
-                    info
-                  </span>
-                </nz-form-label>
+                    style="color: red;">*</span></nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input"
                     (input)="validateBranchAdd($event)" />
@@ -412,12 +414,7 @@
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon style="padding: 0px;">Account
-                  Number<span style="color: red;">*</span>
-                  <span nz-tooltip nzTooltipTitle="กรอกตัวเลขเท่านั้น เช่น เลขบัญชี 181-0-277-86-8 กรอก 1810277868 "
-                    class="material-symbols-outlined ml-1" style="font-size: 18px;">
-                    info
-                  </span>
-                </nz-form-label>
+                  Number<span style="color: red;">*</span></nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input nz-input id="accountNumber" placeholder="Account Number" formControlName="accountNum"
                     class="form-input" (input)="validateAccountNumAdd($event)" />
@@ -427,17 +424,83 @@
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon style="padding: 0px;">Account
-                  Name<span style="color: red;">*</span>
-                  <span nz-tooltip nzTooltipTitle="แก้ไขไม่ได้ เนื่องจาก ชื่อต้องตรงกับ Supplier Name เท่านั้น"
-                    class="material-symbols-outlined ml-1" style="font-size: 18px;">
-                    info
-                  </span>
-                </nz-form-label>
+                  Name<span style="color: red;">*</span></nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input nz-input id="accountName" placeholder="Account Name" formControlName="accountName"
                     class="form-input" readonly />
                 </nz-form-control>
               </nz-form-item>
+            </div>
+            <div *ngIf="selectedSupplierGroupAdd === 'ONE GROUP'">
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>หนังสือยินยอมการโอนเงิน [ONE Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'oneGroupConsentFileAdd')" />
+              </div>
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'oneGroupCertificationFileAdd')" />
+              </div>
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>สำเนาหน้า Book Bank [ONE Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'oneGroupBookBankFileAdd')" />
+              </div>
+            </div>
+
+            <div *ngIf="selectedSupplierGroupAdd === 'GCH GROUP'">
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>หนังสือยินยอมการโอนเงิน [GCH Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupConsentFileAdd')" />
+              </div>
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupCertificationFileAdd')" />
+              </div>
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>สำเนาหน้า Book Bank [GCH Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupBookBankFileAdd')" />
+              </div>
+            </div>
+
+            <div *ngIf="selectedSupplierGroupAdd === 'ACT'">
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>หนังสือยินยอมการโอนเงิน [ACT]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'actConsentFileAdd')" />
+              </div>
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'actCertificationFileAdd')" />
+              </div>
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>สำเนาหน้า Book Bank [ACT]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'actBookBankFileAdd')" />
+              </div>
+            </div>
+
+            <div *ngIf="selectedSupplierGroupAdd === 'ALL Group'">
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>หนังสือยินยอมการโอนเงิน [ONE Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'oneGroupConsentFileAdd')" />
+              </div>
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'oneGroupCertificationFileAdd')" />
+              </div>
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>สำเนาหน้า Book Bank [ONE Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'oneGroupBookBankFileAdd')" />
+              </div>
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>หนังสือยินยอมการโอนเงิน [GCH Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupConsentFileAdd')" />
+              </div>
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupCertificationFileAdd')" />
+              </div>
+              <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+                <label>สำเนาหน้า Book Bank [GCH Group]</label>
+                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupBookBankFileAdd')" />
+              </div>
             </div>
           </div>
         </div>
@@ -458,7 +521,7 @@
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit
       </button>
-      <!-- Approve Button -->
+
       <button
         *ngIf="isViewMode && 
   (
@@ -471,7 +534,6 @@
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
 
-      <!-- Reject Button -->
       <button
         *ngIf="isViewMode && 
   (
@@ -509,13 +571,3 @@
     </tbody>
   </nz-table>
 </div>
-
-<!-- <div *ngIf="isViewMode" class="content-card mt-3">
-  <nz-divider nzText="History Info"></nz-divider>
-  <div *ngFor="let log of logs">
-    <p>Approve By: {{ log.username }}</p>
-    <p>Status: {{ log.status }}</p>
-    <p>Time: {{ log.time | date:'short' }}</p>
-    <br>
-  </div>
-</div> -->

@@ -774,12 +774,12 @@ export class SupplierAddComponent {
       const bankFormValue = this.supplierBankForm.value;
 
       const formData = new FormData();
-      formData.append('SupplierId', bankFormValue.supplier_id);
-      formData.append('NameBank', bankFormValue.name_bank);
+      formData.append('SupplierId', bankFormValue.supplierId);
+      formData.append('NameBank', bankFormValue.nameBank);
       formData.append('Branch', bankFormValue.branch);
-      formData.append('AccountNum', bankFormValue.account_num);
-      formData.append('SupplierGroup', bankFormValue.supplier_group);
-      formData.append('AccountName', bankFormValue.account_name);
+      formData.append('AccountNum', bankFormValue.accountNum);
+      formData.append('SupplierGroup', bankFormValue.supplierGroup);
+      formData.append('AccountName', bankFormValue.accountName);
       formData.append('Company', bankFormValue.company);
 
       if (this.selectedFile) {
@@ -800,12 +800,12 @@ export class SupplierAddComponent {
       const bankFormValueAdd = this.supplierBankFormAdd.value;
 
       const formDataAdd = new FormData();
-      formDataAdd.append('SupplierId', bankFormValueAdd.supplier_id);
-      formDataAdd.append('NameBank', bankFormValueAdd.name_bank);
+      formDataAdd.append('SupplierId', bankFormValueAdd.supplierId);
+      formDataAdd.append('NameBank', bankFormValueAdd.nameBank);
       formDataAdd.append('Branch', bankFormValueAdd.branch);
-      formDataAdd.append('AccountNum', bankFormValueAdd.account_num);
-      formDataAdd.append('SupplierGroup', bankFormValueAdd.supplier_group);
-      formDataAdd.append('AccountName', bankFormValueAdd.account_name);
+      formDataAdd.append('AccountNum', bankFormValueAdd.accountNum);
+      formDataAdd.append('SupplierGroup', bankFormValueAdd.supplierGroup);
+      formDataAdd.append('AccountName', bankFormValueAdd.accountName);
       formDataAdd.append('Company', bankFormValueAdd.company);
 
       if (this.selectedFileAdd) {
@@ -824,7 +824,7 @@ export class SupplierAddComponent {
   }
 
   onUpdateSupplierBank(): void {
-    const bankId = this.supplierBankForm.get('supbank_id')?.value;
+    const bankId = this.supplierBankForm.get('supbankId')?.value;
 
     if (this.supplierBankForm.valid && this.suppilerId) {
       this.supplierService.updateBankData(bankId, this.supplierBankForm.value).subscribe({
@@ -839,7 +839,7 @@ export class SupplierAddComponent {
       });
     }
     if (this.supplierBankFormAdd.valid && this.suppilerId) {
-      const bankId = this.supplierBankFormAdd.get('supbank_id')?.value;
+      const bankId = this.supplierBankFormAdd.get('supbankId')?.value;
 
       this.supplierService.updateBankData(bankId, this.supplierBankFormAdd.value).subscribe({
         next: (response) => {
@@ -875,10 +875,10 @@ export class SupplierAddComponent {
           username: currentUser.username || 'string',
           email: currentUser.email || 'string',
           status: this.supplierForm.get('status')?.value || 'Draft',
-          customer_id: 0, // ถ้ามีค่า customer_id สามารถใส่ได้
-          supplier_id: this.isIDTemp || 0, // อ้างอิง id จาก supplierForm
+          customerId: 0, // ถ้ามีค่า customer_id สามารถใส่ได้
+          supplierId: this.isIDTemp || 0, // อ้างอิง id จาก supplierForm
           time: new Date().toISOString(),
-          reject_reason: this.reasonTemp // หรือใส่เวลาที่คุณต้องการ
+          rejectReason: this.reasonTemp // หรือใส่เวลาที่คุณต้องการ
         };
         this.supplierService.insertLog(log).subscribe({
           next: (response) => {
@@ -901,8 +901,8 @@ export class SupplierAddComponent {
           username: currentUser.username || 'string',
           email: currentUser.email || 'string',
           status: this.supplierForm.get('status')?.value || 'Draft',
-          customer_id: 0, // ถ้ามีค่า customer_id สามารถใส่ได้
-          supplier_id: this.supplierBankForm.get('supplier_id')?.value || 0, // อ้างอิง id จาก supplierForm
+          customerId: 0, // ถ้ามีค่า customer_id สามารถใส่ได้
+          supplierId: this.supplierBankForm.get('supplier_id')?.value || 0, // อ้างอิง id จาก supplierForm
           time: new Date().toISOString() // หรือใส่เวลาที่คุณต้องการ
         };
         this.supplierService.insertLog(log).subscribe({

@@ -246,7 +246,7 @@
 <form [formGroup]="supplierBankForm" *ngIf="showSupplierBankForm">
   <div class="content-card mt-3">
     <ng-container *ngIf="!isViewMode">
-      <button *ngIf="!showSupplierBankFormAdd" class="mr-2" nz-button nzType="primary" (click)="showBankCopy()">
+      <button *ngIf="!showSupplierBankFormAdd && selectedSupplierGroup !== 'ALL Group'" class="mr-2" nz-button nzType="primary" (click)="showBankCopy()">
         <span nz-icon nzType="plus" nzTheme="outline"></span>เพิ่ม Bank
       </button>
       <button *ngIf="showSupplierBankFormAdd" class="mr-2" nz-button type="primary" danger (click)="hideBankCopy()">

@@ -253,12 +253,13 @@ export class SupplierAddComponent {
     });
 
     this.supplierForm.get('name')?.valueChanges.subscribe((value: string) => {
-      this.supplierBankForm.patchValue({ account_name: value });
+      this.supplierBankForm.patchValue({ accountName: value });
+      this.supplierBankFormAdd.patchValue({ accountName: value });
       this._cdr.detectChanges();
     });
 
     this.supplierForm.get('prefix')?.valueChanges.subscribe((prefix: string) => {
-      this.selectedPrefix = prefix;
+      this.selectedPrefix = prefix; 
       this.updateNameWithPrefixChange();
     });
     this.checkRole();
@@ -282,6 +283,7 @@ export class SupplierAddComponent {
 
   onNameBlur(): void {
     const nameControl = this.supplierForm.get('name');
+
     let nameValue = nameControl?.value || '';
 
     if (!nameValue) {

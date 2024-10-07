@@ -52,11 +52,12 @@ export class CustomerAddComponent implements OnInit {
   newCusnum: string = '';
   tempCusForm: any;
   files = [
-    { fileName: 'ใบขอเปิด Customer', status: null },
-    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', status: null },
+    { fileName: 'ใบขอเปิด Customer', status: null,filePath: '' },
+    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', status: null,filePath: '' },
   ];
   file: any;
   filess: Array<{ fileName: string; fileType: string; filePath: string }> = [];
+  displayFiles: Array<{ fileName: string; filePath: string }> = [];
   listfile: File[] = [];
   uploadedFiles: any[] = [];
   constructor(private _location: Location, private fb: FormBuilder
@@ -114,6 +115,8 @@ export class CustomerAddComponent implements OnInit {
       }
     });
     this.checkRole();
+    this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
+    console.log('displayFiles:', this.displayFiles);
   }
 
   validateTaxId(event: any): void {
@@ -180,9 +183,10 @@ export class CustomerAddComponent implements OnInit {
       this.originalData = { ...data };
       console.log(this.originalData);
       this.filess = [
-        { fileName: 'File Request', fileType: 'fileReq', filePath: this.customerForm.value.fileReq || '' },
-        { fileName: 'File Certificate', fileType: 'fileCertificate', filePath: this.customerForm.value.fileCertificate || '' }
+        { fileName: 'ใบขอเปิด Customer', fileType: 'fileReq', filePath: this.customerForm.value.fileReq || '' },
+        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.customerForm.value.fileCertificate || '' }
       ];
+      this.displayFiles = this.filess
       
       this.getEventLogs(id)
     });

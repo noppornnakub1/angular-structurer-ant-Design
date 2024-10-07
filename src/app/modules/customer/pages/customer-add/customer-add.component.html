@@ -154,7 +154,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let file of filess">
+        <tr *ngFor="let file of displayFiles">
           <td>{{ file.fileName }}</td>
           <td *ngIf="!isViewMode">
             <input class="choose" type="file" (change)="onFileSelected($event, file)" />
@@ -162,9 +162,12 @@
             <!-- <input class="upload-button" type="file" (change)="onFileSelected($event, file)" /> -->
           </td>
           <td class="text-center">
-            <a *ngIf="file.filePath" [href]="getDownloadUrl(file.filePath)" target="_blank">
-              <span class="material-symbols-outlined">description</span>
-            </a>
+            <!-- แสดงไอคอนเสมอ และตรวจสอบเงื่อนไขเพื่อแสดงลิงก์ดาวน์โหลด -->
+    <a *ngIf="file.filePath && file.filePath !== ''" [href]="getDownloadUrl(file.filePath)" target="_blank">
+      <span class="material-symbols-outlined">description</span>
+    </a>
+    <!-- แสดงไอคอนโดยไม่มีลิงก์หากไม่มี filePath -->
+    <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
           </td>
         </tr>
       </tbody>

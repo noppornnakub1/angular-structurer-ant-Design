@@ -652,7 +652,7 @@ export class SupplierAddComponent {
       }
       else {
         if (!this.isCheckingDuplicate) {
-          Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+          Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
         }
       }
 
@@ -1319,24 +1319,30 @@ export class SupplierAddComponent {
   
         this.supplierService.CheckDupplicateSupplier(key).subscribe({
           next: (response: any) => {
-            if (response && response.length > 0) {
-              Swal.fire({
-                icon: 'error',
-                title: 'ข้อมูลซ้ำ',
-                text: 'มีข้อมูล Supplier นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ TaxID และ Type อีกครั้ง',
-                confirmButtonText: 'ปิด'
-              });
-              this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
-              reject('Duplicate data found'); // เรียก reject
-            } else {
-              this.getNumMaxSupplier().then(() => {
+            if(this.supplierForm.valid){
+              if (response && response.length > 0) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'ข้อมูลซ้ำ',
+                  text: 'มีข้อมูล Supplier นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ TaxID และ Type อีกครั้ง',
+                  confirmButtonText: 'ปิด'
+                });
                 this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
-                resolve();
-              }).catch(err => {
-                this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
-                reject(err);
-              });
+                reject('Duplicate data found'); // เรียก reject
+              } else {
+                this.getNumMaxSupplier().then(() => {
+                  this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+                  resolve();
+                }).catch(err => {
+                  this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+                  reject(err);
+                });
+              }
             }
+            else{
+              Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
+            }
+            
           },
           error: (err) => {
             if (err === 'No data found.') {

@@ -1486,5 +1486,22 @@ export class SupplierAddComponent {
     });
   }
   
+  isFormValidWithoutSupplierNum(): boolean {
+    // เก็บรายการของฟิลด์ที่ต้องการตรวจสอบ
+    const requiredFields = [
+      'name', 'tax_Id', 'addressSup', 'district', 'subdistrict',
+      'province', 'postalCode', 'tel', 'email', 'supplierType',
+      'site', 'paymentMethod', 'company', 'type', 'mobile'
+    ];
+  
+    // ตรวจสอบว่าฟิลด์ที่ระบุใน requiredFields ถูกกรอกครบถ้วนหรือไม่
+    for (const field of requiredFields) {
+      if (!this.supplierForm.get(field)?.value) {
+        return false; // พบฟิลด์ที่ไม่มีค่า
+      }
+    }
+  
+    return true; // ฟอร์มครบถ้วน (ยกเว้น supplierNum)
+  }
 
 }

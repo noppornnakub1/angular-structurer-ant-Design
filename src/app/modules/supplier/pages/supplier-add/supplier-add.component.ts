@@ -1372,8 +1372,8 @@ export class SupplierAddComponent {
   }
 
   CheckDupplicateData(): Promise<void> {
-    this.isCheckingDuplicate = true;
-
+    this.isCheckingDuplicate = true; // เริ่มกระบวนการตรวจสอบข้อมูลซ้ำ
+  
     return new Promise((resolve, reject) => {
       console.log('Inside CheckDupplicateData');
   
@@ -1394,64 +1394,50 @@ export class SupplierAddComponent {
       const foundItem = this.filteredDataType.find(item => item.code === this.supplierForm.value.supplierType);
       if (foundItem) {
         this.typeCode = foundItem.codeFrom;
-        console.log('Found item:', foundItem);
         console.log('codeFrom:', this.typeCode);
-      } else {
-        console.log('No matching item found for supplier type');
       }
   
-      if (this.supplierForm.value.supplierNum === '-') {
-        const tax = this.supplierForm.value.tax_Id.trim();
-        const type = this.typeCode.trim();
-        const key = `${tax}-${type}`;
-        console.log(key);
+      const tax = this.supplierForm.value.tax_Id.trim();
+      const type = this.typeCode.trim();
+      const key = `${tax}-${type}`;
+      console.log(key);
   
-        this.supplierService.CheckDupplicateSupplier(key).subscribe({
-          next: (response: any) => {
-            if(this.supplierForm.valid){
-              if (response && response.length > 0) {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'ข้อมูลซ้ำ',
-                  text: 'มีข้อมูล Supplier นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ TaxID และ Type อีกครั้ง',
-                  confirmButtonText: 'ปิด'
-                });
-                this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
-                reject('Duplicate data found'); // เรียก reject
-              } else {
-                this.getNumMaxSupplier().then(() => {
-                  this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
-                  resolve();
-                }).catch(err => {
-                  this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
-                  reject(err);
-                });
-              }
-            }
-            else{
-              Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
-            }
-            
-          },
-          error: (err) => {
-            if (err === 'No data found.') {
-              this.getNumMaxSupplier().then(() => {
-                this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
-                resolve();
-              }).catch(err => {
-                this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
-                reject(err);
-              });
-            } else {
-              this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+      this.supplierService.CheckDupplicateSupplier(key).subscribe({
+        next: (response: any) => {
+          if (response && response.length > 0) {
+            Swal.fire({
+              icon: 'error',
+              title: 'ข้อมูลซ้ำ',
+              text: 'มีข้อมูล Supplier นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ TaxID และ Type อีกครั้ง',
+              confirmButtonText: 'ปิด'
+            });
+            this.isCheckingDuplicate = false;
+            reject('Duplicate data found'); // เรียก reject
+          } else {
+            this.getNumMaxSupplier().then(() => {
+              this.isCheckingDuplicate = false;
+              resolve();
+            }).catch(err => {
+              this.isCheckingDuplicate = false;
               reject(err);
-            }
+            });
           }
-        });
-      } else {
-        this.isCheckingDuplicate = false; // ไม่ต้องทำการตรวจสอบข้อมูลซ้ำ
-        resolve();
-      }
+        },
+        error: (err) => {
+          if (err === 'No data found.') {
+            this.getNumMaxSupplier().then(() => {
+              this.isCheckingDuplicate = false;
+              resolve();
+            }).catch(err => {
+              this.isCheckingDuplicate = false;
+              reject(err);
+            });
+          } else {
+            this.isCheckingDuplicate = false;
+            reject(err);
+          }
+        }
+      });
     });
   }
 

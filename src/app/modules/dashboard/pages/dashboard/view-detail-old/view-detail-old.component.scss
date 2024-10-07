@@ -1,0 +1,28 @@
+.details-container {
+    padding: 30px;
+    font-family: Arial, sans-serif;
+    color: #333;
+    border-radius: 8px;
+}
+
+.details-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.details-row:last-child {
+    border-bottom: none;
+}
+
+.details-label {
+    font-weight: bold;
+    flex: 1;
+    color: #555;
+}
+
+.details-value {
+    flex: 2;
+    color: #000;
+}

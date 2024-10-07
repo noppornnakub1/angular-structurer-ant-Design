@@ -185,7 +185,7 @@ export class SupplierAddComponent {
       postalCode: ['', Validators.required],
       tel: ['', Validators.required],
       email: ['', Validators.required],
-      supplierNum: ['', Validators.required],
+      supplierNum: ['', ],
       supplierType: ['', Validators.required],
       site: ['00000', Validators.required],
       vat: [''],
@@ -773,7 +773,7 @@ export class SupplierAddComponent {
     } else {
       this.supplierForm.markAllAsTouched();
       this.supplierBankForm.markAllAsTouched();
-      Swal.fire('Error!', 'กรุณาตรวจสอบข้อมูลของคุณให้ครบถ้วน', 'error');
+      Swal.fire('Warning!', 'กรุณาตรวจสอบข้อมูลของคุณให้ครบถ้วน', 'warning');
     }
 
   }
@@ -1163,15 +1163,6 @@ export class SupplierAddComponent {
   async save(event: Event): Promise<void> {
     console.log(this.suppilerId);
 
-    if (this.emailError != '') {
-      Swal.fire({
-        icon: 'error',
-        title: 'Email ไม่ถูกต้อง',
-        text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
-        confirmButtonText: 'ปิด'
-      });
-      return;
-    }
     event.preventDefault();
     // รอให้ Swal ทำงานและรับค่าตอบสนองจากผู้ใช้
     const result = await Swal.fire({
@@ -1385,9 +1376,21 @@ export class SupplierAddComponent {
 
     return new Promise((resolve, reject) => {
       console.log('Inside CheckDupplicateData');
-
-      console.log('Supplier Type:', this.supplierForm.value.supplierType);
-
+  
+      // ตรวจสอบความถูกต้องของฟอร์มก่อนดำเนินการอื่น ๆ
+      // ตรวจสอบความถูกต้องของฟอร์ม (ยกเว้น supplierNum)
+    if (!this.isFormValidWithoutSupplierNum()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        text: 'โปรดกรอกข้อมูลในฟอร์มให้ครบทุกช่องที่จำเป็น',
+        confirmButtonText: 'ปิด'
+      });
+      this.isCheckingDuplicate = false;
+      console.log("this.supplierForm.value",this.supplierForm.value);
+      return reject('Form is not validxxx');
+    }
+  
       const foundItem = this.filteredDataType.find(item => item.code === this.supplierForm.value.supplierType);
       if (foundItem) {
         this.typeCode = foundItem.codeFrom;
@@ -1396,78 +1399,57 @@ export class SupplierAddComponent {
       } else {
         console.log('No matching item found for supplier type');
       }
-
+  
       if (this.supplierForm.value.supplierNum === '-') {
         const tax = this.supplierForm.value.tax_Id.trim();
         const type = this.typeCode.trim();
-
-        if (tax && type) {
-          const key = `${tax}-${type}`;
-          console.log('Generated key for duplicate check:', key);
-
-          this.supplierService.CheckDupplicateSupplier(key).subscribe({
-            next: (response: any) => {
-              console.log('Response from CheckDupplicateSupplier:', response);
-
+        const key = `${tax}-${type}`;
+        console.log(key);
+  
+        this.supplierService.CheckDupplicateSupplier(key).subscribe({
+          next: (response: any) => {
+            if(this.supplierForm.valid){
               if (response && response.length > 0) {
-                console.log('Duplicate data found. Showing alert.');
                 Swal.fire({
                   icon: 'error',
                   title: 'ข้อมูลซ้ำ',
                   text: 'มีข้อมูล Supplier นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ TaxID และ Type อีกครั้ง',
                   confirmButtonText: 'ปิด'
                 });
-                this.isCheckingDuplicate = false;
-                reject('Duplicate data found');
-              } else if (this.supplierForm.valid) {
-                console.log('No duplicate data found and form is valid. Proceeding to getNumMaxSupplier.');
+                this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+                reject('Duplicate data found'); // เรียก reject
+              } else {
                 this.getNumMaxSupplier().then(() => {
-                  this.isCheckingDuplicate = false;
+                  this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
                   resolve();
                 }).catch(err => {
-                  console.log('Error in getNumMaxSupplier:', err);
-                  this.isCheckingDuplicate = false;
+                  this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
                   reject(err);
                 });
-              } else {
-                console.log('Supplier form is invalid. Showing warning alert.');
-                Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
-                this.isCheckingDuplicate = false;
-                reject('Form is invalid');
-              }
-            },
-            error: (err) => {
-              console.log('Error response from CheckDupplicateSupplier:', err);
-              if (err === 'No data found.') {
-                console.log('No data found. Proceeding to getNumMaxSupplier.');
-                this.getNumMaxSupplier().then(() => {
-                  this.isCheckingDuplicate = false;
-                  resolve();
-                }).catch(err => {
-                  console.log('Error in getNumMaxSupplier:', err);
-                  this.isCheckingDuplicate = false;
-                  reject(err);
-                });
-              } else {
-                this.isCheckingDuplicate = false;
-                reject(err);
               }
             }
-          });
-        } else {
-          console.log('Tax ID or Type is empty. Showing alert.');
-          Swal.fire({
-            icon: 'warning',
-            title: 'ข้อมูลไม่ครบถ้วน',
-            text: 'กรุณากรอก Tax ID และ Type ให้ครบถ้วนก่อนทำการตรวจสอบข้อมูลซ้ำ',
-            confirmButtonText: 'ปิด'
-          });
-          this.isCheckingDuplicate = false;
-          reject('Tax ID or Type is missing');
-        }
+            else{
+              Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
+            }
+            
+          },
+          error: (err) => {
+            if (err === 'No data found.') {
+              this.getNumMaxSupplier().then(() => {
+                this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+                resolve();
+              }).catch(err => {
+                this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+                reject(err);
+              });
+            } else {
+              this.isCheckingDuplicate = false; // กระบวนการตรวจสอบข้อมูลซ้ำเสร็จสิ้น
+              reject(err);
+            }
+          }
+        });
       } else {
-        console.log('Supplier number is not "-", skipping duplicate check.');
-        this.isCheckingDuplicate = false;
+        this.isCheckingDuplicate = false; // ไม่ต้องทำการตรวจสอบข้อมูลซ้ำ
         resolve();
       }
     });
@@ -1503,4 +1485,6 @@ export class SupplierAddComponent {
       });
     });
   }
+  
+
 }

@@ -9,8 +9,11 @@ import { IRole } from '../../../user-manager/interface/role.interface';
 import { SupplierService } from '../../../supplier/services/supplier.service';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
-import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { ViewDetailsComponent } from './view-details/view-details.component';
+import { ModalDataService } from '../../services/modal-data.service';
+import { ViewDetailOldComponent } from './view-detail-old/view-detail-old.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -140,7 +143,9 @@ export class DashboardComponent {
 
   constructor(private customerService: CustomerService,
     private cdr: ChangeDetectorRef,
-    private supplierService: SupplierService
+    private modal: NzModalService,
+    private modalDataService: ModalDataService
+
   ) { }
 
   ngOnInit(): void {
@@ -374,5 +379,27 @@ export class DashboardComponent {
 
   handleCancel(): void {
     this.isVisible = false;
+  }
+
+  openModal(data: any): void {
+    console.log(data);
+    
+    this.modalDataService.setData(data);
+    this.modal.create({
+      nzTitle: 'Customer/Supplier Details',
+      nzContent: ViewDetailsComponent,
+      nzFooter: null,
+    });
+  }
+
+  openModalold(data: any): void {
+    console.log(data);
+    
+    this.modalDataService.setData(data);
+    this.modal.create({
+      nzTitle: 'Customer/Supplier Details',
+      nzContent: ViewDetailOldComponent,
+      nzFooter: null,
+    });
   }
 }

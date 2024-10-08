@@ -16,9 +16,16 @@ export class SupplierService {
     return this._http.get(`/Supplier/SupplierInfo`);
   }
 
-  addData(supplier: any): Observable<any> {
-    return this._http.post(`/Supplier/AddSupplier`, supplier);
+  addDataWithFiles(formData: FormData): Observable<any> {
+    console.log("FormData before sending to API:");
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
+
+    return this._http.post(`/Supplier/AddSupplierWithFiles`, formData);
   }
+
+
   findSupplierById(id: number): Observable<ISupplier> {
     return this._http.get<ISupplier>(`/Supplier/FindSupplierByID?id=${id}`);
   }

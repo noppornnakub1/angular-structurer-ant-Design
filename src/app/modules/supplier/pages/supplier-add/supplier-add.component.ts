@@ -142,8 +142,10 @@ export class SupplierAddComponent {
   isOneTime = false;
   typeCode: string = '';
   newSupnum: string = '';
+  selectedFileSupplier: File | null = null;
   selectedFile: File | null = null;
   selectedFileAdd: File | null = null;
+  selectedFilesSupplier: SelectedFile[] = [];
   selectedFiles: SelectedFile[] = [];
   selectedFilesAdd: SelectedFile[] = [];
   private _cdr = inject(ChangeDetectorRef);
@@ -158,8 +160,8 @@ export class SupplierAddComponent {
     },
   ];
   files = [
-    { fileName: 'ใบขอเปิด Supplier', status: null, filePath: '' },
-    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', status: null, filePath: '' },
+    { fileName: 'ใบขอเปิด Supplier', fileType: '', filePath: '' },
+    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: '', filePath: '' },
   ];
   filesBank = [
     { fileName: 'หนังสือยินยอมการโอนเงิน', fileType: '', filePath: '' },
@@ -364,8 +366,17 @@ export class SupplierAddComponent {
       }
     });
     this.checkRole();
-    this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
-    console.log('displayFiles:', this.displayFiles);
+  }
+
+  onFileSelectSupplier(event: Event, fileType: string, labelText: string) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFilesSupplier.push({
+        file: input.files[0],
+        fileType,
+        labelText
+      });
+    }
   }
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
@@ -785,7 +796,7 @@ export class SupplierAddComponent {
         this.onUpdate(formValue);
       } else {
         console.log('Supplier ID does not exist, adding new supplier');
-        this.supplierService.addData(formValue).subscribe({
+        this.supplierService.addDataWithFiles(formValue).subscribe({
           next: (response) => {
             console.log('Response from addData:', response);
 
@@ -937,7 +948,41 @@ export class SupplierAddComponent {
       formValue.post_id = selectedPostItem.post_id;
     }
     formValue.user_id = currentUser.userId;
-    return formValue;
+
+    const FormValue = formValue;
+    const formData = new FormData();
+    formData.append('Prefix', FormValue.prefix);
+    formData.append('Name', FormValue.name);
+    formData.append('Tax_Id', FormValue.tax_Id);
+    formData.append('AddressSup', FormValue.addressSup);
+    formData.append('District', FormValue.district);
+    formData.append('Subdistrict', FormValue.subdistrict);
+    formData.append('Province', FormValue.province);
+    formData.append('PostalCode', FormValue.postalCode);
+    formData.append('Tel', FormValue.tel);
+    formData.append('Email', FormValue.email);
+    formData.append('SupplierNum', FormValue.supplierNum);
+    formData.append('SupplierType', FormValue.supplierType);
+    formData.append('Site', FormValue.site);
+    formData.append('Vat', '-');
+    formData.append('Status', FormValue.status);
+    formData.append('PaymentMethod', FormValue.paymentMethod);
+    formData.append('Company', FormValue.company);
+    formData.append('Type', FormValue.type);
+    formData.append('UserId', FormValue.userId);
+    formData.append('Mobile', FormValue.mobile);
+    formData.append('groupName', 'SupplierFile');
+
+    const labelTexts: string[] = [];
+
+    for (let selectedFile of this.selectedFilesSupplier) {
+      formData.append('Files', selectedFile.file, selectedFile.file.name);
+      labelTexts.push(selectedFile.labelText);
+    }
+
+    formData.append('LabelTextsJson', JSON.stringify(labelTexts));
+
+    return formData;
   }
 
   getSupplierType(): void {
@@ -987,7 +1032,7 @@ export class SupplierAddComponent {
       const bankFormValue = this.supplierBankForm.value;
 
       const formData = new FormData();
-      formData.append('SupplierId', bankFormValue.supplierId);
+      formData.append('SupbankId', bankFormValue.supbankId);
       formData.append('NameBank', bankFormValue.nameBank);
       formData.append('Branch', bankFormValue.branch);
       formData.append('AccountNum', bankFormValue.accountNum);

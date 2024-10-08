@@ -208,12 +208,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let file of displayFiles">
+        <tr *ngFor="let file of files">
           <td>{{ file.fileName }}</td>
           <td *ngIf="!isViewMode">
-            <input class="choose" type="file" />
-            <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
-            <!-- <input class="upload-button" type="file" (change)="onFileSelected($event, file)" /> -->
+            <input class="upload-button" type="file" (change)="onFileSelectSupplier($event, file.fileType, file.fileName)" /> 
           </td>
           <td class="text-center">
             <a *ngIf="file.filePath && file.filePath !== ''" [href]="" target="_blank">

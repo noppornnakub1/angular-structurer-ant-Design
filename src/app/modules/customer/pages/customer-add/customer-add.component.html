@@ -2,7 +2,7 @@
   <div class="content-card">
     <nz-divider nzText="Customer Info"></nz-divider>
     <div nz-row nzGutter="16" class="mt-2">
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="7" class="pr-3">
         <nz-form-label nzNoColon>Customer Type<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Customer Type = ประเภทของ Customer ที่ต้องการสร้าง 
           สามารถเลือก Dropdown ลงมาดูข้อมูลได้" class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -16,7 +16,7 @@
         </nz-select>
       </div>
 
-      <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="8" class="pr-3">
         <nz-form-label nzNoColon>Customer Number<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Customer Number = ระบบจะ running number 
           ให้ตามประเภทของ Customer" class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -28,7 +28,7 @@
         </nz-input-group>
       </div>
 
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="9" class="pr-3 ">
         <nz-form-label nzNoColon>Site<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Site = สำนักงานใหญ่ คือ 00000 , สาขาย่อยจะ running ตามสาขา 
           เช่น สาขาที่ 1 คือ 00001, สาขาที่ 10 คือ 00010" class="material-symbols-outlined ml-1"
@@ -40,13 +40,13 @@
           <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
 
-      </div>
+      </div> -->
       <div *ngIf="isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
 
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="7" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Tax ID<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="TAX ID : กรุณากรอกตัวเลข 13 หลัก ติดกัน โดยไม่ต้องมี -
           หากเป็นลูกค้าที่ไม่มี TAX ID ให้กรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -58,40 +58,21 @@
             (blur)="getTaxIdData()" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Name<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="Name : ชื่อ Customer กรุณา กรอกข้อมูลตาม Format
-          กรณีบุคคลธรรมดา : คุณ ชื่อ นามสกุล [ช่องว่าง คือ เว้นวรรค]
-          กรณีนิติบุคคล : บริษัท ......... จำกัด " class="material-symbols-outlined ml-1" style="font-size: 18px;">
-            info
-          </span>
-        </nz-form-label>
-        <nz-input-group nzPrefixIcon="user" class="form-input">
-          <input nz-input placeholder="คุณ ชื่อ นามสกุล" formControlName="name" />
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Telephone<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="Tel : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
-          เช่น 063-259-1642 กรุณากรอก 0692591642
-          หาก ไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
-            info
-          </span>
-        </nz-form-label>
-        <nz-input-group nzPrefixIcon="phone" class="form-input">
-          <input nz-input type="text" placeholder="Telephone" maxlength="10" (input)="validateTel($event)"
-            formControlName="tel" />
-        </nz-input-group>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Email<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="Email : ของ Customer ถ้าไม่มีให้ระบุเป็น “-”"
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="4" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>
+          Name<span style="color: red;">*</span>
+          <span nz-tooltip nzTooltipTitle="Name : ชื่อ Supplier กรุณา กรอกข้อมูลตาม Format"
             class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
-        <nz-input-group nzPrefixIcon="mail" class="form-input">
-          <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" />
+        <nz-select formControlName="prefix" nzPlaceHolder="Prefix" class="custom-select">
+          <nz-option *ngFor="let type of item_prefix" [nzLabel]="type.name" [nzValue]="type.name"></nz-option>
+        </nz-select>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="13" class="pr-3" style="margin-top: 46px;">
+        <nz-input-group nzPrefixIcon="user" class="form-input">
+          <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3 mt-3">
@@ -141,6 +122,30 @@
         <nz-form-label nzNoColon>Subdistrict<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="environment" class="form-input">
           <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
+        </nz-input-group>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        <nz-form-label nzNoColon>Mobilephone<span style="color: red;">*</span>
+          <span nz-tooltip nzTooltipTitle="Mobilephone : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
+          เช่น 063-259-1642 กรุณากรอก 0692591642
+          หาก ไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
+            info
+          </span>
+        </nz-form-label>
+        <nz-input-group nzPrefixIcon="phone" class="form-input">
+          <input nz-input type="text" placeholder="Mobilephone" maxlength="10" (input)="validateTel($event)"
+            formControlName="tel" />
+        </nz-input-group>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="18" class="pr-3">
+        <nz-form-label nzNoColon>Email<span style="color: red;">*</span>
+          <span nz-tooltip nzTooltipTitle="Email : ของ Customer ถ้าไม่มีให้ระบุเป็น “-”"
+            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+            info
+          </span>
+        </nz-form-label>
+        <nz-input-group nzPrefixIcon="mail" class="form-input">
+          <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" />
         </nz-input-group>
       </div>
     </div>

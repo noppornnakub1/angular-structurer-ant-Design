@@ -10,10 +10,11 @@ import { PostCodeService } from '../../../../shared/constants/post-code.service'
 import { AuthService } from '../../../authentication/services/auth.service';
 import { IRole } from '../../../user-manager/interface/role.interface';
 import { ICustomerType } from '../../interface/customerType.interface';
-import { DataLocation } from '../../../supplier/pages/supplier-add/supplier-add.component';
+import { DataLocation, prefix } from '../../../supplier/pages/supplier-add/supplier-add.component';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { prefixService } from '../../../../shared/constants/prefix.service';
 
 
 @Component({
@@ -51,6 +52,9 @@ export class CustomerAddComponent implements OnInit {
   typeCode: string = '';
   newCusnum: string = '';
   tempCusForm: any;
+  item_prefix: prefix[] = [];
+  filteredItemsPrefix: prefix[] = [];
+  selectedPrefix: string = '';
   files = [
     { fileName: 'ใบขอเปิด Customer', status: null,filePath: '' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', status: null,filePath: '' },
@@ -66,7 +70,8 @@ export class CustomerAddComponent implements OnInit {
     private route: ActivatedRoute,
     private postCodeService: PostCodeService,
     private cdr: ChangeDetectorRef,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private prefixService: prefixService
   ) { }
 
   ngOnInit(): void {
@@ -90,7 +95,8 @@ export class CustomerAddComponent implements OnInit {
       userId: [0],
       fileReq: [''],
       fileCertificate: [''],
-      path: ['']
+      path: [''],
+      prefix:['']
     });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -107,6 +113,10 @@ export class CustomerAddComponent implements OnInit {
       this.items_provinces = data;
       this.filteredItemsProvince = data;
     });
+    this.prefixService.getPrefix().subscribe(data => {
+      this.item_prefix = data;
+      this.filteredItemsPrefix = data;
+    });
     this.getCustomerType();
     this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
       const customerTypeId = this.getCustomerTypeId(value);
@@ -114,9 +124,80 @@ export class CustomerAddComponent implements OnInit {
         this.loadCustomerType(customerTypeId);
       }
     });
+    this.customerForm.get('prefix')?.valueChanges.subscribe((prefix: string) => {
+      this.selectedPrefix = prefix;
+      this.updateNameWithPrefixChange();
+      this._cdr.detectChanges();
+    });
     this.checkRole();
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
     console.log('displayFiles:', this.displayFiles);
+  }
+
+  onNameBlur(): void {
+    const nameControl = this.customerForm.get('name');
+    let nameValue = nameControl?.value || '';
+  
+    if (!nameValue) {
+      return;
+    }
+  
+    // ลบ prefix และ suffix ที่ไม่ต้องการออกก่อน
+    nameValue = nameValue.replace(/^บริษัท /, '')
+      .replace(/ จำกัด \(มหาชน\)$/, '')
+      .replace(/ จำกัด$/, '')
+      .replace(/^คุณ /, '')
+      .replace(/^ห้างหุ้นส่วนสามัญ/, '')
+      .replace(/^ห้างหุ้นส่วนจำกัด/, '');
+  
+    // กำหนดเงื่อนไขตาม selectedPrefix
+    if (this.selectedPrefix === 'บริษัทจำกัด') {
+      nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
+    } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
+      nameControl?.setValue(`บริษัท ${nameValue} จำกัด (มหาชน)`);
+    } else if (this.selectedPrefix === 'คุณ') {
+      nameControl?.setValue(`คุณ ${nameValue}`);
+    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
+      nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue}`);
+    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
+      nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue}`);
+    } else {
+      // ถ้าเลือกเป็น "อื่นๆ" ให้แสดงแค่ nameValue
+      nameControl?.setValue(nameValue);
+    }
+  }
+  
+  updateNameWithPrefixChange(): void {
+    const nameControl = this.customerForm.get('name');
+    let nameValue = nameControl?.value || '';
+  
+    if (!nameValue) {
+      return;
+    }
+  
+    // ลบ prefix และ suffix ที่ไม่ต้องการออกก่อน
+    nameValue = nameValue.replace(/^บริษัท /, '')
+      .replace(/ จำกัด \(มหาชน\)$/, '')
+      .replace(/ จำกัด$/, '')
+      .replace(/^คุณ /, '')
+      .replace(/^ห้างหุ้นส่วนสามัญ/, '')
+      .replace(/^ห้างหุ้นส่วนจำกัด/, '');
+  
+    // กำหนดเงื่อนไขการเพิ่ม prefix และ suffix
+    if (this.selectedPrefix === 'บริษัทจำกัด') {
+      nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
+    } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
+      nameControl?.setValue(`บริษัท ${nameValue} จำกัด (มหาชน)`);
+    } else if (this.selectedPrefix === 'คุณ') {
+      nameControl?.setValue(`คุณ ${nameValue}`);
+    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
+      nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue}`);
+    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
+      nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue}`);
+    } else {
+      // ถ้าเลือกเป็น "อื่นๆ" ให้แสดงแค่ nameValue
+      nameControl?.setValue(nameValue);
+    }
   }
 
   validateTaxId(event: any): void {

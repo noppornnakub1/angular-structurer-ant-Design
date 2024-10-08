@@ -93,7 +93,7 @@
             <td>{{ data.payment_Method }}</td>
             <td>{{ data.source }}</td>
             <td class="text-center">
-              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"><span
+              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round" (click)="openModal(data)"><span
                   nz-icon nzType="eye" nzTheme="outline"></span>View</button>
             </td>
           </tr>
@@ -125,7 +125,7 @@
             <td>{{ data.TAX }}</td>
             <td>{{ data.PAYMENT_MEDTHOD }}</td>
             <td class="text-center">
-              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"><span
+              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round" (click)="openModalold(data)"><span
                   nz-icon nzType="eye" nzTheme="outline"></span>View</button>
             </td>
           </tr>

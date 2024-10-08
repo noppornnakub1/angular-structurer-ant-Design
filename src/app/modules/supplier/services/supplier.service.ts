@@ -64,6 +64,10 @@ import { DataBank } from '../pages/supplier-add/supplier-add.component';
       return this._http.put(`/SupplierBank/UpdateSupplierBank/${id}`, data);
     }
 
+    updateBankDataWithFiles(id: number, formData: FormData): Observable<any> {
+      return this._http.put(`/SupplierBank/UpdateSupplierBankWithFiles/${id}`, formData);
+    }
+
     insertLog(log: any): Observable<any> {
       return this._http.post(`/EventLog/InsertLog`, log);
     }

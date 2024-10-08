@@ -157,6 +157,13 @@ export class SupplierAddComponent {
       title: 'One Time',
     },
   ];
+  files = [
+    { fileName: 'ใบขอเปิด Supplier', status: null,filePath: '' },
+    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', status: null,filePath: '' },
+  ];
+  file: any;
+  filess: Array<{ fileName: string; fileType: string; filePath: string }> = [];
+  displayFiles: Array<{ fileName: string; filePath: string }> = [];
   selectedPrefix: string = '';
   nameInput: string = '';
   fullName: string = '';
@@ -271,6 +278,8 @@ export class SupplierAddComponent {
       this.updateNameWithPrefixChange();
     });
     this.checkRole();
+    this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
+    console.log('displayFiles:', this.displayFiles);
   }
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
@@ -505,7 +514,11 @@ export class SupplierAddComponent {
         ...data,
         postalCode: postalCodeCombination
       });
-
+      this.filess = [
+        { fileName: 'ใบขอเปิด Supplier', fileType: 'fileReq', filePath: this.supplierForm.value.fileReq || '' },
+        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.supplierForm.value.fileCertificate || '' }
+      ];
+      this.displayFiles = this.filess
       console.log("527", this.supplierForm.value);
 
       this.loadSupplierBank(id);

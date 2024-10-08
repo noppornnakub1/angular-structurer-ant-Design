@@ -199,6 +199,33 @@
         </nz-select>
       </div>
     </div>
+    <nz-divider nzText="Upload file"></nz-divider>
+    <nz-table #basicTable nzBordered [nzData]="files">
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th *ngIf="!isViewMode">Upload</th>
+          <th>Download File</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let file of displayFiles">
+          <td>{{ file.fileName }}</td>
+          <td *ngIf="!isViewMode">
+            <input class="choose" type="file"  />
+            <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
+            <!-- <input class="upload-button" type="file" (change)="onFileSelected($event, file)" /> -->
+          </td>
+          <td class="text-center">
+            <a *ngIf="file.filePath && file.filePath !== ''" [href]="" target="_blank">
+              <span class="material-symbols-outlined">description</span>
+            </a>
+            <!-- แสดงไอคอนโดยไม่มีลิงก์หากไม่มี filePath -->
+            <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
     <div class="mt-5 display-flex justify-center " *ngIf="!showSupplierBankForm">
       <button nz-button nzType="default" class="mr-2" (click)="backClicked($event)"><span nz-icon nzType="rollback"
           nzTheme="outline"></span>ย้อนกลับ</button>

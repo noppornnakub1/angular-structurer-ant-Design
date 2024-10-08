@@ -161,9 +161,21 @@ export class SupplierAddComponent {
     { fileName: 'ใบขอเปิด Supplier', status: null, filePath: '' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', status: null, filePath: '' },
   ];
+  filesBank = [
+    { fileName: 'หนังสือยินยอมการโอนเงิน', fileType: '', filePath: '' },
+    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: '', filePath: '' },
+    { fileName: 'สำเนาหน้า Book Bank', fileType: '', filePath: '' },
+  ];
+  filesBankAdd = [
+    { fileName: 'หนังสือยินยอมการโอนเงิน', fileType: '', filePath: '' },
+    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: '', filePath: '' },
+    { fileName: 'สำเนาหน้า Book Bank', fileType: '', filePath: '' },
+  ];
   file: any;
   filess: Array<{ fileName: string; fileType: string; filePath: string }> = [];
   displayFiles: Array<{ fileName: string; filePath: string }> = [];
+  displayFilesBank: Array<{ fileName: string, fileType: string, filePath: string }> = [];
+  displayFilesBankAdd: Array<{ fileName: string, fileType: string, filePath: string }> = [];
   selectedPrefix: string = '';
   nameInput: string = '';
   fullName: string = '';
@@ -270,10 +282,10 @@ export class SupplierAddComponent {
     this.supplierForm.get('name')?.valueChanges.subscribe((value: string) => {
       const combinedName = this.combinePrefixAndName(); // รวม prefix และ name
       console.log(combinedName);
-      
+
       this.supplierBankForm.patchValue({ accountName: combinedName });
       console.log(this.supplierBankForm.value.accountName);
-      
+
       this.supplierBankFormAdd.patchValue({ accountName: combinedName });
       this._cdr.detectChanges();
     });
@@ -282,6 +294,74 @@ export class SupplierAddComponent {
       this.selectedPrefix = prefix;
       this.updateNameWithPrefixChange();
       this._cdr.detectChanges();
+    });
+
+    this.supplierBankForm.get('supplierGroup')?.valueChanges.subscribe(value => {
+      if (value === 'ALL Group') {
+        this.filesBank = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+          { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'gchGroupBookBankFile', filePath: '' },
+          { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+          { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '' }
+        ];
+      }
+      else if(value === 'ONE GROUP') {
+        this.filesBank = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+          { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'gchGroupBookBankFile', filePath: '' },
+        ];
+      }
+      else if(value === 'GCH GROUP') {
+        this.filesBank = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+          { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '' },
+        ];
+      }
+      else if(value === 'ACT') {
+        this.filesBank = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'gchGroupConsentFile', filePath: '' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'gchGroupCertificationFile', filePath: '' },
+          { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'gchGroupBookBankFile', filePath: '' },
+        ];
+      }
+    });
+
+    this.supplierBankFormAdd.get('supplierGroup')?.valueChanges.subscribe(value => {
+      if (value === 'ALL Group') {
+        this.filesBankAdd = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+          { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'gchGroupBookBankFile', filePath: '' },
+          { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+          { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '' }
+        ];
+      }
+      else if(value === 'ONE GROUP') {
+        this.filesBankAdd = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+          { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'gchGroupBookBankFile', filePath: '' },
+        ];
+      }
+      else if(value === 'GCH GROUP') {
+        this.filesBankAdd = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+          { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '' },
+        ];
+      }
+      else if(value === 'ACT') {
+        this.filesBankAdd = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'gchGroupConsentFile', filePath: '' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'gchGroupCertificationFile', filePath: '' },
+          { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'gchGroupBookBankFile', filePath: '' },
+        ];
+      }
     });
     this.checkRole();
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
@@ -504,6 +584,39 @@ export class SupplierAddComponent {
 
   onPaymentMethodChange(value: string): void {
     this.toggleSupplierBankForm(value);
+  }
+
+  updateDisplayFiles(): void {
+    if (this.selectedSupplierGroup === 'ONE GROUP') {
+      this.displayFilesBank = [
+        { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+        { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'gchGroupBookBankFile', filePath: '' }
+      ];
+    } else if (this.selectedSupplierGroup === 'GCH GROUP') {
+      this.displayFilesBank = [
+        { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+        { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '' }
+      ];
+    } else if (this.selectedSupplierGroup === 'ACT') {
+      this.displayFilesBank = [
+        { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'gchGroupConsentFile', filePath: '' },
+        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'gchGroupCertificationFile', filePath: '' },
+        { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'gchGroupBookBankFile', filePath: '' }
+      ];
+    }
+    else if (this.selectedSupplierGroup === 'ALL Group') {
+      this.displayFilesBank = [
+        { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+        { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'gchGroupBookBankFile', filePath: '' },
+        { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '' },
+        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
+        { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '' }
+      ];
+    }
+    // เพิ่มกลุ่มอื่นๆ ตามที่ต้องการ
   }
 
   checkRole(): void {

@@ -60,26 +60,8 @@
           <input nz-input type="text" placeholder="Tax ID" formControlName="tax_Id" (input)="validateTaxId($event)" />
         </nz-input-group>
       </div>
+
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>
-          Name<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="Name : ชื่อ Supplier กรุณา กรอกข้อมูลตาม Format"
-            class="material-symbols-outlined ml-1" style="font-size: 18px;">
-            info
-          </span>
-        </nz-form-label>
-
-        <div class="input-with-prefix">
-          <nz-select formControlName="prefix" nzPlaceHolder="Prefix" class="customize-input prefix-dropdown">
-            <nz-option *ngFor="let type of item_prefix" [nzLabel]="type.name" [nzValue]="type.name"></nz-option>
-          </nz-select>
-
-          <nz-input-group nzPrefixIcon="user" class="form-input">
-            <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" />
-          </nz-input-group>
-        </div>
-      </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="3" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Telephone<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Tel : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
           เช่น 063-259-1642 กรุณากรอก 0692591642
@@ -92,7 +74,7 @@
             formControlName="tel" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="3" class="pr-3 mt-3">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Mobilephone<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="mobile : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
           เช่น 063-259-1642 กรุณากรอก 0692591642
@@ -114,6 +96,23 @@
         </nz-form-label>
         <nz-input-group nzPrefixIcon="mail" class="form-input">
           <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" />
+        </nz-input-group>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>
+          Name<span style="color: red;">*</span>
+          <span nz-tooltip nzTooltipTitle="Name : ชื่อ Supplier กรุณา กรอกข้อมูลตาม Format"
+            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+            info
+          </span>
+        </nz-form-label>
+        <nz-select formControlName="prefix" nzPlaceHolder="Prefix" class="custom-select">
+          <nz-option *ngFor="let type of item_prefix" [nzLabel]="type.name" [nzValue]="type.name"></nz-option>
+        </nz-select>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="18" class="pr-3" style="margin-top: 46px;">
+        <nz-input-group nzPrefixIcon="user" class="form-input">
+          <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3 mt-3">
@@ -199,7 +198,7 @@
         </nz-select>
       </div>
     </div>
-    <nz-divider nzText="Upload file"></nz-divider>
+    <nz-divider style="margin-top: 30px;" nzText="Upload file"></nz-divider>
     <nz-table #basicTable nzBordered [nzData]="files">
       <thead>
         <tr>
@@ -212,7 +211,7 @@
         <tr *ngFor="let file of displayFiles">
           <td>{{ file.fileName }}</td>
           <td *ngIf="!isViewMode">
-            <input class="choose" type="file"  />
+            <input class="choose" type="file" />
             <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
             <!-- <input class="upload-button" type="file" (change)="onFileSelected($event, file)" /> -->
           </td>
@@ -273,7 +272,8 @@
 <form [formGroup]="supplierBankForm" *ngIf="showSupplierBankForm">
   <div class="content-card mt-3">
     <ng-container *ngIf="!isViewMode">
-      <button *ngIf="!showSupplierBankFormAdd && selectedSupplierGroup !== 'ALL Group'" class="mr-2" nz-button nzType="primary" (click)="showBankCopy()">
+      <button *ngIf="!showSupplierBankFormAdd && selectedSupplierGroup !== 'ALL Group'" class="mr-2" nz-button
+        nzType="primary" (click)="showBankCopy()">
         <span nz-icon nzType="plus" nzTheme="outline"></span>เพิ่ม Bank
       </button>
       <button *ngIf="showSupplierBankFormAdd" class="mr-2" nz-button type="primary" danger (click)="hideBankCopy()">
@@ -330,18 +330,21 @@
                 class="form-input" readonly />
             </nz-form-control>
           </nz-form-item>
-          <div *ngIf="selectedSupplierGroup === 'ONE GROUP'">
+          <!-- <div *ngIf="selectedSupplierGroup === 'ONE GROUP'">
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>หนังสือยินยอมการโอนเงิน [ONE Group]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [ONE Group]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [ONE Group]')" />
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]')" />
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>สำเนาหน้า Book Bank [ONE Group]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [ONE Group]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [ONE Group]')" />
             </div>
           </div>
 
@@ -349,27 +352,32 @@
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือยินยอมการโอนเงิน [GCH Group]</label>
-                <input type="file" (change)="onFileSelect($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [GCH Group]')" />
+                <input type="file"
+                  (change)="onFileSelect($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [GCH Group]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]</label>
-                <input type="file" (change)="onFileSelect($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
+                <input type="file"
+                  (change)="onFileSelect($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
               </div>
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>สำเนาหน้า Book Bank [GCH Group]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [GCH Group]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [GCH Group]')" />
             </div>
           </div>
 
           <div *ngIf="selectedSupplierGroup === 'ACT'">
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>หนังสือยินยอมการโอนเงิน [ACT]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [ACT]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [ACT]')" />
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]')" />
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>สำเนาหน้า Book Bank [ACT]</label>
@@ -380,32 +388,64 @@
           <div *ngIf="selectedSupplierGroup === 'ALL Group'">
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>หนังสือยินยอมการโอนเงิน [ONE Group]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [ONE Group]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [ONE Group]')" />
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>สำเนาหน้า Book Bank [ONE Group]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [ONE Group]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [ONE Group]')" />
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>หนังสือยินยอมการโอนเงิน [GCH Group]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [GCH Group]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [GCH Group]')" />
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <label>สำเนาหน้า Book Bank [GCH Group]</label>
-              <input type="file" (change)="onFileSelect($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [GCH Group]')" />
+              <input type="file"
+                (change)="onFileSelect($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [GCH Group]')" />
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
+    <nz-divider style="margin-top: 30px;" nzText="Upload file"></nz-divider>
+    <nz-table #basicTable1 nzBordered [nzData]="filesBank">
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th *ngIf="!isViewMode">Upload</th>
+          <th>Download File</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let file of filesBank">
+          <td>{{ file.fileName }}</td>
+          <td *ngIf="!isViewMode">
+            <input class="choose" type="file" (change)="onFileSelect($event, file.fileType, file.fileName)" />
+            <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
+          </td>
+          <td class="text-center">
+            <a *ngIf="file.filePath && file.filePath !== ''" [href]="" target="_blank">
+              <span class="material-symbols-outlined">description</span>
+            </a>
+            <!-- แสดงไอคอนโดยไม่มีลิงก์หากไม่มี filePath -->
+            <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
     <form [formGroup]="supplierBankFormAdd" *ngIf="showSupplierBankFormAdd">
       <div class="content-card" style="padding: 0px;">
         <nz-divider nzText="Supplier Bank"></nz-divider>
@@ -424,8 +464,7 @@
                 <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name<span
                     style="color: red;">*</span></nz-form-label>
                 <nz-select formControlName="nameBank" nzPlaceHolder="Select bankName" class="custom-select">
-                  <nz-option *ngFor="let type of listOfBank"
-                    [nzLabel]="type.shortBankName+' : '+type.alternateBankName"
+                  <nz-option *ngFor="let type of listOfBank" [nzLabel]="type.shortBankName+' : '+type.alternateBankName"
                     [nzValue]="type.shortBankName"></nz-option>
                 </nz-select>
               </nz-form-item>
@@ -460,81 +499,122 @@
                 </nz-form-control>
               </nz-form-item>
             </div>
-            <div *ngIf="selectedSupplierGroupAdd === 'ONE GROUP'">
+            <!-- <div *ngIf="selectedSupplierGroupAdd === 'ONE GROUP'">
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือยินยอมการโอนเงิน [ONE Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'oneGroupConsentFileAdd', 'หนังสือยินยอมการโอนเงิน [ONE Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'oneGroupConsentFileAdd', 'หนังสือยินยอมการโอนเงิน [ONE Group]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'oneGroupCertificationFileAdd', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'oneGroupCertificationFileAdd', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>สำเนาหน้า Book Bank [ONE Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'oneGroupBookBankFileAdd', 'สำเนาหน้า Book Bank [ONE Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'oneGroupBookBankFileAdd', 'สำเนาหน้า Book Bank [ONE Group]')" />
               </div>
             </div>
-            
+
             <div *ngIf="selectedSupplierGroupAdd === 'GCH GROUP'">
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือยินยอมการโอนเงิน [GCH Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupConsentFileAdd', 'หนังสือยินยอมการโอนเงิน [GCH Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupConsentFileAdd', 'หนังสือยินยอมการโอนเงิน [GCH Group]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupCertificationFileAdd', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupCertificationFileAdd', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>สำเนาหน้า Book Bank [GCH Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupBookBankFileAdd', 'สำเนาหน้า Book Bank [GCH Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupBookBankFileAdd', 'สำเนาหน้า Book Bank [GCH Group]')" />
               </div>
             </div>
 
             <div *ngIf="selectedSupplierGroupAdd === 'ACT'">
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือยินยอมการโอนเงิน [ACT]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [ACT]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [ACT]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>สำเนาหน้า Book Bank [ACT]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [ACT]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [ACT]')" />
               </div>
             </div>
 
             <div *ngIf="selectedSupplierGroupAdd === 'ALL Group'">
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือยินยอมการโอนเงิน [ONE Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [ONE Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [ONE Group]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>สำเนาหน้า Book Bank [ONE Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [ONE Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [ONE Group]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือยินยอมการโอนเงิน [GCH Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [GCH Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupConsentFile', 'หนังสือยินยอมการโอนเงิน [GCH Group]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupCertificationFile', 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]')" />
               </div>
               <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
                 <label>สำเนาหน้า Book Bank [GCH Group]</label>
-                <input type="file" (change)="onFileSelectAdd($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [GCH Group]')" />
+                <input type="file"
+                  (change)="onFileSelectAdd($event, 'gchGroupBookBankFile', 'สำเนาหน้า Book Bank [GCH Group]')" />
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
     </form>
+    <nz-divider *ngIf="showSupplierBankFormAdd" style="margin-top: 30px;" nzText="Upload file"></nz-divider>
+    <nz-table *ngIf="showSupplierBankFormAdd" #basicTable1 nzBordered [nzData]="filesBankAdd">
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th *ngIf="!isViewMode">Upload</th>
+          <th>Download File</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let file of filesBankAdd">
+          <td>{{ file.fileName }}</td>
+          <td *ngIf="!isViewMode">
+            <input class="choose" type="file" (change)="onFileSelect($event, file.fileType, file.fileName)" />
+            <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
+          </td>
+          <td class="text-center">
+            <a *ngIf="file.filePath && file.filePath !== ''" [href]="" target="_blank">
+              <span class="material-symbols-outlined">description</span>
+            </a>
+            <!-- แสดงไอคอนโดยไม่มีลิงก์หากไม่มี filePath -->
+            <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
     <div class="mt-5 display-flex justify-center ">
       <button nz-button nzType="default" class="mr-2" (click)="backClicked($event)"><span nz-icon nzType="rollback"
           nzTheme="outline"></span>ย้อนกลับ</button>

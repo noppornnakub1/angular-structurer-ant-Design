@@ -283,13 +283,11 @@ export class SupplierAddComponent {
     });
 
     this.supplierForm.get('name')?.valueChanges.subscribe((value: string) => {
-      const combinedName = this.combinePrefixAndName(); // รวม prefix และ name
-      console.log(combinedName);
-
-      this.supplierBankForm.patchValue({ accountName: combinedName });
+      // this.supplierForm.patchValue({name : combinedName})
+      this.supplierBankForm.patchValue({ accountName: this.supplierForm.value.name });
       console.log(this.supplierBankForm.value.accountName);
 
-      this.supplierBankFormAdd.patchValue({ accountName: combinedName });
+      this.supplierBankFormAdd.patchValue({ accountName: this.supplierForm.value.name });
       this._cdr.detectChanges();
     });
 
@@ -409,48 +407,75 @@ export class SupplierAddComponent {
 
   onNameBlur(): void {
     const nameControl = this.supplierForm.get('name');
-
     let nameValue = nameControl?.value || '';
-
+  
     if (!nameValue) {
       return;
     }
-
-    if (nameValue.endsWith(' จำกัด') || nameValue.endsWith(' จำกัด (มหาชน)')) {
-      return;
-    }
-
+  
+    // ลบ prefix และ suffix ที่ไม่ต้องการออกก่อน
+    nameValue = nameValue.replace(/^บริษัท /, '')
+      .replace(/ จำกัด \(มหาชน\)$/, '')
+      .replace(/ จำกัด$/, '')
+      .replace(/^คุณ /, '')
+      .replace(/^ห้างหุ้นส่วนสามัญ/, '')
+      .replace(/^ห้างหุ้นส่วนจำกัด/, '');
+  
+    // กำหนดเงื่อนไขตาม selectedPrefix
     if (this.selectedPrefix === 'บริษัทจำกัด') {
-      nameControl?.setValue(`${nameValue} จำกัด`);
+      nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
     } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
-      nameControl?.setValue(`${nameValue} จำกัด (มหาชน)`);
+      nameControl?.setValue(`บริษัท ${nameValue} จำกัด (มหาชน)`);
+    } else if (this.selectedPrefix === 'คุณ') {
+      nameControl?.setValue(`คุณ ${nameValue}`);
+    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
+      nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue}`);
+    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
+      nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue}`);
+    } else {
+      // ถ้าเลือกเป็น "อื่นๆ" ให้แสดงแค่ nameValue
+      nameControl?.setValue(nameValue);
     }
   }
-
+  
   updateNameWithPrefixChange(): void {
     const nameControl = this.supplierForm.get('name');
     let nameValue = nameControl?.value || '';
-
+  
     if (!nameValue) {
       return;
     }
-
-    nameValue = nameValue.replace(/ จำกัด \(มหาชน\)$/, '').replace(/ จำกัด$/, '');
-
+  
+    // ลบ prefix และ suffix ที่ไม่ต้องการออกก่อน
+    nameValue = nameValue.replace(/^บริษัท /, '')
+      .replace(/ จำกัด \(มหาชน\)$/, '')
+      .replace(/ จำกัด$/, '')
+      .replace(/^คุณ /, '')
+      .replace(/^ห้างหุ้นส่วนสามัญ/, '')
+      .replace(/^ห้างหุ้นส่วนจำกัด/, '');
+  
+    // กำหนดเงื่อนไขการเพิ่ม prefix และ suffix
     if (this.selectedPrefix === 'บริษัทจำกัด') {
-      nameControl?.setValue(`${nameValue} จำกัด`);
+      nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
     } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
-      nameControl?.setValue(`${nameValue} จำกัด (มหาชน)`);
+      nameControl?.setValue(`บริษัท ${nameValue} จำกัด (มหาชน)`);
+    } else if (this.selectedPrefix === 'คุณ') {
+      nameControl?.setValue(`คุณ ${nameValue}`);
+    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
+      nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue}`);
+    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
+      nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue}`);
     } else {
+      // ถ้าเลือกเป็น "อื่นๆ" ให้แสดงแค่ nameValue
       nameControl?.setValue(nameValue);
     }
   }
 
-  combinePrefixAndName() {
-    const prefix = this.supplierForm.get('prefix')?.value || '';
-    const name = this.supplierForm.get('name')?.value || '';
-    return `${prefix} ${name}`; // รวม prefix และ name เข้าด้วยกัน
-  }
+  // combinePrefixAndName() {
+  //   const prefix = this.supplierForm.get('prefix')?.value || '';
+  //   const name = this.supplierForm.get('name')?.value || '';
+  //   return `${prefix} ${name}`; // รวม prefix และ name เข้าด้วยกัน
+  // }
 
   validateTaxId(event: any): void {
     const input = event.target.value;
@@ -573,8 +598,7 @@ export class SupplierAddComponent {
     console.log("310", this.showSupplierBankForm);
 
     if (this.showSupplierBankForm) {
-      const combinedName = this.combinePrefixAndName();
-      this.supplierBankForm.patchValue({ accountName: combinedName });
+      this.supplierBankForm.patchValue({ accountName: this.supplierForm.value.name });
     }
     this._cdr.detectChanges();
   }
@@ -582,8 +606,7 @@ export class SupplierAddComponent {
   showBankCopy() {
     this.showSupplierBankFormAdd = true;
     if (this.showSupplierBankFormAdd) {
-      const combinedName = this.combinePrefixAndName();
-      this.supplierBankFormAdd.patchValue({ accountName: combinedName });
+      this.supplierBankFormAdd.patchValue({ accountName: this.supplierForm.value.name });
     }
   }
 
@@ -1015,10 +1038,10 @@ export class SupplierAddComponent {
         this.listOfType = response;
         console.log(this.listOfType);
 
-        if (this.isUser) {
-          this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));
-        } else {
+        if (this.isAdmin || this.isApproved ) {
           this.filteredDataType = this.listOfType;
+        } else {
+          this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));
         }
         console.log("758", this.filteredDataType);
         this._cdr.markForCheck();

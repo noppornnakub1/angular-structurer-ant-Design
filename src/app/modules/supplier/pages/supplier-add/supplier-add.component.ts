@@ -94,7 +94,6 @@ interface SelectedFile {
     NzGridModule,
     NzIconModule,
     NzSpaceModule
-    NzSpaceModule
   ],
   providers: [PostCodeService],
   templateUrl: './supplier-add.component.html',

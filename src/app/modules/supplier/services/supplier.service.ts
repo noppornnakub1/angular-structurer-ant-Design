@@ -37,6 +37,15 @@ export class SupplierService {
     return this._http.put(`/Supplier/UpdateSupplier?id=${id}`, data);
   }
 
+  updateDataWithFiles(id: number, formData: FormData): Observable<any> {
+    console.log("Sending FormData to API with ID:", id);
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
+  
+    return this._http.put(`/Supplier/UpdateSupplierWithFiles?id=${id}`, formData);
+  }  
+
   findSupplierTypeById(id: number): Observable<IsupplierType> {
     return this._http.get<IsupplierType>(`/Supplier/FindSupplierTypeByID?id=${id}`);
   }

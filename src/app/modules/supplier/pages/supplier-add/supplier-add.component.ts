@@ -93,7 +93,7 @@ interface SelectedFile {
     NzDividerModule,
     NzGridModule,
     NzIconModule,
-    NzSpaceModule 
+    NzSpaceModule
   ],
   providers: [PostCodeService],
   templateUrl: './supplier-add.component.html',
@@ -165,22 +165,22 @@ export class SupplierAddComponent {
     { fileName: 'ใบขอเปิด Supplier', fileType: '', filePath: '', labelText: 'ใบขอเปิด Supplier' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: '', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' },
   ];
-  
+
   filesBank = [
     { fileName: 'หนังสือยินยอมการโอนเงิน', fileType: '', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: '', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' },
     { fileName: 'สำเนาหน้า Book Bank', fileType: '', filePath: '', labelText: 'สำเนาหน้า Book Bank' },
-  ];  
+  ];
   filesBankAdd = [
     { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'gchGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [ACT]' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'gchGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]' },
     { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'gchGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [ACT]' },
-  ];  
+  ];
   file: any;
   filess: Array<{ fileName: string; fileType: string; filePath: string; labelText: string; }> = [];
   displayFiles: Array<{ fileType: string; fileName: string; filePath: string; labelText: string; }> = [];
   displayFilesBank: Array<{ fileName: string, fileType: string, filePath: string, labelText?: string }> = [];
-  displayFilesBankAdd: Array<{ fileName: string, fileType: string, filePath: string, labelText?: string }> = [];  
+  displayFilesBankAdd: Array<{ fileName: string, fileType: string, filePath: string, labelText?: string }> = [];
   selectedPrefix: string = '';
   nameInput: string = '';
   fullName: string = '';
@@ -375,17 +375,27 @@ export class SupplierAddComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
-      
+  
       const fileToUpdate = this.displayFiles.find(file => file.fileType === fileType && file.labelText === labelText);
   
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
+  
+        this.selectedFilesSupplier = this.selectedFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
+  
+        const newFile = {
+          file: selectedFile,
+          fileType: fileType,
+          labelText: labelText
+        };
+        this.selectedFilesSupplier.push(newFile);
+        
+        this.cdr.detectChanges();
       }
     }
-    console.log(this.selectedFilesSupplier);
-    
-  }
+    console.log('Selected files for update:', this.selectedFilesSupplier);
+  } 
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
     const input = event.target as HTMLInputElement;
@@ -417,18 +427,18 @@ export class SupplierAddComponent {
   onNameBlur(): void {
     const nameControl = this.supplierForm.get('name');
     let nameValue = nameControl?.value || '';
-  
+
     if (!nameValue) {
       return;
     }
-  
+
     nameValue = nameValue.replace(/^บริษัท /, '')
       .replace(/ จำกัด \(มหาชน\)$/, '')
       .replace(/ จำกัด$/, '')
       .replace(/^คุณ /, '')
       .replace(/^ห้างหุ้นส่วนสามัญ/, '')
       .replace(/^ห้างหุ้นส่วนจำกัด/, '');
-  
+
     if (this.selectedPrefix === 'บริษัทจำกัด') {
       nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
     } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
@@ -443,22 +453,22 @@ export class SupplierAddComponent {
       nameControl?.setValue(nameValue);
     }
   }
-  
+
   updateNameWithPrefixChange(): void {
     const nameControl = this.supplierForm.get('name');
     let nameValue = nameControl?.value || '';
-  
+
     if (!nameValue) {
       return;
     }
-  
+
     nameValue = nameValue.replace(/^บริษัท /, '')
       .replace(/ จำกัด \(มหาชน\)$/, '')
       .replace(/ จำกัด$/, '')
       .replace(/^คุณ /, '')
       .replace(/^ห้างหุ้นส่วนสามัญ/, '')
       .replace(/^ห้างหุ้นส่วนจำกัด/, '');
-  
+
     if (this.selectedPrefix === 'บริษัทจำกัด') {
       nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
     } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
@@ -672,7 +682,7 @@ export class SupplierAddComponent {
 
   getAdjustedFilePath(filePath: string): string {
     let adjustedFilePath = filePath;
-    
+
     if (!filePath.includes('localhost')) {
       adjustedFilePath = `https://localhost:7126/${filePath}`;
     } else {
@@ -680,25 +690,25 @@ export class SupplierAddComponent {
     }
 
     return adjustedFilePath;
-  }  
+  }
 
   loadSupplierData(id: number): void {
     console.log('Loading supplier data for ID:', id);
-  
+
     this.supplierService.findSupplierByIdV2(id).subscribe((data: any) => {
       console.log('Supplier data received:', data);
-  
+
       const postalCode = data?.postalCode || '';
       const subdistrict = data?.subdistrict || '';
       const postalCodeCombination = postalCode && subdistrict ? postalCode + '-' + subdistrict : postalCode;
       console.log('Postal code combination:', postalCodeCombination);
-  
+
       this.supplierForm.patchValue({
         ...data,
         postalCode: postalCodeCombination
       });
       console.log('Supplier form patched with data:', this.supplierForm.value);
-  
+
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({
           fileName: file.fileName,
@@ -714,10 +724,10 @@ export class SupplierAddComponent {
         ];
         console.log('Default files set:', this.filess);
       }
-  
+
       this.displayFiles = this.filess;
       console.log('Display files:', this.displayFiles);
-  
+
       this.loadSupplierBank(id);
       this.getEventLogs(id);
     }, error => {
@@ -946,14 +956,22 @@ export class SupplierAddComponent {
 
   onUpdate(formValue: any): void {
     if (formValue && this.suppilerId) {
-      this.supplierService.updateData(this.suppilerId, formValue).subscribe({
-        next: (response) => {
-          delete formValue.post_id;
-          console.log(formValue);
-          this.supplierForm.setValue(formValue);
-          console.log("584", this.supplierForm.value);
+      const formData = this.prepareFormData();
 
-          if (this.showSupplierBankForm = false) {
+      console.log('FormData prepared for update:');
+      formData.forEach((value: any, key: string) => {
+        if (value instanceof File) {
+          console.log(`Key: ${key}, File: ${value.name}, Type: ${value.type}`);
+        } else {
+          console.log(`Key: ${key}, Value: ${value}`);
+        }
+      });
+
+      this.supplierService.updateDataWithFiles(this.suppilerId, formData).subscribe({
+        next: (response) => {
+          console.log('Response after update:', response);
+
+          if (this.showSupplierBankForm === false) {
             this.insertLog();
             Swal.fire({
               icon: 'success',
@@ -963,8 +981,7 @@ export class SupplierAddComponent {
               timer: 1500
             });
             this.sendEmailNotification();
-          }
-          else {
+          } else {
             this.onUpdateSupplierBank();
             this.insertLog();
             Swal.fire({
@@ -976,10 +993,12 @@ export class SupplierAddComponent {
             });
             this.sendEmailNotification();
           }
+
           this.router.navigate(['/feature/supplier']);
         },
         error: (err) => {
           Swal.fire('Error!', 'There was an error saving your data.', 'error');
+          console.error('Error updating data with files:', err);
         }
       });
     } else {
@@ -987,61 +1006,36 @@ export class SupplierAddComponent {
       this.supplierBankForm.markAllAsTouched();
       Swal.fire('Warning!', 'กรุณาตรวจสอบข้อมูลของคุณให้ครบถ้วน', 'warning');
     }
-
   }
 
-
   prepareFormData(): any {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-
-    if (!currentUser) {
-      console.error('Current user is not available in local storage');
-      return;
-    }
     const formValue = { ...this.supplierForm.value };
-    const selectedPostItem = this.items_provinces.find(item => {
-      const postalCode = formValue.postalCode.split('-')[0];
-      return item.postalCode === postalCode && this.isSubdistrictMatching(item);
-    });
 
-    if (selectedPostItem) {
-      formValue.postalCode = selectedPostItem.postalCode;
-      formValue.post_id = selectedPostItem.post_id;
-    }
-    formValue.user_id = currentUser.userId;
-
-    const FormValue = formValue;
     const formData = new FormData();
-    formData.append('Prefix', FormValue.prefix);
-    formData.append('Name', FormValue.name);
-    formData.append('Tax_Id', FormValue.tax_Id);
-    formData.append('AddressSup', FormValue.addressSup);
-    formData.append('District', FormValue.district);
-    formData.append('Subdistrict', FormValue.subdistrict);
-    formData.append('Province', FormValue.province);
-    formData.append('PostalCode', FormValue.postalCode);
-    formData.append('Tel', FormValue.tel);
-    formData.append('Email', FormValue.email);
-    formData.append('SupplierNum', FormValue.supplierNum);
-    formData.append('SupplierType', FormValue.supplierType);
-    formData.append('Site', FormValue.site);
+    formData.append('Prefix', formValue.prefix);
+    formData.append('Name', formValue.name);
+    formData.append('Tax_Id', formValue.tax_Id);
+    formData.append('AddressSup', formValue.addressSup);
+    formData.append('District', formValue.district);
+    formData.append('Subdistrict', formValue.subdistrict);
+    formData.append('Province', formValue.province);
+    formData.append('PostalCode', formValue.postalCode);
+    formData.append('Tel', formValue.tel);
+    formData.append('Email', formValue.email);
+    formData.append('SupplierNum', formValue.supplierNum);
+    formData.append('SupplierType', formValue.supplierType);
+    formData.append('Site', formValue.site);
     formData.append('Vat', '-');
-    formData.append('Status', FormValue.status);
-    formData.append('PaymentMethod', FormValue.paymentMethod);
-    formData.append('Company', FormValue.company);
-    formData.append('Type', FormValue.type);
-    formData.append('UserId', FormValue.userId);
-    formData.append('Mobile', FormValue.mobile);
-    formData.append('groupName', 'SupplierFile');
-
-    const labelTexts: string[] = [];
+    formData.append('Status', formValue.status);
+    formData.append('PaymentMethod', formValue.paymentMethod);
+    formData.append('Company', formValue.company);
+    formData.append('Type', formValue.type);
+    formData.append('UserId', formValue.userId);
+    formData.append('Mobile', formValue.mobile);
 
     for (let selectedFile of this.selectedFilesSupplier) {
       formData.append('Files', selectedFile.file, selectedFile.file.name);
-      labelTexts.push(selectedFile.labelText);
     }
-
-    formData.append('LabelTextsJson', JSON.stringify(labelTexts));
 
     return formData;
   }
@@ -1052,7 +1046,7 @@ export class SupplierAddComponent {
         this.listOfType = response;
         console.log(this.listOfType);
 
-        if (this.isAdmin || this.isApproved ) {
+        if (this.isAdmin || this.isApproved) {
           this.filteredDataType = this.listOfType;
         } else {
           this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));

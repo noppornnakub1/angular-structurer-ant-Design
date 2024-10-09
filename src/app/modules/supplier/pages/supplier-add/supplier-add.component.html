@@ -220,7 +220,7 @@
             </div>
             <div *ngIf="!file.filePath || file.filePath === ''">
               <input class="upload-button" type="file"
-                (change)="onFileSelectSupplier($event, file.fileType, file.fileName)" />
+              (change)="onFileSelectSupplier($event, file.fileType, file.labelText)" />            
             </div>
           </td>
           <td class="text-center">

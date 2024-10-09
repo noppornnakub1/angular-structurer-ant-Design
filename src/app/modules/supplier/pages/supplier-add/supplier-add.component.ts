@@ -22,6 +22,7 @@ import { EmailService } from '../../../../shared/constants/email.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
+import { NzSpaceModule } from 'ng-zorro-antd/space';
 
 export interface DataLocation {
   post_id: number,
@@ -91,7 +92,8 @@ interface SelectedFile {
     NzSelectModule,
     NzDividerModule,
     NzGridModule,
-    NzIconModule
+    NzIconModule,
+    NzSpaceModule 
   ],
   providers: [PostCodeService],
   templateUrl: './supplier-add.component.html',
@@ -198,6 +200,7 @@ export class SupplierAddComponent {
   ngOnInit(): void {
     this.supplierForm = this.fb.group({
       id: [0],
+      prefix: ['', Validators.required],
       name: ['', Validators.required],
       tax_Id: ['', Validators.required],
       addressSup: ['', Validators.required],
@@ -216,7 +219,6 @@ export class SupplierAddComponent {
       company: ['', Validators.required],
       type: ['Supplier', Validators.required],
       userId: [''],
-      prefix: [''],
       mobile: ['', Validators.required],
     });
     this.supplierBankForm = this.fb.group({
@@ -261,6 +263,10 @@ export class SupplierAddComponent {
     this.prefixService.getPrefix().subscribe(data => {
       this.item_prefix = data;
       this.filteredItemsPrefix = data;
+
+      this.supplierForm.patchValue({
+        prefix: this.item_prefix.length > 0 ? this.item_prefix[0].name : ''
+      });
     });
     this.showSupplierBankForm = false;
     this.showSupplierBankFormAdd = false;
@@ -270,7 +276,6 @@ export class SupplierAddComponent {
     this.getDataVAT();
     this.getDataCompany();
 
-    // Subscribe to customer_type changes
     this.supplierForm.get('supplier_type')?.valueChanges.subscribe(value => {
       const supplierTypeId = this.getSupplierTypeId(value);
       if (supplierTypeId) {
@@ -283,7 +288,6 @@ export class SupplierAddComponent {
     });
 
     this.supplierForm.get('name')?.valueChanges.subscribe((value: string) => {
-      // this.supplierForm.patchValue({name : combinedName})
       this.supplierBankForm.patchValue({ accountName: this.supplierForm.value.name });
       console.log(this.supplierBankForm.value.accountName);
 
@@ -367,14 +371,17 @@ export class SupplierAddComponent {
     this.checkRole();
   }
 
-  onFileSelectSupplier(event: Event, fileType: string, labelText: string) {
+  onFileSelectSupplier(event: Event, fileType: string, labelText: string): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFilesSupplier.push({
-        file: input.files[0],
-        fileType,
-        labelText
-      });
+      const selectedFile = input.files[0];
+      
+      const fileToUpdate = this.displayFiles.find(file => file.fileType === fileType && file.labelText === labelText);
+  
+      if (fileToUpdate) {
+        fileToUpdate.filePath = '';
+        fileToUpdate.fileName = selectedFile.name;
+      }
     }
   }
 
@@ -413,7 +420,6 @@ export class SupplierAddComponent {
       return;
     }
   
-    // ลบ prefix และ suffix ที่ไม่ต้องการออกก่อน
     nameValue = nameValue.replace(/^บริษัท /, '')
       .replace(/ จำกัด \(มหาชน\)$/, '')
       .replace(/ จำกัด$/, '')
@@ -421,7 +427,6 @@ export class SupplierAddComponent {
       .replace(/^ห้างหุ้นส่วนสามัญ/, '')
       .replace(/^ห้างหุ้นส่วนจำกัด/, '');
   
-    // กำหนดเงื่อนไขตาม selectedPrefix
     if (this.selectedPrefix === 'บริษัทจำกัด') {
       nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
     } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
@@ -433,7 +438,6 @@ export class SupplierAddComponent {
     } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
       nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue}`);
     } else {
-      // ถ้าเลือกเป็น "อื่นๆ" ให้แสดงแค่ nameValue
       nameControl?.setValue(nameValue);
     }
   }
@@ -446,7 +450,6 @@ export class SupplierAddComponent {
       return;
     }
   
-    // ลบ prefix และ suffix ที่ไม่ต้องการออกก่อน
     nameValue = nameValue.replace(/^บริษัท /, '')
       .replace(/ จำกัด \(มหาชน\)$/, '')
       .replace(/ จำกัด$/, '')
@@ -454,7 +457,6 @@ export class SupplierAddComponent {
       .replace(/^ห้างหุ้นส่วนสามัญ/, '')
       .replace(/^ห้างหุ้นส่วนจำกัด/, '');
   
-    // กำหนดเงื่อนไขการเพิ่ม prefix และ suffix
     if (this.selectedPrefix === 'บริษัทจำกัด') {
       nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
     } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
@@ -466,16 +468,9 @@ export class SupplierAddComponent {
     } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
       nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue}`);
     } else {
-      // ถ้าเลือกเป็น "อื่นๆ" ให้แสดงแค่ nameValue
       nameControl?.setValue(nameValue);
     }
   }
-
-  // combinePrefixAndName() {
-  //   const prefix = this.supplierForm.get('prefix')?.value || '';
-  //   const name = this.supplierForm.get('name')?.value || '';
-  //   return `${prefix} ${name}`; // รวม prefix และ name เข้าด้วยกัน
-  // }
 
   validateTaxId(event: any): void {
     const input = event.target.value;
@@ -668,29 +663,46 @@ export class SupplierAddComponent {
     });
   }
 
+  removeFile(file: any): void {
+    file.filePath = '';
+    file.fileName = '';
+  }
+
+  getAdjustedFilePath(filePath: string): string {
+    let adjustedFilePath = filePath;
+    
+    if (!filePath.includes('localhost')) {
+      adjustedFilePath = `https://localhost:7126/${filePath}`;
+    } else {
+      adjustedFilePath = filePath.replace('localhost:2222', 'localhost:7126');
+    }
+
+    return adjustedFilePath;
+  }  
+
   loadSupplierData(id: number): void {
     console.log('Loading supplier data for ID:', id);
-
+  
     this.supplierService.findSupplierByIdV2(id).subscribe((data: any) => {
       console.log('Supplier data received:', data);
-
-      const postalCode = data.supplier?.postalCode || '';
-      const subdistrict = data.supplier?.subdistrict || '';
-      const postalCodeCombination = postalCode + '-' + subdistrict;
+  
+      const postalCode = data?.postalCode || '';
+      const subdistrict = data?.subdistrict || '';
+      const postalCodeCombination = postalCode && subdistrict ? postalCode + '-' + subdistrict : postalCode;
       console.log('Postal code combination:', postalCodeCombination);
-
+  
       this.supplierForm.patchValue({
-        ...data.supplier,
+        ...data,
         postalCode: postalCodeCombination
       });
       console.log('Supplier form patched with data:', this.supplierForm.value);
-
+  
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({
           fileName: file.fileName,
           fileType: file.fileType,
           filePath: file.filePath,
-          labelText: file.labelText || '' 
+          labelText: file.labelText || ''
         }));
         console.log('Supplier files:', this.filess);
       } else {
@@ -700,10 +712,10 @@ export class SupplierAddComponent {
         ];
         console.log('Default files set:', this.filess);
       }
-      
+  
       this.displayFiles = this.filess;
       console.log('Display files:', this.displayFiles);
-
+  
       this.loadSupplierBank(id);
       this.getEventLogs(id);
     }, error => {

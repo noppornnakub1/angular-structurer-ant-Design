@@ -210,15 +210,25 @@
         <tr *ngFor="let file of displayFiles">
           <td>{{ file.labelText }}</td>
           <td *ngIf="!isViewMode">
-            <input class="upload-button" type="file"
-              (change)="onFileSelectSupplier($event, file.fileType, file.fileName)" />
+            <div *ngIf="file.filePath && file.filePath !== ''" class="file-uploaded">
+              <nz-space>
+                <div>
+                  <span>{{ file.fileName }} (Already Uploaded)</span>
+                  <button nz-button nzType="primary" (click)="removeFile(file)">Remove</button>
+                </div>
+              </nz-space>
+            </div>
+            <div *ngIf="!file.filePath || file.filePath === ''">
+              <input class="upload-button" type="file"
+                (change)="onFileSelectSupplier($event, file.fileType, file.fileName)" />
+            </div>
           </td>
           <td class="text-center">
-            <a *ngIf="file.filePath && file.filePath !== ''" [href]="file.filePath" target="_blank">
+            <a *ngIf="file.filePath && file.filePath !== ''" [href]="getAdjustedFilePath(file.filePath)" target="_blank">
               <span class="material-symbols-outlined">description</span>
             </a>
             <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
-          </td>
+          </td>          
         </tr>
       </tbody>
     </nz-table>

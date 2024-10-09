@@ -71,3 +71,17 @@
 .prefix-dropdown {
   min-width: 150px; /* ปรับค่านี้ตามความต้องการ */
 }
+
+.file-uploaded {
+  display: flex;
+  align-items: center;
+}
+
+.file-name {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+button[nz-button] {
+  margin-left: 10px;
+}

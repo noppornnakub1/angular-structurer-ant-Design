@@ -1016,7 +1016,25 @@ export class SupplierAddComponent {
   }
 
   prepareFormData(): any {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    if (!currentUser) {
+      console.error('Current user is not available in local storage');
+      return;
+    }
+
     const formValue = { ...this.supplierForm.value };
+    const selectedPostItem = this.items_provinces.find(item => {
+      const postalCode = formValue.postalCode.split('-')[0];
+      return item.postalCode === postalCode && this.isSubdistrictMatching(item);
+    });
+
+    if (selectedPostItem) {
+      formValue.postalCode = selectedPostItem.postalCode;
+      formValue.post_id = selectedPostItem.post_id;
+    }
+    formValue.user_id = currentUser.userId;
+
 
     const formData = new FormData();
     formData.append('Prefix', formValue.prefix);
@@ -1039,10 +1057,16 @@ export class SupplierAddComponent {
     formData.append('Type', formValue.type);
     formData.append('UserId', formValue.userId);
     formData.append('Mobile', formValue.mobile);
+    formData.append('groupName', 'SupplierFile');
+
+    const labelTexts: string[] = [];
 
     for (let selectedFile of this.selectedFilesSupplier) {
       formData.append('Files', selectedFile.file, selectedFile.file.name);
+      labelTexts.push(selectedFile.labelText);
     }
+
+    formData.append('LabelTextsJson', JSON.stringify(labelTexts));    
 
     return formData;
   }

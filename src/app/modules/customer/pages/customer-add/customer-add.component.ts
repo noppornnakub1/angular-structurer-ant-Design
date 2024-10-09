@@ -137,33 +137,32 @@ export class CustomerAddComponent implements OnInit {
   onNameBlur(): void {
     const nameControl = this.customerForm.get('name');
     let nameValue = nameControl?.value || '';
-  
+
     if (!nameValue) {
       return;
     }
-  
-    // ลบ prefix และ suffix ที่ไม่ต้องการออกก่อน
+
+    // ลบ prefix และ suffix ที่ไม่จำเป็นออกก่อน
     nameValue = nameValue.replace(/^บริษัท /, '')
-      .replace(/ จำกัด \(มหาชน\)$/, '')
-      .replace(/ จำกัด$/, '')
+      .replace(/\s?จำกัด\s?\(มหาชน\)/g, '') // ลบ "จำกัด (มหาชน)" ทั่วทั้งข้อความ
+      .replace(/\s?จำกัด/g, '')              // ลบ "จำกัด" ทั่วทั้งข้อความ
       .replace(/^คุณ /, '')
       .replace(/^ห้างหุ้นส่วนสามัญ/, '')
       .replace(/^ห้างหุ้นส่วนจำกัด/, '');
-  
-    // กำหนดเงื่อนไขตาม selectedPrefix
+
+    // ตรวจสอบและเพิ่ม prefix/suffix ตาม selectedPrefix
     if (this.selectedPrefix === 'บริษัทจำกัด') {
-      nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
+      nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด`);
     } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
-      nameControl?.setValue(`บริษัท ${nameValue} จำกัด (มหาชน)`);
+      nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด (มหาชน)`);
     } else if (this.selectedPrefix === 'คุณ') {
-      nameControl?.setValue(`คุณ ${nameValue}`);
+      nameControl?.setValue(`คุณ ${nameValue.trim()}`);
     } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
-      nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue}`);
+      nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue.trim()}`);
     } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
-      nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue}`);
+      nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue.trim()}`);
     } else {
-      // ถ้าเลือกเป็น "อื่นๆ" ให้แสดงแค่ nameValue
-      nameControl?.setValue(nameValue);
+      nameControl?.setValue(nameValue.trim());
     }
   }
   

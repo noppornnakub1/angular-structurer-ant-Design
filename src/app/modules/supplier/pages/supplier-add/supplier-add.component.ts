@@ -377,27 +377,27 @@ export class SupplierAddComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
-      
+
       const fileToUpdate = this.displayFiles.find(file => file.fileType === fileType && file.labelText === labelText);
 
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
-  
+
         this.selectedFilesSupplier = this.selectedFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
-  
+
         const newFile = {
           file: selectedFile,
           fileType: fileType,
           labelText: labelText
         };
         this.selectedFilesSupplier.push(newFile);
-        
+
         this.cdr.detectChanges();
       }
     }
     console.log(this.selectedFilesSupplier);
-    
+
   }
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
@@ -435,25 +435,27 @@ export class SupplierAddComponent {
       return;
     }
 
+    // ลบ prefix และ suffix ที่ไม่จำเป็นออกก่อน
     nameValue = nameValue.replace(/^บริษัท /, '')
-      .replace(/ จำกัด \(มหาชน\)$/, '')
-      .replace(/ จำกัด$/, '')
+      .replace(/\s?จำกัด\s?\(มหาชน\)/g, '') // ลบ "จำกัด (มหาชน)" ทั่วทั้งข้อความ
+      .replace(/\s?จำกัด/g, '')              // ลบ "จำกัด" ทั่วทั้งข้อความ
       .replace(/^คุณ /, '')
       .replace(/^ห้างหุ้นส่วนสามัญ/, '')
       .replace(/^ห้างหุ้นส่วนจำกัด/, '');
 
+    // ตรวจสอบและเพิ่ม prefix/suffix ตาม selectedPrefix
     if (this.selectedPrefix === 'บริษัทจำกัด') {
-      nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
+      nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด`);
     } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
-      nameControl?.setValue(`บริษัท ${nameValue} จำกัด (มหาชน)`);
+      nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด (มหาชน)`);
     } else if (this.selectedPrefix === 'คุณ') {
-      nameControl?.setValue(`คุณ ${nameValue}`);
+      nameControl?.setValue(`คุณ ${nameValue.trim()}`);
     } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
-      nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue}`);
+      nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue.trim()}`);
     } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
-      nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue}`);
+      nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue.trim()}`);
     } else {
-      nameControl?.setValue(nameValue);
+      nameControl?.setValue(nameValue.trim());
     }
   }
 

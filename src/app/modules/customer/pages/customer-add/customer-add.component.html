@@ -162,12 +162,18 @@
         <tr *ngFor="let file of displayFiles">
           <td>{{ file.fileName }}</td>
           <td *ngIf="!isViewMode">
-            <input class="choose" type="file" (change)="onFileSelected($event, file)" />
-            <div *ngIf="file.filePath && file.filePath !== ''" class="uploaded-file">
-              {{ extractFileName(file.filePath) }}
+            <div *ngIf="file.filePath && file.filePath !== ''" class="file-uploaded">
+              <nz-space>
+                <div>
+                  <span>{{ file.fileName }} (Already Uploaded)</span>
+                  <button class="ml-2" style="background-color: #1CB6E0; border: #1CB6E0;" nz-button nzType="primary" (click)="removeFile(file)">Remove</button>
+                </div>
+              </nz-space>
             </div>
-            <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
-            <!-- <input class="upload-button" type="file" (change)="onFileSelected($event, file)" /> -->
+            <div *ngIf="!file.filePath || file.filePath === ''">
+              <input class="choose" type="file"
+                (change)="onFileSelected($event, file)" />
+            </div>
           </td>
           <td *ngIf="this.customerId != null" class="text-center">
             <!-- แสดงไอคอนเสมอ และตรวจสอบเงื่อนไขเพื่อแสดงลิงก์ดาวน์โหลด -->

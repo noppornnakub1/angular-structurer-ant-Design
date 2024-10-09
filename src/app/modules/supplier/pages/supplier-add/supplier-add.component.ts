@@ -94,6 +94,7 @@ interface SelectedFile {
     NzGridModule,
     NzIconModule,
     NzSpaceModule
+    NzSpaceModule
   ],
   providers: [PostCodeService],
   templateUrl: './supplier-add.component.html',
@@ -210,7 +211,7 @@ export class SupplierAddComponent {
       postalCode: ['', Validators.required],
       tel: ['', Validators.required],
       email: ['', Validators.required],
-      supplierNum: ['',],
+      supplierNum: [''],
       supplierType: ['', Validators.required],
       site: ['00000', Validators.required],
       vat: [''],
@@ -369,15 +370,17 @@ export class SupplierAddComponent {
       }
     });
     this.checkRole();
+    this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
+    console.log('displayFiles:', this.displayFiles);
   }
 
   onFileSelectSupplier(event: Event, fileType: string, labelText: string): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
-  
+      
       const fileToUpdate = this.displayFiles.find(file => file.fileType === fileType && file.labelText === labelText);
-  
+
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
@@ -394,8 +397,9 @@ export class SupplierAddComponent {
         this.cdr.detectChanges();
       }
     }
-    console.log('Selected files for update:', this.selectedFilesSupplier);
-  } 
+    console.log(this.selectedFilesSupplier);
+    
+  }
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
     const input = event.target as HTMLInputElement;
@@ -772,6 +776,8 @@ export class SupplierAddComponent {
         this.showSupplierBankForm = true
         this.showSupplierBankFormAdd = true;
       }
+      console.log(this.supplierBankForm.value);
+
     });
   }
 
@@ -1373,8 +1379,8 @@ export class SupplierAddComponent {
     }
     else {
       try {
-        this.supplierForm.value.supplierNum = '-'
-        await this.CheckDupplicateData();
+        // this.supplierForm.value.supplierNum = '-'
+        // await this.CheckDupplicateData();
 
         await this.save(event);
       } catch (error) {
@@ -1451,7 +1457,7 @@ export class SupplierAddComponent {
     });
   }
 
-  approve(event: Event): void {
+  async approve(event: Event): Promise<void> {
     event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
@@ -1468,6 +1474,16 @@ export class SupplierAddComponent {
         this.setStatusAndSubmit(newStatus);
       }
     });
+  }
+
+  async checkApprove(event: Event) {
+    try {
+      this.supplierForm.value.supplierNum = '-'
+      await this.CheckDupplicateData();
+      await this.approve(event);
+    } catch (error) {
+      console.error('Error occurred:', error);
+    }
   }
 
   reject(event: Event): void {

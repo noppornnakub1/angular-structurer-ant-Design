@@ -910,4 +910,9 @@ export class CustomerAddComponent implements OnInit {
   extractFileName(filePath: string): string {
     return filePath.split('/').pop() || ''; // แยกชื่อไฟล์จาก path
   }
+
+  removeFile(file: any): void {
+    file.filePath = '';
+    // file.fileName = '';
+  }
 }

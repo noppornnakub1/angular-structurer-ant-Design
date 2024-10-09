@@ -138,6 +138,10 @@ hasRole(roleString: string, roleToCheck: string): boolean {
       window.location.reload();
   });
   }
+
+  goToDashboard(): void {
+    this.router.navigate(['/feature/dashboard']);
+  }
   
 
 

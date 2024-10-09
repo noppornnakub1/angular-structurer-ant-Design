@@ -75,6 +75,7 @@ export interface prefix {
 }
 
 interface SelectedFile {
+  fileId?: number;
   file: File;
   fileType: string;
   labelText: string;
@@ -150,6 +151,7 @@ export class SupplierAddComponent {
   selectedFilesSupplier: SelectedFile[] = [];
   selectedFiles: SelectedFile[] = [];
   selectedFilesAdd: SelectedFile[] = [];
+  fileIdsToRemove: number[] = [];
   private _cdr = inject(ChangeDetectorRef);
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService)
@@ -386,6 +388,13 @@ export class SupplierAddComponent {
 
         this.selectedFilesSupplier = this.selectedFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
 
+        if ('fileId' in fileToUpdate) {
+          const fileIdToRemove = (fileToUpdate as any).fileId;
+          if (fileIdToRemove) {
+            this.fileIdsToRemove.push(fileIdToRemove);
+          }
+        }
+
         const newFile = {
           file: selectedFile,
           fileType: fileType,
@@ -397,7 +406,6 @@ export class SupplierAddComponent {
       }
     }
     console.log(this.selectedFilesSupplier);
-
   }
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
@@ -716,6 +724,7 @@ export class SupplierAddComponent {
 
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({
+          fileId: file.fileId,
           fileName: file.fileName,
           fileType: file.fileType,
           filePath: file.filePath,
@@ -1035,7 +1044,6 @@ export class SupplierAddComponent {
     }
     formValue.user_id = currentUser.userId;
 
-
     const formData = new FormData();
     formData.append('Prefix', formValue.prefix);
     formData.append('Name', formValue.name);
@@ -1055,18 +1063,24 @@ export class SupplierAddComponent {
     formData.append('PaymentMethod', formValue.paymentMethod);
     formData.append('Company', formValue.company);
     formData.append('Type', formValue.type);
-    formData.append('UserId', formValue.userId);
+    formData.append('UserId', formValue.user_id);
     formData.append('Mobile', formValue.mobile);
     formData.append('groupName', 'SupplierFile');
 
     const labelTexts: string[] = [];
+    const fileIds: number[] = [];
 
     for (let selectedFile of this.selectedFilesSupplier) {
       formData.append('Files', selectedFile.file, selectedFile.file.name);
       labelTexts.push(selectedFile.labelText);
     }
 
-    formData.append('LabelTextsJson', JSON.stringify(labelTexts));    
+    for (let fileId of this.fileIdsToRemove) {
+      fileIds.push(fileId);
+    }
+
+    formData.append('LabelTextsJson', JSON.stringify(labelTexts));
+    formData.append('FileIdsJson', JSON.stringify(fileIds));
 
     return formData;
   }

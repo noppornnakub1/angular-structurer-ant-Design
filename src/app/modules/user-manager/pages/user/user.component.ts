@@ -85,6 +85,8 @@ export class UserComponent implements OnInit {
       next: (response: any) => {
         
         this.listOfData = response
+        console.log(response);
+        
         this.filteredData = [...this.listOfData];
         this.updateDisplayData(); 
         this._cdr.markForCheck();
@@ -108,7 +110,7 @@ export class UserComponent implements OnInit {
 
   getRoleName(roleId: number): string {
     const role = this.listOfDataRole.find(r => r.id === roleId);
-    return role ? role.role_name : 'Unknown';
+    return role ? role.roleName : 'Unknown';
   }
 
   applyFilters(): void {
@@ -134,6 +136,8 @@ export class UserComponent implements OnInit {
   }
 
   editUser(id: number): void {
+    console.log(id);
+    
     this.modalDataService.setUserId(id); // เซ็ตค่า user ID
     const modal: NzModalRef = this.modalService.create({
       nzTitle: 'Edit User',
@@ -144,6 +148,10 @@ export class UserComponent implements OnInit {
       const instance = modal.getContentComponent();
       instance.modalInstance = modal;
       instance.ngOnInit();
+    });
+
+    modal.afterClose.subscribe(() => {
+      this.getUser();
     });
   }
 

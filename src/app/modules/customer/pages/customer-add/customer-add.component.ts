@@ -906,4 +906,8 @@ export class CustomerAddComponent implements OnInit {
     const baseURL = 'http://10.10.0.28:8088/uploads';
     return `${baseURL}/${fileName}`;
   }
+
+  extractFileName(filePath: string): string {
+    return filePath.split('/').pop() || ''; // แยกชื่อไฟล์จาก path
+  }
 }

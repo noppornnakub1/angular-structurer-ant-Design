@@ -155,7 +155,7 @@
         <tr>
           <th>File Name</th>
           <th *ngIf="!isViewMode">Upload</th>
-          <th>Download File</th>
+          <th *ngIf="this.customerId != null">Download File</th>
         </tr>
       </thead>
       <tbody>
@@ -163,16 +163,19 @@
           <td>{{ file.fileName }}</td>
           <td *ngIf="!isViewMode">
             <input class="choose" type="file" (change)="onFileSelected($event, file)" />
+            <div *ngIf="file.filePath && file.filePath !== ''" class="uploaded-file">
+              {{ extractFileName(file.filePath) }}
+            </div>
             <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
             <!-- <input class="upload-button" type="file" (change)="onFileSelected($event, file)" /> -->
           </td>
-          <td class="text-center">
+          <td *ngIf="this.customerId != null" class="text-center">
             <!-- แสดงไอคอนเสมอ และตรวจสอบเงื่อนไขเพื่อแสดงลิงก์ดาวน์โหลด -->
-    <a *ngIf="file.filePath && file.filePath !== ''" [href]="getDownloadUrl(file.filePath)" target="_blank">
-      <span class="material-symbols-outlined">description</span>
-    </a>
-    <!-- แสดงไอคอนโดยไม่มีลิงก์หากไม่มี filePath -->
-    <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
+            <a *ngIf="file.filePath && file.filePath !== ''" [href]="getDownloadUrl(file.filePath)" target="_blank">
+              <span class="material-symbols-outlined">description</span>
+            </a>
+            <!-- แสดงไอคอนโดยไม่มีลิงก์หากไม่มี filePath -->
+            <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
           </td>
         </tr>
       </tbody>

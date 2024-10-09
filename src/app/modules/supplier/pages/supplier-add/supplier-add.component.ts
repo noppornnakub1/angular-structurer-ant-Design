@@ -376,6 +376,8 @@ export class SupplierAddComponent {
         labelText
       });
     }
+    console.log(this.selectedFilesSupplier);
+    
   }
 
   onFileSelect(event: Event, fileType: string, labelText: string) {

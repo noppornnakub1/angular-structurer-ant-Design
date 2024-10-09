@@ -383,6 +383,8 @@ export class SupplierAddComponent {
         fileToUpdate.fileName = selectedFile.name;
       }
     }
+    console.log(this.selectedFilesSupplier);
+    
   }
 
   onFileSelect(event: Event, fileType: string, labelText: string) {

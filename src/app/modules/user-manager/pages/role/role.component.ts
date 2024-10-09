@@ -36,7 +36,7 @@ export class RoleComponent implements OnInit {
 
   listOfData: IRole[] = [];
   filteredData: IRole[] = [];
-  filters = { role_name: ''};
+  filters = { roleName: ''};
   
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -75,9 +75,9 @@ export class RoleComponent implements OnInit {
 
 
   applyFilters(): void {
-    const { role_name} = this.filters;
+    const { roleName} = this.filters;
     this.filteredData = this.listOfData.filter(data =>
-      (data.role_name?.includes(role_name) ?? true)
+      (data.roleName?.includes(roleName) ?? true)
     );
   }
 

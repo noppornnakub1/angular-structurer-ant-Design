@@ -54,6 +54,7 @@ export class AddUserModelComponent implements OnInit {
       value: 0
     },
   ];
+  CheckRole = 0;
   private _cdr = inject(ChangeDetectorRef);
 
   constructor(private fb: FormBuilder,
@@ -74,8 +75,8 @@ export class AddUserModelComponent implements OnInit {
       email: [null, [Validators.required, Validators.email]],
       role: [null, [Validators.required]],
       status: [1],
-      create_date: [this.getCurrentDate(), [Validators.required]],
-      update_date: [this.getCurrentDate(), [Validators.required]],
+      CreateDate: [this.getCurrentDate(), [Validators.required]],
+      UpdateDate: [this.getCurrentDate(), [Validators.required]],
       company: [null, [Validators.required]],
     });
     this.userId = this.modalDataService.getUserId();
@@ -84,6 +85,11 @@ export class AddUserModelComponent implements OnInit {
       this.loadUserData(this.userId);
       this.validateForm.get('username')?.disable();
       this.validateForm.get('password')?.disable();
+      if (this.CheckRole == 1) {
+        this.validateForm.get('company')?.disable();
+      } else {
+        this.validateForm.get('company')?.enable();
+      }
     }
     this.getDataRole();
     this.getDataCompany();
@@ -186,6 +192,8 @@ export class AddUserModelComponent implements OnInit {
   getDataRole(): void {
     this.roleService.getRoles().subscribe({
       next: (response: any) => {
+        console.log(response);
+        
         this.listOfRole = response;
         this.filteredDataRole = [...this.listOfRole];
         this._cdr.markForCheck();
@@ -199,21 +207,28 @@ export class AddUserModelComponent implements OnInit {
   loadUserData(id: number): void {
     this.userService.findUserById(id).subscribe((data: any) => {
       // แปลง company จาก string เป็น array
+      console.log(data);
+      
       const companyArray = data.company.split(',');
       this.validateForm.patchValue({
-        user_id: data.userId,
+        UserId: data.UserId,
         firstname: data.firstname,
         lastname: data.lastname,
         email: data.email,
         role: data.role,
         status: data.status,
-        create_date: data.create_date,
-        update_date: data.update_date,
+        CreateDate: data.createDate,
+        UpdateDate: data.updateDate,
         username: data.username,
         password: data.password,
         company: companyArray // ใช้ array แทน string
       });
+      this.CheckRole = this.validateForm.value.role
+      const roleInfo = this.listOfRole.find(role => role.id === this.validateForm.value.role );
+      this.validateForm.value.role = roleInfo?.roleName
       console.log(this.validateForm.value);
+      console.log(this.CheckRole);
+      
       
       this._cdr.markForCheck();
     });

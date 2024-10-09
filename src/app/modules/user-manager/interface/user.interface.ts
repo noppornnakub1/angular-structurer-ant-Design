@@ -5,8 +5,8 @@
   email: string;
   role: number;
   status: number;
-  create_date: string;
-  update_date: string;
+  CreateDate: string;
+  UpdateDate: string;
   username: string;
   password: string;
   company:string;

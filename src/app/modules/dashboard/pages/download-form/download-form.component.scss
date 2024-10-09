@@ -1,0 +1,55 @@
+
+.form-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.form-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+}
+
+.form-box {
+    width: 200px;
+    height: 200px;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.form-title {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.form-image {
+    font-size: 12px;
+    color: #888;
+}
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-item {
+        width: 100%; /* ให้เต็มความกว้างของจอ */
+        margin-bottom: 20px;
+    }
+
+    .form-title {
+        font-size: 12px; /* ลดขนาดตัวอักษรเพื่อให้พอดีกับจอ */
+    }
+}

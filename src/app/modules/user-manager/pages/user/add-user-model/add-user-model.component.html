@@ -74,7 +74,7 @@
                     [ngClass]="{'has-error': validateForm.get('role')?.invalid && validateForm.get('role')?.touched}">
                     <nz-select formControlName="role" nzPlaceHolder="Select role" class="custom-select" >
                         <nz-option *ngFor="let type of listOfRole"
-                            [nzLabel]="type.role_name"
+                            [nzLabel]="type.roleName"
                             [nzValue]="type.id"></nz-option>
                     </nz-select>
                     <div nz-form-explain *ngIf="validateForm.get('role')?.invalid && validateForm.get('role')?.touched">

@@ -1,5 +1,5 @@
 export interface IRole {
   id: number;
-  role_name: string;
+  roleName: string;
   action: string;
 }

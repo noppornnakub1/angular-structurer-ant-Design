@@ -432,7 +432,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let file of displayFiles">
+        <tr *ngFor="let file of filesBankAdd">
           <td>{{ file.fileName }}</td>
           <td *ngIf="!isViewMode">
             <ng-container *ngIf="file.filePath && file.filePath !== ''; else fileInput">

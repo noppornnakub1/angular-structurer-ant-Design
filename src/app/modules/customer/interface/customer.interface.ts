@@ -35,7 +35,7 @@ export interface ICustomer {
     num: string; // เป็น customer_num หรือ supplier_num ขึ้นอยู่กับข้อมูล
     type: string; // เป็น customer_type หรือ supplier_type ขึ้นอยู่กับข้อมูล
     site: string;
-    payment_Method?: string; // อาจเป็น null หรือไม่มีสำหรับ customer
+    paymentMethod?: string; // อาจเป็น null หรือไม่มีสำหรับ customer
     source: string; // 'Customer' หรือ 'Supplier'
     user_id: number;
   }

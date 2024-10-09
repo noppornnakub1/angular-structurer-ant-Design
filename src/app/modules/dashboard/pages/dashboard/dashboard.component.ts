@@ -60,7 +60,7 @@ export class DashboardComponent {
     email: '',
     type: '',
     site: '',
-    payment_Method: '',
+    paymentMethod: '',
     source: ''
   };
   listOfColumnCustomer = [
@@ -87,7 +87,7 @@ export class DashboardComponent {
     {
       title: 'Payment Method',
       compare: (a: CustomerSupplier, b: CustomerSupplier) =>
-        (a.payment_Method ?? '').localeCompare(b.payment_Method ?? ''),
+        (a.paymentMethod ?? '').localeCompare(b.paymentMethod ?? ''),
       priority: 2
     },
     {

@@ -4,8 +4,6 @@ import { Router } from '@angular/router';
 import { SupplierService } from '../../services/supplier.service';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { SharedModule } from '../../../../shared/shared.module';
-import { IUser } from '../../../user-manager/interface/user.interface';
-import { AuthMockupService } from '../../../../core/mockup-api/auth-mockup.service';
 import { AuthService } from '../../../authentication/services/auth.service';
 import { IRole } from '../../../user-manager/interface/role.interface';
 
@@ -99,11 +97,9 @@ export class SupplierComponent implements OnInit {
           this.listOfData = response;
           this.changeStatusIfNeeded();
           this.applyFilters();
-          // this.filteredData = response;
           this._cdr.markForCheck();
         },
         error: () => {
-          // Handle error
         }
       });
     }
@@ -113,11 +109,9 @@ export class SupplierComponent implements OnInit {
           this.listOfData = response;
           this.changeStatusIfNeeded();
           this.applyFilters();
-          // this.filteredData = response;
           this._cdr.markForCheck();
         },
         error: () => {
-          // Handle error
         }
       });
     }
@@ -127,11 +121,9 @@ export class SupplierComponent implements OnInit {
           this.listOfData = response;
           this.changeStatusIfNeeded();
           this.applyFilters();
-          // this.filteredData = response;
           this._cdr.markForCheck();
         },
         error: () => {
-          // Handle error
         }
       });
     }
@@ -142,12 +134,9 @@ export class SupplierComponent implements OnInit {
           
           this.changeStatusIfNeeded();
           this.applyFilters();
-          // this.filteredData = response;
-          // this.total = response.length;
           this._cdr.markForCheck();
         },
         error: () => {
-          // Handle error
         }
       });
     }
@@ -168,17 +157,15 @@ export class SupplierComponent implements OnInit {
     });
   }
 
-
   applyFilters(): void {
     const { name, supplier_num, tax_Id, status } = this.filters;
     this.filteredData = this.listOfData.filter(data =>
       (data.name?.includes(name) ?? true) &&
       (data.supplier_num?.includes(supplier_num) ?? true) &&
       (data.tax_Id?.includes(tax_Id) ?? true) &&
-      // (data.status?.includes(status) ?? true)
       (this.selectedStatus === 'All' || data.status === this.selectedStatus)
     );
-    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อมีการกรองข้อมูลใหม่
+    this.pageIndex = 1;
     this.updateDisplayData();
   }
 
@@ -190,12 +177,11 @@ export class SupplierComponent implements OnInit {
   onPageIndexChange(pageIndex: number): void {
     this.pageIndex = pageIndex;
     this.updateDisplayData();
-
   }
 
   onPageSizeChange(pageSize: number): void {
     this.pageSize = pageSize;
-    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อเปลี่ยนขนาดหน้า
+    this.pageIndex = 1;
     this.updateDisplayData();
   }
 
@@ -210,10 +196,10 @@ export class SupplierComponent implements OnInit {
     this._router.navigate(['/feature/supplier/add']);
   }
 
-  editCustomer(id: number): void {
+  editSupplier(id: number): void {
     this._router.navigate(['/feature/supplier/edit', id]);
   }
-  viewCustomer(id: number): void {
+  viewSupplier(id: number): void {
     this._router.navigate(['/feature/supplier/view', id]);
   }
 
@@ -227,7 +213,7 @@ export class SupplierComponent implements OnInit {
         return sortOrder === 'ascend' ? comparison : -comparison;
       });
     } else {
-      this.displayData = [...this.filteredData]; // Reset to original data if no sorting is applied
+      this.displayData = [...this.filteredData];
     }
     this.cdr.detectChanges();
   }

@@ -25,7 +25,6 @@
         <nz-option *ngFor="let status of statusOptions" [nzValue]="status" [nzLabel]="status"></nz-option>
       </nz-select>
     </div>
-
   </div>
   <div class="mt-5 display-flex justify-center ">
     <button nz-button nzType="primary" class="mr-2" (click)="applyFilters()"><span nz-icon nzType="search"
@@ -43,11 +42,6 @@
         <th *ngFor="let column of listOfColumn" [nzSortFn]="column.compare" [nzSortPriority]="column.priority">
           {{ column.title }}
         </th>
-        <!-- <th>Name</th>
-        <th>Supplier Number</th>
-        <th>Tax</th>
-        <th>Status</th>
-        <th>Action</th> -->
       </tr>
     </thead>
     <tbody>
@@ -59,16 +53,12 @@
         <td>{{ data.status }}</td>
         <td class="text-center">
           <button *ngIf="isApproved || isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
-            (click)="viewCustomer(data.id)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
+            (click)="viewSupplier(data.id)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
           <button *ngIf="isApproved || isAdmin || (isUser && (data.status === 'Draft' || data.status === 'Reject By ACC' || data.status === 'Reject By FN'))" nz-button nzType="primary"
-            class="mr-1 button-yellow" nzShape="round" (click)="editCustomer(data.id)"><span nz-icon nzType="edit"
+            class="mr-1 button-yellow" nzShape="round" (click)="editSupplier(data.id)"><span nz-icon nzType="edit"
               nzTheme="outline"></span>Edit</button>
-
         </td>
       </tr>
     </tbody>
   </nz-table>
-  <!-- <nz-pagination [nzPageSize]="pageSize" [nzTotal]="filteredData.length" [(nzPageIndex)]="pageIndex"
-    [nzShowSizeChanger]="true" [nzPageSizeOptions]="[10, 20, 50]" (nzPageSizeChange)="onPageSizeChange($event)"
-    (nzPageIndexChange)="onPageIndexChange($event)"></nz-pagination> -->
 </div>

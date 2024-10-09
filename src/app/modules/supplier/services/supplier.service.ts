@@ -25,10 +25,13 @@ export class SupplierService {
     return this._http.post(`/Supplier/AddSupplierWithFiles`, formData);
   }
 
-
   findSupplierById(id: number): Observable<ISupplier> {
     return this._http.get<ISupplier>(`/Supplier/FindSupplierByID?id=${id}`);
   }
+
+  findSupplierByIdV2(id: number): Observable<any> {
+    return this._http.get(`/Supplier/FindSupplierByIDV2?id=${id}`);
+  }  
 
   updateData(id: number, data: ISupplier): Observable<any> {
     return this._http.put(`/Supplier/UpdateSupplier?id=${id}`, data);

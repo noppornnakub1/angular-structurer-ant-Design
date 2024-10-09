@@ -93,7 +93,7 @@ interface SelectedFile {
     NzDividerModule,
     NzGridModule,
     NzIconModule,
-    NzSpaceModule 
+    NzSpaceModule
   ],
   providers: [PostCodeService],
   templateUrl: './supplier-add.component.html',
@@ -165,22 +165,22 @@ export class SupplierAddComponent {
     { fileName: 'ใบขอเปิด Supplier', fileType: '', filePath: '', labelText: 'ใบขอเปิด Supplier' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: '', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' },
   ];
-  
+
   filesBank = [
     { fileName: 'หนังสือยินยอมการโอนเงิน', fileType: '', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: '', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' },
     { fileName: 'สำเนาหน้า Book Bank', fileType: '', filePath: '', labelText: 'สำเนาหน้า Book Bank' },
-  ];  
+  ];
   filesBankAdd = [
     { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'gchGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [ACT]' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'gchGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]' },
     { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'gchGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [ACT]' },
-  ];  
+  ];
   file: any;
   filess: Array<{ fileName: string; fileType: string; filePath: string; labelText: string; }> = [];
   displayFiles: Array<{ fileType: string; fileName: string; filePath: string; labelText: string; }> = [];
   displayFilesBank: Array<{ fileName: string, fileType: string, filePath: string, labelText?: string }> = [];
-  displayFilesBankAdd: Array<{ fileName: string, fileType: string, filePath: string, labelText?: string }> = [];  
+  displayFilesBankAdd: Array<{ fileName: string, fileType: string, filePath: string, labelText?: string }> = [];
   selectedPrefix: string = '';
   nameInput: string = '';
   fullName: string = '';
@@ -210,7 +210,7 @@ export class SupplierAddComponent {
       postalCode: ['', Validators.required],
       tel: ['', Validators.required],
       email: ['', Validators.required],
-      supplierNum: ['',],
+      supplierNum: [''],
       supplierType: ['', Validators.required],
       site: ['00000', Validators.required],
       vat: [''],
@@ -369,22 +369,24 @@ export class SupplierAddComponent {
       }
     });
     this.checkRole();
+    this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
+    console.log('displayFiles:', this.displayFiles);
   }
 
   onFileSelectSupplier(event: Event, fileType: string, labelText: string): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
-      
+
       const fileToUpdate = this.displayFiles.find(file => file.fileType === fileType && file.labelText === labelText);
-  
+
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
       }
     }
     console.log(this.selectedFilesSupplier);
-    
+
   }
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
@@ -417,18 +419,18 @@ export class SupplierAddComponent {
   onNameBlur(): void {
     const nameControl = this.supplierForm.get('name');
     let nameValue = nameControl?.value || '';
-  
+
     if (!nameValue) {
       return;
     }
-  
+
     nameValue = nameValue.replace(/^บริษัท /, '')
       .replace(/ จำกัด \(มหาชน\)$/, '')
       .replace(/ จำกัด$/, '')
       .replace(/^คุณ /, '')
       .replace(/^ห้างหุ้นส่วนสามัญ/, '')
       .replace(/^ห้างหุ้นส่วนจำกัด/, '');
-  
+
     if (this.selectedPrefix === 'บริษัทจำกัด') {
       nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
     } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
@@ -443,22 +445,22 @@ export class SupplierAddComponent {
       nameControl?.setValue(nameValue);
     }
   }
-  
+
   updateNameWithPrefixChange(): void {
     const nameControl = this.supplierForm.get('name');
     let nameValue = nameControl?.value || '';
-  
+
     if (!nameValue) {
       return;
     }
-  
+
     nameValue = nameValue.replace(/^บริษัท /, '')
       .replace(/ จำกัด \(มหาชน\)$/, '')
       .replace(/ จำกัด$/, '')
       .replace(/^คุณ /, '')
       .replace(/^ห้างหุ้นส่วนสามัญ/, '')
       .replace(/^ห้างหุ้นส่วนจำกัด/, '');
-  
+
     if (this.selectedPrefix === 'บริษัทจำกัด') {
       nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
     } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
@@ -672,7 +674,7 @@ export class SupplierAddComponent {
 
   getAdjustedFilePath(filePath: string): string {
     let adjustedFilePath = filePath;
-    
+
     if (!filePath.includes('localhost')) {
       adjustedFilePath = `https://localhost:7126/${filePath}`;
     } else {
@@ -680,25 +682,25 @@ export class SupplierAddComponent {
     }
 
     return adjustedFilePath;
-  }  
+  }
 
   loadSupplierData(id: number): void {
     console.log('Loading supplier data for ID:', id);
-  
+
     this.supplierService.findSupplierByIdV2(id).subscribe((data: any) => {
       console.log('Supplier data received:', data);
-  
+
       const postalCode = data?.postalCode || '';
       const subdistrict = data?.subdistrict || '';
       const postalCodeCombination = postalCode && subdistrict ? postalCode + '-' + subdistrict : postalCode;
       console.log('Postal code combination:', postalCodeCombination);
-  
+
       this.supplierForm.patchValue({
         ...data,
         postalCode: postalCodeCombination
       });
       console.log('Supplier form patched with data:', this.supplierForm.value);
-  
+
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({
           fileName: file.fileName,
@@ -714,10 +716,10 @@ export class SupplierAddComponent {
         ];
         console.log('Default files set:', this.filess);
       }
-  
+
       this.displayFiles = this.filess;
       console.log('Display files:', this.displayFiles);
-  
+
       this.loadSupplierBank(id);
       this.getEventLogs(id);
     }, error => {
@@ -762,6 +764,8 @@ export class SupplierAddComponent {
         this.showSupplierBankForm = true
         this.showSupplierBankFormAdd = true;
       }
+      console.log(this.supplierBankForm.value);
+
     });
   }
 
@@ -1052,7 +1056,7 @@ export class SupplierAddComponent {
         this.listOfType = response;
         console.log(this.listOfType);
 
-        if (this.isAdmin || this.isApproved ) {
+        if (this.isAdmin || this.isApproved) {
           this.filteredDataType = this.listOfType;
         } else {
           this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));
@@ -1379,8 +1383,8 @@ export class SupplierAddComponent {
     }
     else {
       try {
-        this.supplierForm.value.supplierNum = '-'
-        await this.CheckDupplicateData();
+        // this.supplierForm.value.supplierNum = '-'
+        // await this.CheckDupplicateData();
 
         await this.save(event);
       } catch (error) {
@@ -1457,7 +1461,7 @@ export class SupplierAddComponent {
     });
   }
 
-  approve(event: Event): void {
+  async approve(event: Event): Promise<void> {
     event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
@@ -1474,6 +1478,16 @@ export class SupplierAddComponent {
         this.setStatusAndSubmit(newStatus);
       }
     });
+  }
+
+  async checkApprove(event: Event) {
+    try {
+      this.supplierForm.value.supplierNum = '-'
+      await this.CheckDupplicateData();
+      await this.approve(event);
+    } catch (error) {
+      console.error('Error occurred:', error);
+    }
   }
 
   reject(event: Event): void {

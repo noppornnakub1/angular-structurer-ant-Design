@@ -16,7 +16,7 @@
         </nz-select>
       </div>
 
-      <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="8" class="pr-3">
+      <div *ngIf="!isOverseaCustomer() && (isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="8" class="pr-3">
         <nz-form-label nzNoColon>Customer Number<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Customer Number = ระบบจะ running number 
           ให้ตามประเภทของ Customer" class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -43,6 +43,8 @@
       <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
 
       </div> -->
+      <div *ngIf="!isOverseaCustomer() && !(isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="8" class="pr-3">
+      </div>
       <div *ngIf="isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
 
       </div>

@@ -87,7 +87,7 @@ export class CustomerAddComponent implements OnInit {
       tel: ['', Validators.required],
       email: ['', Validators.required],
       customer_id: ['0', Validators.required],
-      customerNum: ['', Validators.required],
+      customerNum: ['-', Validators.required],
       customerType: ['', Validators.required],
       site: ['', Validators.required],
       status: ['', Validators.required],
@@ -557,7 +557,6 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     else {
-      this.CheckDupplicateData();
       this.save(event);
     }
   }
@@ -597,6 +596,7 @@ export class CustomerAddComponent implements OnInit {
       if (result.isConfirmed) {
         const currentStatus = this.customerForm.get('status')?.value;
         const newStatus = currentStatus === 'Approved By ACC' ? 'Approved By FN' : 'Approved By ACC';
+        this.CheckDupplicateData();
         this.setStatusAndSubmit(newStatus);
       }
     });

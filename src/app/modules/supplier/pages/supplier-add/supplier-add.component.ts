@@ -150,6 +150,7 @@ export class SupplierAddComponent {
   selectedFile: File | null = null;
   selectedFileAdd: File | null = null;
   selectedFilesSupplier: SelectedFile[] = [];
+  selectedNewFilesSupplier: SelectedFile[] = [];
   selectedFiles: SelectedFile[] = [];
   selectedFilesAdd: SelectedFile[] = [];
   fileIdsToRemove: number[] = [];
@@ -373,9 +374,9 @@ export class SupplierAddComponent {
     });
 
     this.supplierBankForm.get('supplierGroup')?.valueChanges.subscribe((selectedGroup: string) => {
-      console.log("376",selectedGroup);
-      
-      if(selectedGroup === 'ALL Group'){
+      console.log("376", selectedGroup);
+
+      if (selectedGroup === 'ALL Group') {
         this.showSupplierBankFormAdd = false;
       }
       this.updateFilteredSupplierGroups(selectedGroup);
@@ -402,6 +403,7 @@ export class SupplierAddComponent {
           const fileIdToRemove = (fileToUpdate as any).fileId;
           if (fileIdToRemove) {
             this.fileIdsToRemove.push(fileIdToRemove);
+            console.log('Added fileId to remove:', fileIdToRemove);
           }
         }
 
@@ -412,10 +414,42 @@ export class SupplierAddComponent {
         };
         this.selectedFilesSupplier.push(newFile);
 
-        this.cdr.detectChanges();
+        this._cdr.detectChanges();
       }
     }
-    console.log(this.selectedFilesSupplier);
+    console.log('Selected files for supplier:', this.selectedFilesSupplier);
+    console.log('fileIdsToRemove:', this.fileIdsToRemove);
+  }
+
+  onFileSelectNew(event: Event, fileType: string, labelText: string): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const selectedFile = input.files[0];
+      const fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText);
+
+      console.log('fileType:', fileType, 'labelText:', labelText);
+      console.log('Selected File:', selectedFile);
+      console.log('Current filesBank:', this.filesBank);
+
+      if (fileToUpdate) {
+        fileToUpdate.filePath = '';
+        fileToUpdate.fileName = selectedFile.name;
+
+        this.selectedFilesSupplier = this.selectedFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
+
+        const newFile = {
+          file: selectedFile,
+          fileType: fileType,
+          labelText: labelText
+        };
+
+        this.selectedNewFilesSupplier.push(newFile);
+
+        console.log('Updated selectedNewFilesSupplier:', this.selectedNewFilesSupplier);
+
+        this._cdr.detectChanges();
+      }
+    }
   }
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
@@ -1222,8 +1256,15 @@ export class SupplierAddComponent {
 
     if (this.supplierBankForm.valid && this.suppilerId) {
       const formData = this.prepareBankFormData(this.supplierBankForm.value);
+      const bankId = this.supplierBankForm.get('supbankId')?.value;
+
+      console.log('Bank ID:', bankId);
+      console.log('Form Data:', formData);
+
       this.supplierService.updateBankDataWithFiles(bankId, formData).subscribe({
         next: (response) => {
+          console.log('Response from update:', response);
+
           this.router.navigate(['/feature/supplier']);
           Swal.fire({
             icon: 'success',
@@ -1234,8 +1275,8 @@ export class SupplierAddComponent {
           });
         },
         error: (err) => {
-          Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
           console.error('Error updating bank data with files:', err);
+          Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
         }
       });
     }
@@ -1269,6 +1310,8 @@ export class SupplierAddComponent {
 
   prepareBankFormData(bankFormValue: any): FormData {
     const formData = new FormData();
+    console.log('Preparing FormData with the following bankFormValue:', bankFormValue);
+
     formData.append('SupbankId', bankFormValue.supbankId);
     formData.append('SupplierId', bankFormValue.supplierId);
     formData.append('NameBank', bankFormValue.nameBank);
@@ -1284,15 +1327,29 @@ export class SupplierAddComponent {
     for (let selectedFile of this.selectedFiles) {
       formData.append('Files', selectedFile.file, selectedFile.file.name);
       labelTexts.push(selectedFile.labelText);
+      console.log('Adding file to FormData:', selectedFile.file.name, 'with label:', selectedFile.labelText);
     }
+
+    console.log('Files to upload:', this.selectedFiles);
+    console.log('fileIdsToRemove:', this.fileIdsToRemove);
 
     for (let fileId of this.fileIdsToRemove) {
       fileIds.push(fileId);
+      console.log('Adding fileId to remove:', fileId);
     }
 
     formData.append('LabelTextsJson', JSON.stringify(labelTexts));
-    formData.append('FileIdsJson', JSON.stringify(fileIds));
+    formData.append('FileIdsString', JSON.stringify(fileIds));
 
+    formData.forEach((value, key) => {
+      if (value instanceof File) {
+        console.log(`FormData field - Key: ${key}, FileName: ${value.name}`);
+      } else {
+        console.log(`FormData field - Key: ${key}, Value: ${value}`);
+      }
+    });
+
+    console.log('FormData prepared:', formData);
     return formData;
   }
 
@@ -1866,4 +1923,37 @@ export class SupplierAddComponent {
     this.supplierBankFormAdd.get('supplierGroup')?.setValue('');
   }
 
+  
+  isFormValidWithoutSupplierIdCompanyBank(): boolean {
+    // เก็บรายการของฟิลด์ที่ต้องการตรวจสอบ (ยกเว้น supplierId และ company)
+    const requiredFields = [
+      'accountName', 'accountNum', 'branch', 'nameBank',
+    ];
+  
+  for (const field of requiredFields) {
+    const value = this.supplierBankForm.get(field)?.value;
+    console.log(`Field ${field} value:`, value); // ตรวจสอบค่าของฟิลด์
+    if (!value) {
+      return false; // พบฟิลด์ที่ไม่มีค่า
+    }
+  }
+  
+    return true; // ฟอร์มครบถ้วน
+  }
+
+  isFormValidWithoutSupplierIdCompanyBankAdd(): boolean {
+    // เก็บรายการของฟิลด์ที่ต้องการตรวจสอบ
+    const requiredFields = [
+      'accountName', 'accountNum', 'branch', 'nameBank',
+    ];
+
+    // ตรวจสอบว่าฟิลด์ที่ระบุใน requiredFields ถูกกรอกครบถ้วนหรือไม่
+    for (const field of requiredFields) {
+      if (!this.supplierBankFormAdd.get(field)?.value) {
+        return false; // พบฟิลด์ที่ไม่มีค่า
+      }
+    }
+
+    return true; // ฟอร์มครบถ้วน (ยกเว้น supplierNum)
+  }
 }

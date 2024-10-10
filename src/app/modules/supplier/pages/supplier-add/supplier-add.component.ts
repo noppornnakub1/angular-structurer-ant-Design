@@ -139,6 +139,7 @@ export class SupplierAddComponent {
   isLength = false;
   selectType: string = '';
   listOfGroup: DataGroup[] = [];
+  filteredListOfGroup = [...this.listOfGroup];
   selectedSupplierGroup: string | null = null;
   selectedSupplierGroupAdd: string | null = null;
   emailError: string = '';
@@ -369,6 +370,15 @@ export class SupplierAddComponent {
           { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'actGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [ACT]' },
         ];
       }
+    });
+
+    this.supplierBankForm.get('supplierGroup')?.valueChanges.subscribe((selectedGroup: string) => {
+      console.log("376",selectedGroup);
+      
+      if(selectedGroup === 'ALL Group'){
+        this.showSupplierBankFormAdd = false;
+      }
+      this.updateFilteredSupplierGroups(selectedGroup);
     });
     this.checkRole();
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
@@ -1844,6 +1854,16 @@ export class SupplierAddComponent {
     }
 
     return true; // ฟอร์มครบถ้วน (ยกเว้น supplierNum)
+  }
+
+  updateFilteredSupplierGroups(selectedGroup: string): void {
+    // กรองรายการที่ไม่ใช่ selectedGroup และ 'ALL Group'
+    this.filteredListOfGroup = this.listOfGroup.filter(group => {
+      return group.group_name !== selectedGroup && group.group_name !== 'ALL Group';
+    });
+
+    // รีเซ็ต supplierBankFormAdd เมื่อมีการเปลี่ยนแปลง
+    this.supplierBankFormAdd.get('supplierGroup')?.setValue('');
   }
 
 }

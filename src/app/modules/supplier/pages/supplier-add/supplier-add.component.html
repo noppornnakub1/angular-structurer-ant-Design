@@ -385,7 +385,7 @@
               <nz-form-label nzNoColon>Supplier Group<span style="color: red;">*</span></nz-form-label>
               <nz-select [(ngModel)]="selectedSupplierGroupAdd" formControlName="supplierGroup"
                 nzPlaceHolder="Select Supplier Group" class="custom-select">
-                <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
+                <nz-option *ngFor="let type of filteredListOfGroup" [nzLabel]="type.group_name"
                   [nzValue]="type.group_name"></nz-option>
               </nz-select>
             </div>

@@ -911,91 +911,83 @@ export class SupplierAddComponent {
           console.log("911",check);
           
           if (!this.isFormValidWithoutSupplierIdCompanyBank()) {
-            console.log("Bacnk", this.supplierBankForm.valid);
-            console.log("Bacnk", this.supplierBankForm.value);
-            // หาก showSupplierBankForm เป็น true และ supplierBankForm ไม่ valid
             Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
-            return; // ออกจากเงื่อนไข ไม่ดำเนินการต่อ
+            return; 
           }
-
-          // ถ้า showSupplierBankForm ผ่าน, เช็ค showSupplierBankFormAdd ต่อ
           if (this.showSupplierBankFormAdd) {
             const checkAdd = this.isFormValidWithoutSupplierIdCompanyBankAdd()
           console.log("924",checkAdd);
             if (checkAdd == false) {
-              console.log("BacnkADD", this.supplierBankFormAdd.valid);
-              console.log("BacnkADD", this.supplierBankFormAdd.value);
-              // หาก showSupplierBankFormAdd เป็น true และ supplierBankFormAdd ไม่ valid
               Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
-              return; // ออกจากเงื่อนไข ไม่ดำเนินการต่อ
+              return; 
             }
           }
         }
-        // this.supplierService.addDataWithFiles(formValue).subscribe({
-        //   next: (response) => {
-        //     console.log('Response from addData:', response);
+        this.supplierService.addDataWithFiles(formValue).subscribe({
+          next: (response) => {
+            console.log('Response from addData:', response);
 
-        //     if (response && response.supplier_id) {
-        //       console.log('Setting supplierId from response');
-        //       this.supplierBankForm.patchValue({ supplierId: response.supplier_id, company: response.company });
-        //       console.log('supplierBankForm after patchValue:', this.supplierBankForm.value);
+            if (response && response.supplier_id) {
+              console.log('Setting supplierId from response');
+              this.supplierBankForm.patchValue({ supplierId: response.supplier_id, company: response.company });
+              console.log('supplierBankForm after patchValue:', this.supplierBankForm.value);
 
-        //       this.isIDTemp = response.supplier_id;
-        //       console.log("518", this.showSupplierBankFormAdd);
+              this.isIDTemp = response.supplier_id;
+              console.log("518", this.showSupplierBankFormAdd);
 
-        //       if (this.showSupplierBankForm) {
-        //         console.log('showSupplierBankForm is true');
-        //         console.log('supplierBankForm valid:', this.supplierBankForm.valid);
-        //         console.log(response.supplier_id);
-        //         if (!this.supplierBankForm.get('supplierId')?.value && this.suppilerId) {
-        //           this.supplierBankForm.patchValue({ supplierId: response.supplier_id, company: response.company });
-        //         }
+              if (this.showSupplierBankForm) {
+                console.log('showSupplierBankForm is true');
+                console.log('supplierBankForm valid:', this.supplierBankForm.valid);
+                console.log(response.supplier_id);
+                if (!this.supplierBankForm.get('supplierId')?.value && this.suppilerId) {
+                  this.supplierBankForm.patchValue({ supplierId: response.supplier_id, company: response.company });
+                }
 
-        //         Object.keys(this.supplierBankForm.controls).forEach(key => {
-        //           console.log(`${key} value:`, this.supplierBankForm.get(key)?.value);
-        //           console.log(`${key} valid:`, this.supplierBankForm.get(key)?.valid);
-        //           console.log(`${key} errors:`, this.supplierBankForm.get(key)?.errors);
-        //         });
+                Object.keys(this.supplierBankForm.controls).forEach(key => {
+                  console.log(`${key} value:`, this.supplierBankForm.get(key)?.value);
+                  console.log(`${key} valid:`, this.supplierBankForm.get(key)?.valid);
+                  console.log(`${key} errors:`, this.supplierBankForm.get(key)?.errors);
+                });
 
-        //         if (this.supplierBankForm.valid) {
-        //           console.log('Adding bank data for supplierBankForm');
-        //           this.addBankData();
-        //         }
-        //       } else {
-        //         console.log('showSupplierBankForm is false');
-        //       }
+                if (this.supplierBankForm.valid) {
+                  console.log('Adding bank data for supplierBankForm');
+                  this.addBankData();
+                }
+              } else {
+                console.log('showSupplierBankForm is false');
+              }
 
-        //       if (this.showSupplierBankFormAdd) {
-        //         console.log('showSupplierBankFormAdd is true');
-        //         console.log('supplierBankFormAdd valid:', this.supplierBankFormAdd.valid);
-        //         if (this.supplierBankFormAdd.valid) {
-        //           console.log('Adding bank data for supplierBankFormAdd');
-        //           this.addBankData();
-        //         }
-        //       } else {
-        //         console.log('showSupplierBankFormAdd is false');
-        //       }
+              if (this.showSupplierBankFormAdd) {
+                console.log('showSupplierBankFormAdd is true');
+                console.log('supplierBankFormAdd valid:', this.supplierBankFormAdd.valid);
+                if (this.supplierBankFormAdd.valid) {
+                  console.log('Adding bank data for supplierBankFormAdd');
+                  this.addBankData();
+                }
+              } else {
+                console.log('showSupplierBankFormAdd is false');
+              }
 
-        //       console.log('Inserting log entry');
-        //       this.insertLog();
-        //       Swal.fire({
-        //         icon: 'success',
-        //         title: 'Saved!',
-        //         text: 'Your data has been saved.',
-        //         showConfirmButton: false,
-        //         timer: 1500
-        //       });
-        //       console.log('Navigating to /feature/supplier');
-        //       this.router.navigate(['/feature/supplier']);
-        //     } else {
-        //       console.error('Response does not contain supplier_id', response);
-        //     }
-        //   },
-        //   error: (err) => {
-        //     console.error('Error saving supplier data:', err);
-        //     Swal.fire('Error!', 'There was an error saving your data.', 'error');
-        //   }
-        // });
+              console.log('Inserting log entry');
+              this.insertLog();
+              Swal.fire({
+                icon: 'success',
+                title: 'Saved!',
+                text: 'Your data has been saved.',
+                showConfirmButton: false,
+                timer: 1500
+              });
+              console.log('Navigating to /feature/supplier');
+              this.router.navigate(['/feature/supplier']);
+            } else {
+              console.error('Response does not contain supplier_id', response);
+            }
+          },
+          error: (err) => {
+            console.error('Error saving supplier data:', err);
+            Swal.fire('Error!', 'There was an error saving your data.', 'error');
+          }
+        });
       }
     } else {
       console.log('Supplier form is invalid');

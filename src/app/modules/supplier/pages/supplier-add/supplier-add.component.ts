@@ -981,12 +981,13 @@ export class SupplierAddComponent {
                   this.supplierBankForm.patchValue({ supplierId: response.supplier_id, company: response.company });
                 }
 
-                Object.keys(this.supplierBankForm.controls).forEach(key => {
-                  console.log(`${key} value:`, this.supplierBankForm.get(key)?.value);
-                  console.log(`${key} valid:`, this.supplierBankForm.get(key)?.valid);
-                  console.log(`${key} errors:`, this.supplierBankForm.get(key)?.errors);
-                });
-
+                // Object.keys(this.supplierBankForm.controls).forEach(key => {
+                //   console.log(`${key} value:`, this.supplierBankForm.get(key)?.value);
+                //   console.log(`${key} valid:`, this.supplierBankForm.get(key)?.valid);
+                //   console.log(`${key} errors:`, this.supplierBankForm.get(key)?.errors);
+                // });
+                console.log("bank",this.supplierBankForm.valid);
+                
                 if (this.supplierBankForm.valid) {
                   console.log('Adding bank data for supplierBankForm');
                   this.addBankData();
@@ -1222,8 +1223,9 @@ export class SupplierAddComponent {
       formData.append('Company', bankFormValue.company);
 
       const labelTexts: string[] = [];
-
-      for (let selectedFile of this.selectedFiles) {
+      console.log(this.selectedNewFilesSupplier);
+      
+      for (let selectedFile of this.selectedNewFilesSupplier) {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
         labelTexts.push(selectedFile.labelText);
       }

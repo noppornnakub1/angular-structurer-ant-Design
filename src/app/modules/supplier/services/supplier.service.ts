@@ -31,7 +31,7 @@ export class SupplierService {
 
   findSupplierByIdV2(id: number): Observable<any> {
     return this._http.get(`/Supplier/FindSupplierByIDV2?id=${id}`);
-  }  
+  }
 
   updateData(id: number, data: ISupplier): Observable<any> {
     return this._http.put(`/Supplier/UpdateSupplier?id=${id}`, data);
@@ -42,9 +42,9 @@ export class SupplierService {
     formData.forEach((value, key) => {
       console.log(`${key}:`, value);
     });
-  
+
     return this._http.put(`/Supplier/UpdateSupplierWithFiles?id=${id}`, formData);
-  }  
+  }
 
   findSupplierTypeById(id: number): Observable<IsupplierType> {
     return this._http.get<IsupplierType>(`/Supplier/FindSupplierTypeByID?id=${id}`);
@@ -60,7 +60,7 @@ export class SupplierService {
 
   findSupplierBankBySupplierIdV2(id: number): Observable<any> {
     return this._http.get<any>(`/SupplierBank/FindSupplierBankBySupplierIDV2?supplierid=${id}`);
-  }  
+  }
 
   getTopSupplierByType(supplier_type: string): Observable<{ supplier_num: string, code_from: string }> {
     return this._http.get<{ supplier_num: string, code_from: string }>(`/Supplier/FindSupplierByTypeName?supplierType=${supplier_type}`)
@@ -88,13 +88,13 @@ export class SupplierService {
     return this._http.post(`/SupplierBank/AddSupplierBankWithFiles`, formData);
   }
 
-    updateBankData(id: number, data: DataBank): Observable<any> {
-      return this._http.put(`/SupplierBank/UpdateSupplierBank/${id}`, data);
-    }
+  updateBankData(id: number, data: DataBank): Observable<any> {
+    return this._http.put(`/SupplierBank/UpdateSupplierBank/${id}`, data);
+  }
 
-    updateBankDataWithFiles(id: number, formData: FormData): Observable<any> {
-      return this._http.put(`/SupplierBank/UpdateSupplierBankWithFiles/${id}`, formData);
-    }
+  updateBankDataWithFiles(id: number, formData: FormData): Observable<any> {
+    return this._http.put(`/SupplierBank/UpdateSupplierBankWithFiles/${id}`, formData);
+  }
 
   insertLog(log: any): Observable<any> {
     return this._http.post(`/EventLog/InsertLog`, log);

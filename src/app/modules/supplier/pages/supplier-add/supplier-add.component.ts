@@ -695,13 +695,13 @@ export class SupplierAddComponent {
 
   getAdjustedFilePath(filePath: string): string {
     let adjustedFilePath = filePath;
-    
+
     // ตรวจสอบว่าอยู่บน localhost หรือไม่
     const isLocalhost = window.location.hostname.includes('localhost');
-    
+
     // URL พื้นฐานสำหรับ Production
     const baseURL = 'http://10.10.0.28:8088';
-  
+
     if (isLocalhost) {
       // สำหรับ localhost
       if (!filePath.includes('localhost')) {
@@ -713,7 +713,7 @@ export class SupplierAddComponent {
       // สำหรับ Server (Production)
       adjustedFilePath = `${baseURL}/${filePath}`;
     }
-  
+
     return adjustedFilePath;
   }
 
@@ -764,16 +764,16 @@ export class SupplierAddComponent {
   loadSupplierBank(id: number): void {
     this.supplierService.findSupplierBankBySupplierIdV2(id).subscribe((data: any) => {
       this._cdr.detectChanges();
-  
+
       // Handle the supplier bank information
       if (data.supplierBank.length > 0) {
         const bankData = data.supplierBank[0];
-        
+
         // Check if supplier group exists in the list
         if (!this.listOfGroup.some(group => group.group_name === bankData.supplierGroup)) {
           this.listOfGroup.push({ group_name: bankData.supplierGroup });
         }
-  
+
         this.supplierBankForm.patchValue({
           supbankId: bankData.SupbankId,
           supplierId: bankData.SupplierId,
@@ -784,10 +784,10 @@ export class SupplierAddComponent {
           accountName: bankData.AccountName,
           company: bankData.Company
         });
-  
+
         this.showSupplierBankForm = true;
       }
-  
+
       if (data.supplierBankFiles && data.supplierBankFiles.length > 0) {
         this.filesBank = data.supplierBankFiles.map((file: any) => ({
           fileName: file.FileName,
@@ -796,12 +796,12 @@ export class SupplierAddComponent {
           labelText: file.LabelText
         }));
       }
-  
+
       console.log(this.supplierBankForm.value);
       console.log('Files for bank:', this.filesBank);
     });
   }
-  
+
 
   loadSupplierType(id: number): void {
     this.supplierService.findSupplierTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
@@ -1142,8 +1142,8 @@ export class SupplierAddComponent {
   addBankData(): void {
     if (this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
-      console.log("1133",this.supplierBankForm.value);
-      
+      console.log("1133", this.supplierBankForm.value);
+
 
       const formData = new FormData();
       formData.append('SupbankId', bankFormValue.supbankId);
@@ -1211,27 +1211,43 @@ export class SupplierAddComponent {
     const bankId = this.supplierBankForm.get('supbankId')?.value;
 
     if (this.supplierBankForm.valid && this.suppilerId) {
-      this.supplierService.updateBankData(bankId, this.supplierBankForm.value).subscribe({
+      const formData = this.prepareBankFormData(this.supplierBankForm.value);
+      this.supplierService.updateBankDataWithFiles(bankId, formData).subscribe({
         next: (response) => {
-
-
           this.router.navigate(['/feature/supplier']);
+          Swal.fire({
+            icon: 'success',
+            title: 'Updated!',
+            text: 'Your bank data has been updated successfully.',
+            showConfirmButton: false,
+            timer: 1500
+          });
         },
         error: (err) => {
-          console.error('Error updating data', err);
+          Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
+          console.error('Error updating bank data with files:', err);
         }
       });
     }
+
     if (this.supplierBankFormAdd.valid && this.suppilerId) {
-      const bankId = this.supplierBankFormAdd.get('supbankId')?.value;
+      const bankIdAdd = this.supplierBankFormAdd.get('supbankId')?.value;
+      const formDataAdd = this.prepareBankFormData(this.supplierBankFormAdd.value);
 
-      this.supplierService.updateBankData(bankId, this.supplierBankFormAdd.value).subscribe({
+      this.supplierService.updateBankDataWithFiles(bankIdAdd, formDataAdd).subscribe({
         next: (response) => {
-
           this.router.navigate(['/feature/supplier']);
+          Swal.fire({
+            icon: 'success',
+            title: 'Updated!',
+            text: 'Your additional bank data has been updated successfully.',
+            showConfirmButton: false,
+            timer: 1500
+          });
         },
         error: (err) => {
-          console.error('Error updating data', err);
+          Swal.fire('Error!', 'There was an error updating your additional bank data.', 'error');
+          console.error('Error updating additional bank data with files:', err);
         }
       });
     } else {
@@ -1239,6 +1255,35 @@ export class SupplierAddComponent {
       this.supplierBankForm.markAllAsTouched();
       Swal.fire('Error!', 'There was an error saving your data.', 'error');
     }
+  }
+
+  prepareBankFormData(bankFormValue: any): FormData {
+    const formData = new FormData();
+    formData.append('SupbankId', bankFormValue.supbankId);
+    formData.append('SupplierId', bankFormValue.supplierId);
+    formData.append('NameBank', bankFormValue.nameBank);
+    formData.append('Branch', bankFormValue.branch);
+    formData.append('AccountNum', bankFormValue.accountNum);
+    formData.append('SupplierGroup', bankFormValue.supplierGroup);
+    formData.append('AccountName', bankFormValue.accountName);
+    formData.append('Company', bankFormValue.company);
+
+    const labelTexts: string[] = [];
+    const fileIds: number[] = [];
+
+    for (let selectedFile of this.selectedFiles) {
+      formData.append('Files', selectedFile.file, selectedFile.file.name);
+      labelTexts.push(selectedFile.labelText);
+    }
+
+    for (let fileId of this.fileIdsToRemove) {
+      fileIds.push(fileId);
+    }
+
+    formData.append('LabelTextsJson', JSON.stringify(labelTexts));
+    formData.append('FileIdsJson', JSON.stringify(fileIds));
+
+    return formData;
   }
 
   insertLog(): void {
@@ -1339,7 +1384,7 @@ export class SupplierAddComponent {
         if (this.isAdmin || this.isApproved) {
           this.filteredDataPaymentMethod = this.listOfPaymentMethod;
         } else {
-          this.filteredDataPaymentMethod = this.listOfPaymentMethod.filter(type => ['Cheque', 'Transfer'].includes(type.paymentMethodName));        
+          this.filteredDataPaymentMethod = this.listOfPaymentMethod.filter(type => ['Cheque', 'Transfer'].includes(type.paymentMethodName));
         }
         this._cdr.markForCheck();
       },

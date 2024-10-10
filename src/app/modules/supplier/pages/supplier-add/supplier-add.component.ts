@@ -1166,6 +1166,7 @@ export class SupplierAddComponent {
       const bankFormValueAdd = this.supplierBankFormAdd.value;
 
       const formDataAdd = new FormData();
+      formDataAdd.append('SupbankId', bankFormValueAdd.supbankId);
       formDataAdd.append('SupplierId', bankFormValueAdd.supplierId);
       formDataAdd.append('NameBank', bankFormValueAdd.nameBank);
       formDataAdd.append('Branch', bankFormValueAdd.branch);

@@ -695,13 +695,25 @@ export class SupplierAddComponent {
 
   getAdjustedFilePath(filePath: string): string {
     let adjustedFilePath = filePath;
-
-    if (!filePath.includes('localhost')) {
-      adjustedFilePath = `https://localhost:7126/${filePath}`;
+    
+    // ตรวจสอบว่าอยู่บน localhost หรือไม่
+    const isLocalhost = window.location.hostname.includes('localhost');
+    
+    // URL พื้นฐานสำหรับ Production
+    const baseURL = 'http://10.10.0.28:8088';
+  
+    if (isLocalhost) {
+      // สำหรับ localhost
+      if (!filePath.includes('localhost')) {
+        adjustedFilePath = `https://localhost:7126/${filePath}`;
+      } else {
+        adjustedFilePath = filePath.replace('localhost:2222', 'localhost:7126');
+      }
     } else {
-      adjustedFilePath = filePath.replace('localhost:2222', 'localhost:7126');
+      // สำหรับ Server (Production)
+      adjustedFilePath = `${baseURL}/${filePath}`;
     }
-
+  
     return adjustedFilePath;
   }
 

@@ -354,9 +354,18 @@
         <tr *ngFor="let file of filesBank">
           <td>{{ file.fileName }}</td>
           <td *ngIf="!isViewMode">
-            <input class="choose" type="file" (change)="onFileSelect($event, file.fileType, file.fileName)" />
-            <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
-          </td>
+            <div *ngIf="file.filePath && file.filePath !== ''" class="file-uploaded">
+              <nz-space>
+                <div>
+                  <span>{{ file.fileName }} (Already Uploaded)</span>
+                  <button nz-button nzType="primary" (click)="removeFile(file)">Remove</button>
+                </div>
+              </nz-space>
+            </div>
+            <div *ngIf="!file.filePath || file.filePath === ''">
+              <input class="upload-button" type="file" (change)="onFileSelectSupplier($event, file.fileType, file.labelText)" />
+            </div>
+          </td>          
           <td class="text-center">
             <a *ngIf="file.filePath && file.filePath !== ''" [href]="getAdjustedFilePath(file.filePath)"
               target="_blank">

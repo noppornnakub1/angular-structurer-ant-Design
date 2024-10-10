@@ -1941,4 +1941,37 @@ export class SupplierAddComponent {
     this.supplierBankFormAdd.get('supplierGroup')?.setValue('');
   }
 
+  isFormValidWithoutSupplierIdCompanyBank(): boolean {
+    // เก็บรายการของฟิลด์ที่ต้องการตรวจสอบ (ยกเว้น supplierId และ company)
+    const requiredFields = [
+      'accountName', 'accountNum', 'branch', 'nameBank',
+    ];
+  
+  for (const field of requiredFields) {
+    const value = this.supplierBankForm.get(field)?.value;
+    console.log(`Field ${field} value:`, value); // ตรวจสอบค่าของฟิลด์
+    if (!value) {
+      return false; // พบฟิลด์ที่ไม่มีค่า
+    }
+  }
+  
+    return true; // ฟอร์มครบถ้วน
+  }
+
+  isFormValidWithoutSupplierIdCompanyBankAdd(): boolean {
+    // เก็บรายการของฟิลด์ที่ต้องการตรวจสอบ
+    const requiredFields = [
+      'accountName', 'accountNum', 'branch', 'nameBank',
+    ];
+
+    // ตรวจสอบว่าฟิลด์ที่ระบุใน requiredFields ถูกกรอกครบถ้วนหรือไม่
+    for (const field of requiredFields) {
+      if (!this.supplierBankFormAdd.get(field)?.value) {
+        return false; // พบฟิลด์ที่ไม่มีค่า
+      }
+    }
+
+    return true; // ฟอร์มครบถ้วน (ยกเว้น supplierNum)
+  }
+
 }

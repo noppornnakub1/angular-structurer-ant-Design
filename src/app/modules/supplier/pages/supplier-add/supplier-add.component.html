@@ -352,7 +352,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let file of filesBank">
-          <td>{{ file.fileName }}</td>
+          <td>{{ file.labelText }}</td>
           <td *ngIf="!isViewMode">
             <div *ngIf="file.filePath && file.filePath !== ''" class="file-uploaded">
               <nz-space>

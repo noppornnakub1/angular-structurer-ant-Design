@@ -809,11 +809,9 @@ export class SupplierAddComponent {
     this.supplierService.findSupplierBankBySupplierIdV2(id).subscribe((data: any) => {
       this._cdr.detectChanges();
 
-      // Handle the supplier bank information
       if (data.supplierBank.length > 0) {
         const bankData = data.supplierBank[0];
 
-        // Check if supplier group exists in the list
         if (!this.listOfGroup.some(group => group.group_name === bankData.supplierGroup)) {
           this.listOfGroup.push({ group_name: bankData.supplierGroup });
         }
@@ -834,18 +832,19 @@ export class SupplierAddComponent {
 
       if (data.supplierBankFiles && data.supplierBankFiles.length > 0) {
         this.filesBank = data.supplierBankFiles.map((file: any) => ({
+          fileId: file.FileId,
           fileName: file.FileName,
           fileType: file.FileType,
           filePath: file.FilePath,
           labelText: file.LabelText
         }));
+        console.log('Mapped filesBank:', this.filesBank);
       }
-
+      
       console.log(this.supplierBankForm.value);
       console.log('Files for bank:', this.filesBank);
     });
   }
-
 
   loadSupplierType(id: number): void {
     this.supplierService.findSupplierTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
@@ -942,18 +941,18 @@ export class SupplierAddComponent {
 
         if (this.showSupplierBankForm) {
           const check = this.isFormValidWithoutSupplierIdCompanyBank()
-          console.log("911",check);
-          
+          console.log("911", check);
+
           if (!this.isFormValidWithoutSupplierIdCompanyBank()) {
             Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
-            return; 
+            return;
           }
           if (this.showSupplierBankFormAdd) {
             const checkAdd = this.isFormValidWithoutSupplierIdCompanyBankAdd()
-          console.log("924",checkAdd);
+            console.log("924", checkAdd);
             if (checkAdd == false) {
               Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
-              return; 
+              return;
             }
           }
         }
@@ -1340,24 +1339,27 @@ export class SupplierAddComponent {
     formData.append('Company', bankFormValue.company);
 
     const labelTexts: string[] = [];
-    const fileIds: number[] = [];
+    const filesToRemove: number[] = [];
+    let removedFileIdsString = '';
 
-    for (let selectedFile of this.selectedFiles) {
+    console.log('Files to upload (selectedNewFilesSupplier):', this.selectedNewFilesSupplier);
+
+    for (let selectedFile of this.selectedNewFilesSupplier) {
       formData.append('Files', selectedFile.file, selectedFile.file.name);
       labelTexts.push(selectedFile.labelText);
       console.log('Adding file to FormData:', selectedFile.file.name, 'with label:', selectedFile.labelText);
     }
 
-    console.log('Files to upload:', this.selectedFiles);
-    console.log('fileIdsToRemove:', this.fileIdsToRemove);
+    removedFileIdsString = filesToRemove.join(', ');
+    console.log('Removed file IDs:', removedFileIdsString);
 
-    for (let fileId of this.fileIdsToRemove) {
-      fileIds.push(fileId);
+    for (let fileId of filesToRemove) {
       console.log('Adding fileId to remove:', fileId);
+      formData.append('FileIdsToRemove', fileId.toString());
     }
 
     formData.append('LabelTextsJson', JSON.stringify(labelTexts));
-    formData.append('FileIdsString', JSON.stringify(fileIds));
+    formData.append('FileIdsString', JSON.stringify(filesToRemove));
 
     formData.forEach((value, key) => {
       if (value instanceof File) {
@@ -1946,15 +1948,15 @@ export class SupplierAddComponent {
     const requiredFields = [
       'accountName', 'accountNum', 'branch', 'nameBank',
     ];
-  
-  for (const field of requiredFields) {
-    const value = this.supplierBankForm.get(field)?.value;
-    console.log(`Field ${field} value:`, value); // ตรวจสอบค่าของฟิลด์
-    if (!value) {
-      return false; // พบฟิลด์ที่ไม่มีค่า
+
+    for (const field of requiredFields) {
+      const value = this.supplierBankForm.get(field)?.value;
+      console.log(`Field ${field} value:`, value); // ตรวจสอบค่าของฟิลด์
+      if (!value) {
+        return false; // พบฟิลด์ที่ไม่มีค่า
+      }
     }
-  }
-  
+
     return true; // ฟอร์มครบถ้วน
   }
 

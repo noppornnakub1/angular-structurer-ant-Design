@@ -278,7 +278,7 @@ export class SupplierAddComponent {
     this.getDataVAT();
     this.getDataCompany();
 
-    this.supplierForm.get('supplier_type')?.valueChanges.subscribe(value => {
+    this.supplierForm.get('supplierType')?.valueChanges.subscribe(value => {
       const supplierTypeId = this.getSupplierTypeId(value);
       if (supplierTypeId) {
         this.loadSupplierType(supplierTypeId);
@@ -898,7 +898,7 @@ export class SupplierAddComponent {
               if (this.showSupplierBankForm) {
                 console.log('showSupplierBankForm is true');
                 console.log('supplierBankForm valid:', this.supplierBankForm.valid);
-
+                console.log(response.supplier_id);
                 if (!this.supplierBankForm.get('supplierId')?.value && this.suppilerId) {
                   this.supplierBankForm.patchValue({ supplierId: response.supplier_id, company: response.company });
                 }
@@ -1130,9 +1130,12 @@ export class SupplierAddComponent {
   addBankData(): void {
     if (this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
+      console.log("1133",this.supplierBankForm.value);
+      
 
       const formData = new FormData();
       formData.append('SupbankId', bankFormValue.supbankId);
+      formData.append('SupplierId', bankFormValue.supplierId);
       formData.append('NameBank', bankFormValue.nameBank);
       formData.append('Branch', bankFormValue.branch);
       formData.append('AccountNum', bankFormValue.accountNum);
@@ -1163,6 +1166,7 @@ export class SupplierAddComponent {
       const bankFormValueAdd = this.supplierBankFormAdd.value;
 
       const formDataAdd = new FormData();
+      formDataAdd.append('SupbankId', bankFormValueAdd.supbankId);
       formDataAdd.append('SupplierId', bankFormValueAdd.supplierId);
       formDataAdd.append('NameBank', bankFormValueAdd.nameBank);
       formDataAdd.append('Branch', bankFormValueAdd.branch);
@@ -1320,10 +1324,10 @@ export class SupplierAddComponent {
         this.listOfPaymentMethod = response;
         console.log(this.listOfPaymentMethod);
 
-        if (this.isUser) {
-          this.filteredDataPaymentMethod = this.listOfPaymentMethod.filter(type => ['Cheque', 'Transfer'].includes(type.paymentMethodName));
-        } else {
+        if (this.isAdmin || this.isApproved) {
           this.filteredDataPaymentMethod = this.listOfPaymentMethod;
+        } else {
+          this.filteredDataPaymentMethod = this.listOfPaymentMethod.filter(type => ['Cheque', 'Transfer'].includes(type.paymentMethodName));        
         }
         this._cdr.markForCheck();
       },

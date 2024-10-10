@@ -220,15 +220,16 @@
             </div>
             <div *ngIf="!file.filePath || file.filePath === ''">
               <input class="upload-button" type="file"
-              (change)="onFileSelectSupplier($event, file.fileType, file.labelText)" />            
+                (change)="onFileSelectSupplier($event, file.fileType, file.labelText)" />
             </div>
           </td>
           <td class="text-center">
-            <a *ngIf="file.filePath && file.filePath !== ''" [href]="getAdjustedFilePath(file.filePath)" target="_blank">
+            <a *ngIf="file.filePath && file.filePath !== ''" [href]="getAdjustedFilePath(file.filePath)"
+              target="_blank">
               <span class="material-symbols-outlined">description</span>
             </a>
             <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
-          </td>          
+          </td>
         </tr>
       </tbody>
     </nz-table>
@@ -357,7 +358,8 @@
             <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
           </td>
           <td class="text-center">
-            <a *ngIf="file.filePath && file.filePath !== ''" [href]="" target="_blank">
+            <a *ngIf="file.filePath && file.filePath !== ''" [href]="getAdjustedFilePath(file.filePath)"
+              target="_blank">
               <span class="material-symbols-outlined">description</span>
             </a>
             <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>

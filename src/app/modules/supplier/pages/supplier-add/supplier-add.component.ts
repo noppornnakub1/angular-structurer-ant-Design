@@ -750,46 +750,46 @@ export class SupplierAddComponent {
   }
 
   loadSupplierBank(id: number): void {
-    this.supplierService.findSupplierBankBySupplierId(id).subscribe((data: any[]) => {
+    this.supplierService.findSupplierBankBySupplierIdV2(id).subscribe((data: any) => {
       this._cdr.detectChanges();
-      if (data.length > 0) {
-        if (!this.listOfGroup.some(group => group.group_name === data[0].supplierGroup)) {
-          this.listOfGroup.push({ group_name: data[0].supplierGroup });
+  
+      // Handle the supplier bank information
+      if (data.supplierBank.length > 0) {
+        const bankData = data.supplierBank[0];
+        
+        // Check if supplier group exists in the list
+        if (!this.listOfGroup.some(group => group.group_name === bankData.supplierGroup)) {
+          this.listOfGroup.push({ group_name: bankData.supplierGroup });
         }
+  
         this.supplierBankForm.patchValue({
-          supbankId: data[0].supbankId,
-          supplierId: data[0].supplierId,
-          nameBank: data[0].nameBank,
-          branch: data[0].branch,
-          accountNum: data[0].accountNum,
-          supplierGroup: data[0].supplierGroup,
-          accountName: data[0].accountName,
-          company: data[0].company
+          supbankId: bankData.SupbankId,
+          supplierId: bankData.SupplierId,
+          nameBank: bankData.NameBank,
+          branch: bankData.Branch,
+          accountNum: bankData.AccountNum,
+          supplierGroup: bankData.SupplierGroup,
+          accountName: bankData.AccountName,
+          company: bankData.Company
         });
-        this.showSupplierBankForm = true
+  
+        this.showSupplierBankForm = true;
       }
-      if (data.length > 1) {
-        if (!this.listOfGroup.some(group => group.group_name === data[1].supplierGroup)) {
-          this.listOfGroup.push({ group_name: data[1].supplierGroup });
-        }
-        this.supplierBankFormAdd.patchValue({
-          supbankId: data[1].supbankId,
-          supplierId: data[1].supplierId,
-          nameBank: data[1].nameBank,
-          branch: data[1].branch,
-          accountNum: data[1].accountNum,
-          supplierGroup: data[1].supplierGroup,
-          accountName: data[1].accountName,
-          company: data[1].company
-        });
-        this.selectedSupplierGroupAdd = data[1].supplierGroup;
-        this.showSupplierBankForm = true
-        this.showSupplierBankFormAdd = true;
+  
+      if (data.supplierBankFiles && data.supplierBankFiles.length > 0) {
+        this.filesBank = data.supplierBankFiles.map((file: any) => ({
+          fileName: file.FileName,
+          fileType: file.FileType,
+          filePath: file.FilePath,
+          labelText: file.LabelText
+        }));
       }
+  
       console.log(this.supplierBankForm.value);
-
+      console.log('Files for bank:', this.filesBank);
     });
   }
+  
 
   loadSupplierType(id: number): void {
     this.supplierService.findSupplierTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {

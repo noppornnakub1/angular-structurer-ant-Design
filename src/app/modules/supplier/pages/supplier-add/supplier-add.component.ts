@@ -154,6 +154,8 @@ export class SupplierAddComponent {
   selectedFiles: SelectedFile[] = [];
   selectedFilesAdd: SelectedFile[] = [];
   fileIdsToRemove: number[] = [];
+  fileIdsToRemoveBank: number[] = [];
+  fileIdsToRemoveBankAdd: number[] = [];
   private _cdr = inject(ChangeDetectorRef);
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService)
@@ -436,6 +438,7 @@ export class SupplierAddComponent {
         if ('fileId' in fileToUpdate) {
           const fileId = (fileToUpdate as any).fileId;
           if (fileId) {
+            this.fileIdsToRemoveBank.push(fileId)
             console.log('File ID:', fileId);
           }
         }
@@ -1341,7 +1344,8 @@ export class SupplierAddComponent {
     formData.append('Company', bankFormValue.company);
 
     const labelTexts: string[] = [];
-    const filesToRemove: number[] = this.fileIdsToRemove;
+    const filesToRemoveBank: number[] = this.fileIdsToRemoveBank
+    // const filesToRemove: number[] = this.fileIdsToRemove;
 
     console.log('Files to upload (selectedNewFilesSupplier):', this.selectedNewFilesSupplier);
 
@@ -1351,16 +1355,16 @@ export class SupplierAddComponent {
       console.log('Adding file to FormData:', selectedFile.file.name, 'with label:', selectedFile.labelText);
     }
 
-    const removedFileIdsString = filesToRemove.join(', ');
+    const removedFileIdsString = filesToRemoveBank.join(', ');
     console.log('Removed file IDs:', removedFileIdsString);
 
-    for (let fileId of filesToRemove) {
+    for (let fileId of filesToRemoveBank) {
       console.log('Adding fileId to remove:', fileId);
       formData.append('FileIdsToRemove', fileId.toString());
     }
 
     formData.append('LabelTextsJson', JSON.stringify(labelTexts));
-    formData.append('FileIdsString', JSON.stringify(filesToRemove));
+    formData.append('FileIdsString', JSON.stringify(filesToRemoveBank));
 
     formData.forEach((value, key) => {
       if (value instanceof File) {

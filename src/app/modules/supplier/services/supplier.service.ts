@@ -38,10 +38,10 @@ export class SupplierService {
   }
 
   updateDataWithFiles(id: number, formData: FormData): Observable<any> {
-    console.log("Sending FormData to API with ID:", id);
-    formData.forEach((value, key) => {
-      console.log(`${key}:`, value);
-    });
+    // console.log("Sending FormData to API with ID:", id);
+    // formData.forEach((value, key) => {
+    //   console.log(`${key}:`, value);
+    // });
 
     return this._http.put(`/Supplier/UpdateSupplierWithFiles?id=${id}`, formData);
   }

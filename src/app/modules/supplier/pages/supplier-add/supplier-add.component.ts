@@ -427,22 +427,24 @@ export class SupplierAddComponent {
       const selectedFile = input.files[0];
       const fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText);
 
-      console.log('fileType:', fileType, 'labelText:', labelText);
-      console.log('Selected File:', selectedFile);
-      console.log('Current filesBank:', this.filesBank);
-
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
 
         this.selectedFilesSupplier = this.selectedFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
 
+        if ('fileId' in fileToUpdate) {
+          const fileId = (fileToUpdate as any).fileId;
+          if (fileId) {
+            console.log('File ID:', fileId);
+          }
+        }
+
         const newFile = {
           file: selectedFile,
           fileType: fileType,
           labelText: labelText
         };
-
         this.selectedNewFilesSupplier.push(newFile);
 
         console.log('Updated selectedNewFilesSupplier:', this.selectedNewFilesSupplier);
@@ -840,7 +842,7 @@ export class SupplierAddComponent {
         }));
         console.log('Mapped filesBank:', this.filesBank);
       }
-      
+
       console.log(this.supplierBankForm.value);
       console.log('Files for bank:', this.filesBank);
     });
@@ -1339,8 +1341,7 @@ export class SupplierAddComponent {
     formData.append('Company', bankFormValue.company);
 
     const labelTexts: string[] = [];
-    const filesToRemove: number[] = [];
-    let removedFileIdsString = '';
+    const filesToRemove: number[] = this.fileIdsToRemove;
 
     console.log('Files to upload (selectedNewFilesSupplier):', this.selectedNewFilesSupplier);
 
@@ -1350,7 +1351,7 @@ export class SupplierAddComponent {
       console.log('Adding file to FormData:', selectedFile.file.name, 'with label:', selectedFile.labelText);
     }
 
-    removedFileIdsString = filesToRemove.join(', ');
+    const removedFileIdsString = filesToRemove.join(', ');
     console.log('Removed file IDs:', removedFileIdsString);
 
     for (let fileId of filesToRemove) {

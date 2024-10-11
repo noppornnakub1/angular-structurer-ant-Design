@@ -256,7 +256,7 @@
     (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
     isAdmin
   ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)
-  &&(supplierForm.get('payment_method')?.value === 'Transfer' || supplierForm.get('payment_method')?.value === 'Transfer_Employee')"
+  &&(supplierForm.get('paymentMethod')?.value === 'Transfer' || supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')"
         class="mr-2" nz-button nzType="primary" (click)="approve($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
@@ -269,7 +269,7 @@
         isAdmin
       ) && 
       !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value) 
-      &&(supplierForm.get('payment_method')?.value === 'Transfer' || supplierForm.get('payment_method')?.value === 'Transfer_Employee')"
+      &&(supplierForm.get('paymentMethod')?.value === 'Transfer' || supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')"
         nz-button nzType="primary" nzDanger (click)="reject($event)">
         <span nz-icon nzType="close" nzTheme="outline"></span>Reject
       </button>
@@ -363,9 +363,10 @@
               </nz-space>
             </div>
             <div *ngIf="!file.filePath || file.filePath === ''">
-              <input class="upload-button" type="file" (change)="onFileSelectNew($event, file.fileType, file.labelText)" />
+              <input class="upload-button" type="file"
+                (change)="onFileSelectNew($event, file.fileType, file.labelText)" />
             </div>
-          </td>          
+          </td>
           <td class="text-center">
             <a *ngIf="file.filePath && file.filePath !== ''" [href]="getAdjustedFilePath(file.filePath)"
               target="_blank">
@@ -487,7 +488,7 @@
     (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
     isAdmin
   ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)
-  &&(supplierForm.get('payment_method')?.value === 'Transfer' || supplierForm.get('payment_method')?.value === 'Transfer_Employee')"
+  &&(supplierForm.get('paymentMethod')?.value === 'Transfer' || supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')"
         class="mr-2" nz-button nzType="primary" (click)="approve($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
@@ -499,7 +500,7 @@
     (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
     isAdmin
   ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)
-  &&(supplierForm.get('payment_method')?.value === 'Transfer' || supplierForm.get('payment_method')?.value === 'Transfer_Employee')"
+  &&(supplierForm.get('paymentMethod')?.value === 'Transfer' || supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')"
         nz-button nzType="primary" nzDanger (click)="reject($event)">
         <span nz-icon nzType="close" nzTheme="outline"></span>Reject
       </button>

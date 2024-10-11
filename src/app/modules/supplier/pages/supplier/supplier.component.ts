@@ -144,10 +144,10 @@ export class SupplierComponent implements OnInit {
 
   changeStatusIfNeeded(): void {
     this.listOfData = this.listOfData.map(item => {
-      if (item.status === 'Approved By ACC' && (item.payment_method === 'Transfer' || item.payment_method === 'Transfer_Employee')) {
+      if (item.status === 'Approved By ACC' && (item.paymentMethod === 'Transfer' || item.paymentMethod === 'Transfer_Employee')) {
         return { ...item, status: 'Pending Approved By FN' };
       }
-      else if(item.status === 'Approved By ACC' && item.payment_method !== 'Transfer' && item.payment_method !== 'Transfer_Employee'){
+      else if(item.status === 'Approved By ACC' && item.paymentMethod !== 'Transfer' && item.paymentMethod !== 'Transfer_Employee'){
         return { ...item, status: 'Pending Sync.' };
       }
       if (item.status === 'Approved By FN') {

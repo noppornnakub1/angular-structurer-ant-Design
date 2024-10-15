@@ -1188,8 +1188,13 @@ export class SupplierAddComponent {
 
   onUpdateSupplierBank(): void {
     const bankId = this.supplierBankForm.get('supbankId')?.value;
-
+    console.log('1191',this.supplierBankForm.value);
+    console.log('1192',this.suppilerId,this.supplierForm.value.company);
+    this.supplierBankForm.patchValue({ supplierId: this.suppilerId, company: this.supplierForm.value.company });
+    
     if (this.supplierBankForm.valid && this.suppilerId) {
+      console.log('if');
+      console.log('1191',this.supplierBankForm.value);
       const formData = this.prepareBankFormData(this.supplierBankForm.value);
       const bankId = this.supplierBankForm.get('supbankId')?.value;
 

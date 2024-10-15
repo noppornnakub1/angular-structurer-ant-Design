@@ -452,7 +452,7 @@
               <a [href]="file.filePath" target="_blank">ดาวน์โหลด</a>
             </ng-container>
             <ng-template #fileInput>
-              <input class="choose" type="file" (change)="onFileSelect($event, file.fileType, file.fileName)" />
+              <input class="choose" type="file" (change)="onFileSelectNew($event, file.fileType, file.labelText)" />
               <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
             </ng-template>
           </td>

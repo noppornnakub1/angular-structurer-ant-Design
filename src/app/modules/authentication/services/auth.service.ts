@@ -38,7 +38,7 @@ export class AuthService {
     return this.http.post<IUser>('/Login/signIn', loginRequest).pipe(
       map(response => {
         
-         if (response && response.status == 1) { // ตรวจสอบค่า status เป็น true
+         if (response && response.status == 1) {
         this.setUser(response);
         return response;
       }
@@ -47,7 +47,6 @@ export class AuthService {
       catchError(this.handleError<IUser>('login', undefined))
     );
   }
-
 
   getRole(id: number): Observable<IRole | null> {
     return this.http.get<IRole>(`/User/findby/${id}`).pipe(
@@ -63,12 +62,10 @@ export class AuthService {
   }
 
   private setRole(user: IRole): void {
-    // Your logic to set user, e.g., saving to localStorage
     localStorage.setItem('currentRole', JSON.stringify(user));
     this.currentRoleubject.next(user);
   }
   private setUser(user: IUser): void {
-    // Your logic to set user, e.g., saving to localStorage
     localStorage.setItem('currentUser', JSON.stringify(user));
     this.currentUserSubject.next(user);
   }

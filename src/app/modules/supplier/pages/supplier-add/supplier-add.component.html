@@ -257,7 +257,7 @@
     isAdmin
   ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)
   &&(supplierForm.get('paymentMethod')?.value === 'Transfer' || supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')"
-        class="mr-2" nz-button nzType="primary" (click)="approve($event)">
+        class="mr-2" nz-button nzType="primary" (click)="checkApprove($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
 
@@ -489,7 +489,7 @@
     isAdmin
   ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)
   &&(supplierForm.get('paymentMethod')?.value === 'Transfer' || supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')"
-        class="mr-2" nz-button nzType="primary" (click)="approve($event)">
+        class="mr-2" nz-button nzType="primary" (click)="checkApprove($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
 

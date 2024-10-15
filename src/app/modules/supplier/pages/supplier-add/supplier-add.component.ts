@@ -1687,8 +1687,8 @@ export class SupplierAddComponent {
     if (value === 'One Time') {
       this.isOneTime = true;
       this.supplierForm.patchValue({
-        supplierNum: '-',
-        site: '-',
+        supplierNum: '',
+        site: '00000',
         supplierType: '-'
       });
     } else {

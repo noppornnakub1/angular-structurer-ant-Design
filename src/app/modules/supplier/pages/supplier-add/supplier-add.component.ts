@@ -1763,10 +1763,10 @@ export class SupplierAddComponent {
     return new Promise((resolve, reject) => {
       this.supplierService.GetNumMaxSupplier(this.typeCode).subscribe({
         next: (response: any) => {
-          if (!response || response.length === 0 || response[0]["MAX(NUM)"] === null) {
+          if (!response || response.length === 0 || response.num === null) {
             this.supplierForm.patchValue({ supplierNum: '' });
           } else {
-            const max = response[0]["MAX(NUM)"];
+            const max = response.num;
             const maxStr = String(max);
             const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
             const prefix = matchResult ? matchResult[1] : '';
@@ -1775,6 +1775,8 @@ export class SupplierAddComponent {
             const newCustomerNum = `${prefix}${nextNum}`;
             this.newSupnum = newCustomerNum;
             this.supplierForm.patchValue({ supplierNum: newCustomerNum });
+            console.log(this.supplierForm.value);
+            
           }
           this._cdr.markForCheck();
           resolve();

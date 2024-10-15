@@ -132,7 +132,7 @@ export class CustomerService {
     return this._http.get(`/BankMasterData/CHECK_KEY_CUSTOMER?key=${key}`);
   }
   GetNumMaxCustomer(num: string): Observable<any> {
-    return this._http.get(`/BankMasterData/Get_Num_KEY_CUSTOMER?num=${num}`);
+    return this._http.get(`/TempNumKey/findbyKey/${num}`);
   }
 
   FindDataHistoryByApprover(id?: number, company?: string, status?: string): Observable<CustomerSupplier> {

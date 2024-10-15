@@ -787,11 +787,11 @@ export class CustomerAddComponent implements OnInit {
               next: (response: any) => {
                 console.log("Response from GetNumMaxCustomer:", response);
 
-                if (!response || response.length === 0 || response[0]["MAX(NUM)"] === null) {
+                if (!response || response.length === 0 || response.num === null) {
                   this.customerForm.patchValue({ customerNum: '' });
                   console.log("No customers found, setting customer_num to empty.");
                 } else {
-                  const max = response[0]["MAX(NUM)"];
+                  const max = response.num;
                   const maxStr = String(max);
                   console.log("Max Customer Num String:", maxStr);
                   const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);

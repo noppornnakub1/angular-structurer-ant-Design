@@ -101,7 +101,6 @@ interface SelectedFile {
   styleUrl: './supplier-add.component.scss'
 })
 
-
 export class SupplierAddComponent {
   currentUser!: IRole | null;
   listOfType: IsupplierType[] = [];
@@ -295,8 +294,6 @@ export class SupplierAddComponent {
 
     this.supplierForm.get('name')?.valueChanges.subscribe((value: string) => {
       this.supplierBankForm.patchValue({ accountName: this.supplierForm.value.name });
-      console.log(this.supplierBankForm.value.accountName);
-
       this.supplierBankFormAdd.patchValue({ accountName: this.supplierForm.value.name });
       this._cdr.detectChanges();
     });
@@ -376,8 +373,6 @@ export class SupplierAddComponent {
     });
 
     this.supplierBankForm.get('supplierGroup')?.valueChanges.subscribe((selectedGroup: string) => {
-      console.log("376", selectedGroup);
-
       if (selectedGroup === 'ALL Group') {
         this.showSupplierBankFormAdd = false;
       }
@@ -385,7 +380,6 @@ export class SupplierAddComponent {
     });
     this.checkRole();
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
-    console.log('displayFiles:', this.displayFiles);
   }
 
   onFileSelectSupplier(event: Event, fileType: string, labelText: string): void {
@@ -405,7 +399,6 @@ export class SupplierAddComponent {
           const fileIdToRemove = (fileToUpdate as any).fileId;
           if (fileIdToRemove) {
             this.fileIdsToRemove.push(fileIdToRemove);
-            console.log('Added fileId to remove:', fileIdToRemove);
           }
         }
 
@@ -419,43 +412,41 @@ export class SupplierAddComponent {
         this._cdr.detectChanges();
       }
     }
-    console.log('Selected files for supplier:', this.selectedFilesSupplier);
-    console.log('fileIdsToRemove:', this.fileIdsToRemove);
   }
 
   onFileSelectNew(event: Event, fileType: string, labelText: string): void {
     const input = event.target as HTMLInputElement;
+    
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
-      const fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText);
-
+  
+      const fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText) 
+                        || this.filesBankAdd.find(file => file.fileType === fileType && file.labelText === labelText);
+  
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
-
+  
         this.selectedFilesSupplier = this.selectedFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
-
+  
         if ('fileId' in fileToUpdate) {
           const fileId = (fileToUpdate as any).fileId;
           if (fileId) {
-            this.fileIdsToRemoveBank.push(fileId)
-            console.log('File ID:', fileId);
+            this.fileIdsToRemoveBank.push(fileId);
           }
         }
-
+  
         const newFile = {
           file: selectedFile,
           fileType: fileType,
           labelText: labelText
         };
+  
         this.selectedNewFilesSupplier.push(newFile);
-
-        console.log('Updated selectedNewFilesSupplier:', this.selectedNewFilesSupplier);
-
         this._cdr.detectChanges();
       }
     }
-  }
+  }  
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
     const input = event.target as HTMLInputElement;
@@ -479,10 +470,8 @@ export class SupplierAddComponent {
           labelText
         });
       }
-      console.log(`Files selected for ${fileType}:`, this.selectedFilesAdd);
     }
   }
-
 
   onNameBlur(): void {
     const nameControl = this.supplierForm.get('name');
@@ -492,15 +481,13 @@ export class SupplierAddComponent {
       return;
     }
 
-    // ลบ prefix และ suffix ที่ไม่จำเป็นออกก่อน
     nameValue = nameValue.replace(/^บริษัท /, '')
-      .replace(/\s?จำกัด\s?\(มหาชน\)/g, '') // ลบ "จำกัด (มหาชน)" ทั่วทั้งข้อความ
-      .replace(/\s?จำกัด/g, '')              // ลบ "จำกัด" ทั่วทั้งข้อความ
+      .replace(/\s?จำกัด\s?\(มหาชน\)/g, '')
+      .replace(/\s?จำกัด/g, '') 
       .replace(/^คุณ /, '')
       .replace(/^ห้างหุ้นส่วนสามัญ/, '')
       .replace(/^ห้างหุ้นส่วนจำกัด/, '');
 
-    // ตรวจสอบและเพิ่ม prefix/suffix ตาม selectedPrefix
     if (this.selectedPrefix === 'บริษัทจำกัด') {
       nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด`);
     } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
@@ -641,8 +628,6 @@ export class SupplierAddComponent {
   validateAccountNum(event: any): void {
     const input = event.target.value;
     const numericValue = input.replace(/\D/g, '');
-
-    // อัปเดตค่าใน form control
     this.supplierBankForm.patchValue({ accountNum: numericValue });
     event.target.value = numericValue;
   }
@@ -651,7 +636,6 @@ export class SupplierAddComponent {
     const input = event.target.value;
     const numericValue = input.replace(/\D/g, '');
 
-    // อัปเดตค่าใน form control
     this.supplierBankFormAdd.patchValue({ accounNnum: numericValue });
     event.target.value = numericValue;
   }
@@ -664,7 +648,6 @@ export class SupplierAddComponent {
     }
     this.getGruopName(currentUser.company);
     this.showSupplierBankForm = this.paymentMethods.includes(value);
-    console.log("310", this.showSupplierBankForm);
 
     if (this.showSupplierBankForm) {
       this.supplierBankForm.patchValue({ accountName: this.supplierForm.value.name });
@@ -725,7 +708,6 @@ export class SupplierAddComponent {
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
-      console.log(this.currentUser);
 
       if (user) {
         this.isAdmin = user.action.includes('admin');
@@ -745,21 +727,17 @@ export class SupplierAddComponent {
   getAdjustedFilePath(filePath: string): string {
     let adjustedFilePath = filePath;
 
-    // ตรวจสอบว่าอยู่บน localhost หรือไม่
     const isLocalhost = window.location.hostname.includes('localhost');
 
-    // URL พื้นฐานสำหรับ Production
     const baseURL = 'http://10.10.0.28:8088';
 
     if (isLocalhost) {
-      // สำหรับ localhost
       if (!filePath.includes('localhost')) {
         adjustedFilePath = `https://localhost:7126/${filePath}`;
       } else {
         adjustedFilePath = filePath.replace('localhost:2222', 'localhost:7126');
       }
     } else {
-      // สำหรับ Server (Production)
       adjustedFilePath = `${baseURL}/${filePath}`;
     }
 
@@ -767,21 +745,14 @@ export class SupplierAddComponent {
   }
 
   loadSupplierData(id: number): void {
-    console.log('Loading supplier data for ID:', id);
-
     this.supplierService.findSupplierByIdV2(id).subscribe((data: any) => {
-      console.log('Supplier data received:', data);
-
       const postalCode = data?.postalCode || '';
       const subdistrict = data?.subdistrict || '';
       const postalCodeCombination = postalCode && subdistrict ? postalCode + '-' + subdistrict : postalCode;
-      console.log('Postal code combination:', postalCodeCombination);
-
       this.supplierForm.patchValue({
         ...data,
         postalCode: postalCodeCombination
       });
-      console.log('Supplier form patched with data:', this.supplierForm.value);
 
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({
@@ -791,17 +762,14 @@ export class SupplierAddComponent {
           filePath: file.filePath,
           labelText: file.labelText || ''
         }));
-        console.log('Supplier files:', this.filess);
       } else {
         this.filess = [
           { fileName: 'ใบขอเปิด Supplier', fileType: 'fileReq', filePath: this.supplierForm.value.fileReq || '', labelText: 'ใบขอเปิด Supplier' },
           { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.supplierForm.value.fileCertificate || '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' }
         ];
-        console.log('Default files set:', this.filess);
       }
 
       this.displayFiles = this.filess;
-      console.log('Display files:', this.displayFiles);
 
       this.loadSupplierBank(id);
       this.getEventLogs(id);
@@ -843,11 +811,7 @@ export class SupplierAddComponent {
           filePath: file.FilePath,
           labelText: file.LabelText
         }));
-        console.log('Mapped filesBank:', this.filesBank);
       }
-
-      console.log(this.supplierBankForm.value);
-      console.log('Files for bank:', this.filesBank);
     });
   }
 
@@ -1005,11 +969,6 @@ export class SupplierAddComponent {
     return true;
   }
   
-  private handleError(message: string, error: any): void {
-    console.error(message, error);
-    Swal.fire('Error!', 'There was an error saving your data.', 'error');
-  }
-  
   private handleInvalidForm(): void {
     this.supplierForm.markAllAsTouched();
     if (this.emailError !== '') {
@@ -1028,19 +987,14 @@ export class SupplierAddComponent {
     if (formValue && this.suppilerId) {
       const formData = this.prepareFormData();
 
-      console.log('FormData prepared for update:');
       formData.forEach((value: any, key: string) => {
         if (value instanceof File) {
-          console.log(`Key: ${key}, File: ${value.name}, Type: ${value.type}`);
         } else {
-          console.log(`Key: ${key}, Value: ${value}`);
         }
       });
 
       this.supplierService.updateDataWithFiles(this.suppilerId, formData).subscribe({
         next: (response) => {
-          console.log('Response after update:', response);
-
           if (this.showSupplierBankForm === false) {
             this.insertLog();
             Swal.fire({
@@ -1143,14 +1097,11 @@ export class SupplierAddComponent {
     this.supplierService.getSupplierType().subscribe({
       next: (response: any) => {
         this.listOfType = response;
-        console.log(this.listOfType);
-
         if (this.isAdmin || this.isApproved) {
           this.filteredDataType = this.listOfType;
         } else {
           this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));
         }
-        console.log("758", this.filteredDataType);
         this._cdr.markForCheck();
       },
       error: () => {
@@ -1202,6 +1153,9 @@ export class SupplierAddComponent {
       }
       formData.append('LabelTextsJson', JSON.stringify(labelTexts));
   
+      formData.forEach((value, key) => {
+      });
+  
       await this.supplierService.addBankDataWithFiles(formData).toPromise();
     }
   
@@ -1225,6 +1179,9 @@ export class SupplierAddComponent {
       }
       formDataAdd.append('LabelTextsJson', JSON.stringify(labelTextsAdd));
   
+      formDataAdd.forEach((value, key) => {
+      });
+  
       await this.supplierService.addBankDataWithFiles(formDataAdd).toPromise();
     }
   }  
@@ -1236,13 +1193,8 @@ export class SupplierAddComponent {
       const formData = this.prepareBankFormData(this.supplierBankForm.value);
       const bankId = this.supplierBankForm.get('supbankId')?.value;
 
-      console.log('Bank ID:', bankId);
-      console.log('Form Data:', formData);
-
       this.supplierService.updateBankDataWithFiles(bankId, formData).subscribe({
         next: (response) => {
-          console.log('Response from update:', response);
-
           this.router.navigate(['/feature/supplier']);
           Swal.fire({
             icon: 'success',
@@ -1288,8 +1240,6 @@ export class SupplierAddComponent {
 
   prepareBankFormData(bankFormValue: any): FormData {
     const formData = new FormData();
-    console.log('Preparing FormData with the following bankFormValue:', bankFormValue);
-
     formData.append('SupbankId', bankFormValue.supbankId);
     formData.append('SupplierId', bankFormValue.supplierId);
     formData.append('NameBank', bankFormValue.nameBank);
@@ -1301,21 +1251,15 @@ export class SupplierAddComponent {
 
     const labelTexts: string[] = [];
     const filesToRemoveBank: number[] = this.fileIdsToRemoveBank
-    // const filesToRemove: number[] = this.fileIdsToRemove;
-
-    console.log('Files to upload (selectedNewFilesSupplier):', this.selectedNewFilesSupplier);
 
     for (let selectedFile of this.selectedNewFilesSupplier) {
       formData.append('Files', selectedFile.file, selectedFile.file.name);
       labelTexts.push(selectedFile.labelText);
-      console.log('Adding file to FormData:', selectedFile.file.name, 'with label:', selectedFile.labelText);
     }
 
     const removedFileIdsString = filesToRemoveBank.join(', ');
-    console.log('Removed file IDs:', removedFileIdsString);
 
     for (let fileId of filesToRemoveBank) {
-      console.log('Adding fileId to remove:', fileId);
       formData.append('FileIdsToRemove', fileId.toString());
     }
 
@@ -1324,13 +1268,9 @@ export class SupplierAddComponent {
 
     formData.forEach((value, key) => {
       if (value instanceof File) {
-        console.log(`FormData field - Key: ${key}, FileName: ${value.name}`);
       } else {
-        console.log(`FormData field - Key: ${key}, Value: ${value}`);
       }
     });
-
-    console.log('FormData prepared:', formData);
     return formData;
   }
 
@@ -1341,8 +1281,6 @@ export class SupplierAddComponent {
       console.error('Current user is not available in local storage');
       return;
     }
-    console.log(this.showSupplierBankForm);
-    console.log("744", this.supplierForm.valid, this.supplierBankForm.valid);
 
     if (this.showSupplierBankForm = true) {
       if (this.supplierForm.valid) {
@@ -1352,10 +1290,10 @@ export class SupplierAddComponent {
           username: currentUser.username || 'string',
           email: currentUser.email || 'string',
           status: this.supplierForm.get('status')?.value || 'Draft',
-          customerId: 0, // ถ้ามีค่า customer_id สามารถใส่ได้
-          supplierId: this.isIDTemp || 0, // อ้างอิง id จาก supplierForm
+          customerId: 0,
+          supplierId: this.isIDTemp || 0,
           time: new Date().toISOString(),
-          rejectReason: this.reasonTemp // หรือใส่เวลาที่คุณต้องการ
+          rejectReason: this.reasonTemp
         };
         this.supplierService.insertLog(log).subscribe({
           next: (response) => {
@@ -1378,14 +1316,12 @@ export class SupplierAddComponent {
           username: currentUser.username || 'string',
           email: currentUser.email || 'string',
           status: this.supplierForm.get('status')?.value || 'Draft',
-          customerId: 0, // ถ้ามีค่า customer_id สามารถใส่ได้
-          supplierId: this.supplierBankForm.get('supplier_id')?.value || 0, // อ้างอิง id จาก supplierForm
-          time: new Date().toISOString() // หรือใส่เวลาที่คุณต้องการ
+          customerId: 0,
+          supplierId: this.supplierBankForm.get('supplier_id')?.value || 0,
+          time: new Date().toISOString()
         };
         this.supplierService.insertLog(log).subscribe({
           next: (response) => {
-            console.log("Save Event Log สำเร็จ", response);
-
           },
           error: (err) => {
             console.error('Error adding log data', err);
@@ -1395,7 +1331,6 @@ export class SupplierAddComponent {
         console.error('Supplier form or supplier bank form is not valid');
       }
     }
-
   }
 
   getTaxIdData(): void {
@@ -1427,8 +1362,6 @@ export class SupplierAddComponent {
     this.supplierService.getDataPaymentMethod().subscribe({
       next: (response: any) => {
         this.listOfPaymentMethod = response;
-        console.log(this.listOfPaymentMethod);
-
         if (this.isAdmin || this.isApproved) {
           this.filteredDataPaymentMethod = this.listOfPaymentMethod;
         } else {
@@ -1481,8 +1414,6 @@ export class SupplierAddComponent {
         if (CheckcurrentUser.company === 'ALL') {
           this.listOfCompany = response;
           this.filteredDataompany = response;
-          console.log(response);
-
         } else {
           this.listOfCompany = response.filter((company: DataCompany) => userCompanies.includes(company.abbreviation));
           this.filteredDataompany = this.listOfCompany;
@@ -1512,11 +1443,8 @@ export class SupplierAddComponent {
   }
 
   async checkSave(event: Event) {
-    console.log(this.nameInput)
-    console.log(this.supplierForm.value.name);
     this.validateEmail()
     if (this.emailError != '') {
-      console.log(this.emailError);
       Swal.fire({
         icon: 'error',
         title: 'Email ไม่ถูกต้อง',
@@ -1527,9 +1455,6 @@ export class SupplierAddComponent {
     }
     else {
       try {
-        // this.supplierForm.value.supplierNum = '-'
-        // await this.CheckDupplicateData();
-
         await this.save(event);
       } catch (error) {
         console.error('Error occurred:', error);
@@ -1555,10 +1480,7 @@ export class SupplierAddComponent {
   }
 
   async save(event: Event): Promise<void> {
-    console.log(this.suppilerId);
-
     event.preventDefault();
-    // รอให้ Swal ทำงานและรับค่าตอบสนองจากผู้ใช้
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to save the changes?",
@@ -1568,15 +1490,12 @@ export class SupplierAddComponent {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, save it!'
     });
-
-    // ตรวจสอบการตอบสนองจาก Swal
     if (result.isConfirmed) {
       if (this.suppilerId == null) {
         this.setStatusAndSubmit('Draft');
       } else {
         if (this.isApproved) {
           this.setStatusAndSubmit('Pending Approved By ACC');
-          console.log("เข้า approve");
         } else {
           this.setStatusAndSubmit('Draft');
         }
@@ -1682,15 +1601,12 @@ export class SupplierAddComponent {
     });
   }
 
-
   async setStatusAndSubmit(status: string): Promise<void> {
     this.supplierForm.patchValue({ status });
     if (this.suppilerId == null) {
       this.supplierForm.patchValue({ supplierNum: this.newSupnum });
       this.supplierForm.patchValue({ userId: this.currentUser?.id });
     }
-    console.log("1170", this.supplierForm.value);
-
     await this.onSubmit();
   }
 
@@ -1776,13 +1692,9 @@ export class SupplierAddComponent {
   }
 
   CheckDupplicateData(): Promise<void> {
-    this.isCheckingDuplicate = true; // เริ่มกระบวนการตรวจสอบข้อมูลซ้ำ
+    this.isCheckingDuplicate = true;
 
     return new Promise((resolve, reject) => {
-      console.log('Inside CheckDupplicateData');
-
-      // ตรวจสอบความถูกต้องของฟอร์มก่อนดำเนินการอื่น ๆ
-      // ตรวจสอบความถูกต้องของฟอร์ม (ยกเว้น supplierNum)
       if (!this.isFormValidWithoutSupplierNum()) {
         Swal.fire({
           icon: 'warning',
@@ -1791,20 +1703,17 @@ export class SupplierAddComponent {
           confirmButtonText: 'ปิด'
         });
         this.isCheckingDuplicate = false;
-        console.log("this.supplierForm.value", this.supplierForm.value);
         return reject('Form is not validxxx');
       }
 
       const foundItem = this.filteredDataType.find(item => item.code === this.supplierForm.value.supplierType);
       if (foundItem) {
         this.typeCode = foundItem.codeFrom;
-        console.log('codeFrom:', this.typeCode);
       }
 
       const tax = this.supplierForm.value.tax_Id.trim();
       const type = this.typeCode.trim();
       const key = `${tax}-${type}`;
-      console.log(key);
 
       this.supplierService.CheckDupplicateSupplier(key).subscribe({
         next: (response: any) => {
@@ -1816,7 +1725,7 @@ export class SupplierAddComponent {
               confirmButtonText: 'ปิด'
             });
             this.isCheckingDuplicate = false;
-            reject('Duplicate data found'); // เรียก reject
+            reject('Duplicate data found');
           } else {
             this.getNumMaxSupplier().then(() => {
               this.isCheckingDuplicate = false;
@@ -1845,7 +1754,6 @@ export class SupplierAddComponent {
     });
   }
 
-  // ฟังก์ชันใหม่เพื่อแยกการดึงข้อมูลหมายเลข
   getNumMaxSupplier(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.supplierService.GetNumMaxSupplier(this.typeCode).subscribe({
@@ -1862,79 +1770,68 @@ export class SupplierAddComponent {
             const newCustomerNum = `${prefix}${nextNum}`;
             this.newSupnum = newCustomerNum;
             this.supplierForm.patchValue({ supplierNum: newCustomerNum });
-            console.log("New Customer Num:", this.supplierForm.value);
           }
-
           this._cdr.markForCheck();
-          resolve(); // เรียก resolve เมื่อเสร็จสิ้น
+          resolve();
         },
         error: (err) => {
           console.error('Error while fetching max supplier number', err);
-          reject(err); // เรียก reject เมื่อเกิดข้อผิดพลาด
+          reject(err);
         }
       });
     });
   }
 
   isFormValidWithoutSupplierNum(): boolean {
-    // เก็บรายการของฟิลด์ที่ต้องการตรวจสอบ
     const requiredFields = [
       'name', 'tax_Id', 'addressSup', 'district', 'subdistrict',
       'province', 'postalCode', 'tel', 'email', 'supplierType',
       'site', 'paymentMethod', 'company', 'type', 'mobile'
     ];
 
-    // ตรวจสอบว่าฟิลด์ที่ระบุใน requiredFields ถูกกรอกครบถ้วนหรือไม่
     for (const field of requiredFields) {
       if (!this.supplierForm.get(field)?.value) {
-        return false; // พบฟิลด์ที่ไม่มีค่า
+        return false;
       }
     }
 
-    return true; // ฟอร์มครบถ้วน (ยกเว้น supplierNum)
+    return true;
   }
 
   updateFilteredSupplierGroups(selectedGroup: string): void {
-    // กรองรายการที่ไม่ใช่ selectedGroup และ 'ALL Group'
     this.filteredListOfGroup = this.listOfGroup.filter(group => {
       return group.group_name !== selectedGroup && group.group_name !== 'ALL Group';
     });
 
-    // รีเซ็ต supplierBankFormAdd เมื่อมีการเปลี่ยนแปลง
     this.supplierBankFormAdd.get('supplierGroup')?.setValue('');
   }
 
   isFormValidWithoutSupplierIdCompanyBank(): boolean {
-    // เก็บรายการของฟิลด์ที่ต้องการตรวจสอบ (ยกเว้น supplierId และ company)
     const requiredFields = [
       'accountName', 'accountNum', 'branch', 'nameBank',
     ];
 
     for (const field of requiredFields) {
       const value = this.supplierBankForm.get(field)?.value;
-      console.log(`Field ${field} value:`, value); // ตรวจสอบค่าของฟิลด์
       if (!value) {
-        return false; // พบฟิลด์ที่ไม่มีค่า
+        return false;
       }
     }
 
-    return true; // ฟอร์มครบถ้วน
+    return true;
   }
 
   isFormValidWithoutSupplierIdCompanyBankAdd(): boolean {
-    // เก็บรายการของฟิลด์ที่ต้องการตรวจสอบ
     const requiredFields = [
       'accountName', 'accountNum', 'branch', 'nameBank',
     ];
 
-    // ตรวจสอบว่าฟิลด์ที่ระบุใน requiredFields ถูกกรอกครบถ้วนหรือไม่
     for (const field of requiredFields) {
       if (!this.supplierBankFormAdd.get(field)?.value) {
-        return false; // พบฟิลด์ที่ไม่มีค่า
+        return false;
       }
     }
 
-    return true; // ฟอร์มครบถ้วน (ยกเว้น supplierNum)
+    return true;
   }
-
 }

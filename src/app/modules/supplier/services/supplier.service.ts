@@ -17,11 +17,6 @@ export class SupplierService {
   }
 
   addDataWithFiles(formData: FormData): Observable<any> {
-    console.log("FormData before sending to API:");
-    formData.forEach((value, key) => {
-      console.log(`${key}:`, value);
-    });
-
     return this._http.post(`/Supplier/AddSupplierWithFiles`, formData);
   }
 

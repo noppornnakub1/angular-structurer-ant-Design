@@ -164,10 +164,10 @@ export class DashboardComponent {
 
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
+      if (user && user.action) {
       this.currentUser = user;
       console.log("151",this.currentUser);
       
-      if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
@@ -176,7 +176,10 @@ export class DashboardComponent {
         console.log("this.isApproved",this.isApproved);
         console.log("this.isUser",this.isUser);
         console.log("this.isApprovedFN",this.isApprovedFN);
-      }
+    } else {
+      console.warn('User data is null or invalid');
+      // สามารถเพิ่มการจัดการกรณีที่ไม่มี user เช่น redirect ไปยังหน้า login หรือแสดงข้อความ
+    }
     });
   }
 

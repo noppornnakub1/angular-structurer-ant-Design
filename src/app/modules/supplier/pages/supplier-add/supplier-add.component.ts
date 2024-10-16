@@ -23,6 +23,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { ValidationService } from '../../../../shared/constants/ValidationService';
 
 export interface DataLocation {
   post_id: number,
@@ -199,7 +200,9 @@ export class SupplierAddComponent {
     private bankMasterService: BankMasterService,
     private emailService: EmailService,
     private modal: NzModalService,
-    private prefixService: prefixService
+    private prefixService: prefixService,
+    private validationService: ValidationService
+
   ) { }
 
   ngOnInit(): void {
@@ -552,58 +555,23 @@ export class SupplierAddComponent {
 
   validateTaxId(event: any): void {
     const input = event.target.value;
-    let numericValue = input.replace(/[^0-9-]/g, '');
-    const hyphenCount = (numericValue.match(/-/g) || []).length;
-
-    if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
-    }
-
-    this.supplierForm.patchValue({ tax_Id: numericValue });
+    const numericValue = this.validationService.validateTaxId(input);  // เรียกใช้ฟังก์ชันจาก service
+    this.supplierForm.patchValue({ taxId: numericValue });
     event.target.value = numericValue;
   }
 
   validateTel(event: any): void {
     const input = event.target.value;
-    let numericValue = input.replace(/[^0-9-]/g, '');
-    const hyphenCount = (numericValue.match(/-/g) || []).length;
-
-    if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
-    }
-
-    if (numericValue.replace(/-/g, '').length > 10) {
-      numericValue = numericValue.slice(0, 10) + (hyphenCount ? '-' : '');
-    }
-
+    const numericValue = this.validationService.validateTel(input);  // เรียกใช้ฟังก์ชันจาก service
     event.target.value = numericValue;
-
-    this.supplierForm.patchValue({ tel: event.target.value });
-  }
-
-  validateMobile(event: any): void {
-    const input = event.target.value;
-    let numericValue = input.replace(/[^0-9-]/g, '');
-    const hyphenCount = (numericValue.match(/-/g) || []).length;
-
-    if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
-    }
-
-    if (numericValue.replace(/-/g, '').length > 10) {
-      numericValue = numericValue.slice(0, 10) + (hyphenCount ? '-' : '');
-    }
-
-    event.target.value = numericValue;
-
-    this.supplierForm.patchValue({ mobile: event.target.value });
+    this.supplierForm.patchValue({ tel: numericValue });
   }
 
   validateSite(event: any): void {
     const input = event.target.value;
-    const numericValue = input.replace(/\D/g, '');
-    this.supplierForm.patchValue({ site: numericValue });
+    const numericValue = this.validationService.validateSite(input);  // เรียกใช้ฟังก์ชันจาก service
     event.target.value = numericValue;
+    this.supplierForm.patchValue({ site: numericValue });
   }
 
   validateBranch(event: any): void {
@@ -1083,6 +1051,7 @@ export class SupplierAddComponent {
               timer: 1500
             });
             this.sendEmailNotification();
+            this.sendEmailNotificationRequester();
           } else {
             this.onUpdateSupplierBank();
             this.insertLog();
@@ -1094,6 +1063,7 @@ export class SupplierAddComponent {
               timer: 1500
             });
             this.sendEmailNotification();
+            this.sendEmailNotificationRequester();
           }
 
           this.router.navigate(['/feature/supplier']);
@@ -1681,10 +1651,15 @@ export class SupplierAddComponent {
         (approvers) => {
           approvers.forEach((approver: any) => {
             const to = approver.email;
-            const subject = 'Approval Notification';
-            const body = `สถานะของ Supplier Number:${supplierNum} 
-            ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} 
-            รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป`;
+            const subject = 'OnePortal Notification';
+            const body = `
+            <p>สถานะของ Supplier Number:${supplierNum}</p>
+            <br>
+            <p>ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป</p>
+            <br>
+            <p>ขอแสดงความนับถือ</p>
+            <p>OnePortal</p>
+            <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
 
             this.emailService.sendEmail(to, subject, body).subscribe(
               (response) => {
@@ -1706,10 +1681,15 @@ export class SupplierAddComponent {
         (approvers) => {
           approvers.forEach((approver: any) => {
             const to = approver.email;
-            const subject = 'Approval Notification';
-            const body = `สถานะของ Supplier Number:${supplierNum} 
-            ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} 
-            รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป`;
+            const subject = 'OnePortal Notification';
+            const body = `
+            <p>สถานะของ Supplier Number:${supplierNum}</p>
+            <br>
+            <p>ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป</p>
+            <br>
+            <p>ขอแสดงความนับถือ</p>
+            <p>OnePortal</p>
+            <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
 
             this.emailService.sendEmail(to, subject, body).subscribe(
               (response) => {
@@ -1820,10 +1800,10 @@ export class SupplierAddComponent {
     return new Promise((resolve, reject) => {
       this.supplierService.GetNumMaxSupplier(this.typeCode).subscribe({
         next: (response: any) => {
-          if (!response || response.length === 0 || response[0]["MAX(NUM)"] === null) {
+          if (!response || response.length === 0 || response.num === null) {
             this.supplierForm.patchValue({ supplierNum: '' });
           } else {
-            const max = response[0]["MAX(NUM)"];
+            const max = response.num;
             const maxStr = String(max);
             const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
             const prefix = matchResult ? matchResult[1] : '';
@@ -1832,6 +1812,8 @@ export class SupplierAddComponent {
             const newCustomerNum = `${prefix}${nextNum}`;
             this.newSupnum = newCustomerNum;
             this.supplierForm.patchValue({ supplierNum: newCustomerNum });
+            console.log(this.supplierForm.value);
+            
           }
           this._cdr.markForCheck();
           resolve();
@@ -1895,5 +1877,28 @@ export class SupplierAddComponent {
     }
 
     return true;
+  }
+
+  sendEmailNotificationRequester(): void {
+    const supplierNum = this.supplierForm.get('supplierNum')?.value;
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const to = currentUser.email;
+    const subject = 'OnePortal Notification';
+    const body = `
+        <p>สถานะของ Customer Number:${supplierNum}</p>
+        <br>
+        <p>ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} สามารถเข้ามาตรวจสอบได้ในระบบ</p>
+        <br>
+        <p>ขอแสดงความนับถือ</p>
+        <p>OnePortal</p>
+        <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+
+    this.emailService.sendEmail(to, subject, body).subscribe(
+      (response) => {
+      },
+      (error) => {
+        console.error('Error sending email', error);
+      }
+    );
   }
 }

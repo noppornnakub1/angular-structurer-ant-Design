@@ -41,7 +41,7 @@
             info
           </span>
         </nz-form-label>
-        <nz-input-group nzPrefixIcon="global" class="form-input">
+        <nz-input-group nzPrefixIcon="home" class="form-input">
           <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)" />
         </nz-input-group>
       </div>
@@ -150,7 +150,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="phone" class="form-input">
-          <input nz-input type="text" placeholder="Telephone" maxlength="10" (input)="validateMobile($event)"
+          <input nz-input type="text" placeholder="Telephone" maxlength="10" (input)="validateTel($event)"
             formControlName="mobile" />
         </nz-input-group>
       </div>
@@ -257,7 +257,7 @@
     isAdmin
   ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)
   &&(supplierForm.get('paymentMethod')?.value === 'Transfer' || supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')"
-        class="mr-2" nz-button nzType="primary" (click)="approve($event)">
+        class="mr-2" nz-button nzType="primary" (click)="checkApprove($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
 
@@ -489,7 +489,7 @@
     isAdmin
   ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)
   &&(supplierForm.get('paymentMethod')?.value === 'Transfer' || supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')"
-        class="mr-2" nz-button nzType="primary" (click)="approve($event)">
+        class="mr-2" nz-button nzType="primary" (click)="checkApprove($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
 

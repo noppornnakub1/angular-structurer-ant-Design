@@ -81,7 +81,7 @@ export class DashboardComponent {
     },
     {
       title: 'Tax',
-      compare: (a: CustomerSupplier, b: CustomerSupplier) => a.tax_Id.localeCompare(b.tax_Id),
+      compare: (a: CustomerSupplier, b: CustomerSupplier) => a.taxId.localeCompare(b.taxId),
       priority: 2
     },
     {
@@ -297,7 +297,7 @@ export class DashboardComponent {
     this.filteredData = this.listOfData.filter(data =>
       (data.name?.includes(name) ?? true) &&
       (data.num?.includes(num) ?? true) &&
-      (data.tax_Id?.includes(tax_Id) ?? true) &&
+      (data.taxId?.includes(tax_Id) ?? true) &&
       (this.selectedType === 'All' || data.source === this.selectedType)
     );
     this.pageIndex = 1;

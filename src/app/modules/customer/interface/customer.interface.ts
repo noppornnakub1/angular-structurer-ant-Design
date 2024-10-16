@@ -24,7 +24,7 @@ export interface ICustomer {
   export interface CustomerSupplier {
     id: number;
     name: string;
-    tax_Id: string;
+    taxId: string;
     address_sup: string;
     district: string;
     subdistrict: string;

@@ -93,8 +93,8 @@
             <td>{{ data.paymentMethod }}</td>
             <td>{{ data.source }}</td>
             <td class="text-center">
-              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round" (click)="openModal(data)"><span
-                  nz-icon nzType="eye" nzTheme="outline"></span>View</button>
+              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
+                (click)="openModal(data)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
             </td>
           </tr>
         </tbody>
@@ -104,12 +104,8 @@
   <nz-tab nzTitle="Old Data">
     <div class="content-data-table">
       <nz-table #datatable nzBordered [nzData]="displayDataOld" [nzFrontPagination]="false"
-      [nzTotal]="filteredDataOld.length"
-      [nzPageIndex]="pageIndexOld"
-      [nzPageSize]="pageSizeOld"
-      (nzPageIndexChange)="onPageIndexChangeOld($event)"
-      (nzPageSizeChange)="onPageSizeChangeOld($event)"
-      >
+        [nzTotal]="filteredDataOld.length" [nzPageIndex]="pageIndexOld" [nzPageSize]="pageSizeOld"
+        (nzPageIndexChange)="onPageIndexChangeOld($event)" (nzPageSizeChange)="onPageSizeChangeOld($event)">
         <thead>
           <tr>
             <th *ngFor="let column of listOfColumnOld">
@@ -122,11 +118,13 @@
             <td style="text-align: center;">{{ (pageIndexOld - 1) * pageSizeOld + i + 1 }}</td>
             <td>{{ data.NAME }}</td>
             <td>{{ data.NUM }}</td>
-            <td>{{ data.TAX }}</td>
-            <td>{{ data.PAYMENT_MEDTHOD }}</td>
+            <td *ngIf="data.TAX">{{ data.TAX }}</td>
+            <td *ngIf="!data.TAX"></td>
+            <td *ngIf="data.PAYMENT_MEDTHOD">{{ data.PAYMENT_MEDTHOD }}</td>
+            <td *ngIf="!data.PAYMENT_MEDTHOD"></td>
             <td class="text-center">
-              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round" (click)="openModalold(data)"><span
-                  nz-icon nzType="eye" nzTheme="outline"></span>View</button>
+              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
+                (click)="openModalold(data)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
             </td>
           </tr>
         </tbody>

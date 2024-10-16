@@ -255,6 +255,7 @@ export class DashboardComponent {
       this.customerService.findDataOldCustomer(this.filtersOld.num, this.filtersOld.name, this.filtersOld.site).subscribe({
         next: (response: any) => {
           console.log(response);
+          this.listOfDataOld = response
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
           this.updateDisplayDataOld();

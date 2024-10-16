@@ -1015,16 +1015,6 @@ export class SupplierAddComponent {
 
       try {
         await this.supplierService.addBankDataWithFiles(formData).toPromise();
-
-        await Swal.fire({
-          icon: 'success',
-          title: 'Saved!',
-          text: 'Your data has been saved.',
-          showConfirmButton: false,
-          timer: 1500
-        });
-
-        this.router.navigate(['/feature/supplier']);
       } catch (error) {
         console.error('Error sending data to backend:', error);
         Swal.fire('Error!', 'There was an error saving your data.', 'error');

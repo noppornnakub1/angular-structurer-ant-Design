@@ -430,19 +430,16 @@ export class SupplierAddComponent {
         fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText);
       }
 
-      // เช็คว่ามีไฟล์ที่เลือกอยู่แล้วหรือไม่ ถ้ามีให้เคลียร์ออกก่อน
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
 
-        // ลบไฟล์เก่าออกจาก array ถ้ามีการเลือกไฟล์ใหม่
         if (isFromFilesBankAdd) {
           this.selectedFilesAdd = this.selectedFilesAdd.filter(file => file.fileType !== fileType || file.labelText !== labelText);
         } else {
-          this.selectedNewFilesSupplier = this.selectedNewFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
+          this.selectedFilesSupplier = this.selectedFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
         }
 
-        // ตรวจสอบว่า fileId มีอยู่และเพิ่มเข้าในรายการลบ
         if ('fileId' in fileToUpdate) {
           const fileId = (fileToUpdate as any).fileId;
           if (fileId) {
@@ -453,24 +450,23 @@ export class SupplierAddComponent {
             }
           }
         }
+
+        const newFile = {
+          file: selectedFile,
+          fileType: fileType,
+          labelText: labelText
+        };
+
+        if (isFromFilesBankAdd) {
+          this.selectedFilesAdd.push(newFile);
+        } else {
+          this.selectedNewFilesSupplier.push(newFile);
+          console.log(this.selectedNewFilesSupplier, "456");
+
+        }
+
+        this._cdr.detectChanges();
       }
-
-      // สร้างไฟล์ใหม่
-      const newFile = {
-        file: selectedFile,
-        fileType: fileType,
-        labelText: labelText
-      };
-
-      // เพิ่มไฟล์ใหม่เข้าไปใน array
-      if (isFromFilesBankAdd) {
-        this.selectedFilesAdd.push(newFile);
-      } else {
-        this.selectedNewFilesSupplier.push(newFile);
-        console.log(this.selectedNewFilesSupplier, "456");
-      }
-
-      this._cdr.detectChanges();
     }
   }
 

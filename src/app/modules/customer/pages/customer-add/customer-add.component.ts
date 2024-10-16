@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
+import { ValidationService } from '../../../../shared/constants/ValidationService';
 
 
 @Component({
@@ -71,7 +72,8 @@ export class CustomerAddComponent implements OnInit {
     private postCodeService: PostCodeService,
     private cdr: ChangeDetectorRef,
     private emailService: EmailService,
-    private prefixService: prefixService
+    private prefixService: prefixService,
+    private validationService: ValidationService
   ) { }
 
   ngOnInit(): void {
@@ -201,44 +203,23 @@ export class CustomerAddComponent implements OnInit {
 
   validateTaxId(event: any): void {
     const input = event.target.value;
-    let numericValue = input.replace(/[^0-9-]/g, '');
-    const hyphenCount = (numericValue.match(/-/g) || []).length;
-
-    if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
-    }
-
+    const numericValue = this.validationService.validateTaxId(input);  // เรียกใช้ฟังก์ชันจาก service
     this.customerForm.patchValue({ taxId: numericValue });
     event.target.value = numericValue;
   }
 
   validateTel(event: any): void {
     const input = event.target.value;
-    let numericValue = input.replace(/[^0-9-]/g, '');
-    const hyphenCount = (numericValue.match(/-/g) || []).length;
-
-    if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
-    }
-
-    if (numericValue.replace(/-/g, '').length > 10) {
-      numericValue = numericValue.slice(0, 10) + (hyphenCount ? '-' : '');
-    }
-
+    const numericValue = this.validationService.validateTel(input);  // เรียกใช้ฟังก์ชันจาก service
     event.target.value = numericValue;
-
-    this.customerForm.patchValue({ tel: event.target.value });
+    this.customerForm.patchValue({ tel: numericValue });
   }
 
   validateSite(event: any): void {
     const input = event.target.value;
-
-    // ลบตัวอักษรที่ไม่ใช่ตัวเลขออก
-    const numericValue = input.replace(/\D/g, '');
-
-    // อัปเดตค่าใน form control
-    this.customerForm.patchValue({ site: numericValue });
+    const numericValue = this.validationService.validateSite(input);  // เรียกใช้ฟังก์ชันจาก service
     event.target.value = numericValue;
+    this.customerForm.patchValue({ site: numericValue });
   }
 
   checkRole(): void {

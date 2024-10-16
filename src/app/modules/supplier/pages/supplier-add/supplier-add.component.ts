@@ -23,6 +23,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { ValidationService } from '../../../../shared/constants/ValidationService';
 
 export interface DataLocation {
   post_id: number,
@@ -199,7 +200,9 @@ export class SupplierAddComponent {
     private bankMasterService: BankMasterService,
     private emailService: EmailService,
     private modal: NzModalService,
-    private prefixService: prefixService
+    private prefixService: prefixService,
+    private validationService: ValidationService
+
   ) { }
 
   ngOnInit(): void {
@@ -535,58 +538,23 @@ export class SupplierAddComponent {
 
   validateTaxId(event: any): void {
     const input = event.target.value;
-    let numericValue = input.replace(/[^0-9-]/g, '');
-    const hyphenCount = (numericValue.match(/-/g) || []).length;
-
-    if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
-    }
-
-    this.supplierForm.patchValue({ tax_Id: numericValue });
+    const numericValue = this.validationService.validateTaxId(input);  // เรียกใช้ฟังก์ชันจาก service
+    this.supplierForm.patchValue({ taxId: numericValue });
     event.target.value = numericValue;
   }
 
   validateTel(event: any): void {
     const input = event.target.value;
-    let numericValue = input.replace(/[^0-9-]/g, '');
-    const hyphenCount = (numericValue.match(/-/g) || []).length;
-
-    if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
-    }
-
-    if (numericValue.replace(/-/g, '').length > 10) {
-      numericValue = numericValue.slice(0, 10) + (hyphenCount ? '-' : '');
-    }
-
+    const numericValue = this.validationService.validateTel(input);  // เรียกใช้ฟังก์ชันจาก service
     event.target.value = numericValue;
-
-    this.supplierForm.patchValue({ tel: event.target.value });
-  }
-
-  validateMobile(event: any): void {
-    const input = event.target.value;
-    let numericValue = input.replace(/[^0-9-]/g, '');
-    const hyphenCount = (numericValue.match(/-/g) || []).length;
-
-    if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
-    }
-
-    if (numericValue.replace(/-/g, '').length > 10) {
-      numericValue = numericValue.slice(0, 10) + (hyphenCount ? '-' : '');
-    }
-
-    event.target.value = numericValue;
-
-    this.supplierForm.patchValue({ mobile: event.target.value });
+    this.supplierForm.patchValue({ tel: numericValue });
   }
 
   validateSite(event: any): void {
     const input = event.target.value;
-    const numericValue = input.replace(/\D/g, '');
-    this.supplierForm.patchValue({ site: numericValue });
+    const numericValue = this.validationService.validateSite(input);  // เรียกใช้ฟังก์ชันจาก service
     event.target.value = numericValue;
+    this.supplierForm.patchValue({ site: numericValue });
   }
 
   validateBranch(event: any): void {

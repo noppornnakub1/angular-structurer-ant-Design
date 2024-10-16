@@ -461,8 +461,8 @@ export class SupplierAddComponent {
           this.selectedFilesAdd.push(newFile);
         } else {
           this.selectedNewFilesSupplier.push(newFile);
-          console.log(this.selectedNewFilesSupplier,"456");
-          
+          console.log(this.selectedNewFilesSupplier, "456");
+
         }
 
         this._cdr.detectChanges();
@@ -947,11 +947,9 @@ export class SupplierAddComponent {
     const supplierBankData = [];
     let mainSupplierId: number | undefined;
     let mainCompany: string | undefined;
-    
-    // สร้าง labelTexts รวบรวมทั้งจาก form หลักและ form ที่เพิ่มมา
-    const labelTexts: string[] = [];
 
-    // ตรวจสอบฟอร์มหลัก
+    const labelTextsGrouped: { [key: string]: string[] } = {};
+
     if (this.showSupplierBankForm && this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
       if (!bankFormValue.supplierId || bankFormValue.supplierId === 0) {
@@ -963,15 +961,17 @@ export class SupplierAddComponent {
 
       supplierBankData.push(bankFormValue);
 
-      // เพิ่ม selected files และ label texts จากฟอร์มหลัก
       for (let selectedFile of this.selectedNewFilesSupplier) {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
-        console.log('Selected File Label Text:', selectedFile.labelText); // ตรวจสอบค่า labelText
-        labelTexts.push(selectedFile.labelText); // ตรวจสอบว่า labelText ถูกดึงออกมาและเพิ่มลง array
+        console.log('Selected File Label Text:', selectedFile.labelText);
+
+        if (!labelTextsGrouped[bankFormValue.supplierGroup]) {
+          labelTextsGrouped[bankFormValue.supplierGroup] = [];
+        }
+        labelTextsGrouped[bankFormValue.supplierGroup].push(selectedFile.labelText);
       }
     }
 
-    // ตรวจสอบฟอร์มที่เพิ่ม
     if (this.showSupplierBankFormAdd) {
       const bankFormValueAdd = this.supplierBankFormAdd.value;
       if (!bankFormValueAdd.supplierId || bankFormValueAdd.supplierId === 0) {
@@ -984,20 +984,30 @@ export class SupplierAddComponent {
 
       supplierBankData.push(bankFormValueAdd);
 
-      // เพิ่ม selected files และ label texts จากฟอร์มที่เพิ่ม
       for (let selectedFile of this.selectedFilesAdd) {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
-        console.log('Selected Add File Label Text:', selectedFile.labelText); // ตรวจสอบค่า labelText
-        labelTexts.push(selectedFile.labelText); // ตรวจสอบว่า labelText ถูกเพิ่มลง array
+        console.log('Selected Add File Label Text:', selectedFile.labelText);
+
+        if (!labelTextsGrouped[bankFormValueAdd.supplierGroup]) {
+          labelTextsGrouped[bankFormValueAdd.supplierGroup] = [];
+        }
+        labelTextsGrouped[bankFormValueAdd.supplierGroup].push(selectedFile.labelText);
       }
     }
 
+    supplierBankData.forEach(bank => {
+      const group = bank.supplierGroup;
+      if (labelTextsGrouped[group]) {
+        bank.LabelTextsV2 = { [group]: labelTextsGrouped[group] };
+      }
+    });
+
     if (supplierBankData.length > 0) {
       const supplierBankJson = JSON.stringify(supplierBankData);
+
       formData.append('supplierBankJson', supplierBankJson);
 
-      // รวม labelTexts จากทั้งสองฟอร์มและตรวจสอบค่าที่ถูกเพิ่ม
-      formData.append('LabelTextsJson', JSON.stringify(labelTexts));
+      formData.append('LabelTextsJson', JSON.stringify(labelTextsGrouped));
 
       try {
         await this.supplierService.addBankDataWithFiles(formData).toPromise();
@@ -1018,7 +1028,7 @@ export class SupplierAddComponent {
     } else {
       console.log('No valid form data to send.');
     }
-}
+  }
 
   private validateBankForms(): boolean {
     if (this.showSupplierBankForm && !this.isFormValidWithoutSupplierIdCompanyBank()) {

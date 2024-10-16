@@ -697,7 +697,7 @@ export class CustomerAddComponent implements OnInit {
         (approvers) => {
           approvers.forEach((approver: any) => {
             const to = approver.email;
-            const subject = 'Approval Notification';
+            const subject = 'OnePortal Notification';
             const body = `
             <p>สถานะของ Customer Number:${customerNum}</p>
             <br>

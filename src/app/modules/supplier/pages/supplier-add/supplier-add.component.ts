@@ -1005,6 +1005,7 @@ export class SupplierAddComponent {
               timer: 1500
             });
             this.sendEmailNotification();
+            this.sendEmailNotificationRequester();
           } else {
             this.onUpdateSupplierBank();
             this.insertLog();
@@ -1016,6 +1017,7 @@ export class SupplierAddComponent {
               timer: 1500
             });
             this.sendEmailNotification();
+            this.sendEmailNotificationRequester();
           }
 
           this.router.navigate(['/feature/supplier']);
@@ -1624,10 +1626,15 @@ export class SupplierAddComponent {
         (approvers) => {
           approvers.forEach((approver: any) => {
             const to = approver.email;
-            const subject = 'Approval Notification';
-            const body = `สถานะของ Supplier Number:${supplierNum} 
-            ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} 
-            รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป`;
+            const subject = 'OnePortal Notification';
+            const body = `
+            <p>สถานะของ Supplier Number:${supplierNum}</p>
+            <br>
+            <p>ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป</p>
+            <br>
+            <p>ขอแสดงความนับถือ</p>
+            <p>OnePortal</p>
+            <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
 
             this.emailService.sendEmail(to, subject, body).subscribe(
               (response) => {
@@ -1649,10 +1656,15 @@ export class SupplierAddComponent {
         (approvers) => {
           approvers.forEach((approver: any) => {
             const to = approver.email;
-            const subject = 'Approval Notification';
-            const body = `สถานะของ Supplier Number:${supplierNum} 
-            ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} 
-            รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป`;
+            const subject = 'OnePortal Notification';
+            const body = `
+            <p>สถานะของ Supplier Number:${supplierNum}</p>
+            <br>
+            <p>ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป</p>
+            <br>
+            <p>ขอแสดงความนับถือ</p>
+            <p>OnePortal</p>
+            <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
 
             this.emailService.sendEmail(to, subject, body).subscribe(
               (response) => {
@@ -1840,5 +1852,28 @@ export class SupplierAddComponent {
     }
 
     return true;
+  }
+
+  sendEmailNotificationRequester(): void {
+    const supplierNum = this.supplierForm.get('supplierNum')?.value;
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const to = currentUser.email;
+    const subject = 'OnePortal Notification';
+    const body = `
+        <p>สถานะของ Customer Number:${supplierNum}</p>
+        <br>
+        <p>ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} สามารถเข้ามาตรวจสอบได้ในระบบ</p>
+        <br>
+        <p>ขอแสดงความนับถือ</p>
+        <p>OnePortal</p>
+        <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+
+    this.emailService.sendEmail(to, subject, body).subscribe(
+      (response) => {
+      },
+      (error) => {
+        console.error('Error sending email', error);
+      }
+    );
   }
 }

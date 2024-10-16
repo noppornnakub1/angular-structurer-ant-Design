@@ -56,8 +56,8 @@ export class CustomerAddComponent implements OnInit {
   filteredItemsPrefix: prefix[] = [];
   selectedPrefix: string = '';
   files = [
-    { fileName: 'ใบขอเปิด Customer', status: null,filePath: '' },
-    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', status: null,filePath: '' },
+    { fileName: 'ใบขอเปิด Customer', status: null, filePath: '' },
+    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', status: null, filePath: '' },
   ];
   file: any;
   filess: Array<{ fileName: string; fileType: string; filePath: string }> = [];
@@ -96,7 +96,7 @@ export class CustomerAddComponent implements OnInit {
       fileReq: [''],
       fileCertificate: [''],
       path: [''],
-      prefix:['']
+      prefix: ['']
     });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -165,15 +165,15 @@ export class CustomerAddComponent implements OnInit {
       nameControl?.setValue(nameValue.trim());
     }
   }
-  
+
   updateNameWithPrefixChange(): void {
     const nameControl = this.customerForm.get('name');
     let nameValue = nameControl?.value || '';
-  
+
     if (!nameValue) {
       return;
     }
-  
+
     // ลบ prefix และ suffix ที่ไม่ต้องการออกก่อน
     nameValue = nameValue.replace(/^บริษัท /, '')
       .replace(/ จำกัด \(มหาชน\)$/, '')
@@ -181,7 +181,7 @@ export class CustomerAddComponent implements OnInit {
       .replace(/^คุณ /, '')
       .replace(/^ห้างหุ้นส่วนสามัญ/, '')
       .replace(/^ห้างหุ้นส่วนจำกัด/, '');
-  
+
     // กำหนดเงื่อนไขการเพิ่ม prefix และ suffix
     if (this.selectedPrefix === 'บริษัทจำกัด') {
       nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
@@ -267,7 +267,7 @@ export class CustomerAddComponent implements OnInit {
         { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.customerForm.value.fileCertificate || '' }
       ];
       this.displayFiles = this.filess
-      
+
       this.getEventLogs(id)
     });
   }
@@ -395,6 +395,8 @@ export class CustomerAddComponent implements OnInit {
       console.log('Form value before update:', formValue);
       this.customerService.updateData(this.customerId!, formValue).subscribe({
         next: (response) => {
+          this.sendEmailNotification();
+          this.sendEmailNotificationRequester();
           console.log('Update response:', response);
         },
         error: (err) => {
@@ -696,9 +698,14 @@ export class CustomerAddComponent implements OnInit {
           approvers.forEach((approver: any) => {
             const to = approver.email;
             const subject = 'Approval Notification';
-            const body = `สถานะของ Customer Number:${customerNum} 
-            ได้เปลี่ยนเป็น ${this.customerForm.get('status')?.value} 
-            รบกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป`;
+            const body = `
+            <p>สถานะของ Customer Number:${customerNum}</p>
+            <br>
+            <p>ได้เปลี่ยนเป็น ${this.customerForm.get('status')?.value} บกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป</p>
+            <br>
+            <p>ขอแสดงความนับถือ</p>
+            <p>OnePortal</p>
+            <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
 
             this.emailService.sendEmail(to, subject, body).subscribe(
               (response) => {
@@ -826,39 +833,39 @@ export class CustomerAddComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
-      // ตรวจสอบชนิดของไฟล์
-      const fileType = selectedFile.type;
-      if (fileType !== 'application/pdf') {
-        Swal.fire({
-          icon: 'error',
-          title: 'ชนิดของไฟล์ไม่ถูกต้อง',
-          text: 'ชนิดของไฟล์ต้องเป็น .PDF เท่านั้น',
-          confirmButtonText: 'ปิด'
-        });
-        input.value = ''; // รีเซ็ต input file
-        return;
-      }
+      // พี่หนึ่งห้ามลบครับ ขอร้องงง ตรวจสอบชนิดของไฟล์ เอาออก (16/10/2024)
+      // const fileType = selectedFile.type;
+      // if (fileType !== 'application/pdf') {
+      //   Swal.fire({
+      //     icon: 'error',
+      //     title: 'ชนิดของไฟล์ไม่ถูกต้อง',
+      //     text: 'ชนิดของไฟล์ต้องเป็น .PDF เท่านั้น',
+      //     confirmButtonText: 'ปิด'
+      //   });
+      //   input.value = ''; // รีเซ็ต input file
+      //   return;
+      // }
 
-      // ตรวจสอบขนาดของไฟล์ (ขนาดไฟล์จะถูกวัดในหน่วย bytes, 1MB = 1,048,576 bytes)
-      const maxSizeInMB = 5;
-      const maxSizeInBytes = maxSizeInMB * 1048576; // 5MB in bytes
-      if (selectedFile.size > maxSizeInBytes) {
-        Swal.fire({
-          icon: 'error',
-          title: 'ขนาดของไฟล์ไม่ถูกต้อง',
-          text: 'ขนาดของไฟล์ต้องไม่เกิน 5 MB ',
-          confirmButtonText: 'ปิด'
-        });
-        input.value = ''; // รีเซ็ต input file
-        return;
-      }
+      // พี่หนึ่งห้ามลบครับ ขอร้องงง ตรวจสอบขนาดของไฟล์ (ขนาดไฟล์จะถูกวัดในหน่วย bytes, 1MB = 1,048,576 bytes) เอาออก (16/10/2024)
+      // const maxSizeInMB = 5;
+      // const maxSizeInBytes = maxSizeInMB * 1048576; // 5MB in bytes
+      // if (selectedFile.size > maxSizeInBytes) {
+      //   Swal.fire({
+      //     icon: 'error',
+      //     title: 'ขนาดของไฟล์ไม่ถูกต้อง',
+      //     text: 'ขนาดของไฟล์ต้องไม่เกิน 5 MB ',
+      //     confirmButtonText: 'ปิด'
+      //   });
+      //   input.value = ''; // รีเซ็ต input file
+      //   return;
+      // }
       // ถ้าไฟล์ผ่านการตรวจสอบทั้งชนิดและขนาด
       this.listfile.push(selectedFile);
       console.log('Selected file:', this.listfile);
       if (this.listfile.length > 0) {
         this.customerForm.patchValue({ fileReq: this.listfile[0].name });
       }
-      
+
       if (this.listfile.length > 1) {
         this.customerForm.patchValue({ fileCertificate: this.listfile[1].name });
       }
@@ -913,5 +920,28 @@ export class CustomerAddComponent implements OnInit {
   removeFile(file: any): void {
     file.filePath = '';
     // file.fileName = '';
+  }
+
+  sendEmailNotificationRequester(): void {
+    const customerNum = this.customerForm.get('customerNum')?.value;
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const to = currentUser.email;
+    const subject = 'OnePortal Notification';
+    const body = `
+        <p>สถานะของ Customer Number:${customerNum}</p>
+        <br>
+        <p>ได้เปลี่ยนเป็น ${this.customerForm.get('status')?.value} สามารถเข้ามาตรวจสอบได้ในระบบ</p>
+        <br>
+        <p>ขอแสดงความนับถือ</p>
+        <p>OnePortal</p>
+        <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+
+    this.emailService.sendEmail(to, subject, body).subscribe(
+      (response) => {
+      },
+      (error) => {
+        console.error('Error sending email', error);
+      }
+    );
   }
 }

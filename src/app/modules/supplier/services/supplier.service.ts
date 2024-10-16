@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError, Observable, of, forkJoin  } from 'rxjs';
 import { ISupplier } from '../interface/supplier.interface';
 import { IsupplierType } from '../interface/supplierType.interface';
 import { DataBank } from '../pages/supplier-add/supplier-add.component';
@@ -33,11 +33,6 @@ export class SupplierService {
   }
 
   updateDataWithFiles(id: number, formData: FormData): Observable<any> {
-    // console.log("Sending FormData to API with ID:", id);
-    // formData.forEach((value, key) => {
-    //   console.log(`${key}:`, value);
-    // });
-
     return this._http.put(`/Supplier/UpdateSupplierWithFiles?id=${id}`, formData);
   }
 
@@ -75,14 +70,9 @@ export class SupplierService {
   }
 
   addBankDataWithFiles(formData: FormData): Observable<any> {
-    console.log("FormData before sending to API:");
-    formData.forEach((value, key) => {
-      console.log(`${key}:`, value);
-    });
-
-    return this._http.post(`/SupplierBank/AddSupplierBankWithFiles`, formData);
+    return this._http.post(`/SupplierBank/AddSupplierBanksWithFiles`, formData);
   }
-
+    
   updateBankData(id: number, data: DataBank): Observable<any> {
     return this._http.put(`/SupplierBank/UpdateSupplierBank/${id}`, data);
   }

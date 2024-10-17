@@ -49,8 +49,8 @@
       <tr *ngFor="let data of datatable.data; let i = index">
         <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
         <td>{{ data.name }}</td>
-        <td>{{ data.customer_num }}</td>
-        <td>{{ data.tax_Id }}</td>
+        <td>{{ data.customerNum }}</td>
+        <td>{{ data.taxId }}</td>
         <td>{{ data.status }}</td>
         <td class="text-center">
           <button *ngIf="isApproved || isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"

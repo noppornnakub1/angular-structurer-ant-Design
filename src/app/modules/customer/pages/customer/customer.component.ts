@@ -46,12 +46,12 @@ export class CustomerComponent implements OnInit {
     },
     {
       title: 'Customer Number',
-      compare: (a: ICustomer, b: ICustomer) =>  a.customer_num.localeCompare(b.customer_num),
+      compare: (a: ICustomer, b: ICustomer) =>  a.customerNum.localeCompare(b.customerNum),
       priority: 3
     },
     {
       title: 'Tax',
-      compare: (a: ICustomer, b: ICustomer) => a.tax_Id.localeCompare(b.tax_Id),
+      compare: (a: ICustomer, b: ICustomer) => a.taxId.localeCompare(b.taxId),
       priority: 2
     },
     {
@@ -169,8 +169,8 @@ export class CustomerComponent implements OnInit {
     const { name, customer_num, tax_Id, status } = this.filters;
     this.filteredData = this.listOfData.filter(data =>
       (data.name?.includes(name) ?? true) &&
-      (data.customer_num?.includes(customer_num) ?? true) &&
-      (data.tax_Id?.includes(tax_Id) ?? true) &&
+      (data.customerNum?.includes(customer_num) ?? true) &&
+      (data.taxId?.includes(tax_Id) ?? true) &&
       // (data.status?.includes(status) ?? true)
       (this.selectedStatus === 'All' || data.status === this.selectedStatus)
     );

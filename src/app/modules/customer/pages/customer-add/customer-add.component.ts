@@ -92,7 +92,7 @@ export class CustomerAddComponent implements OnInit {
       postalCode: ['', Validators.required],
       tel: ['', Validators.required],
       email: ['', Validators.required],
-      customer_id: ['0', Validators.required],
+      customerId: ['0', Validators.required],
       customerNum: ['',],
       customerType: ['', Validators.required],
       site: ['', Validators.required],
@@ -315,12 +315,11 @@ export class CustomerAddComponent implements OnInit {
       this.customerForm.enable();
     }
 
-    this.isSubmitting = true;
     if (!this.customerId) {
       this.customerForm.patchValue({ company: currentUser.company });
       console.log("!this.customerId");
     }
-    this.CheckDupplicateData();
+    // this.CheckDupplicateData();
     console.log(this.customerForm.valid, this.customerForm.value);
 
     if (this.customerForm.valid) {
@@ -351,9 +350,6 @@ export class CustomerAddComponent implements OnInit {
           error: (err) => {
             console.error('Error adding data', err);
           },
-          complete: () => {
-            this.isSubmitting = false;
-          }
         });
       }
     } else {
@@ -370,12 +366,14 @@ export class CustomerAddComponent implements OnInit {
       else {
         Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
       }
-      this.isSubmitting = false;
+
     }
   }
 
   async onUpdate(): Promise<void> {
     try {
+      console.log('asdsadsad');
+      
       await this.UploadFile();
       const formValue = this.prepareFormData();
       console.log('Form value before update:', formValue);
@@ -383,7 +381,14 @@ export class CustomerAddComponent implements OnInit {
         next: (response) => {
           this.sendEmailNotification();
           this.sendEmailNotificationRequester();
-          console.log('Update response:', response);
+          Swal.fire({
+            icon: 'success',
+            title: 'Updated!',
+            text: 'Your data has been updated.',
+            showConfirmButton: false,
+            timer: 1500
+          });
+          this.router.navigate(['/feature/customer'])
         },
         error: (err) => {
           console.error('Error updating data', err);
@@ -437,7 +442,7 @@ export class CustomerAddComponent implements OnInit {
 
   insertLog(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const customerId = this.customerForm.get('customer_id')?.value || this.customerId || 0;
+    const customerId = this.customerForm.get('customerId')?.value || this.customerId || 0;
     delete this.tempCusForm.post_id;
     this.customerForm.setValue(this.tempCusForm);
     console.log(this.customerForm);
@@ -776,6 +781,10 @@ export class CustomerAddComponent implements OnInit {
         error: (err) => {
           if (err === 'No data found.') {
             console.log("ไม่พบข้อมูลซ้ำ, ดำเนินการหาข้อมูลเลขล่าสุด...");
+            const foundItem = this.filteredDataType.find(item => item.code === this.customerForm.value.customerType);
+            if (foundItem) {
+              this.typeCode = foundItem.codeFrom;
+            }
             this.customerService.GetNumMaxCustomer(this.typeCode).subscribe({
               next: (response: any) => {
                 console.log("Response from GetNumMaxCustomer:", response);
@@ -814,6 +823,8 @@ export class CustomerAddComponent implements OnInit {
       });
     }
   }
+
+
 
   onFileSelected(event: Event, file: any): void {
     const input = event.target as HTMLInputElement;
@@ -911,7 +922,7 @@ export class CustomerAddComponent implements OnInit {
   sendEmailNotificationRequester(): void {
     const customerNum = this.customerForm.get('customerNum')?.value;
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
-      this.emailreq = data.email 
+      this.emailreq = data.email
       console.log(this.emailreq);
       this._cdr.markForCheck();
     });

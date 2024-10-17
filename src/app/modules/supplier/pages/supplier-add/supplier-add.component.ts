@@ -805,14 +805,25 @@ export class SupplierAddComponent {
         this.showSupplierBankForm = true;
       }
 
-      if (data.supplierBankFiles && data.supplierBankFiles.length > 0) {
-        this.filesBank = data.supplierBankFiles.map((file: any) => ({
+      if (data.supplierBankFilesForSupbankId1 && data.supplierBankFilesForSupbankId1.length > 0) {
+        this.filesBank = data.supplierBankFilesForSupbankId1.map((file: any) => ({
           fileId: file.FileId,
           fileName: file.FileName,
           fileType: file.FileType,
           filePath: file.FilePath,
           labelText: file.LabelText
         }));
+      }
+
+      if (data.supplierBankFilesForSupbankId2 && data.supplierBankFilesForSupbankId2.length > 0) {
+        this.filesBankAdd = data.supplierBankFilesForSupbankId2.map((file: any) => ({
+          fileId: file.FileId,
+          fileName: file.FileName,
+          fileType: file.FileType,
+          filePath: file.FilePath,
+          labelText: file.LabelText
+        }));
+        this.showSupplierBankFormAdd = true;
       }
     });
   }

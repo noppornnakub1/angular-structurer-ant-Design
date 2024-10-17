@@ -1321,14 +1321,7 @@ export class SupplierAddComponent {
 
       this.supplierService.updateBankDataWithFiles(bankId, formData).subscribe({
         next: (response) => {
-          this.router.navigate(['/feature/supplier']);
-          Swal.fire({
-            icon: 'success',
-            title: 'Updated!',
-            text: 'Your bank data has been updated successfully.',
-            showConfirmButton: false,
-            timer: 1500
-          });
+
         },
         error: (err) => {
           console.error('Error updating bank data with files:', err);
@@ -1340,17 +1333,11 @@ export class SupplierAddComponent {
     if (this.supplierBankFormAdd.valid && this.suppilerId) {
       const bankIdAdd = this.supplierBankFormAdd.get('supbankId')?.value;
       const formDataAdd = this.prepareBankFormData(this.supplierBankFormAdd.value);
-
+      console.log(this.supplierBankFormAdd.value);
+      
       this.supplierService.updateBankDataWithFiles(bankIdAdd, formDataAdd).subscribe({
         next: (response) => {
-          this.router.navigate(['/feature/supplier']);
-          Swal.fire({
-            icon: 'success',
-            title: 'Updated!',
-            text: 'Your additional bank data has been updated successfully.',
-            showConfirmButton: false,
-            timer: 1500
-          });
+          
         },
         error: (err) => {
           Swal.fire('Error!', 'There was an error updating your additional bank data.', 'error');

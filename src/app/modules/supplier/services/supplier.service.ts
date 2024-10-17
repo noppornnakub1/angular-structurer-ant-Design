@@ -72,6 +72,10 @@ export class SupplierService {
   addBankDataWithFiles(formData: FormData): Observable<any> {
     return this._http.post(`/SupplierBank/AddSupplierBanksWithFiles`, formData);
   }
+
+  addOrUpdateBankDataWithFiles(formData: FormData): Observable<any> {
+    return this._http.post(`/SupplierBank/AddOrUpdateSupplierBanksWithFiles`, formData);
+  }
     
   updateBankData(id: number, data: DataBank): Observable<any> {
     return this._http.put(`/SupplierBank/UpdateSupplierBank/${id}`, data);

@@ -1087,7 +1087,7 @@ export class SupplierAddComponent {
       formData.append('LabelTextsJson', JSON.stringify(labelTextsGrouped));
 
       try {
-        await this.supplierService.addBankDataWithFiles(formData).toPromise();
+        await this.supplierService.addOrUpdateBankDataWithFiles(formData).toPromise();
       } catch (error) {
         console.error('Error sending data to backend:', error);
         Swal.fire('Error!', 'There was an error saving your data.', 'error');
@@ -1275,46 +1275,45 @@ export class SupplierAddComponent {
   }
 
   onUpdateSupplierBank(): void {
-    const bankId = this.supplierBankForm.get('supbankId')?.value;
-    console.log('1191', this.supplierBankForm.value);
-    console.log('1192', this.suppilerId, this.supplierForm.value.company);
-    this.supplierBankForm.patchValue({ supplierId: this.suppilerId, company: this.supplierForm.value.company });
-
-    if (this.supplierBankForm.valid && this.suppilerId) {
-      console.log('if');
-      console.log('1191', this.supplierBankForm.value);
-      const formData = this.prepareBankFormData(this.supplierBankForm.value);
-      const bankId = this.supplierBankForm.get('supbankId')?.value;
-
-      this.supplierService.updateBankDataWithFiles(bankId, formData).subscribe({
-        next: (response) => {
-
-        },
-        error: (err) => {
-          console.error('Error updating bank data with files:', err);
-          Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
-        }
-      });
+    const supplierBankData = [];
+  
+    if (this.supplierBankForm.valid) {
+      const bankFormValue = this.supplierBankForm.value;
+      supplierBankData.push(bankFormValue);
     }
-
-    if (this.supplierBankFormAdd.valid && this.suppilerId) {
-      const bankIdAdd = this.supplierBankFormAdd.get('supbankId')?.value;
-      const formDataAdd = this.prepareBankFormData(this.supplierBankFormAdd.value);
-      console.log(this.supplierBankFormAdd.value);
-      
-      this.supplierService.updateBankDataWithFiles(bankIdAdd, formDataAdd).subscribe({
+  
+    if (this.supplierBankFormAdd.valid) {
+      const bankFormValueAdd = this.supplierBankFormAdd.value;
+      supplierBankData.push(bankFormValueAdd);
+    }
+  
+    if (supplierBankData.length > 0) {
+      const formData = new FormData();
+      const supplierBankJson = JSON.stringify(supplierBankData);
+  
+      formData.append('supplierBankJson', supplierBankJson);
+  
+      for (let selectedFile of this.selectedNewFilesSupplier) {
+        formData.append('Files', selectedFile.file, selectedFile.file.name);
+      }
+  
+      for (let selectedFile of this.selectedFilesAdd) {
+        formData.append('Files', selectedFile.file, selectedFile.file.name);
+      }
+  
+      this.supplierService.addOrUpdateBankDataWithFiles(formData).subscribe({
         next: (response) => {
-          
+          Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');
         },
         error: (err) => {
-          Swal.fire('Error!', 'There was an error updating your additional bank data.', 'error');
-          console.error('Error updating additional bank data with files:', err);
+          Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
+          console.error('Error updating bank data with files:', err);
         }
       });
     } else {
-      this.supplierForm.markAllAsTouched();
       this.supplierBankForm.markAllAsTouched();
-      Swal.fire('Error!', 'There was an error saving your data.', 'error');
+      this.supplierBankFormAdd.markAllAsTouched();
+      Swal.fire('Error!', 'Please fill in all required fields.', 'error');
     }
   }
 

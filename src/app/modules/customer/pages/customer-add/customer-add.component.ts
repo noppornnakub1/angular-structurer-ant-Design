@@ -354,7 +354,8 @@ export class CustomerAddComponent implements OnInit {
       } else {
         this.customerService.addData(formValue).subscribe({
           next: (response) => {
-            this.customerForm.patchValue({ customer_id: response.customer_id });
+            console.log(response);
+            this.customerForm.patchValue({ customerId: response.customer_id });
             this.UploadFile()
             this.insertLog();
             Swal.fire({
@@ -392,12 +393,14 @@ export class CustomerAddComponent implements OnInit {
   async onUpdate(): Promise<void> {
     try {
       console.log('asdsadsad');
-      
-      await this.UploadFile();
+      if (this.listfile.length != 0) {
+        await this.UploadFile();
+      }
       const formValue = this.prepareFormData();
       console.log('Form value before update:', formValue);
       this.customerService.updateData(this.customerId!, formValue).subscribe({
         next: (response) => {
+          this.insertLog();
           this.sendEmailNotification();
           this.sendEmailNotificationRequester();
           Swal.fire({

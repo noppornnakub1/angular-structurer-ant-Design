@@ -16,6 +16,7 @@ import { EmailService } from '../../../../shared/constants/email.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { ValidationService } from '../../../../shared/constants/ValidationService';
+import { UserService } from '../../../user-manager/services/user.service';
 
 
 @Component({
@@ -65,6 +66,8 @@ export class CustomerAddComponent implements OnInit {
   displayFiles: Array<{ fileName: string; filePath: string }> = [];
   listfile: File[] = [];
   uploadedFiles: any[] = [];
+  idreq: number = 0;
+  emailreq: string = '';
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -73,7 +76,8 @@ export class CustomerAddComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private emailService: EmailService,
     private prefixService: prefixService,
-    private validationService: ValidationService
+    private validationService: ValidationService,
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
@@ -242,6 +246,7 @@ export class CustomerAddComponent implements OnInit {
         postalCode: postalCodeCombination
       });
       this.originalData = { ...data };
+      this.idreq = data.userId
       console.log(this.originalData);
       this.filess = [
         { fileName: 'ใบขอเปิด Customer', fileType: 'fileReq', filePath: this.customerForm.value.fileReq || '' },
@@ -905,8 +910,13 @@ export class CustomerAddComponent implements OnInit {
 
   sendEmailNotificationRequester(): void {
     const customerNum = this.customerForm.get('customerNum')?.value;
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const to = currentUser.email;
+    this.userService.findUserById(this.idreq).subscribe((data: any) => {
+      this.emailreq = data.email 
+      console.log(this.emailreq);
+      this._cdr.markForCheck();
+    });
+
+    const to = this.emailreq;
     const subject = 'OnePortal Notification';
     const body = `
         <p>สถานะของ Customer Number:${customerNum}</p>

@@ -24,6 +24,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { ValidationService } from '../../../../shared/constants/ValidationService';
+import { UserService } from '../../../user-manager/services/user.service';
 
 export interface DataLocation {
   post_id: number,
@@ -191,6 +192,8 @@ export class SupplierAddComponent {
   nameInput: string = '';
   fullName: string = '';
   isCheckingDuplicate: boolean = false;
+  idreq: number = 0;
+  emailreq: string = '';
   constructor(private _location: Location, private fb: FormBuilder
     , private supplierService: SupplierService,
     private router: Router,
@@ -201,8 +204,8 @@ export class SupplierAddComponent {
     private emailService: EmailService,
     private modal: NzModalService,
     private prefixService: prefixService,
-    private validationService: ValidationService
-
+    private validationService: ValidationService,
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
@@ -383,6 +386,7 @@ export class SupplierAddComponent {
     });
     this.checkRole();
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
+  
   }
 
   onFileSelectSupplier(event: Event, fileType: string, labelText: string): void {
@@ -751,7 +755,8 @@ export class SupplierAddComponent {
         ...data,
         postalCode: postalCodeCombination
       });
-
+      this.idreq = data.userId
+      
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({
           fileId: file.fileId,
@@ -766,7 +771,6 @@ export class SupplierAddComponent {
           { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.supplierForm.value.fileCertificate || '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' }
         ];
       }
-
       this.displayFiles = this.filess;
 
       this.loadSupplierBank(id);
@@ -1902,8 +1906,13 @@ export class SupplierAddComponent {
 
   sendEmailNotificationRequester(): void {
     const supplierNum = this.supplierForm.get('supplierNum')?.value;
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const to = currentUser.email;
+    this.userService.findUserById(this.idreq).subscribe((data: any) => {
+      this.emailreq = data.email 
+      console.log(this.emailreq);
+      this._cdr.markForCheck();
+    });
+
+    const to = this.emailreq;
     const subject = 'OnePortal Notification';
     const body = `
         <p>สถานะของ Customer Number:${supplierNum}</p>

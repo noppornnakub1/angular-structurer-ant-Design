@@ -1274,39 +1274,6 @@ export class SupplierAddComponent {
     });
   }
 
-  async addBankData(form: FormGroup, selectedFiles: SelectedFile[]): Promise<void> {
-    const formData = new FormData();
-
-    if (form.valid) {
-      const bankFormValue = form.value;
-
-      const supplierBankJson = JSON.stringify(bankFormValue);
-      formData.append('supplierBankJson', supplierBankJson);
-
-      for (let selectedFile of selectedFiles) {
-        formData.append('Files', selectedFile.file, selectedFile.file.name);
-      }
-
-      try {
-        await this.supplierService.addBankDataWithFiles(formData).toPromise();
-
-        await Swal.fire({
-          icon: 'success',
-          title: 'Saved!',
-          text: 'Your data has been saved.',
-          showConfirmButton: false,
-          timer: 1500
-        });
-
-        this.router.navigate(['/feature/supplier']);
-
-      } catch (error) {
-        console.error('Error sending data to backend:', error);
-        Swal.fire('Error!', 'There was an error saving your data.', 'error');
-      }
-    }
-  }
-
   onUpdateSupplierBank(): void {
     const bankId = this.supplierBankForm.get('supbankId')?.value;
     console.log('1191', this.supplierBankForm.value);

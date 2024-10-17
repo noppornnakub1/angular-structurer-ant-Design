@@ -172,6 +172,25 @@ export class CustomerAddComponent implements OnInit {
     }
   }
 
+  onSiteBlur(): void {
+    const nameControl = this.customerForm.get('site');
+    let siteValue = nameControl?.value || '';
+
+    if (!siteValue) {
+      return;
+    }
+
+    if (siteValue.length !== 5) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Site ไม่ถูกต้อง',
+        text: 'โปรดตรวจสอบให้แน่ใจว่า Site ของคุณมี 5 หลักหรือไม่',
+        confirmButtonText: 'ปิด'
+      });
+      return;
+    }
+  }
+
   updateNameWithPrefixChange(): void {
     const nameControl = this.customerForm.get('name');
     let nameValue = nameControl?.value || '';
@@ -548,19 +567,6 @@ export class CustomerAddComponent implements OnInit {
         confirmButtonText: 'ปิด'
       });
       return;
-    }
-    if (this.customerForm.value.site) {
-      const siteValue = this.customerForm.value.site;
-
-      if (siteValue.length !== 5) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Site ไม่ถูกต้อง',
-          text: 'โปรดตรวจสอบให้แน่ใจว่า Site ของคุณมี 5 หลักหรือไม่',
-          confirmButtonText: 'ปิด'
-        });
-        return;  
-      }
     }
     else {
       this.save(event);

@@ -538,6 +538,26 @@ export class SupplierAddComponent {
     }
   }
 
+  onSiteBlur(): void {
+    const nameControl = this.supplierForm.get('site');
+    let siteValue = nameControl?.value || '';
+
+    if (!siteValue) {
+      return;
+    }
+
+    if (siteValue.length !== 5) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Site ไม่ถูกต้อง',
+        text: 'โปรดตรวจสอบให้แน่ใจว่า Site ของคุณมี 5 หลักหรือไม่',
+        confirmButtonText: 'ปิด'
+      });
+      this.supplierForm.value.site = '00000'
+      return;
+    }
+  }
+
   updateNameWithPrefixChange(): void {
     const nameControl = this.supplierForm.get('name');
     let nameValue = nameControl?.value || '';
@@ -797,7 +817,7 @@ export class SupplierAddComponent {
           this.listOfGroup.push({ group_name: bankData.supplierGroup });
         }
         console.log(this.listOfGroup);
-        
+
 
         this.supplierBankForm.patchValue({
           supbankId: bankData.SupbankId,
@@ -1558,19 +1578,6 @@ export class SupplierAddComponent {
         confirmButtonText: 'ปิด'
       });
       return;
-    }
-    if (this.supplierForm.value.site) {
-      const siteValue = this.supplierForm.value.site;
-
-      if (siteValue.length !== 5) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Site ไม่ถูกต้อง',
-          text: 'โปรดตรวจสอบให้แน่ใจว่า Site ของคุณมี 5 หลักหรือไม่',
-          confirmButtonText: 'ปิด'
-        });
-        return;
-      }
     }
     else {
       try {

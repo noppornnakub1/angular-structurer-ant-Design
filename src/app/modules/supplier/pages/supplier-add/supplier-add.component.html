@@ -42,7 +42,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)" />
+          <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)" (blur)="onSiteBlur()"/>
         </nz-input-group>
       </div>
       <div *ngIf="isOverseaSupplier() || isOneTime" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">

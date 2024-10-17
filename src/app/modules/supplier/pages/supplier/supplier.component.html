@@ -10,7 +10,7 @@
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Supplier Number</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="Supplier Number" [(ngModel)]="filters.supplier_num" />
+        <input nz-input placeholder="Supplier Number" [(ngModel)]="filters.supplierNum" />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
@@ -48,7 +48,7 @@
       <tr *ngFor="let data of datatable.data; let i = index">
         <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
         <td>{{ data.name }}</td>
-        <td>{{ data.supplier_num }}</td>
+        <td>{{ data.supplierNum }}</td>
         <td>{{ data.tax_Id }}</td>
         <td>{{ data.status }}</td>
         <td class="text-center">

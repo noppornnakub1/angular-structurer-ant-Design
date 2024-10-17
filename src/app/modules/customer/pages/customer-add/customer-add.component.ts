@@ -549,6 +549,19 @@ export class CustomerAddComponent implements OnInit {
       });
       return;
     }
+    if (this.customerForm.value.site) {
+      const siteValue = this.customerForm.value.site;
+
+      if (siteValue.length !== 5) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Site ไม่ถูกต้อง',
+          text: 'โปรดตรวจสอบให้แน่ใจว่า Site ของคุณมี 5 หลักหรือไม่',
+          confirmButtonText: 'ปิด'
+        });
+        return;  
+      }
+    }
     else {
       this.save(event);
     }

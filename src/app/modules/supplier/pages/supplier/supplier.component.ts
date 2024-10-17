@@ -23,7 +23,7 @@ export class SupplierComponent implements OnInit {
   listOfData: ISupplier[] = [];
   filteredData: ISupplier[] = [];
   displayData: ISupplier[] = [];
-  filters = { name: '', supplier_num: '', tax_Id: '', status: '' };
+  filters = { name: '', supplierNum: '', tax_Id: '', status: '' };
   pageIndex: number = 1;
   pageSize: number = 10;
   statusOptions: string[] = ['All', 'Draft', 'Cancel','Pending Approved By ACC','Pending Approved By FN', 'Approved By ACC', 'Approve By FN','Reject By ACC','Reject By FN','Pending Sync.'];
@@ -42,7 +42,7 @@ export class SupplierComponent implements OnInit {
     },
     {
       title: 'Supplier Number',
-      compare: (a: ISupplier, b: ISupplier) =>  a.supplier_num.localeCompare(b.supplier_num),
+      compare: (a: ISupplier, b: ISupplier) =>  a.supplierNum.localeCompare(b.supplierNum),
       priority: 3
     },
     {
@@ -158,10 +158,10 @@ export class SupplierComponent implements OnInit {
   }
 
   applyFilters(): void {
-    const { name, supplier_num, tax_Id, status } = this.filters;
+    const { name, supplierNum, tax_Id, status } = this.filters;
     this.filteredData = this.listOfData.filter(data =>
       (data.name?.includes(name) ?? true) &&
-      (data.supplier_num?.includes(supplier_num) ?? true) &&
+      (data.supplierNum?.includes(supplierNum) ?? true) &&
       (data.tax_Id?.includes(tax_Id) ?? true) &&
       (this.selectedStatus === 'All' || data.status === this.selectedStatus)
     );

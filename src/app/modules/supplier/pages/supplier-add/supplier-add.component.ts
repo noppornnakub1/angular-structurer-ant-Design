@@ -783,14 +783,14 @@ export class SupplierAddComponent {
   loadSupplierBank(id: number): void {
     this.supplierService.findSupplierBankBySupplierIdV2(id).subscribe((data: any) => {
       this._cdr.detectChanges();
-
+  
       if (data.supplierBank.length > 0) {
         const bankData = data.supplierBank[0];
-
+  
         if (!this.listOfGroup.some(group => group.group_name === bankData.supplierGroup)) {
           this.listOfGroup.push({ group_name: bankData.supplierGroup });
         }
-
+  
         this.supplierBankForm.patchValue({
           supbankId: bankData.SupbankId,
           supplierId: bankData.SupplierId,
@@ -801,10 +801,10 @@ export class SupplierAddComponent {
           accountName: bankData.AccountName,
           company: bankData.Company
         });
-
+  
         this.showSupplierBankForm = true;
       }
-
+  
       if (data.supplierBankFilesForSupbankId1 && data.supplierBankFilesForSupbankId1.length > 0) {
         this.filesBank = data.supplierBankFilesForSupbankId1.map((file: any) => ({
           fileId: file.FileId,
@@ -814,7 +814,28 @@ export class SupplierAddComponent {
           labelText: file.LabelText
         }));
       }
-
+  
+      if (data.supplierBank.length > 1) {
+        const bankDataAdd = data.supplierBank[1];
+  
+        if (!this.listOfGroup.some(group => group.group_name === bankDataAdd.supplierGroup)) {
+          this.listOfGroup.push({ group_name: bankDataAdd.supplierGroup });
+        }
+  
+        this.supplierBankFormAdd.patchValue({
+          supbankId: bankDataAdd.SupbankId,
+          supplierId: bankDataAdd.SupplierId,
+          nameBank: bankDataAdd.NameBank,
+          branch: bankDataAdd.Branch,
+          accountNum: bankDataAdd.AccountNum,
+          supplierGroup: bankDataAdd.SupplierGroup,
+          accountName: bankDataAdd.AccountName,
+          company: bankDataAdd.Company
+        });
+  
+        this.showSupplierBankFormAdd = true;
+      }
+  
       if (data.supplierBankFilesForSupbankId2 && data.supplierBankFilesForSupbankId2.length > 0) {
         this.filesBankAdd = data.supplierBankFilesForSupbankId2.map((file: any) => ({
           fileId: file.FileId,
@@ -823,10 +844,9 @@ export class SupplierAddComponent {
           filePath: file.FilePath,
           labelText: file.LabelText
         }));
-        this.showSupplierBankFormAdd = true;
       }
     });
-  }
+  }  
 
   loadSupplierType(id: number): void {
     this.supplierService.findSupplierTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {

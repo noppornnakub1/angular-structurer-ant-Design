@@ -443,7 +443,7 @@
           <th>Download File</th>
         </tr>
       </thead>
-      <tbody>
+      <!-- <tbody>
         <tr *ngFor="let file of filesBankAdd">
           <td>{{ file.labelText }}</td>
           <td *ngIf="!isViewMode">
@@ -458,6 +458,32 @@
           </td>
           <td class="text-center">
             <a *ngIf="file.filePath && file.filePath !== ''" [href]="file.filePath" target="_blank">
+              <span class="material-symbols-outlined">description</span>
+            </a>
+            <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
+          </td>
+        </tr>
+      </tbody> -->
+      <tbody>
+        <tr *ngFor="let file of filesBankAdd">
+          <td>{{ file.labelText }}</td>
+          <td *ngIf="!isViewMode">
+            <div *ngIf="file.filePath && file.filePath !== ''" class="file-uploaded">
+              <nz-space>
+                <div>
+                  <span>{{ file.fileName }} (Already Uploaded)</span>
+                  <button nz-button nzType="primary" (click)="removeFile(file)">Remove</button>
+                </div>
+              </nz-space>
+            </div>
+            <div *ngIf="!file.filePath || file.filePath === ''">
+              <input class="upload-button" type="file"
+                (change)="onFileSelectNew($event, file.fileType, file.labelText)" />
+            </div>
+          </td>
+          <td class="text-center">
+            <a *ngIf="file.filePath && file.filePath !== ''" [href]="getAdjustedFilePath(file.filePath)"
+              target="_blank">
               <span class="material-symbols-outlined">description</span>
             </a>
             <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>

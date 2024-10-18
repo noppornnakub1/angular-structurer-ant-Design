@@ -409,13 +409,6 @@ export class SupplierAddComponent {
 
         this.selectedFilesSupplier = this.selectedFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
 
-        if ('fileId' in fileToUpdate) {
-          const fileIdToRemove = (fileToUpdate as any).fileId;
-          if (fileIdToRemove) {
-            this.fileIdsToRemove.push(fileIdToRemove);
-          }
-        }
-
         const newFile = {
           file: selectedFile,
           fileType: fileType,
@@ -755,21 +748,21 @@ export class SupplierAddComponent {
     if (file.fileId) {
       if (isForBank) {
         this.fileIdsToRemoveForBank.push(file.fileId);
-        console.log('Added fileId to fileIdsToRemoveForBank:', this.fileIdsToRemoveForBank);
       } else {
         this.fileIdsToRemove.push(file.fileId);
-        console.log('Added fileId to fileIdsToRemove:', this.fileIdsToRemove);
       }
-    } else {
-      console.log('No fileId found for the file:', file);
     }
-
-    console.log('File object before update:', file);
 
     file.filePath = '';
     file.fileName = '';
 
-    console.log('File object after update:', file);
+    if (!isForBank) {
+      this.selectedFilesSupplier = this.selectedFilesSupplier.filter(f => f.fileType !== file.fileType || f.labelText !== file.labelText);
+    } else {
+      this.selectedNewFilesSupplier = this.selectedNewFilesSupplier.filter(f => f.fileType !== file.fileType || f.labelText !== file.labelText);
+    }
+
+    this._cdr.detectChanges();
   }
 
   getAdjustedFilePath(filePath: string): string {
@@ -1148,17 +1141,10 @@ export class SupplierAddComponent {
     if (formValue && this.suppilerId) {
       const formData = this.prepareFormData();
 
-      const fileIdsToRemoveJson = this.showSupplierBankForm
-        ? JSON.stringify(this.fileIdsToRemoveForBank)
-        : JSON.stringify(this.fileIdsToRemove);
+      const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
+      formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
 
       console.log('File IDs to Remove JSON:', fileIdsToRemoveJson);
-
-      formData.append('fileIdsToRemoveJson', JSON.stringify(this.fileIdsToRemove));
-
-      console.log('FormData after appending fileIdsToRemoveJson:', formData.get('fileIdsToRemoveJson'));
-
-      console.log('FormData:', formData.get('fileIdsToRemoveJson'));
 
       this.supplierService.updateDataWithFiles(this.suppilerId, formData).subscribe({
         next: (response) => {
@@ -1201,15 +1187,16 @@ export class SupplierAddComponent {
     }
   }
 
-  prepareFormData(): any {
+  prepareFormData(): FormData {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
-    if (!currentUser) {
+    if (!currentUser || !currentUser.userId) {
       console.error('Current user is not available in local storage');
-      return;
+      return new FormData();
     }
 
     const formValue = { ...this.supplierForm.value };
+
     const selectedPostItem = this.items_provinces.find(item => {
       const postalCode = formValue.postalCode.split('-')[0];
       return item.postalCode === postalCode && this.isSubdistrictMatching(item);
@@ -1219,6 +1206,7 @@ export class SupplierAddComponent {
       formValue.postalCode = selectedPostItem.postalCode;
       formValue.post_id = selectedPostItem.post_id;
     }
+
     formValue.user_id = currentUser.userId;
 
     const formData = new FormData();

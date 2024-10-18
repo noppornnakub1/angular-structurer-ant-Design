@@ -549,7 +549,13 @@ export class CustomerAddComponent implements OnInit {
       confirmButtonText: 'Yes, save it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.setStatusAndSubmit('Draft');
+        const status = this.customerForm.value.status
+        if(status === 'Pending Approved By ACC'){
+          this.setStatusAndSubmit(status);
+        }
+        else{
+          this.setStatusAndSubmit('Draft');
+        }
         // เมื่อทุกอย่างเสร็จแล้ว ค่อยทำการ redirect
         Swal.fire({
           icon: 'success',

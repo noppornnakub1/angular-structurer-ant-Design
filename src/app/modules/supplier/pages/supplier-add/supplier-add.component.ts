@@ -747,6 +747,9 @@ export class SupplierAddComponent {
   }
 
   removeFile(file: any): void {
+    if (file.fileId) {
+      this.fileIdsToRemove.push(file.fileId);
+    }
     file.filePath = '';
     file.fileName = '';
   }
@@ -1290,8 +1293,10 @@ export class SupplierAddComponent {
     if (supplierBankData.length > 0) {
       const formData = new FormData();
       const supplierBankJson = JSON.stringify(supplierBankData);
+      const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
   
       formData.append('supplierBankJson', supplierBankJson);
+      formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
   
       for (let selectedFile of this.selectedNewFilesSupplier) {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
@@ -1301,7 +1306,7 @@ export class SupplierAddComponent {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
       }
   
-      this.supplierService.addOrUpdateBankDataWithFiles(formData).subscribe({
+      this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
         next: (response) => {
           Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');
         },

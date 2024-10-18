@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, of, forkJoin  } from 'rxjs';
+import { catchError, Observable, of, forkJoin } from 'rxjs';
 import { ISupplier } from '../interface/supplier.interface';
 import { IsupplierType } from '../interface/supplierType.interface';
 import { DataBank } from '../pages/supplier-add/supplier-add.component';
@@ -76,7 +76,11 @@ export class SupplierService {
   addOrUpdateBankDataWithFiles(formData: FormData): Observable<any> {
     return this._http.post(`/SupplierBank/AddOrUpdateSupplierBanksWithFiles`, formData);
   }
-    
+
+  insertOrUpdateBankDataWithFiles(formData: FormData): Observable<any> {
+    return this._http.post(`/SupplierBank/InsertOrUpdateSupplierBanksWithFiles`, formData);
+  }
+
   updateBankData(id: number, data: DataBank): Observable<any> {
     return this._http.put(`/SupplierBank/UpdateSupplierBank/${id}`, data);
   }

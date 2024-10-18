@@ -443,27 +443,6 @@
           <th>Download File</th>
         </tr>
       </thead>
-      <!-- <tbody>
-        <tr *ngFor="let file of filesBankAdd">
-          <td>{{ file.labelText }}</td>
-          <td *ngIf="!isViewMode">
-            <ng-container *ngIf="file.filePath && file.filePath !== ''; else fileInput">
-              <span>{{ file.fileName }} (ไฟล์ที่บันทึกแล้ว)</span>
-              <a [href]="file.filePath" target="_blank">ดาวน์โหลด</a>
-            </ng-container>
-            <ng-template #fileInput>
-              <input class="choose" type="file" (change)="onFileSelectNew($event, file.fileType, file.labelText, true)" />
-              <small class="form-text text-muted">Accepted formats: PDF (Max size: 5MB)</small>
-            </ng-template>
-          </td>
-          <td class="text-center">
-            <a *ngIf="file.filePath && file.filePath !== ''" [href]="file.filePath" target="_blank">
-              <span class="material-symbols-outlined">description</span>
-            </a>
-            <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
-          </td>
-        </tr>
-      </tbody> -->
       <tbody>
         <tr *ngFor="let file of filesBankAdd">
           <td>{{ file.labelText }}</td>

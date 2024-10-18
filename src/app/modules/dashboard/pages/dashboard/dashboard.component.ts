@@ -18,7 +18,7 @@ import { ViewDetailOldComponent } from './view-detail-old/view-detail-old.compon
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [SharedModule, NgZorroAntdModule,FormsModule,NzModalModule,NzInputModule],
+  imports: [SharedModule, NgZorroAntdModule, FormsModule, NzModalModule, NzInputModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -76,7 +76,7 @@ export class DashboardComponent {
     },
     {
       title: 'Customer & Supplier / Number',
-      compare: (a: CustomerSupplier, b: CustomerSupplier) => a.num.localeCompare(b.num),
+      compare: (a: CustomerSupplier, b: CustomerSupplier) => (a.num || '').localeCompare(b.num || ''),
       priority: 3
     },
     {
@@ -121,12 +121,12 @@ export class DashboardComponent {
     },
     {
       title: 'Tax',
-      compare: (a: DataOld, b: DataOld) => a.TAX??''.localeCompare(b.TAX ?? ''),
+      compare: (a: DataOld, b: DataOld) => a.TAX ?? ''.localeCompare(b.TAX ?? ''),
       priority: 2
     },
     {
       title: 'Payment Method',
-      compare: (a: DataOld, b: DataOld) => a.PAYMENT_MEDTHOD??''.localeCompare(b.PAYMENT_MEDTHOD ?? ''),
+      compare: (a: DataOld, b: DataOld) => a.PAYMENT_MEDTHOD ?? ''.localeCompare(b.PAYMENT_MEDTHOD ?? ''),
       priority: 2
     },
     {
@@ -162,51 +162,51 @@ export class DashboardComponent {
   }
 
   ngAfterViewInit(): void {
-    this.checkRole(); 
+    this.checkRole();
   }
 
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       if (user && user.action) {
-      this.currentUser = user;
-      console.log("151",this.currentUser);
-      
+        this.currentUser = user;
+        console.log("151", this.currentUser);
+
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
-        console.log("this.isAdmin",this.isAdmin);
-        console.log("this.isApproved",this.isApproved);
-        console.log("this.isUser",this.isUser);
-        console.log("this.isApprovedFN",this.isApprovedFN);
-    } else {
-      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-      console.log("184",currentUser);
-      this.authService.getRole(currentUser.role)
-      this.authService.currenttRole.subscribe(user => {
-        if (user && user.action) {
-        this.currentUser = user;
-        console.log("189",this.currentUser);
-        
-          this.isAdmin = user.action.includes('admin');
-          this.isApproved = user.action.includes('approved');
-          this.isApprovedFN = user.action.includes('approvedFN');
-          this.isUser = user.action.includes('user');
-          console.log("this.isAdmin",this.isAdmin);
-          console.log("this.isApproved",this.isApproved);
-          console.log("this.isUser",this.isUser);
-          console.log("this.isApprovedFN",this.isApprovedFN);
+        console.log("this.isAdmin", this.isAdmin);
+        console.log("this.isApproved", this.isApproved);
+        console.log("this.isUser", this.isUser);
+        console.log("this.isApprovedFN", this.isApprovedFN);
+      } else {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        console.log("184", currentUser);
+        this.authService.getRole(currentUser.role)
+        this.authService.currenttRole.subscribe(user => {
+          if (user && user.action) {
+            this.currentUser = user;
+            console.log("189", this.currentUser);
+
+            this.isAdmin = user.action.includes('admin');
+            this.isApproved = user.action.includes('approved');
+            this.isApprovedFN = user.action.includes('approvedFN');
+            this.isUser = user.action.includes('user');
+            console.log("this.isAdmin", this.isAdmin);
+            console.log("this.isApproved", this.isApproved);
+            console.log("this.isUser", this.isUser);
+            console.log("this.isApprovedFN", this.isApprovedFN);
+          }
+        });
+        // สามารถเพิ่มการจัดการกรณีที่ไม่มี user เช่น redirect ไปยังหน้า login หรือแสดงข้อความ
       }
-      });
-      // สามารถเพิ่มการจัดการกรณีที่ไม่มี user เช่น redirect ไปยังหน้า login หรือแสดงข้อความ
-    }
     });
   }
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log("169",currentUser);
-    
+    console.log("169", currentUser);
+
     if (!currentUser) {
       console.error('Current user is not available in local storage');
       return;
@@ -228,7 +228,7 @@ export class DashboardComponent {
     else if (currentUser.role == 3) {
       const userId = currentUser.userId;
       const company = currentUser.company;
-      this.customerService.FindDataHistoryByApprover(userId, company,'Pending Approved By ACC').subscribe({
+      this.customerService.FindDataHistoryByApprover(userId, company, 'Pending Approved By ACC').subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.applyFilters();
@@ -241,7 +241,7 @@ export class DashboardComponent {
     else if (currentUser.role == 4) {
       const userId = currentUser.userId;
       const company = currentUser.company;
-      this.customerService.FindDataHistoryByApproverFN(userId, company,'Approved By ACC').subscribe({
+      this.customerService.FindDataHistoryByApproverFN(userId, company, 'Approved By ACC').subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.applyFilters();
@@ -254,13 +254,13 @@ export class DashboardComponent {
     else {
       const userId = currentUser.userId;
       console.log(userId);
-      
+
       const company = undefined;
       this.customerService.findDataHistoryByUserId(userId, company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
           console.log(this.listOfData);
-          
+
           this.applyFilters();
           this._cdr.markForCheck();
         },
@@ -290,7 +290,7 @@ export class DashboardComponent {
         next: (response: any) => {
           this.listOfDataOld = response
           console.log(this.listOfDataOld);
-          
+
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
           this.updateDisplayDataOld();
@@ -314,13 +314,27 @@ export class DashboardComponent {
 
   applyFilters(): void {
     const { name, num, tax_Id, source } = this.filters;
-    this.filteredData = this.listOfData.filter(data =>
-      (data.name?.includes(name) ?? true) &&
-      (data.num?.includes(num) ?? true) &&
-      (data.taxId?.includes(tax_Id) ?? true) &&
-      (this.selectedType === 'All' || data.source === this.selectedType)
-    );
-    this.pageIndex = 1;
+
+    // แปลงข้อมูลที่กรอกในฟิลด์เป็นตัวพิมพ์เล็กเพื่อให้ไม่สนใจการพิมพ์เล็กหรือพิมพ์ใหญ่
+    const lowerCaseName = name ? name.toLowerCase() : '';
+    const lowerCaseNum = num ? num.toLowerCase() : '';
+    const lowerCaseTaxId = tax_Id ? tax_Id.toLowerCase() : '';
+
+    this.filteredData = this.listOfData.filter(data => {
+      // ตรวจสอบและแปลงข้อมูลที่ต้องการกรองให้เป็นตัวพิมพ์เล็กเช่นกัน
+      const dataName = data.name ? data.name.toLowerCase() : '';
+      const dataNum = data.num ? data.num.toLowerCase() : '';
+      const dataTaxId = data.taxId ? data.taxId.toLowerCase() : '';
+
+      return (
+        dataName.includes(lowerCaseName) &&  // ตรวจสอบชื่อที่ค้นหาตรงกับข้อมูลหรือไม่
+        dataNum.includes(lowerCaseNum) &&  // ตรวจสอบเลขที่
+        dataTaxId.includes(lowerCaseTaxId) &&  // ตรวจสอบ taxId
+        (this.selectedType === 'All' || data.source === this.selectedType) // ตรวจสอบสถานะ source
+      );
+    });
+
+    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อมีการกรองข้อมูลใหม่
     this.updateDisplayData();
   }
 
@@ -373,21 +387,21 @@ export class DashboardComponent {
     this.pageIndexOld = pageIndex;
     this.updateDisplayDataOld();
   }
-  
+
   onPageSizeChangeOld(pageSize: number): void {
     this.pageSizeOld = pageSize;
     this.pageIndexOld = 1;
     this.updateDisplayDataOld();
-  }  
+  }
 
   updateDisplayDataOld(): void {
     const startIndex = (this.pageIndexOld - 1) * this.pageSizeOld;
     const endIndex = startIndex + this.pageSizeOld;
     this.displayDataOld = this.filteredDataOld.slice(startIndex, endIndex);
     console.log(this.displayDataOld);
-  
+
     this._cdr.markForCheck();
-  }  
+  }
 
   showModal(data: any): void {
     console.log('Data sent to modal:', data);
@@ -407,7 +421,7 @@ export class DashboardComponent {
 
   openModal(data: any): void {
     console.log(data);
-    
+
     this.modalDataService.setData(data);
     this.modal.create({
       nzTitle: 'Customer/Supplier Details',
@@ -418,7 +432,7 @@ export class DashboardComponent {
 
   openModalold(data: any): void {
     console.log(data);
-    
+
     this.modalDataService.setData(data);
     this.modal.create({
       nzTitle: 'Customer/Supplier Details',

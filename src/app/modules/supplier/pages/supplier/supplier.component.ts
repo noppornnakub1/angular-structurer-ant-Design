@@ -174,7 +174,7 @@ export class SupplierComponent implements OnInit {
       return (
         dataName.includes(lowerCaseName) &&  // ตรวจสอบชื่อที่ค้นหาตรงกับข้อมูลหรือไม่
         (
-          lowerCaseSupplierNum ? dataSupplierNum.startsWith(lowerCaseSupplierNum) : true // ตรวจสอบ supplierNum โดยใช้ startsWith
+          lowerCaseSupplierNum ? dataSupplierNum.includes(lowerCaseSupplierNum) : true // เปลี่ยนจาก startsWith เป็น includes
         ) &&
         dataTaxId.includes(lowerCaseTaxId) &&  // ตรวจสอบ taxId
         (this.selectedStatus === 'All' || data.status === this.selectedStatus) // ตรวจสอบสถานะ
@@ -183,7 +183,7 @@ export class SupplierComponent implements OnInit {
 
     this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อมีการกรองข้อมูลใหม่
     this.updateDisplayData();
-}
+  }
 
   onStatusChange(status: string): void {
     this.selectedStatus = status;

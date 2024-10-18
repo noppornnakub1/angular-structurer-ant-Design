@@ -360,7 +360,10 @@ export class CustomerAddComponent implements OnInit {
           next: async (response) => {
             console.log(response);
             this.customerForm.patchValue({ customerId: response.customer_id });
-            await this.UploadFile();  // รอให้การอัปโหลดไฟล์เสร็จก่อน
+            this.customerId =  response.customer_id
+            if (this.listfile.length !== 0) {
+              await this.UploadFile();  // รอให้การอัปโหลดไฟล์เสร็จก่อน
+            }
             this.insertLog();
   
             Swal.fire({

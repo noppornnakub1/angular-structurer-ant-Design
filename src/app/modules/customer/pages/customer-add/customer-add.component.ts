@@ -68,6 +68,7 @@ export class CustomerAddComponent implements OnInit {
   uploadedFiles: any[] = [];
   idreq: number = 0;
   emailreq: string = '';
+  isCheckingDuplicate: boolean = false;
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -326,7 +327,7 @@ export class CustomerAddComponent implements OnInit {
     return item.subdistrict === currentSubdistrict;
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void>  {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     console.log(currentUser);
 
@@ -402,7 +403,7 @@ export class CustomerAddComponent implements OnInit {
         next: (response) => {
           this.insertLog();
           this.sendEmailNotification();
-          this.sendEmailNotificationRequester();
+          // this.sendEmailNotificationRequester();
           Swal.fire({
             icon: 'success',
             title: 'Updated!',
@@ -464,10 +465,10 @@ export class CustomerAddComponent implements OnInit {
 
   insertLog(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const customerId = this.customerForm.get('customerId')?.value || this.customerId || 0;
     delete this.tempCusForm.post_id;
     this.customerForm.setValue(this.tempCusForm);
-    console.log(this.customerForm);
+    console.log("470",this.customerId);
+    console.log("471",this.customerForm.value);
 
     if (!currentUser) {
       console.error('Current user is not available in local storage');
@@ -480,7 +481,7 @@ export class CustomerAddComponent implements OnInit {
         Username: currentUser.username || 'string',
         Email: currentUser.email || 'string',
         Status: this.customerForm.get('status')?.value || 'Draft',
-        CustomerId: customerId,
+        CustomerId: this.customerId || 0,
         SupplierId: 0,
         Time: new Date().toISOString(),
         RejectReason: this.reasonTemp
@@ -590,14 +591,13 @@ export class CustomerAddComponent implements OnInit {
       if (result.isConfirmed) {
         if (result.isConfirmed) {
           const currentStatus = this.customerForm.get('status')?.value;
-          const newStatus = currentStatus === 'Pending Approved By ACC' ? 'Pending Approve By FN' : 'Pending Approved By ACC';
-          this.setStatusAndSubmit(newStatus);
+          this.setStatusAndSubmit("Pending Approved By ACC");
         }
       }
     });
   }
 
-  approve(event: Event): void {
+  async approve(event: Event): Promise<void>  {
     event.preventDefault();
     Swal.fire({
       title: 'Are you sure?',
@@ -609,10 +609,7 @@ export class CustomerAddComponent implements OnInit {
       confirmButtonText: 'Yes, save it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        const currentStatus = this.customerForm.get('status')?.value;
-        const newStatus = currentStatus === 'Approved By ACC' ? 'Approved By FN' : 'Approved By ACC';
-        this.CheckDupplicateData();
-        this.setStatusAndSubmit(newStatus);
+        this.setStatusAndSubmit("Approved By ACC");
       }
     });
   }
@@ -631,10 +628,8 @@ export class CustomerAddComponent implements OnInit {
           confirmButtonText: 'Yes, save it!'
         }).then((result) => {
           if (result.isConfirmed) {
-            const currentStatus = this.customerForm.get('status')?.value;
-            const newStatus = currentStatus === 'Approved By ACC' ? 'Reject By FN' : 'Reject By ACC';
             this.reasonTemp = rejectReason;
-            this.setStatusAndSubmit(newStatus);
+            this.setStatusAndSubmit("Reject By ACC");
           }
         });
       } else {
@@ -665,13 +660,13 @@ export class CustomerAddComponent implements OnInit {
     });
   }
 
-  setStatusAndSubmit(status: string): void {
+   async setStatusAndSubmit(status: string): Promise<void> {
     this.customerForm.patchValue({ status });
     if (!this.customerId) {
       this.customerForm.patchValue({ customerNum: this.newCusnum });
       console.log("625", this.customerForm.value);
     }
-    this.onSubmit();
+    await this.onSubmit();
   }
 
   getTaxIdData(): void {
@@ -776,74 +771,117 @@ export class CustomerAddComponent implements OnInit {
     return this.selectType === 'OSEA';
   }
 
-  CheckDupplicateData() {
-    if (this.customerForm.value.customerNum === '') {
-      const name = this.customerForm.value.name.trim();
-      const site = this.customerForm.value.site.trim();
-      const isEnglish = /^[A-Za-z\s]+$/.test(name);
-      const cleanedName = isEnglish ? name.replace(/\s+/g, '').toUpperCase() : name.replace(/\s+/g, '');
-      const key = site + cleanedName;
+  CheckDupplicateData(): Promise<void> {
+    this.isCheckingDuplicate = true;
 
-      console.log("Generated key for CheckDupplicateCustomer:", key);
+    return new Promise((resolve, reject) => {
+      if (!this.isFormValidWithoutCustomerNum()) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+          text: 'โปรดกรอกข้อมูลในฟอร์มให้ครบทุกช่องที่จำเป็น',
+          confirmButtonText: 'ปิด'
+        });
+        this.isCheckingDuplicate = false;
+        return reject('Form is not validxxx');
+      }
 
+      const foundItem = this.filteredDataType.find(item => item.code === this.customerForm.value.customerType);
+      if (foundItem) {
+        this.typeCode = foundItem.codeFrom;
+      }
+
+      const tax = this.customerForm.value.taxId.trim();
+      const type = this.typeCode.trim();
+      const key = `${tax}-${type}`;
+      console.log('804',key);
+      console.log('805',this.typeCode);
+      
       this.customerService.CheckDupplicateCustomer(key).subscribe({
         next: (response: any) => {
-          console.log("Response from CheckDupplicateCustomer:", response);
-
           if (response && response.length > 0) {
             Swal.fire({
               icon: 'error',
               title: 'ข้อมูลซ้ำ',
-              text: 'มีข้อมูล Customer นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ Name และ Site อีกครั้ง',
+              text: 'มีข้อมูล Supplier นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ TaxID และ Type อีกครั้ง',
               confirmButtonText: 'ปิด'
             });
-            return;
+            this.isCheckingDuplicate = false;
+            reject('Duplicate data found');
+          } else {
+            this.getNumMaxCustomer().then(() => {
+              this.isCheckingDuplicate = false;
+              resolve();
+            }).catch(err => {
+              this.isCheckingDuplicate = false;
+              reject(err);
+            });
           }
         },
         error: (err) => {
           if (err === 'No data found.') {
-            console.log("ไม่พบข้อมูลซ้ำ, ดำเนินการหาข้อมูลเลขล่าสุด...");
-            const foundItem = this.filteredDataType.find(item => item.code === this.customerForm.value.customerType);
-            if (foundItem) {
-              this.typeCode = foundItem.codeFrom;
-            }
-            this.customerService.GetNumMaxCustomer(this.typeCode).subscribe({
-              next: (response: any) => {
-                console.log("Response from GetNumMaxCustomer:", response);
-
-                if (!response || response.length === 0 || response.num === null) {
-                  this.customerForm.patchValue({ customerNum: '' });
-                  console.log("No customers found, setting customer_num to empty.");
-                } else {
-                  const max = response.num;
-                  const maxStr = String(max);
-                  console.log("Max Customer Num String:", maxStr);
-                  const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
-                  const prefix = matchResult ? matchResult[1] : '';
-                  const numPart = matchResult ? matchResult[2] : '0';
-                  console.log("Prefix:", prefix);
-                  console.log("NumPart:", numPart);
-                  const nextNum = String(parseInt(numPart, 10) + 1).padStart(numPart.length, '0');
-                  console.log("Next Num after increment:", nextNum);
-                  const newCustomerNum = `${prefix}${nextNum}`;
-                  this.newCusnum = newCustomerNum;
-                  this.customerForm.setValue({ ...this.customerForm.value, customerNum: newCustomerNum });
-                  console.log("New Customer Num:", newCustomerNum);
-                  console.log("New Customer Num:", this.customerForm.value);
-                  this._cdr.markForCheck();
-                }
-                this._cdr.markForCheck();
-              },
-              error: (err) => {
-                console.error('Error while fetching max customer number', err);
-              }
+            this.getNumMaxCustomer().then(() => {
+              this.isCheckingDuplicate = false;
+              resolve();
+            }).catch(err => {
+              this.isCheckingDuplicate = false;
+              reject(err);
             });
           } else {
-            console.error("Error occurred during CheckDupplicateCustomer:", err);
+            this.isCheckingDuplicate = false;
+            reject(err);
           }
         }
       });
+    });
+  }
+
+  getNumMaxCustomer(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.customerService.GetNumMaxCustomer(this.typeCode).subscribe({
+        next: (response: any) => {
+          console.log('850',response);
+          
+          if (!response || response.length === 0 || response.num === null) {
+            this.customerForm.patchValue({ customerNum: '' });
+          } else {
+            const max = response.num;
+            const maxStr = String(max);
+            const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
+            const prefix = matchResult ? matchResult[1] : '';
+            const numPart = matchResult ? matchResult[2] : '0';
+            const nextNum = String(parseInt(numPart, 10) + 1).padStart(numPart.length, '0');
+            const newCustomerNum = `${prefix}${nextNum}`;
+            this.newCusnum = newCustomerNum;
+            this.customerForm.patchValue({ customerNum: newCustomerNum });
+            console.log(this.customerForm.value);
+
+          }
+          this._cdr.markForCheck();
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error while fetching max supplier number', err);
+          reject(err);
+        }
+      });
+    });
+  }
+
+  isFormValidWithoutCustomerNum(): boolean {
+    const requiredFields = [
+      'name', 'taxId', 'addressSup', 'district', 'subdistrict',
+      'province', 'postalCode', 'tel', 'email', 'customerType',
+      'site', 'company'
+    ];
+
+    for (const field of requiredFields) {
+      if (!this.customerForm.get(field)?.value) {
+        return false;
+      }
     }
+
+    return true;
   }
 
 
@@ -967,5 +1005,14 @@ export class CustomerAddComponent implements OnInit {
         console.error('Error sending email', error);
       }
     );
+  }
+
+  async checkApprove(event: Event) {
+    try {
+      await this.CheckDupplicateData();
+      await this.approve(event);
+    } catch (error) {
+      console.error('Error occurred:', error);
+    }
   }
 }

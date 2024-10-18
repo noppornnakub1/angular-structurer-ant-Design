@@ -804,13 +804,22 @@ export class SupplierAddComponent {
           filePath: file.filePath,
           labelText: file.labelText || ''
         }));
+
+        console.log(this.filess);
+        
+        const missingFiles = this.files.filter(file => {
+          const existingFile = this.filess.find(f => f.labelText === file.labelText);
+          return !existingFile || !existingFile.filePath; // กรองไฟล์ที่ไม่มี filePath (แสดงว่าผู้ใช้อาจยังไม่ได้อัปโหลด)
+        });
+        console.log(missingFiles);
+        
+
+        // รวมรายการไฟล์จาก API กับไฟล์ที่ยังไม่ได้อัปโหลด
+        this.displayFiles = [...this.filess, ...missingFiles];
       } else {
-        this.filess = [
-          { fileName: 'ใบขอเปิด Supplier', fileType: 'fileReq', filePath: this.supplierForm.value.fileReq || '', labelText: 'ใบขอเปิด Supplier' },
-          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.supplierForm.value.fileCertificate || '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' }
-        ];
+        // ถ้าไม่มีไฟล์จาก API ให้แสดงรายการที่เตรียมไว้ทั้งหมด
+        this.displayFiles = this.files;
       }
-      this.displayFiles = this.filess;
 
       this.loadSupplierBank(id);
       this.getEventLogs(id);

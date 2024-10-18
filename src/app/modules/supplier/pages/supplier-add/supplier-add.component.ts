@@ -871,7 +871,7 @@ export class SupplierAddComponent {
         // เสร็จสิ้นการโหลดข้อมูลจาก API ตั้งค่า flag กลับเป็น false
         setTimeout(() => {
           this.isLoadingFromAPI = false;
-        }, 100);
+        }, 1000);
       }
 
       // ตรวจสอบข้อมูลไฟล์จาก API

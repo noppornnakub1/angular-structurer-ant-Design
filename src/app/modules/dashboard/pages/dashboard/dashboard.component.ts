@@ -162,6 +162,10 @@ export class DashboardComponent {
     this.getData();
   }
 
+  ngAfterViewInit(): void {
+    this.checkRole(); 
+  }
+
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       if (user && user.action) {

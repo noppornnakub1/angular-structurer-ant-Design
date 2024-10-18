@@ -10,13 +10,14 @@ import { PostCodeService } from '../../../../shared/constants/post-code.service'
 import { AuthService } from '../../../authentication/services/auth.service';
 import { IRole } from '../../../user-manager/interface/role.interface';
 import { ICustomerType } from '../../interface/customerType.interface';
-import { DataLocation, prefix } from '../../../supplier/pages/supplier-add/supplier-add.component';
+import { DataCompany, DataLocation, prefix } from '../../../supplier/pages/supplier-add/supplier-add.component';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { ValidationService } from '../../../../shared/constants/ValidationService';
 import { UserService } from '../../../user-manager/services/user.service';
+import { SupplierService } from '../../../supplier/services/supplier.service';
 
 
 @Component({
@@ -69,6 +70,8 @@ export class CustomerAddComponent implements OnInit {
   idreq: number = 0;
   emailreq: string = '';
   isCheckingDuplicate: boolean = false;
+  listOfCompany: DataCompany[] = [];
+  filteredDataompany: DataCompany[] = [];
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -78,7 +81,8 @@ export class CustomerAddComponent implements OnInit {
     private emailService: EmailService,
     private prefixService: prefixService,
     private validationService: ValidationService,
-    private userService: UserService
+    private userService: UserService,
+    private supplierService: SupplierService,
   ) { }
 
   ngOnInit(): void {
@@ -137,6 +141,7 @@ export class CustomerAddComponent implements OnInit {
       this._cdr.detectChanges();
     });
     this.checkRole();
+    this.getDataCompany()
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
     console.log('displayFiles:', this.displayFiles);
   }
@@ -334,9 +339,6 @@ export class CustomerAddComponent implements OnInit {
       this.customerForm.enable();
     }
   
-    if (!this.customerId) {
-      this.customerForm.patchValue({ company: currentUser.company });
-    }
   
     if (this.customerForm.valid) {
       const formValue = this.prepareFormData();
@@ -1030,5 +1032,31 @@ export class CustomerAddComponent implements OnInit {
     } catch (error) {
       console.error('Error occurred during approval:', error);
     }
+  }
+
+  getDataCompany(): void {
+    const CheckcurrentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const userCompanies = CheckcurrentUser.company ? CheckcurrentUser.company.split(',') : [];
+
+    if (userCompanies.length === 0) {
+      console.error('No company information found in local storage');
+      return;
+    }
+
+    this.supplierService.getDataCompany().subscribe({
+      next: (response: any) => {
+
+        // if (CheckcurrentUser.company === 'ALL') {
+          this.listOfCompany = response;
+          this.filteredDataompany = response;
+        // } else {
+        //   this.listOfCompany = response.filter((company: DataCompany) => userCompanies.includes(company.abbreviation));
+        //   this.filteredDataompany = this.listOfCompany;
+        // }
+        this._cdr.markForCheck();
+      },
+      error: () => {
+      }
+    });
   }
 }

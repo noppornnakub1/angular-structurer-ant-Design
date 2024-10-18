@@ -57,9 +57,9 @@
         <td>{{ data.name }}</td>
 
         <!-- ซ่อนคอลัมน์ Customer Number เมื่อเป็น user และ status ไม่ใช่ Success -->
-        <td *ngIf="isApproved || isAdmin || (isUser && (data.status === 'Success'))">{{ data.customerNum }}</td>
+        <td  class="text-center" *ngIf="isApproved || isAdmin || (isUser && (data.status === 'Success'))">{{ data.customerNum }}</td>
 
-        <td>{{ data.site }}</td>
+        <td class="text-center">{{ data.site }}</td>
         <td>{{ data.taxId }}</td>
         <td>{{ data.status }}</td>
         <td class="text-center">

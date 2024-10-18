@@ -144,8 +144,7 @@ export class DashboardComponent {
   constructor(private customerService: CustomerService,
     private cdr: ChangeDetectorRef,
     private modal: NzModalService,
-    private modalDataService: ModalDataService
-
+    private modalDataService: ModalDataService,
   ) { }
 
   ngOnInit(): void {
@@ -160,6 +159,10 @@ export class DashboardComponent {
     }
     this.checkRole();
     this.getData();
+  }
+
+  ngAfterViewInit(): void {
+    this.checkRole(); 
   }
 
   checkRole(): void {
@@ -177,7 +180,24 @@ export class DashboardComponent {
         console.log("this.isUser",this.isUser);
         console.log("this.isApprovedFN",this.isApprovedFN);
     } else {
-      console.warn('User data is null or invalid');
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      console.log("184",currentUser);
+      this.authService.getRole(currentUser.role)
+      this.authService.currenttRole.subscribe(user => {
+        if (user && user.action) {
+        this.currentUser = user;
+        console.log("189",this.currentUser);
+        
+          this.isAdmin = user.action.includes('admin');
+          this.isApproved = user.action.includes('approved');
+          this.isApprovedFN = user.action.includes('approvedFN');
+          this.isUser = user.action.includes('user');
+          console.log("this.isAdmin",this.isAdmin);
+          console.log("this.isApproved",this.isApproved);
+          console.log("this.isUser",this.isUser);
+          console.log("this.isApprovedFN",this.isApprovedFN);
+      }
+      });
       // สามารถเพิ่มการจัดการกรณีที่ไม่มี user เช่น redirect ไปยังหน้า login หรือแสดงข้อความ
     }
     });

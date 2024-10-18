@@ -211,7 +211,7 @@
        (isApprovedFN && customerForm.get('status')?.value === 'Approved By ACC') ||
        isAdmin
      ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(customerForm.get('status')?.value)"
-        class="mr-2" nz-button nzType="primary" (click)="approve($event)">
+        class="mr-2" nz-button nzType="primary" (click)="checkApprove($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
 

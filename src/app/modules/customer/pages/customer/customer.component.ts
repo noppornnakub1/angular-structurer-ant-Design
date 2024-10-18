@@ -50,6 +50,11 @@ export class CustomerComponent implements OnInit {
       priority: 3
     },
     {
+      title: 'Site',
+      compare: (a: ICustomer, b: ICustomer) => a.site.localeCompare(b.site),
+      priority: 2
+    },
+    {
       title: 'Tax',
       compare: (a: ICustomer, b: ICustomer) => a.taxId.localeCompare(b.taxId),
       priority: 2
@@ -166,17 +171,29 @@ export class CustomerComponent implements OnInit {
   }
 
   applyFilters(): void {
-    const { name, customer_num, tax_Id, status } = this.filters;
-    this.filteredData = this.listOfData.filter(data =>
-      (data.name?.includes(name) ?? true) &&
-      (data.customerNum?.includes(customer_num) ?? true) &&
-      (data.taxId?.includes(tax_Id) ?? true) &&
-      // (data.status?.includes(status) ?? true)
-      (this.selectedStatus === 'All' || data.status === this.selectedStatus)
-    );
+    const { name, customer_num, tax_Id } = this.filters;
+
+    // ตรวจสอบให้แน่ใจว่าค่าการค้นหาไม่เป็น null หรือ undefined ก่อนการแปลงเป็นตัวพิมพ์เล็ก
+    const lowerCaseName = name ? name.toLowerCase() : '';
+    const lowerCaseCustomerNum = customer_num ? customer_num.toLowerCase() : '';
+    const lowerCaseTaxId = tax_Id ? tax_Id.toLowerCase() : '';
+
+    this.filteredData = this.listOfData.filter(data => {
+      const dataName = data.name ? data.name.toLowerCase() : '';
+      const dataCustomerNum = data.customerNum ? data.customerNum.toLowerCase() : '';
+      const dataTaxId = data.taxId ? data.taxId.toLowerCase() : '';
+
+      return (
+        dataName.includes(lowerCaseName) &&
+        dataCustomerNum.includes(lowerCaseCustomerNum) &&
+        dataTaxId.includes(lowerCaseTaxId) &&
+        (this.selectedStatus === 'All' || data.status === this.selectedStatus)
+      );
+    });
+
     this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อมีการกรองข้อมูลใหม่
     this.updateDisplayData();
-  }
+}
   
   onStatusChange(status: string): void {
     this.selectedStatus = status;
@@ -198,6 +215,8 @@ export class CustomerComponent implements OnInit {
     const startIndex = (this.pageIndex - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.displayData = this.filteredData.slice(startIndex, endIndex);
+    console.log(this.displayData);
+    
     this._cdr.markForCheck();
   }
 

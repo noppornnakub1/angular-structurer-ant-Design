@@ -10,13 +10,14 @@ import { PostCodeService } from '../../../../shared/constants/post-code.service'
 import { AuthService } from '../../../authentication/services/auth.service';
 import { IRole } from '../../../user-manager/interface/role.interface';
 import { ICustomerType } from '../../interface/customerType.interface';
-import { DataLocation, prefix } from '../../../supplier/pages/supplier-add/supplier-add.component';
+import { DataCompany, DataLocation, prefix } from '../../../supplier/pages/supplier-add/supplier-add.component';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { ValidationService } from '../../../../shared/constants/ValidationService';
 import { UserService } from '../../../user-manager/services/user.service';
+import { SupplierService } from '../../../supplier/services/supplier.service';
 
 
 @Component({
@@ -69,6 +70,8 @@ export class CustomerAddComponent implements OnInit {
   idreq: number = 0;
   emailreq: string = '';
   isCheckingDuplicate: boolean = false;
+  listOfCompany: DataCompany[] = [];
+  filteredDataompany: DataCompany[] = [];
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -78,7 +81,8 @@ export class CustomerAddComponent implements OnInit {
     private emailService: EmailService,
     private prefixService: prefixService,
     private validationService: ValidationService,
-    private userService: UserService
+    private userService: UserService,
+    private supplierService: SupplierService,
   ) { }
 
   ngOnInit(): void {
@@ -137,6 +141,7 @@ export class CustomerAddComponent implements OnInit {
       this._cdr.detectChanges();
     });
     this.checkRole();
+    this.getDataCompany()
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
     console.log('displayFiles:', this.displayFiles);
   }
@@ -327,54 +332,59 @@ export class CustomerAddComponent implements OnInit {
     return item.subdistrict === currentSubdistrict;
   }
 
-  async onSubmit(): Promise<void>  {
+  async onSubmit(): Promise<void> {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log(currentUser);
 
     if (this.isViewMode) {
       this.customerForm.enable();
     }
 
-    if (!this.customerId) {
-      this.customerForm.patchValue({ company: currentUser.company });
-      console.log("!this.customerId");
-    }
-    // this.CheckDupplicateData();
-    console.log(this.customerForm.valid, this.customerForm.value);
 
     if (this.customerForm.valid) {
       const formValue = this.prepareFormData();
-      const selectedPostItem = this.items_provinces.find(item => item.postalCode === formValue.postalCode && this.isSubdistrictMatching(item));
+
+      // ตรวจสอบข้อมูลที่เกี่ยวข้องกับรหัสไปรษณีย์
+      const selectedPostItem = this.items_provinces.find(item =>
+        item.postalCode === formValue.postalCode &&
+        this.isSubdistrictMatching(item)
+      );
+
       if (selectedPostItem) {
         formValue.post_id = selectedPostItem.post_id;
       }
-      console.log(selectedPostItem, formValue);
-      this.tempCusForm = formValue;
+
       if (this.customerId) {
-        this.onUpdate();
+        await this.onUpdate();  // รอให้การอัปเดตเสร็จก่อน
       } else {
         this.customerService.addData(formValue).subscribe({
-          next: (response) => {
+          next: async (response) => {
             console.log(response);
             this.customerForm.patchValue({ customerId: response.customer_id });
-            this.UploadFile()
+            this.customerId = response.customer_id
+            if (this.listfile.length !== 0) {
+              await this.UploadFile();  // รอให้การอัปโหลดไฟล์เสร็จก่อน
+            }
             this.insertLog();
+
             Swal.fire({
               icon: 'success',
               title: 'Saved!',
               text: 'Your data has been saved.',
               showConfirmButton: false,
               timer: 1500
+            }).then(() => {
+              // ทำการ redirect หลังจาก popup ทำงานเสร็จ
+              this.router.navigate(['/feature/customer']);
             });
-            this.router.navigate(['/feature/customer']);
           },
           error: (err) => {
             console.error('Error adding data', err);
-          },
+          }
         });
       }
     } else {
       this.customerForm.markAllAsTouched();
+
       if (this.emailError !== '') {
         Swal.fire({
           icon: 'error',
@@ -382,41 +392,27 @@ export class CustomerAddComponent implements OnInit {
           text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
           confirmButtonText: 'ปิด'
         });
-        return;
-      }
-      else {
+      } else {
         Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
       }
-
     }
   }
 
   async onUpdate(): Promise<void> {
     try {
-      console.log('asdsadsad');
-      if (this.listfile.length != 0) {
-        await this.UploadFile();
+      if (this.listfile.length !== 0) {
+        await this.UploadFile();  // รอให้การอัปโหลดไฟล์เสร็จก่อน
       }
+
       const formValue = this.prepareFormData();
-      console.log('Form value before update:', formValue);
-      this.customerService.updateData(this.customerId!, formValue).subscribe({
-        next: (response) => {
-          this.insertLog();
-          this.sendEmailNotification();
-          // this.sendEmailNotificationRequester();
-          Swal.fire({
-            icon: 'success',
-            title: 'Updated!',
-            text: 'Your data has been updated.',
-            showConfirmButton: false,
-            timer: 1500
-          });
-          this.router.navigate(['/feature/customer'])
-        },
-        error: (err) => {
-          console.error('Error updating data', err);
-        }
-      });
+      console.log(formValue);
+      delete formValue.post_id;
+
+      // รอให้การ update ข้อมูลเสร็จสมบูรณ์ก่อนทำอย่างอื่น
+      await this.customerService.updateData(this.customerId!, formValue).toPromise();
+
+      this.insertLog();
+
     } catch (error) {
       console.error('Error during update process:', error);
     }
@@ -465,10 +461,8 @@ export class CustomerAddComponent implements OnInit {
 
   insertLog(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    delete this.tempCusForm.post_id;
-    this.customerForm.setValue(this.tempCusForm);
-    console.log("470",this.customerId);
-    console.log("471",this.customerForm.value);
+    console.log("470", this.customerId);
+    console.log("471", this.customerForm.value);
 
     if (!currentUser) {
       console.error('Current user is not available in local storage');
@@ -555,7 +549,24 @@ export class CustomerAddComponent implements OnInit {
       confirmButtonText: 'Yes, save it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.setStatusAndSubmit('Draft');
+        const status = this.customerForm.value.status
+        if(status === 'Pending Approved By ACC'){
+          this.setStatusAndSubmit(status);
+        }
+        else{
+          this.setStatusAndSubmit('Draft');
+        }
+        // เมื่อทุกอย่างเสร็จแล้ว ค่อยทำการ redirect
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: 'Your data has been updated.',
+          showConfirmButton: false,
+          timer: 1500
+        }).then(() => {
+          // ทำการ redirect หลังจาก popup ปิด
+          this.router.navigate(['/feature/customer']);
+        });
       }
     });
   }
@@ -592,26 +603,54 @@ export class CustomerAddComponent implements OnInit {
         if (result.isConfirmed) {
           const currentStatus = this.customerForm.get('status')?.value;
           this.setStatusAndSubmit("Pending Approved By ACC");
+
+          // เมื่อทุกอย่างเสร็จแล้ว ค่อยทำการ redirect
+          Swal.fire({
+            icon: 'success',
+            title: 'Updated!',
+            text: 'Your data has been updated.',
+            showConfirmButton: false,
+            timer: 1500
+          }).then(() => {
+            // ทำการ redirect หลังจาก popup ปิด
+            this.router.navigate(['/feature/customer']);
+          });
         }
       }
     });
   }
 
-  async approve(event: Event): Promise<void>  {
+  async approve(event: Event): Promise<void> {
     event.preventDefault();
-    Swal.fire({
+
+    // ใช้ await เพื่อรอการทำงานของ Swal.fire ให้เสร็จสมบูรณ์
+    const result = await Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to Approve?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.setStatusAndSubmit("Approved By ACC");
-      }
+      confirmButtonText: 'Yes, approve it!'
     });
+
+    // ถ้าผู้ใช้กดยืนยัน ให้ทำการอนุมัติ
+    if (result.isConfirmed) {
+      // รอให้การตั้งค่าสถานะและการ submit เสร็จสิ้นก่อน
+      await this.setStatusAndSubmit("Approved By ACC");
+
+      // เมื่อทุกอย่างเสร็จแล้ว ค่อยทำการ redirect
+      Swal.fire({
+        icon: 'success',
+        title: 'Updated!',
+        text: 'Your data has been updated.',
+        showConfirmButton: false,
+        timer: 1500
+      }).then(() => {
+        // ทำการ redirect หลังจาก popup ปิด
+        this.router.navigate(['/feature/customer']);
+      });
+    }
   }
 
   reject(event: Event): void {
@@ -630,10 +669,20 @@ export class CustomerAddComponent implements OnInit {
           if (result.isConfirmed) {
             this.reasonTemp = rejectReason;
             this.setStatusAndSubmit("Reject By ACC");
+            // เมื่อทุกอย่างเสร็จแล้ว ค่อยทำการ redirect
+            Swal.fire({
+              icon: 'success',
+              title: 'Updated!',
+              text: 'Your data has been updated.',
+              showConfirmButton: false,
+              timer: 1500
+            }).then(() => {
+              // ทำการ redirect หลังจาก popup ปิด
+              this.router.navigate(['/feature/customer']);
+            });
           }
         });
-      } else {
-      }
+      } 
     });
   }
 
@@ -660,12 +709,15 @@ export class CustomerAddComponent implements OnInit {
     });
   }
 
-   async setStatusAndSubmit(status: string): Promise<void> {
+  async setStatusAndSubmit(status: string): Promise<void> {
     this.customerForm.patchValue({ status });
+
     if (!this.customerId) {
       this.customerForm.patchValue({ customerNum: this.newCusnum });
-      console.log("625", this.customerForm.value);
+      console.log("Set customerNum: ", this.customerForm.value);
     }
+
+    // รอให้การ submit ข้อมูลเสร็จก่อน
     await this.onSubmit();
   }
 
@@ -794,9 +846,9 @@ export class CustomerAddComponent implements OnInit {
       const tax = this.customerForm.value.taxId.trim();
       const type = this.typeCode.trim();
       const key = `${tax}-${type}`;
-      console.log('804',key);
-      console.log('805',this.typeCode);
-      
+      console.log('804', key);
+      console.log('805', this.typeCode);
+
       this.customerService.CheckDupplicateCustomer(key).subscribe({
         next: (response: any) => {
           if (response && response.length > 0) {
@@ -838,10 +890,12 @@ export class CustomerAddComponent implements OnInit {
 
   getNumMaxCustomer(): Promise<void> {
     return new Promise((resolve, reject) => {
+      console.log("841", this.typeCode);
+
       this.customerService.GetNumMaxCustomer(this.typeCode).subscribe({
         next: (response: any) => {
-          console.log('850',response);
-          
+          console.log('850', response);
+
           if (!response || response.length === 0 || response.num === null) {
             this.customerForm.patchValue({ customerNum: '' });
           } else {
@@ -1007,12 +1061,41 @@ export class CustomerAddComponent implements OnInit {
     );
   }
 
-  async checkApprove(event: Event) {
+  async checkApprove(event: Event): Promise<void> {
     try {
+      // ตรวจสอบข้อมูลซ้ำให้เสร็จก่อน
       await this.CheckDupplicateData();
+
+      // รอให้ approve() ทำงานเสร็จก่อนดำเนินการต่อ
       await this.approve(event);
     } catch (error) {
-      console.error('Error occurred:', error);
+      console.error('Error occurred during approval:', error);
     }
+  }
+
+  getDataCompany(): void {
+    const CheckcurrentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const userCompanies = CheckcurrentUser.company ? CheckcurrentUser.company.split(',') : [];
+
+    if (userCompanies.length === 0) {
+      console.error('No company information found in local storage');
+      return;
+    }
+
+    this.supplierService.getDataCompany().subscribe({
+      next: (response: any) => {
+
+        // if (CheckcurrentUser.company === 'ALL') {
+        this.listOfCompany = response;
+        this.filteredDataompany = response;
+        // } else {
+        //   this.listOfCompany = response.filter((company: DataCompany) => userCompanies.includes(company.abbreviation));
+        //   this.filteredDataompany = this.listOfCompany;
+        // }
+        this._cdr.markForCheck();
+      },
+      error: () => {
+      }
+    });
   }
 }

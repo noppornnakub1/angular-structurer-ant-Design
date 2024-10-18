@@ -155,6 +155,8 @@ export class SupplierAddComponent {
   selectedFiles: SelectedFile[] = [];
   selectedFilesAdd: SelectedFile[] = [];
   fileIdsToRemove: number[] = [];
+  fileIdsToRemoveForBank: number[] = [];
+  anotherFileIdsToRemove: number[] = [];
   fileIdsToRemoveBank: number[] = [];
   fileIdsToRemoveBankAdd: number[] = [];
   private _cdr = inject(ChangeDetectorRef);
@@ -746,12 +748,28 @@ export class SupplierAddComponent {
     });
   }
 
-  removeFile(file: any): void {
+  removeFile(file: any, isForBank: boolean = false): void {
+    console.log('Removing file:', file);
+    console.log('Is for Bank:', isForBank);
+
     if (file.fileId) {
-      this.fileIdsToRemove.push(file.fileId);
+      if (isForBank) {
+        this.fileIdsToRemoveForBank.push(file.fileId);
+        console.log('Added fileId to fileIdsToRemoveForBank:', this.fileIdsToRemoveForBank);
+      } else {
+        this.fileIdsToRemove.push(file.fileId);
+        console.log('Added fileId to fileIdsToRemove:', this.fileIdsToRemove);
+      }
+    } else {
+      console.log('No fileId found for the file:', file);
     }
+
+    console.log('File object before update:', file);
+
     file.filePath = '';
     file.fileName = '';
+
+    console.log('File object after update:', file);
   }
 
   getAdjustedFilePath(filePath: string): string {
@@ -1130,15 +1148,21 @@ export class SupplierAddComponent {
     if (formValue && this.suppilerId) {
       const formData = this.prepareFormData();
 
-      formData.forEach((value: any, key: string) => {
-        if (value instanceof File) {
-        } else {
-        }
-      });
+      const fileIdsToRemoveJson = this.showSupplierBankForm
+        ? JSON.stringify(this.fileIdsToRemoveForBank)
+        : JSON.stringify(this.fileIdsToRemove);
+
+      console.log('File IDs to Remove JSON:', fileIdsToRemoveJson);
+
+      formData.append('fileIdsToRemoveJson', JSON.stringify(this.fileIdsToRemove));
+
+      console.log('FormData after appending fileIdsToRemoveJson:', formData.get('fileIdsToRemoveJson'));
+
+      console.log('FormData:', formData.get('fileIdsToRemoveJson'));
 
       this.supplierService.updateDataWithFiles(this.suppilerId, formData).subscribe({
         next: (response) => {
-          if (this.showSupplierBankForm === false) {
+          if (!this.showSupplierBankForm) {
             this.insertLog();
             Swal.fire({
               icon: 'success',
@@ -1279,33 +1303,38 @@ export class SupplierAddComponent {
 
   onUpdateSupplierBank(): void {
     const supplierBankData = [];
-  
+
     if (this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
       supplierBankData.push(bankFormValue);
     }
-  
+
     if (this.supplierBankFormAdd.valid) {
       const bankFormValueAdd = this.supplierBankFormAdd.value;
       supplierBankData.push(bankFormValueAdd);
     }
-  
+
     if (supplierBankData.length > 0) {
       const formData = new FormData();
       const supplierBankJson = JSON.stringify(supplierBankData);
-      const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
-  
+      const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemoveForBank);
+
       formData.append('supplierBankJson', supplierBankJson);
+
+      console.log('File IDs to Remove JSON:', fileIdsToRemoveJson);
+
+      formData.append('fileIdsToRemoveJson', JSON.stringify(this.fileIdsToRemoveForBank));
+
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
-  
+
       for (let selectedFile of this.selectedNewFilesSupplier) {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
       }
-  
+
       for (let selectedFile of this.selectedFilesAdd) {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
       }
-  
+
       this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
         next: (response) => {
           Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');

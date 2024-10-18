@@ -34,7 +34,7 @@ export class SupplierService {
 
   updateDataWithFiles(id: number, formData: FormData): Observable<any> {
     return this._http.put(`/Supplier/UpdateSupplierWithFiles?id=${id}`, formData);
-  }
+  }  
 
   findSupplierTypeById(id: number): Observable<IsupplierType> {
     return this._http.get<IsupplierType>(`/Supplier/FindSupplierTypeByID?id=${id}`);

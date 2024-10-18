@@ -1311,9 +1311,17 @@ export class SupplierAddComponent {
 
       console.log('File IDs to Remove JSON:', fileIdsToRemoveJson);
 
-      formData.append('fileIdsToRemoveJson', JSON.stringify(this.fileIdsToRemoveForBank));
-
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
+
+      const labelTextsGrouped: { [key: string]: string[] } = {};
+      this.selectedNewFilesSupplier.forEach(selectedFile => {
+        if (!labelTextsGrouped[selectedFile.fileType]) {
+          labelTextsGrouped[selectedFile.fileType] = [];
+        }
+        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
+      });
+
+      formData.append('labelTextsJson', JSON.stringify(labelTextsGrouped));
 
       for (let selectedFile of this.selectedNewFilesSupplier) {
         formData.append('Files', selectedFile.file, selectedFile.file.name);

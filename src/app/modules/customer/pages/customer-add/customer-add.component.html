@@ -203,7 +203,7 @@
         nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
           nzTheme="outline"></span>Cancel</button>
       <button nz-tooltip nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
-        *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(customerForm.get('status')?.value)) || isAdmin"
+        *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(customerForm.get('status')?.value)) || isAdmin || isApproved || isApprovedFN"
         class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft
       </button>

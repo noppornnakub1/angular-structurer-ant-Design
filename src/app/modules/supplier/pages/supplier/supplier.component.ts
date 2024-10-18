@@ -23,10 +23,10 @@ export class SupplierComponent implements OnInit {
   listOfData: ISupplier[] = [];
   filteredData: ISupplier[] = [];
   displayData: ISupplier[] = [];
-  filters = { name: '', supplierNum: '', tax_Id: '', status: '' };
+  filters = { name: '', supplier_num: '', tax_Id: '', status: '' };
   pageIndex: number = 1;
   pageSize: number = 10;
-  statusOptions: string[] = ['All', 'Draft', 'Cancel','Pending Approved By ACC','Pending Approved By FN', 'Approved By ACC', 'Approve By FN','Reject By ACC','Reject By FN','Pending Sync.'];
+  statusOptions: string[] = ['All', 'Draft', 'Cancel', 'Pending Approved By ACC', 'Pending Approved By FN', 'Approved By ACC', 'Approve By FN', 'Reject By ACC', 'Reject By FN', 'Pending Sync.'];
   selectedStatus: string = 'All';
 
   listOfColumn = [
@@ -42,7 +42,7 @@ export class SupplierComponent implements OnInit {
     },
     {
       title: 'Supplier Number',
-      compare: (a: ISupplier, b: ISupplier) =>  a.supplierNum.localeCompare(b.supplierNum),
+      compare: (a: ISupplier, b: ISupplier) => (a.supplierNum || '').localeCompare(b.supplierNum || ''),
       priority: 3
     },
     {
@@ -66,7 +66,7 @@ export class SupplierComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
 
-  constructor(private supplierService: SupplierService,private cdr: ChangeDetectorRef) { }
+  constructor(private supplierService: SupplierService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
 
@@ -131,7 +131,7 @@ export class SupplierComponent implements OnInit {
       this.supplierService.findDataByUserId(currentUser.userId).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          
+
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();
@@ -147,7 +147,7 @@ export class SupplierComponent implements OnInit {
       if (item.status === 'Approved By ACC' && (item.paymentMethod === 'Transfer' || item.paymentMethod === 'Transfer_Employee')) {
         return { ...item, status: 'Pending Approved By FN' };
       }
-      else if(item.status === 'Approved By ACC' && item.paymentMethod !== 'Transfer' && item.paymentMethod !== 'Transfer_Employee'){
+      else if (item.status === 'Approved By ACC' && item.paymentMethod !== 'Transfer' && item.paymentMethod !== 'Transfer_Employee') {
         return { ...item, status: 'Pending Sync.' };
       }
       if (item.status === 'Approved By FN') {
@@ -158,16 +158,32 @@ export class SupplierComponent implements OnInit {
   }
 
   applyFilters(): void {
-    const { name, supplierNum, tax_Id, status } = this.filters;
-    this.filteredData = this.listOfData.filter(data =>
-      (data.name?.includes(name) ?? true) &&
-      (data.supplierNum?.includes(supplierNum) ?? true) &&
-      (data.tax_Id?.includes(tax_Id) ?? true) &&
-      (this.selectedStatus === 'All' || data.status === this.selectedStatus)
-    );
-    this.pageIndex = 1;
+    const { name, supplier_num, tax_Id } = this.filters;
+
+    // แปลงข้อมูลที่กรอกในฟิลด์เป็นตัวพิมพ์เล็กเพื่อให้ไม่สนใจการพิมพ์เล็กหรือพิมพ์ใหญ่
+    const lowerCaseName = name ? name.toLowerCase() : '';
+    const lowerCaseSupplierNum = supplier_num ? supplier_num.toLowerCase() : '';
+    const lowerCaseTaxId = tax_Id ? tax_Id.toLowerCase() : '';
+
+    this.filteredData = this.listOfData.filter(data => {
+      // ตรวจสอบและแปลงข้อมูลที่ต้องการกรองให้เป็นตัวพิมพ์เล็กเช่นกัน
+      const dataName = data.name ? data.name.toLowerCase() : '';
+      const dataSupplierNum = data.supplierNum ? data.supplierNum.toLowerCase() : '';
+      const dataTaxId = data.tax_Id ? data.tax_Id.toLowerCase() : '';
+
+      return (
+        dataName.includes(lowerCaseName) &&  // ตรวจสอบชื่อที่ค้นหาตรงกับข้อมูลหรือไม่
+        (
+          lowerCaseSupplierNum ? dataSupplierNum.startsWith(lowerCaseSupplierNum) : true // ตรวจสอบ supplierNum โดยใช้ startsWith
+        ) &&
+        dataTaxId.includes(lowerCaseTaxId) &&  // ตรวจสอบ taxId
+        (this.selectedStatus === 'All' || data.status === this.selectedStatus) // ตรวจสอบสถานะ
+      );
+    });
+
+    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อมีการกรองข้อมูลใหม่
     this.updateDisplayData();
-  }
+}
 
   onStatusChange(status: string): void {
     this.selectedStatus = status;
@@ -206,7 +222,7 @@ export class SupplierComponent implements OnInit {
   sortData(event: any): void {
     const sortField = event.key as keyof ISupplier;
     const sortOrder = event.value;
-  
+
     if (sortField && sortOrder) {
       this.displayData = this.filteredData.sort((a, b) => {
         const comparison = a[sortField] > b[sortField] ? 1 : -1;

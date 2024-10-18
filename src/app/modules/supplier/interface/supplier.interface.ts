@@ -3,7 +3,7 @@ export interface ISupplier {
     name: string,
     key:string,
     tax_Id: string,
-    address_sup: string,
+    addressSup: string,
     district: string,
     subdistrict: string,
     province: string,

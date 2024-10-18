@@ -43,40 +43,44 @@ export class SignInComponent {
       const { username, password } = this.loginForm.value;
       this.authService.login(username, password).subscribe(
         response => {
-
           if (response) {
+            // เรียก getRole หลังจาก login สำเร็จ
             this.authService.getRole(response.role).subscribe(
               responseRole => {
                 if (responseRole) {
+                  // แสดงข้อความสำเร็จ
                   Swal.fire({
                     icon: 'success',
                     title: 'เข้าสู่ระบบสำเร็จ',
                     showConfirmButton: false,
                     timer: 1500
                   });
+  
+                  // รอนำทางหลังจาก getRole สำเร็จ
                   this.router.navigate(['/feature/dashboard']);
                 }
               },
               error => {
-                console.error('Login failed', error);
-                this.errorMessage = 'Login failed. Please try again later.';
+                console.error('Fetching role failed', error);
+                this.errorMessage = 'Fetching role failed. Please try again later.';
+                Swal.fire('Error!', 'การดึงข้อมูล role ล้มเหลว', 'error');
               }
             );
-
-            this.router.navigate(['/feature/dashboard']);
           } else {
+            // ถ้า login ไม่สำเร็จ
             this.errorMessage = 'Invalid username or password';
-
             Swal.fire('Error!', 'กรุณาตรวจสอบ Username และ Password ให้ถูกต้อง', 'error');
-
           }
         },
         error => {
+          // เมื่อ login ล้มเหลว
           console.error('Login failed', error);
           this.errorMessage = 'Login failed. Please try again later.';
+          Swal.fire('Error!', 'การเข้าสู่ระบบล้มเหลว', 'error');
         }
       );
     } else {
+      // ฟอร์มไม่ถูกต้อง
       this.errorMessage = 'Please fill out the form correctly.';
     }
   }

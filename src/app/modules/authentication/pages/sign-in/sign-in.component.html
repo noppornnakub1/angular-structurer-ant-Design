@@ -13,7 +13,7 @@
         <nz-form-item>
           <nz-form-control>
             <nz-input-group nzPrefixIcon="user" class="input-group-field">
-              <input formControlName="username" nz-input placeholder="username" />
+              <input formControlName="username" nz-input placeholder="username" autocomplete="off"/>
             </nz-input-group>
             <div *ngIf="loginForm.controls['username'].invalid && loginForm.controls['username'].dirty">
               <span *ngIf="loginForm.controls['username'].errors!['required']">Username is required.</span>
@@ -27,7 +27,7 @@
               <input formControlName="password" 
                      nz-input 
                      [type]="isPasswordVisible ? 'text' : 'password'" 
-                     placeholder="Password" />
+                     placeholder="Password" autocomplete="off"/>
               <span nz-icon 
                     [nzType]="isPasswordVisible ? 'eye-invisible' : 'eye'" 
                     nzTheme="outline" 

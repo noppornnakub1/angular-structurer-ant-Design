@@ -670,7 +670,7 @@ export class CustomerAddComponent implements OnInit {
   }
 
   getTaxIdData(): void {
-    const taxId = this.customerForm.get('tax_Id')?.value;
+    const taxId = this.customerForm.get('taxId')?.value;
 
     if (taxId) {
       this.customerService.getDataByTaxId(taxId).subscribe({

@@ -195,6 +195,8 @@ export class SupplierAddComponent {
   fullName: string = '';
   isCheckingDuplicate: boolean = false;
   idreq: number = 0;
+  selectedPostalCodeObject: any;
+  selectedPostalCode: any = null;
   emailreq: string = '';
   fileBankAddApi: boolean = false;
   public isLoadingFromAPI = false;
@@ -219,10 +221,10 @@ export class SupplierAddComponent {
       name: ['', Validators.required],
       tax_Id: ['', Validators.required],
       addressSup: ['', Validators.required],
-      district: ['', Validators.required],
-      subdistrict: ['', Validators.required],
-      province: ['', Validators.required],
-      postalCode: ['', Validators.required],
+      postalCode: [null, Validators.required],
+      province: [null],
+      district: [null],
+      subdistrict: [null],
       tel: ['', Validators.required],
       email: ['', Validators.required],
       supplierNum: [''],
@@ -806,13 +808,13 @@ export class SupplierAddComponent {
         }));
 
         console.log(this.filess);
-        
+
         const missingFiles = this.files.filter(file => {
           const existingFile = this.filess.find(f => f.labelText === file.labelText);
           return !existingFile || !existingFile.filePath; // กรองไฟล์ที่ไม่มี filePath (แสดงว่าผู้ใช้อาจยังไม่ได้อัปโหลด)
         });
         console.log(missingFiles);
-        
+
 
         // รวมรายการไฟล์จาก API กับไฟล์ที่ยังไม่ได้อัปโหลด
         this.displayFiles = [...this.filess, ...missingFiles];
@@ -935,27 +937,30 @@ export class SupplierAddComponent {
   }
 
   onSearch(value: string): void {
-    this.filteredItemsProvince = this.items_provinces.filter(item =>
-      item.subdistrict.includes(value) ||
-      item.district.includes(value) ||
-      item.province.includes(value) ||
-      item.postalCode.includes(value)
-    );
+    if (value) {
+      this.filteredItemsProvince = this.items_provinces.filter(item =>
+        item.postalCode.includes(value) ||
+        item.subdistrict.includes(value) ||
+        item.district.includes(value) ||
+        item.province.includes(value)
+      );
+    } else {
+      this.filteredItemsProvince = [...this.items_provinces];
+    }
   }
 
   onPostalCodeChange(value: any): void {
-    const [postalCode, subdistrict] = value.split('-');
-    const selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
-    if (selectedItem) {
+    if (value && value.postalCode) {
       this.supplierForm.patchValue({
-        district: selectedItem.district,
-        subdistrict: selectedItem.subdistrict,
-        province: selectedItem.province
+        postalCode: value.postalCode,
+        district: value.district,
+        subdistrict: value.subdistrict,
+        province: value.province
       });
-
-      this.cdr.markForCheck();
     } else {
+      console.warn('Invalid value for postal code:', value);
     }
+    this.cdr.markForCheck();
   }
 
   isSubdistrictMatching(item: DataLocation): boolean {
@@ -964,6 +969,8 @@ export class SupplierAddComponent {
   }
 
   async onSubmit(): Promise<void> {
+    const formValue = { ...this.supplierForm.value };
+
     if (this.isViewMode) {
       this.toggleFormState(true);
     }
@@ -976,6 +983,7 @@ export class SupplierAddComponent {
 
     if (this.supplierForm.valid) {
       const formData = this.prepareFormData();
+
       this.assignPostId(formData);
 
       if (this.suppilerId) {
@@ -1314,11 +1322,13 @@ export class SupplierAddComponent {
     if (supplierBankData.length > 0) {
       const formData = new FormData();
       const supplierBankJson = JSON.stringify(supplierBankData);
-      const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemoveForBank);
+
+      const sortedFileIdsToRemove = [...this.fileIdsToRemoveForBank].sort((a, b) => a - b);
+      const fileIdsToRemoveJson = JSON.stringify(sortedFileIdsToRemove);
 
       formData.append('supplierBankJson', supplierBankJson);
 
-      console.log('File IDs to Remove JSON:', fileIdsToRemoveJson);
+      console.log('File IDs to Remove JSON (Sorted):', fileIdsToRemoveJson);
 
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
 

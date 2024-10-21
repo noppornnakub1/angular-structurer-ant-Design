@@ -42,7 +42,8 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)" (blur)="onSiteBlur()"/>
+          <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)"
+            (blur)="onSiteBlur()" />
         </nz-input-group>
       </div>
       <div *ngIf="isOverseaSupplier() || isOneTime" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
@@ -100,18 +101,21 @@
         <nz-form-item>
           <nz-form-control nzErrorTip="Please select postal code!">
             <nz-select nzShowSearch nzServerSearch nzPlaceHolder="Postal Code" (nzOnSearch)="onSearch($event)"
-              formControlName="postalCode" (ngModelChange)="onPostalCodeChange($event)">
+              [(ngModel)]="selectedPostalCodeObject" [ngModelOptions]="{standalone: true}"
+              (ngModelChange)="onPostalCodeChange($event)">
               <nz-option *ngFor="let item of filteredItemsProvince"
-                [nzLabel]="item.postalCode + ' '+ item.subdistrict + ' ' + item.district + ' ' + item.province"
-                [nzValue]="item.postalCode + '-' + item.subdistrict">
+                [nzLabel]="item.postalCode + ' ' + item.subdistrict + ' ' + item.district + ' ' + item.province"
+                [nzValue]="item">
               </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
+        <div *ngIf="supplierForm.get('postalCode')?.hasError('required') && supplierForm.get('postalCode')?.touched">
+          Please select postal code!
+        </div>
       </div>
       <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Province<span style="color: red;">*</span>
-        </nz-form-label>
+        <nz-form-label nzNoColon>Province<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="global" class="form-input">
           <input nz-input placeholder="Province" formControlName="province" />
         </nz-input-group>

@@ -916,17 +916,29 @@ export class SupplierAddComponent {
       const SupplierNumPrefix = data.codeFrom;
       this.typeCode = SupplierNumPrefix;
       if (SupplierNumPrefix === '2F') {
-        this.supplierForm.patchValue({
-          supplierNum: '-',
-          postalCode: '-',
-          province: '-',
-          district: '-',
-          subdistrict: '-',
-          site: '',
-          vat: '-',
-          company: '-',
-          paymentMethod: '-'
-        });
+        if(this.supplierForm.value.company === ''){
+          this.supplierForm.patchValue({
+            postalCode: '-',
+            province: '-',
+            district: '-',
+            subdistrict: '-',
+            site: '',
+            vat: '-',
+            company: '-',
+            paymentMethod: '-'
+          });
+        }
+        else{
+          this.supplierForm.patchValue({
+            postalCode: '-',
+            province: '-',
+            district: '-',
+            subdistrict: '-',
+            site: '',
+            vat: '-',
+            paymentMethod: '-'
+          });
+        }
       }
     });
   }

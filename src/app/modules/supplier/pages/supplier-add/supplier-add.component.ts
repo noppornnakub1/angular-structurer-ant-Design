@@ -77,10 +77,13 @@ export interface prefix {
 }
 
 interface SelectedFile {
-  fileId?: number;
   file: File;
   fileType: string;
+  fileName: string;
+  filePath: string;
   labelText: string;
+  fileId?: number;
+  supbankId?: number;
 }
 
 @Component({
@@ -411,9 +414,11 @@ export class SupplierAddComponent {
 
         this.selectedFilesSupplier = this.selectedFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
 
-        const newFile = {
+        const newFile: SelectedFile = {
           file: selectedFile,
           fileType: fileType,
+          fileName: selectedFile.name,
+          filePath: '',
           labelText: labelText
         };
         this.selectedFilesSupplier.push(newFile);
@@ -436,44 +441,38 @@ export class SupplierAddComponent {
         fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText);
       }
 
-      // เช็คว่ามีไฟล์ที่เลือกอยู่แล้วหรือไม่ ถ้ามีให้เคลียร์ออกก่อน
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
 
-        // ลบไฟล์เก่าออกจาก array ถ้ามีการเลือกไฟล์ใหม่
-        if (isFromFilesBankAdd) {
-          this.selectedFilesAdd = this.selectedFilesAdd.filter(file => file.fileType !== fileType || file.labelText !== labelText);
-        } else {
-          this.selectedNewFilesSupplier = this.selectedNewFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
-        }
-
-        // ตรวจสอบว่า fileId มีอยู่และเพิ่มเข้าในรายการลบ
-        if ('fileId' in fileToUpdate) {
-          const fileId = (fileToUpdate as any).fileId;
+        if (fileToUpdate && 'fileId' in fileToUpdate) {
+          const fileId = (fileToUpdate as { fileId: number }).fileId;
           if (fileId) {
             if (isFromFilesBankAdd) {
-              this.fileIdsToRemoveBankAdd.push(fileId);
+              if (!this.fileIdsToRemoveBankAdd.includes(fileId)) {
+                this.fileIdsToRemoveBankAdd.push(fileId);
+              }
             } else {
-              this.fileIdsToRemoveBank.push(fileId);
+              if (!this.fileIdsToRemoveBank.includes(fileId)) {
+                this.fileIdsToRemoveBank.push(fileId);
+              }
             }
           }
         }
       }
 
-      // สร้างไฟล์ใหม่
-      const newFile = {
+      const newFile: SelectedFile = {
         file: selectedFile,
         fileType: fileType,
+        fileName: selectedFile.name,
+        filePath: '',
         labelText: labelText
       };
 
-      // เพิ่มไฟล์ใหม่เข้าไปใน array
       if (isFromFilesBankAdd) {
         this.selectedFilesAdd.push(newFile);
       } else {
         this.selectedNewFilesSupplier.push(newFile);
-        console.log(this.selectedNewFilesSupplier, "456");
       }
 
       this._cdr.detectChanges();
@@ -483,11 +482,15 @@ export class SupplierAddComponent {
   onFileSelect(event: Event, fileType: string, labelText: string) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFiles.push({
-        file: input.files[0],
-        fileType,
-        labelText
-      });
+      const selectedFile = input.files[0];
+      const newFile: SelectedFile = {
+        file: selectedFile,
+        fileType: fileType,
+        fileName: selectedFile.name,
+        filePath: '',
+        labelText: labelText
+      };
+      this.selectedFiles.push(newFile);
     }
   }
 
@@ -496,11 +499,15 @@ export class SupplierAddComponent {
     if (input.files && input.files.length > 0) {
       this.selectedFilesAdd = [];
       for (let i = 0; i < input.files.length; i++) {
-        this.selectedFilesAdd.push({
-          file: input.files[i],
-          fileType,
-          labelText
-        });
+        const selectedFile = input.files[i];
+        const newFile: SelectedFile = {
+          file: selectedFile,
+          fileType: fileType,
+          fileName: selectedFile.name,
+          filePath: '',
+          labelText: labelText
+        };
+        this.selectedFilesAdd.push(newFile);
       }
     }
   }
@@ -861,6 +868,7 @@ export class SupplierAddComponent {
       if (data.supplierBankFilesForSupbankId1 && data.supplierBankFilesForSupbankId1.length > 0) {
         this.filesBank = data.supplierBankFilesForSupbankId1.map((file: any) => ({
           fileId: file.FileId,
+          supbankId: file.SupbankId,
           fileName: file.FileName,
           fileType: file.FileType,
           filePath: file.FilePath,
@@ -868,14 +876,11 @@ export class SupplierAddComponent {
         }));
       }
 
+
       if (data.supplierBank.length > 1) {
         const bankDataAdd = data.supplierBank[1];
         console.log("SupplierBank[1] data:", bankDataAdd);
-        // ตั้ง flag เพื่อบอกว่ากำลังโหลดข้อมูลจาก API
         this.isLoadingFromAPI = true;
-        // if (!this.filteredListOfGroup.some(group => group.group_name === bankDataAdd.supplierGroup)) {
-        //   this.filteredListOfGroup.push({ group_name: bankDataAdd.supplierGroup });
-        // }
         this.selectedSupplierGroupAdd = bankDataAdd.SupplierGroup;
 
         this.supplierBankFormAdd.patchValue({
@@ -890,17 +895,14 @@ export class SupplierAddComponent {
         });
 
         this.showSupplierBankFormAdd = true;
-        // เสร็จสิ้นการโหลดข้อมูลจาก API ตั้งค่า flag กลับเป็น false
         setTimeout(() => {
           this.isLoadingFromAPI = false;
         }, 1000);
       }
 
-      // ตรวจสอบข้อมูลไฟล์จาก API
       if (data.supplierBankFilesForSupbankId2 && data.supplierBankFilesForSupbankId2.length > 0) {
         console.log("Files from API for supbankId2:", data.supplierBankFilesForSupbankId2);
 
-        // อัปเดต filesBankAdd ด้วยข้อมูลจาก API
         this.filesBankAdd = data.supplierBankFilesForSupbankId2.map((file: any) => ({
           fileId: file.FileId,
           fileName: file.FileName,
@@ -1307,48 +1309,77 @@ export class SupplierAddComponent {
   }
 
   onUpdateSupplierBank(): void {
-    const supplierBankData = [];
+    const supplierBankData: any[] = [];
 
     if (this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
+      console.log('Bank Form Value:', bankFormValue);
       supplierBankData.push(bankFormValue);
+    } else {
+      console.log('Supplier Bank Form is invalid:', this.supplierBankForm.errors);
     }
 
     if (this.supplierBankFormAdd.valid) {
       const bankFormValueAdd = this.supplierBankFormAdd.value;
+      console.log('Bank Form Add Value:', bankFormValueAdd);
       supplierBankData.push(bankFormValueAdd);
+    } else {
+      console.log('Supplier Bank Form Add is invalid:', this.supplierBankFormAdd.errors);
     }
 
     if (supplierBankData.length > 0) {
       const formData = new FormData();
       const supplierBankJson = JSON.stringify(supplierBankData);
 
-      const sortedFileIdsToRemove = [...this.fileIdsToRemoveForBank].sort((a, b) => a - b);
-      const fileIdsToRemoveJson = JSON.stringify(sortedFileIdsToRemove);
+      const fileIdsToRemoveList: { SupbankId: string, FileId: number }[] = [];
 
-      formData.append('supplierBankJson', supplierBankJson);
+      if (this.fileIdsToRemoveBank.length > 0) {
+        this.fileIdsToRemoveBank.forEach((fileId: number) => {
+          fileIdsToRemoveList.push({ SupbankId: this.supplierBankForm.value.supbankId, FileId: fileId });
+        });
+      }
+      
+      if (this.fileIdsToRemoveBankAdd.length > 0) {
+        this.fileIdsToRemoveBankAdd.forEach((fileId: number) => {
+          fileIdsToRemoveList.push({ SupbankId: this.supplierBankFormAdd.value.supbankId, FileId: fileId });
+        });
+      }      
 
-      console.log('File IDs to Remove JSON (Sorted):', fileIdsToRemoveJson);
+      console.log('File IDs to Remove List:', fileIdsToRemoveList);
+
+      const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveList);
+
+      console.log('File IDs to Remove JSON:', fileIdsToRemoveJson);
 
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
+      formData.append('supplierBankJson', supplierBankJson);
 
       const labelTextsGrouped: { [key: string]: string[] } = {};
-      this.selectedNewFilesSupplier.forEach(selectedFile => {
+
+      this.selectedNewFilesSupplier?.forEach(selectedFile => {
         if (!labelTextsGrouped[selectedFile.fileType]) {
           labelTextsGrouped[selectedFile.fileType] = [];
         }
         labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
       });
 
-      formData.append('labelTextsJson', JSON.stringify(labelTextsGrouped));
+      this.selectedFilesAdd?.forEach(selectedFile => {
+        if (!labelTextsGrouped[selectedFile.fileType]) {
+          labelTextsGrouped[selectedFile.fileType] = [];
+        }
+        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
+      });
 
-      for (let selectedFile of this.selectedNewFilesSupplier) {
-        formData.append('Files', selectedFile.file, selectedFile.file.name);
-      }
+      const labelTextsJson = JSON.stringify(labelTextsGrouped);
+      formData.append('labelTextsJson', labelTextsJson);
 
-      for (let selectedFile of this.selectedFilesAdd) {
+      this.selectedNewFilesSupplier?.forEach(selectedFile => {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
-      }
+      });
+
+      this.selectedFilesAdd?.forEach(selectedFile => {
+        formData.append('Files', selectedFile.file, selectedFile.file.name);
+      });
 
       this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
         next: (response) => {

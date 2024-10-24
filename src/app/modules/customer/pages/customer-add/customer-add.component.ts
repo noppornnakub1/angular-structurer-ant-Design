@@ -131,6 +131,8 @@ export class CustomerAddComponent implements OnInit {
     this.getCustomerType();
     this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
       const customerTypeId = this.getCustomerTypeId(value);
+      console.log(customerTypeId);
+      
       if (customerTypeId) {
         this.loadCustomerType(customerTypeId);
       }
@@ -285,16 +287,17 @@ export class CustomerAddComponent implements OnInit {
 
   loadCustomerType(id: number): void {
     this.customerService.findCustomerTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
-      const customerNumPrefix = data.code_from;
+      const customerNumPrefix = data.codeFrom;
       this.typeCode = customerNumPrefix;
       if (customerNumPrefix === '1F') {
         this.customerForm.patchValue({
-          customerNum: '-',
+          customerNum: '',
           postalCode: '-',
           province: '-',
           district: '-',
           subdistrict: '-',
-          site: ''
+          site: '',
+          company: '-'
         });
       }
     });
@@ -315,6 +318,8 @@ export class CustomerAddComponent implements OnInit {
   }
 
   onPostalCodeChange(value: any): void {
+    console.log(value);
+    
     const [postalCode, subdistrict] = value.split('-');
     const selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
     if (selectedItem) {
@@ -334,7 +339,8 @@ export class CustomerAddComponent implements OnInit {
 
   async onSubmit(): Promise<void> {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-
+    console.log("เข้าไม่เข้า");
+    
     if (this.isViewMode) {
       this.customerForm.enable();
     }
@@ -354,8 +360,11 @@ export class CustomerAddComponent implements OnInit {
       }
 
       if (this.customerId) {
+        console.log(this.customerId);
         await this.onUpdate();  // รอให้การอัปเดตเสร็จก่อน
       } else {
+        console.log("366",formValue);
+        
         this.customerService.addData(formValue).subscribe({
           next: async (response) => {
             console.log(response);
@@ -426,9 +435,11 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     const formValue = { ...this.customerForm.value };
+    console.log("438",formValue);
+    
     const selectedPostItem = this.items_provinces.find(item => {
       const postalCode = formValue.postalCode.split('-')[0];
-      return item.postalCode === postalCode && this.isSubdistrictMatching(item);
+      return item.postalCode === postalCode || this.isSubdistrictMatching(item);
     });
 
     if (selectedPostItem) {
@@ -537,38 +548,40 @@ export class CustomerAddComponent implements OnInit {
     });
   }
 
-  save(event: Event): void {
+  async save(event: Event): Promise<void> {
     event.preventDefault();
-    Swal.fire({
+    // ใช้ await เพื่อรอการทำงานของ Swal.fire ให้เสร็จสมบูรณ์
+    const result = await Swal.fire({
       title: 'Are you sure?',
-      text: "Do you want to save the changes?",
+      text: "Do you want to Approve?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const status = this.customerForm.value.status
-        if(status === 'Pending Approved By ACC'){
-          this.setStatusAndSubmit(status);
-        }
-        else{
-          this.setStatusAndSubmit('Draft');
-        }
-        // เมื่อทุกอย่างเสร็จแล้ว ค่อยทำการ redirect
-        Swal.fire({
-          icon: 'success',
-          title: 'Updated!',
-          text: 'Your data has been updated.',
-          showConfirmButton: false,
-          timer: 1500
-        }).then(() => {
-          // ทำการ redirect หลังจาก popup ปิด
-          this.router.navigate(['/feature/customer']);
-        });
-      }
+      confirmButtonText: 'Yes, approve it!'
     });
+
+    // ถ้าผู้ใช้กดยืนยัน ให้ทำการอนุมัติ
+    if (result.isConfirmed) {
+      const status = this.customerForm.value.status
+      if (status === 'Pending Approved By ACC') {
+        await this.setStatusAndSubmit(status);
+      }
+      else {
+        await this.setStatusAndSubmit('Draft');
+      }
+      // เมื่อทุกอย่างเสร็จแล้ว ค่อยทำการ redirect
+     await Swal.fire({
+        icon: 'success',
+        title: 'Updated!',
+        text: 'Your data has been updatedXXXX.',
+        showConfirmButton: false,
+        timer: 1500
+      }).then(() => {
+        // ทำการ redirect หลังจาก popup ปิด
+        this.router.navigate(['/feature/customer']);
+      });
+    }
   }
 
   checkSave(event: Event) {
@@ -584,6 +597,8 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     else {
+      console.log('558');
+
       this.save(event);
     }
   }
@@ -682,7 +697,7 @@ export class CustomerAddComponent implements OnInit {
             });
           }
         });
-      } 
+      }
     });
   }
 

@@ -27,7 +27,7 @@ import { ValidationService } from '../../../../shared/constants/ValidationServic
 import { UserService } from '../../../user-manager/services/user.service';
 
 export interface DataLocation {
-  post_id: number,
+  postId: number,
   province: string;
   district: string;
   subdistrict: string;
@@ -1033,7 +1033,7 @@ export class SupplierAddComponent {
       item => item.postalCode === formData.postalCode && this.isSubdistrictMatching(item)
     );
     if (selectedPostItem) {
-      formData.post_id = selectedPostItem.post_id;
+      formData.postId = selectedPostItem.postId;
     }
   }
 
@@ -1235,7 +1235,7 @@ export class SupplierAddComponent {
 
     if (selectedPostItem) {
       formValue.postalCode = selectedPostItem.postalCode;
-      formValue.post_id = selectedPostItem.post_id;
+      formValue.postId = selectedPostItem.postId;
     }
 
     formValue.user_id = currentUser.userId;

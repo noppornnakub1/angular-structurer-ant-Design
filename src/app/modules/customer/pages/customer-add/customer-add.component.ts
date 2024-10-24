@@ -356,7 +356,7 @@ export class CustomerAddComponent implements OnInit {
       );
 
       if (selectedPostItem) {
-        formValue.post_id = selectedPostItem.post_id;
+        formValue.postId = selectedPostItem.postId;
       }
 
       if (this.customerId) {
@@ -415,7 +415,7 @@ export class CustomerAddComponent implements OnInit {
 
       const formValue = this.prepareFormData();
       console.log(formValue);
-      delete formValue.post_id;
+      delete formValue.postId;
 
       // รอให้การ update ข้อมูลเสร็จสมบูรณ์ก่อนทำอย่างอื่น
       await this.customerService.updateData(this.customerId!, formValue).toPromise();
@@ -444,7 +444,7 @@ export class CustomerAddComponent implements OnInit {
 
     if (selectedPostItem) {
       formValue.postalCode = selectedPostItem.postalCode;
-      formValue.post_id = selectedPostItem.post_id;
+      formValue.postId = selectedPostItem.postId;
     }
     if (this.listDataByTaxId) {
       formValue.id = 0

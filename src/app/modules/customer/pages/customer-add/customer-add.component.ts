@@ -107,7 +107,8 @@ export class CustomerAddComponent implements OnInit {
       fileReq: [''],
       fileCertificate: [''],
       path: [''],
-      prefix: ['']
+      prefix: [''],
+      postId:[0]
     });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -322,8 +323,11 @@ export class CustomerAddComponent implements OnInit {
     
     const [postalCode, subdistrict] = value.split('-');
     const selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+    console.log(selectedItem);
+    
     if (selectedItem) {
       this.customerForm.patchValue({
+        postId: selectedItem.postId,
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
         province: selectedItem.province
@@ -356,7 +360,7 @@ export class CustomerAddComponent implements OnInit {
       );
 
       if (selectedPostItem) {
-        formValue.post_id = selectedPostItem.post_id;
+        formValue.postId = selectedPostItem.postId;
       }
 
       if (this.customerId) {
@@ -415,8 +419,6 @@ export class CustomerAddComponent implements OnInit {
 
       const formValue = this.prepareFormData();
       console.log(formValue);
-      delete formValue.post_id;
-
       // รอให้การ update ข้อมูลเสร็จสมบูรณ์ก่อนทำอย่างอื่น
       await this.customerService.updateData(this.customerId!, formValue).toPromise();
 
@@ -444,7 +446,7 @@ export class CustomerAddComponent implements OnInit {
 
     if (selectedPostItem) {
       formValue.postalCode = selectedPostItem.postalCode;
-      formValue.post_id = selectedPostItem.post_id;
+      formValue.postId = selectedPostItem.postId;
     }
     if (this.listDataByTaxId) {
       formValue.id = 0
@@ -453,6 +455,7 @@ export class CustomerAddComponent implements OnInit {
       delete formValue.id;
     }
     formValue.userId = currentUser.userId;
+    formValue.path = 'uploads'
     return formValue;
   }
 
@@ -570,8 +573,8 @@ export class CustomerAddComponent implements OnInit {
       else {
         await this.setStatusAndSubmit('Draft');
       }
-      // เมื่อทุกอย่างเสร็จแล้ว ค่อยทำการ redirect
-     await Swal.fire({
+     if(this.customerForm.value.id !== 0){
+      await Swal.fire({
         icon: 'success',
         title: 'Updated!',
         text: 'Your data has been updatedXXXX.',
@@ -581,6 +584,8 @@ export class CustomerAddComponent implements OnInit {
         // ทำการ redirect หลังจาก popup ปิด
         this.router.navigate(['/feature/customer']);
       });
+     } // เมื่อทุกอย่างเสร็จแล้ว ค่อยทำการ redirect
+     
     }
   }
 

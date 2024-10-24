@@ -1031,7 +1031,7 @@ export class SupplierAddComponent {
       item => item.postalCode === formData.postalCode && this.isSubdistrictMatching(item)
     );
     if (selectedPostItem) {
-      formData.post_id = selectedPostItem.postId;
+      formData.postId = selectedPostItem.postId;
     }
   }
 
@@ -1233,7 +1233,7 @@ export class SupplierAddComponent {
 
     if (selectedPostItem) {
       formValue.postalCode = selectedPostItem.postalCode;
-      formValue.post_id = selectedPostItem.postId;
+      formValue.postId = selectedPostItem.postId;
     }
 
     formValue.user_id = currentUser.userId;

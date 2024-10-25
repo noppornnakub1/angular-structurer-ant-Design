@@ -1120,7 +1120,7 @@ export class SupplierAddComponent {
           },
           error: (err) => {
             console.error('Error saving supplier data:', err);
-            Swal.fire('Error!', 'There was an error saving your data.', 'error');
+            Swal.fire('warning!', err, 'warning');
           }
         });
       }

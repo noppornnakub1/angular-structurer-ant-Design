@@ -1045,7 +1045,7 @@ export class SupplierAddComponent {
       selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
       console.log(selectedItemId, "selectedItemId");
     }
-    selectedItem = selectedItemId
+    // selectedItem = selectedItemId
     if(selectedItemId){
       // แก้ไขค่า subdistrict และ filteredItemsProvince
       selectedItemId.subdistrict = subdistrict;
@@ -1058,6 +1058,7 @@ export class SupplierAddComponent {
       });
     }
     else if (selectedItem) {
+      console.log();
       this.supplierForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,

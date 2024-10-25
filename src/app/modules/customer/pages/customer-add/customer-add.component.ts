@@ -359,7 +359,7 @@ export class CustomerAddComponent implements OnInit {
       selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
       console.log(selectedItemId, "selectedItemId");
     }
-    selectedItem = selectedItemId
+    // selectedItem = selectedItemId
     if(selectedItemId){
       // แก้ไขค่า subdistrict และ filteredItemsProvince
       selectedItemId.subdistrict = subdistrict;
@@ -371,7 +371,7 @@ export class CustomerAddComponent implements OnInit {
         postalCode: selectedItemId.postalCode+'-'+selectedItemId.subdistrict
       });
     }
-    else if (selectedItem) {
+    if (selectedItem) {
       this.customerForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,

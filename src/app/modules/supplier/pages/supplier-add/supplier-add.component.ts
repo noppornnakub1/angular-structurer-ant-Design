@@ -1058,7 +1058,6 @@ export class SupplierAddComponent {
       });
     }
     else if (selectedItem) {
-      console.log();
       this.supplierForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,

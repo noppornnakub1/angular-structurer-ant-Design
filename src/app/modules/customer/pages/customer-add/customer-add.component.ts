@@ -371,7 +371,7 @@ export class CustomerAddComponent implements OnInit {
         postalCode: selectedItemId.postalCode+'-'+selectedItemId.subdistrict
       });
     }
-    if (selectedItem) {
+    else if (selectedItem) {
       this.customerForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,

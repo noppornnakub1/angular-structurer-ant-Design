@@ -141,6 +141,7 @@ export class CustomerAddComponent implements OnInit {
           }
         });
       }
+      this.loadCustomerData(this.customerId!);
     });
     if (this.router.url.includes('/view/')) {
       this.isViewMode = true;

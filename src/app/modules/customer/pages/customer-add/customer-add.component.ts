@@ -165,13 +165,14 @@ export class CustomerAddComponent implements OnInit {
       }
       if (value === '1F' || value === 'OSEA') {
         this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
+        this.customerForm.patchValue({
+          prefix: ''  
+        });
       } else {
         this.filteredItemsPrefix = this.item_prefix;
       }
 
-      this.customerForm.patchValue({
-        prefix: ''  
-      });
+      
 
       this._cdr.detectChanges();
     });

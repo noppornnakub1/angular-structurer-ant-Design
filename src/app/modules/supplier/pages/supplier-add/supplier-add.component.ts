@@ -285,7 +285,8 @@ export class SupplierAddComponent {
           supplierData: this.supplierService.findSupplierByIdV2(this.suppilerId),
           postCodes: this.postCodeService.getPostCodes()
         }).subscribe(({ supplierData, postCodes }) => {
-          // โหลดข้อมูล customer
+          console.log(supplierData);
+          
           this.supplierForm.patchValue({
             ...supplierData,
             postalCode: supplierData.postalCode + '-' + supplierData.subdistrict
@@ -342,13 +343,14 @@ export class SupplierAddComponent {
       }
       if (value === '1F' || value === 'OSEA') {
         this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
+        this.supplierForm.patchValue({
+          prefix: ''  
+        });
       } else {
         this.filteredItemsPrefix = this.item_prefix;
       }
 
-      this.supplierForm.patchValue({
-        prefix: ''  
-      });
+      
 
       this._cdr.detectChanges();
     });
@@ -859,6 +861,8 @@ export class SupplierAddComponent {
 
   loadSupplierData(id: number): void {
     this.supplierService.findSupplierByIdV2(id).subscribe((data: any) => {
+      console.log(data);
+      
       const postalCode = data?.postalCode || '';
       const subdistrict = data?.subdistrict || '';
       const postalCodeCombination = postalCode && subdistrict ? postalCode + '-' + subdistrict : postalCode;
@@ -867,7 +871,8 @@ export class SupplierAddComponent {
         postalCode: postalCodeCombination
       });
       this.idreq = data.userId
-
+      console.log(this.supplierForm.value);
+      
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({
           fileId: file.fileId,

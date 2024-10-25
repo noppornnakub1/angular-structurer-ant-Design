@@ -107,6 +107,10 @@ interface SelectedFile {
 })
 
 export class SupplierAddComponent {
+  fileIdsToRemove: { SupbankId: number, FileId: number }[] = [];
+  fileIdsToRemoveForBank: number[] = [];
+  fileIdsToRemoveMapping: { SupbankId: number, FileId: number }[] = [];
+  fileIdsToRemoveJson: string = '';
   currentUser!: IRole | null;
   listOfType: IsupplierType[] = [];
   filteredDataType: IsupplierType[] = [];
@@ -153,13 +157,13 @@ export class SupplierAddComponent {
   selectedFileSupplier: File | null = null;
   selectedFile: File | null = null;
   selectedFileAdd: File | null = null;
+  fileIdsToRemoveForBankAdd: number[] = [];
   selectedFilesSupplier: SelectedFile[] = [];
   selectedNewFilesSupplier: SelectedFile[] = [];
   selectedFiles: SelectedFile[] = [];
   selectedFilesAdd: SelectedFile[] = [];
-  fileIdsToRemove: number[] = [];
-  fileIdsToRemoveForBank: number[] = [];
   anotherFileIdsToRemove: number[] = [];
+  formData: FormData = new FormData();
   fileIdsToRemoveBank: number[] = [];
   fileIdsToRemoveBankAdd: number[] = [];
   private _cdr = inject(ChangeDetectorRef);
@@ -755,23 +759,36 @@ export class SupplierAddComponent {
     console.log('Is for Bank:', isForBank);
 
     if (file.fileId) {
+      const supbankId = file.supbankId || (isForBank ? this.supplierBankForm.get('supbankId')?.value : this.supplierBankFormAdd.get('supbankId')?.value);
+
       if (isForBank) {
         this.fileIdsToRemoveForBank.push(file.fileId);
       } else {
         this.fileIdsToRemove.push(file.fileId);
       }
+
+      this.fileIdsToRemoveMapping = this.fileIdsToRemoveMapping || [];
+      this.fileIdsToRemoveMapping.push({ SupbankId: supbankId, FileId: file.fileId });
+
+      file.filePath = '';
+      file.fileName = '';
+
+      if (!isForBank) {
+        this.selectedFilesSupplier = this.selectedFilesSupplier.filter(f => f.fileType !== file.fileType || f.labelText !== file.labelText);
+      } else {
+        this.selectedNewFilesSupplier = this.selectedNewFilesSupplier.filter(f => f.fileType !== file.fileType || f.labelText !== file.labelText);
+      }
+
+      const combinedFileIdsToRemove = [
+        ...this.fileIdsToRemove,
+        ...this.fileIdsToRemoveForBank
+      ];
+
+      this.fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemoveMapping);
+      console.log('File IDs to Remove JSON:', this.fileIdsToRemoveJson);
+
+      this._cdr.detectChanges();
     }
-
-    file.filePath = '';
-    file.fileName = '';
-
-    if (!isForBank) {
-      this.selectedFilesSupplier = this.selectedFilesSupplier.filter(f => f.fileType !== file.fileType || f.labelText !== file.labelText);
-    } else {
-      this.selectedNewFilesSupplier = this.selectedNewFilesSupplier.filter(f => f.fileType !== file.fileType || f.labelText !== file.labelText);
-    }
-
-    this._cdr.detectChanges();
   }
 
   getAdjustedFilePath(filePath: string): string {
@@ -905,6 +922,7 @@ export class SupplierAddComponent {
 
         this.filesBankAdd = data.supplierBankFilesForSupbankId2.map((file: any) => ({
           fileId: file.FileId,
+          supbankId: file.SupbankId,
           fileName: file.FileName,
           fileType: file.FileType,
           filePath: file.FilePath,
@@ -918,7 +936,7 @@ export class SupplierAddComponent {
       const SupplierNumPrefix = data.codeFrom;
       this.typeCode = SupplierNumPrefix;
       if (SupplierNumPrefix === '2F') {
-        if(this.supplierForm.value.company === ''){
+        if (this.supplierForm.value.company === '') {
           this.supplierForm.patchValue({
             postalCode: '-',
             province: '-',
@@ -930,7 +948,7 @@ export class SupplierAddComponent {
             paymentMethod: '-'
           });
         }
-        else{
+        else {
           this.supplierForm.patchValue({
             postalCode: '-',
             province: '-',
@@ -1271,8 +1289,8 @@ export class SupplierAddComponent {
       labelTexts.push(selectedFile.labelText);
     }
 
-    for (let fileId of this.fileIdsToRemove) {
-      fileIds.push(fileId);
+    for (let file of this.fileIdsToRemove) {
+      fileIds.push(file.FileId);
     }
 
     formData.append('LabelTextsJson', JSON.stringify(labelTexts));
@@ -1343,27 +1361,9 @@ export class SupplierAddComponent {
       const formData = new FormData();
       const supplierBankJson = JSON.stringify(supplierBankData);
 
-      const fileIdsToRemoveList: { SupbankId: string, FileId: number }[] = [];
+      console.log('File IDs to Remove JSON:', this.fileIdsToRemoveJson);
 
-      if (this.fileIdsToRemoveBank.length > 0) {
-        this.fileIdsToRemoveBank.forEach((fileId: number) => {
-          fileIdsToRemoveList.push({ SupbankId: this.supplierBankForm.value.supbankId, FileId: fileId });
-        });
-      }
-      
-      if (this.fileIdsToRemoveBankAdd.length > 0) {
-        this.fileIdsToRemoveBankAdd.forEach((fileId: number) => {
-          fileIdsToRemoveList.push({ SupbankId: this.supplierBankFormAdd.value.supbankId, FileId: fileId });
-        });
-      }      
-
-      console.log('File IDs to Remove List:', fileIdsToRemoveList);
-
-      const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveList);
-
-      console.log('File IDs to Remove JSON:', fileIdsToRemoveJson);
-
-      formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
+      formData.append('fileIdsToRemoveJson', this.fileIdsToRemoveJson);
       formData.append('supplierBankJson', supplierBankJson);
 
       const labelTextsGrouped: { [key: string]: string[] } = {};

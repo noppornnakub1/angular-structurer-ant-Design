@@ -69,7 +69,7 @@
           </span>
         </nz-form-label>
         <nz-select formControlName="prefix" nzPlaceHolder="Prefix" class="custom-select">
-          <nz-option *ngFor="let type of item_prefix" [nzLabel]="type.name" [nzValue]="type.name"></nz-option>
+          <nz-option *ngFor="let type of filteredItemsPrefix" [nzLabel]="type.name" [nzValue]="type.name"></nz-option>
         </nz-select>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="13" class="pr-3" style="margin-top: 46px;">

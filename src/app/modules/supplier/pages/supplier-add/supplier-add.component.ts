@@ -340,6 +340,17 @@ export class SupplierAddComponent {
       if (supplierTypeId) {
         this.loadSupplierType(supplierTypeId);
       }
+      if (value === '1F' || value === 'OSEA') {
+        this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
+      } else {
+        this.filteredItemsPrefix = this.item_prefix;
+      }
+
+      this.supplierForm.patchValue({
+        prefix: ''  
+      });
+
+      this._cdr.detectChanges();
     });
 
     this.supplierForm.get('paymentMethod')?.valueChanges.subscribe(value => {
@@ -1089,7 +1100,8 @@ export class SupplierAddComponent {
       const formData = this.prepareFormData();
 
       this.assignPostId(formData);
-
+      console.log(formData);
+      
       if (this.suppilerId) {
         this.onUpdate(formData);
       } else {

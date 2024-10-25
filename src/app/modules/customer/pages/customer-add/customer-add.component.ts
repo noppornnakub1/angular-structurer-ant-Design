@@ -156,12 +156,24 @@ export class CustomerAddComponent implements OnInit {
     });
     this.getCustomerType();
     this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
+
       const customerTypeId = this.getCustomerTypeId(value);
       console.log(customerTypeId);
 
       if (customerTypeId) {
         this.loadCustomerType(customerTypeId);
       }
+      if (value === '1F' || value === 'OSEA') {
+        this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
+      } else {
+        this.filteredItemsPrefix = this.item_prefix;
+      }
+
+      this.customerForm.patchValue({
+        prefix: ''  
+      });
+
+      this._cdr.detectChanges();
     });
     this.customerForm.get('prefix')?.valueChanges.subscribe((prefix: string) => {
       this.selectedPrefix = prefix;
@@ -360,7 +372,7 @@ export class CustomerAddComponent implements OnInit {
       console.log(selectedItemId, "selectedItemId");
     }
     // selectedItem = selectedItemId
-    if(selectedItemId){
+    if (selectedItemId) {
       // แก้ไขค่า subdistrict และ filteredItemsProvince
       selectedItemId.subdistrict = subdistrict;
       selectedItemId.district = district;
@@ -368,7 +380,7 @@ export class CustomerAddComponent implements OnInit {
       this.filteredItemsProvince = [...this.items_provinces];
 
       this.customerForm.patchValue({
-        postalCode: selectedItemId.postalCode+'-'+selectedItemId.subdistrict
+        postalCode: selectedItemId.postalCode + '-' + selectedItemId.subdistrict
       });
     }
     else if (selectedItem) {

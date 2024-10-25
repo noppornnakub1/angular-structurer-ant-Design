@@ -13,7 +13,7 @@ import { ICustomerType } from '../../interface/customerType.interface';
 import { DataCompany, DataLocation, prefix } from '../../../supplier/pages/supplier-add/supplier-add.component';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinct, distinctUntilChanged, forkJoin } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { ValidationService } from '../../../../shared/constants/ValidationService';
 import { UserService } from '../../../user-manager/services/user.service';
@@ -107,13 +107,39 @@ export class CustomerAddComponent implements OnInit {
       fileReq: [''],
       fileCertificate: [''],
       path: [''],
-      prefix: ['']
+      prefix: [''],
+      postId: ['']
     });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
         this.customerId = +id;
-        this.loadCustomerData(this.customerId);
+
+        // ใช้ forkJoin เพื่อรอให้ข้อมูลทั้งสองถูกโหลดครบ
+        forkJoin({
+          customerData: this.customerService.findCustomerById(this.customerId),
+          postCodes: this.postCodeService.getPostCodes()
+        }).subscribe(({ customerData, postCodes }) => {
+          // โหลดข้อมูล customer
+          this.customerForm.patchValue({
+            ...customerData,
+            postalCode: customerData.postalCode + '-' + customerData.subdistrict
+          });
+
+          // โหลดข้อมูลรหัสไปรษณีย์
+          this.items_provinces = postCodes;
+          this.filteredItemsProvince = postCodes;
+
+          console.log('ข้อมูลโหลดเสร็จแล้ว:', this.items_provinces);
+
+          // เรียกใช้ onPostalCodeChange หลังจากที่ข้อมูลโหลดครบ
+          if (this.customerForm.value.postalCode && this.customerForm.value.postId) {
+            const merge = this.customerForm.value.postalCode;
+            console.log(merge);
+
+            this.onPostalCodeChange(merge);
+          }
+        });
       }
     });
     if (this.router.url.includes('/view/')) {
@@ -132,7 +158,7 @@ export class CustomerAddComponent implements OnInit {
     this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
       const customerTypeId = this.getCustomerTypeId(value);
       console.log(customerTypeId);
-      
+
       if (customerTypeId) {
         this.loadCustomerType(customerTypeId);
       }
@@ -319,10 +345,33 @@ export class CustomerAddComponent implements OnInit {
 
   onPostalCodeChange(value: any): void {
     console.log(value);
-    
+    let selectedItemId: any;
     const [postalCode, subdistrict] = value.split('-');
-    const selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
-    if (selectedItem) {
+    const postId = this.customerForm.value.postId
+    const district = this.customerForm.value.district
+    const province = this.customerForm.value.province
+    console.log(postalCode, subdistrict, postId);
+    console.log(this.items_provinces);
+
+    let selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+    console.log(selectedItem, 'selectedItem');
+    if (selectedItem == null || selectedItem == undefined) {
+      selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
+      console.log(selectedItemId, "selectedItemId");
+    }
+    selectedItem = selectedItemId
+    if(selectedItemId){
+      // แก้ไขค่า subdistrict และ filteredItemsProvince
+      selectedItemId.subdistrict = subdistrict;
+      selectedItemId.district = district;
+      selectedItemId.district = province;
+      this.filteredItemsProvince = [...this.items_provinces];
+
+      this.customerForm.patchValue({
+        postalCode: selectedItemId.postalCode+'-'+selectedItemId.subdistrict
+      });
+    }
+    else if (selectedItem) {
       this.customerForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
@@ -340,7 +389,7 @@ export class CustomerAddComponent implements OnInit {
   async onSubmit(): Promise<void> {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     console.log("เข้าไม่เข้า");
-    
+
     if (this.isViewMode) {
       this.customerForm.enable();
     }
@@ -363,8 +412,8 @@ export class CustomerAddComponent implements OnInit {
         console.log(this.customerId);
         await this.onUpdate();  // รอให้การอัปเดตเสร็จก่อน
       } else {
-        console.log("366",formValue);
-        
+        console.log("366", formValue);
+
         this.customerService.addData(formValue).subscribe({
           next: async (response) => {
             console.log(response);
@@ -414,8 +463,7 @@ export class CustomerAddComponent implements OnInit {
       }
 
       const formValue = this.prepareFormData();
-      console.log(formValue);
-      delete formValue.postId;
+      console.log("488", formValue);
 
       // รอให้การ update ข้อมูลเสร็จสมบูรณ์ก่อนทำอย่างอื่น
       await this.customerService.updateData(this.customerId!, formValue).toPromise();
@@ -435,8 +483,8 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     const formValue = { ...this.customerForm.value };
-    console.log("438",formValue);
-    
+    console.log("438", formValue);
+
     const selectedPostItem = this.items_provinces.find(item => {
       const postalCode = formValue.postalCode.split('-')[0];
       return item.postalCode === postalCode || this.isSubdistrictMatching(item);
@@ -571,7 +619,7 @@ export class CustomerAddComponent implements OnInit {
         await this.setStatusAndSubmit('Draft');
       }
       // เมื่อทุกอย่างเสร็จแล้ว ค่อยทำการ redirect
-     await Swal.fire({
+      await Swal.fire({
         icon: 'success',
         title: 'Updated!',
         text: 'Your data has been updatedXXXX.',

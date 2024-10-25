@@ -18,7 +18,8 @@ export interface ICustomer {
     company: string,
     fileReq: string,
     fileCertificate: string,
-    path: string
+    path: string,
+    postId: number
   }
 
   export interface CustomerSupplier {

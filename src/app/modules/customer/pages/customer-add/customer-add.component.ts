@@ -13,7 +13,7 @@ import { ICustomerType } from '../../interface/customerType.interface';
 import { DataCompany, DataLocation, prefix } from '../../../supplier/pages/supplier-add/supplier-add.component';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
-import { debounceTime, distinctUntilChanged, forkJoin } from 'rxjs';
+import { debounceTime, distinct, distinctUntilChanged, forkJoin } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { ValidationService } from '../../../../shared/constants/ValidationService';
 import { UserService } from '../../../user-manager/services/user.service';
@@ -348,6 +348,8 @@ export class CustomerAddComponent implements OnInit {
     let selectedItemId: any;
     const [postalCode, subdistrict] = value.split('-');
     const postId = this.customerForm.value.postId
+    const district = this.customerForm.value.district
+    const province = this.customerForm.value.province
     console.log(postalCode, subdistrict, postId);
     console.log(this.items_provinces);
 
@@ -360,8 +362,10 @@ export class CustomerAddComponent implements OnInit {
     selectedItem = selectedItemId
     if(selectedItemId){
       // แก้ไขค่า subdistrict และ filteredItemsProvince
-      // selectedItemId.subdistrict = subdistrict; 
-      // this.filteredItemsProvince = [...this.items_provinces];
+      selectedItemId.subdistrict = subdistrict;
+      selectedItemId.district = district;
+      selectedItemId.district = province;
+      this.filteredItemsProvince = [...this.items_provinces];
 
       this.customerForm.patchValue({
         postalCode: selectedItemId.postalCode+'-'+selectedItemId.subdistrict

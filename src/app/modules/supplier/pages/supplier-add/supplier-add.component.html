@@ -101,11 +101,10 @@
         <nz-form-item>
           <nz-form-control nzErrorTip="Please select postal code!">
             <nz-select nzShowSearch nzServerSearch nzPlaceHolder="Postal Code" (nzOnSearch)="onSearch($event)"
-              [(ngModel)]="selectedPostalCodeObject" [ngModelOptions]="{standalone: true}"
-              (ngModelChange)="onPostalCodeChange($event)">
+              formControlName="postalCode" (ngModelChange)="onPostalCodeChange($event)">
               <nz-option *ngFor="let item of filteredItemsProvince"
                 [nzLabel]="item.postalCode + ' ' + item.subdistrict + ' ' + item.district + ' ' + item.province"
-                [nzValue]="item">
+                [nzValue]="item.postalCode + '-' + item.subdistrict">
               </nz-option>
             </nz-select>
           </nz-form-control>

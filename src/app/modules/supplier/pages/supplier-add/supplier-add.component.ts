@@ -20,7 +20,7 @@ import { BankMasterService } from '../../../../shared/constants/bank-master.serv
 import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, forkJoin } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { ValidationService } from '../../../../shared/constants/ValidationService';
@@ -244,6 +244,7 @@ export class SupplierAddComponent {
       type: ['Supplier', Validators.required],
       userId: [''],
       mobile: ['', Validators.required],
+      postId: ['']
     });
     this.supplierBankForm = this.fb.group({
       supbankId: [0],
@@ -266,10 +267,44 @@ export class SupplierAddComponent {
       company: ['', Validators.required],
     });
 
+    // this.route.paramMap.subscribe(params => {
+    //   const id = params.get('id');
+    //   if (id) {
+    //     this.suppilerId = +id;
+    //     this.loadSupplierData(this.suppilerId);
+    //     this.isIDTemp = this.suppilerId;
+    //   }
+    // });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
         this.suppilerId = +id;
+
+        // ใช้ forkJoin เพื่อรอให้ข้อมูลทั้งสองถูกโหลดครบ
+        forkJoin({
+          supplierData: this.supplierService.findSupplierByIdV2(this.suppilerId),
+          postCodes: this.postCodeService.getPostCodes()
+        }).subscribe(({ supplierData, postCodes }) => {
+          // โหลดข้อมูล customer
+          this.supplierForm.patchValue({
+            ...supplierData,
+            postalCode: supplierData.postalCode + '-' + supplierData.subdistrict
+          });
+
+          // โหลดข้อมูลรหัสไปรษณีย์
+          this.items_provinces = postCodes;
+          this.filteredItemsProvince = postCodes;
+
+          console.log('ข้อมูลโหลดเสร็จแล้ว:', this.items_provinces);
+
+          // เรียกใช้ onPostalCodeChange หลังจากที่ข้อมูลโหลดครบ
+          if (this.supplierForm.value.postalCode && this.supplierForm.value.postId) {
+            const merge = this.supplierForm.value.postalCode;
+            console.log(merge);
+
+            this.onPostalCodeChange(merge);
+          }
+        });
         this.loadSupplierData(this.suppilerId);
         this.isIDTemp = this.suppilerId;
       }
@@ -981,18 +1016,55 @@ export class SupplierAddComponent {
     }
   }
 
+  // onPostalCodeChange(value: any): void {
+  //   if (value && value.postalCode) {
+  //     this.supplierForm.patchValue({
+  //       postalCode: value.postalCode,
+  //       district: value.district,
+  //       subdistrict: value.subdistrict,
+  //       province: value.province
+  //     });
+  //   } else {
+  //     console.warn('Invalid value for postal code:', value);
+  //   }
+  //   this.cdr.markForCheck();
+  // }
   onPostalCodeChange(value: any): void {
-    if (value && value.postalCode) {
-      this.supplierForm.patchValue({
-        postalCode: value.postalCode,
-        district: value.district,
-        subdistrict: value.subdistrict,
-        province: value.province
-      });
-    } else {
-      console.warn('Invalid value for postal code:', value);
+    console.log(value);
+    let selectedItemId: any;
+    const [postalCode, subdistrict] = value.split('-');
+    const postId = this.supplierForm.value.postId
+    const district = this.supplierForm.value.district
+    const province = this.supplierForm.value.province
+    console.log(postalCode, subdistrict, postId);
+    console.log(this.items_provinces);
+
+    let selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+    console.log(selectedItem, 'selectedItem');
+    if (selectedItem == null || selectedItem == undefined) {
+      selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
+      console.log(selectedItemId, "selectedItemId");
     }
-    this.cdr.markForCheck();
+    selectedItem = selectedItemId
+    if(selectedItemId){
+      // แก้ไขค่า subdistrict และ filteredItemsProvince
+      selectedItemId.subdistrict = subdistrict;
+      selectedItemId.district = district;
+      selectedItemId.district = province;
+      this.filteredItemsProvince = [...this.items_provinces];
+
+      this.supplierForm.patchValue({
+        postalCode: selectedItemId.postalCode+'-'+selectedItemId.subdistrict
+      });
+    }
+    else if (selectedItem) {
+      this.supplierForm.patchValue({
+        district: selectedItem.district,
+        subdistrict: selectedItem.subdistrict,
+        province: selectedItem.province
+      });
+      this.cdr.markForCheck();
+    }
   }
 
   isSubdistrictMatching(item: DataLocation): boolean {
@@ -1279,6 +1351,7 @@ export class SupplierAddComponent {
     formData.append('Type', formValue.type);
     formData.append('UserId', formValue.user_id);
     formData.append('Mobile', formValue.mobile);
+    formData.append('PostId', formValue.postId);
     formData.append('groupName', 'SupplierFile');
 
     const labelTexts: string[] = [];

@@ -109,7 +109,7 @@ interface SelectedFile {
 export class SupplierAddComponent {
   fileIdsToRemove: { SupbankId: number, FileId: number }[] = [];
   fileIdsToRemoveForBank: number[] = [];
-  fileIdsToRemoveMapping: { SupbankId: number, FileId: number }[] = [];
+  fileIdsToRemoveMapping: { SupbankId: number; FileId: number; IsNewUpload?: boolean }[] = [];
   fileIdsToRemoveJson: string = '';
   currentUser!: IRole | null;
   listOfType: IsupplierType[] = [];
@@ -482,24 +482,38 @@ export class SupplierAddComponent {
 
   onFileSelectNew(event: Event, fileType: string, labelText: string, isFromFilesBankAdd: boolean = false): void {
     const input = event.target as HTMLInputElement;
-
+  
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
       let fileToUpdate;
-
+  
       if (isFromFilesBankAdd) {
-        fileToUpdate = this.filesBankAdd.find(file => file.fileType === fileType && file.labelText === labelText);
+        fileToUpdate = this.filesBankAdd.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
       } else {
-        fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText);
+        fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
       }
-
+  
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
-
+  
         if (fileToUpdate && 'fileId' in fileToUpdate) {
-          const fileId = (fileToUpdate as { fileId: number }).fileId;
+          const fileId = fileToUpdate.fileId;
           if (fileId) {
+            const supbankId = fileToUpdate.supbankId ?? (isFromFilesBankAdd ? this.supplierBankFormAdd.get('supbankId')?.value : this.supplierBankForm.get('supbankId')?.value);
+  
+            const existingEntry = this.fileIdsToRemoveMapping.find(entry => entry.SupbankId === supbankId && entry.FileId === fileId);
+  
+            if (existingEntry) {
+              existingEntry.IsNewUpload = true;
+            } else {
+              this.fileIdsToRemoveMapping.push({
+                SupbankId: supbankId,
+                FileId: fileId,
+                IsNewUpload: true
+              });
+            }
+  
             if (isFromFilesBankAdd) {
               if (!this.fileIdsToRemoveBankAdd.includes(fileId)) {
                 this.fileIdsToRemoveBankAdd.push(fileId);
@@ -512,7 +526,7 @@ export class SupplierAddComponent {
           }
         }
       }
-
+  
       const newFile: SelectedFile = {
         file: selectedFile,
         fileType: fileType,
@@ -520,16 +534,16 @@ export class SupplierAddComponent {
         filePath: '',
         labelText: labelText
       };
-
+  
       if (isFromFilesBankAdd) {
         this.selectedFilesAdd.push(newFile);
       } else {
         this.selectedNewFilesSupplier.push(newFile);
       }
-
+  
       this._cdr.detectChanges();
     }
-  }
+  }  
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
     const input = event.target as HTMLInputElement;
@@ -1432,72 +1446,75 @@ export class SupplierAddComponent {
     const supplierBankData: any[] = [];
 
     if (this.supplierBankForm.valid) {
-      const bankFormValue = this.supplierBankForm.value;
-      console.log('Bank Form Value:', bankFormValue);
-      supplierBankData.push(bankFormValue);
+        const bankFormValue = this.supplierBankForm.value;
+        supplierBankData.push(bankFormValue);
     } else {
-      console.log('Supplier Bank Form is invalid:', this.supplierBankForm.errors);
+        console.log('Supplier Bank Form is invalid:', this.supplierBankForm.errors);
     }
 
     if (this.supplierBankFormAdd.valid) {
-      const bankFormValueAdd = this.supplierBankFormAdd.value;
-      console.log('Bank Form Add Value:', bankFormValueAdd);
-      supplierBankData.push(bankFormValueAdd);
+        const bankFormValueAdd = this.supplierBankFormAdd.value;
+        supplierBankData.push(bankFormValueAdd);
     } else {
-      console.log('Supplier Bank Form Add is invalid:', this.supplierBankFormAdd.errors);
+        console.log('Supplier Bank Form Add is invalid:', this.supplierBankFormAdd.errors);
     }
 
     if (supplierBankData.length > 0) {
-      const formData = new FormData();
-      const supplierBankJson = JSON.stringify(supplierBankData);
+        const formData = new FormData();
+        const supplierBankJson = JSON.stringify(supplierBankData);
 
-      console.log('File IDs to Remove JSON:', this.fileIdsToRemoveJson);
+        const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
+            SupbankId: file.SupbankId,
+            FileId: file.FileId,
+            IsNewUpload: file.IsNewUpload || false
+        }));
+        
+        const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
 
-      formData.append('fileIdsToRemoveJson', this.fileIdsToRemoveJson);
-      formData.append('supplierBankJson', supplierBankJson);
+        formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
+        formData.append('supplierBankJson', supplierBankJson);
 
-      const labelTextsGrouped: { [key: string]: string[] } = {};
+        const labelTextsGrouped: { [key: string]: string[] } = {};
+        this.selectedNewFilesSupplier?.forEach(selectedFile => {
+            if (!labelTextsGrouped[selectedFile.fileType]) {
+                labelTextsGrouped[selectedFile.fileType] = [];
+            }
+            labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
+        });
 
-      this.selectedNewFilesSupplier?.forEach(selectedFile => {
-        if (!labelTextsGrouped[selectedFile.fileType]) {
-          labelTextsGrouped[selectedFile.fileType] = [];
-        }
-        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
-      });
+        this.selectedFilesAdd?.forEach(selectedFile => {
+            if (!labelTextsGrouped[selectedFile.fileType]) {
+                labelTextsGrouped[selectedFile.fileType] = [];
+            }
+            labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
+        });
 
-      this.selectedFilesAdd?.forEach(selectedFile => {
-        if (!labelTextsGrouped[selectedFile.fileType]) {
-          labelTextsGrouped[selectedFile.fileType] = [];
-        }
-        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
-      });
+        const labelTextsJson = JSON.stringify(labelTextsGrouped);
+        formData.append('labelTextsJson', labelTextsJson);
 
-      const labelTextsJson = JSON.stringify(labelTextsGrouped);
-      formData.append('labelTextsJson', labelTextsJson);
+        this.selectedNewFilesSupplier?.forEach(selectedFile => {
+            formData.append('Files', selectedFile.file, selectedFile.file.name);
+        });
 
-      this.selectedNewFilesSupplier?.forEach(selectedFile => {
-        formData.append('Files', selectedFile.file, selectedFile.file.name);
-      });
+        this.selectedFilesAdd?.forEach(selectedFile => {
+            formData.append('Files', selectedFile.file, selectedFile.file.name);
+        });
 
-      this.selectedFilesAdd?.forEach(selectedFile => {
-        formData.append('Files', selectedFile.file, selectedFile.file.name);
-      });
-
-      this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
-        next: (response) => {
-          Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');
-        },
-        error: (err) => {
-          Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
-          console.error('Error updating bank data with files:', err);
-        }
-      });
+        this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
+            next: (response) => {
+                Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');
+            },
+            error: (err) => {
+                Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
+                console.error('Error updating bank data with files:', err);
+            }
+        });
     } else {
-      this.supplierBankForm.markAllAsTouched();
-      this.supplierBankFormAdd.markAllAsTouched();
-      Swal.fire('Error!', 'Please fill in all required fields.', 'error');
+        this.supplierBankForm.markAllAsTouched();
+        this.supplierBankFormAdd.markAllAsTouched();
+        Swal.fire('Error!', 'Please fill in all required fields.', 'error');
     }
-  }
+}
 
   prepareBankFormData(bankFormValue: any): FormData {
     const formData = new FormData();

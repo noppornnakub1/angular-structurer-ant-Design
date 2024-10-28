@@ -202,11 +202,11 @@
       <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || isAdmin)" nz-button
         nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
           nzTheme="outline"></span>Cancel</button>
-      <button nz-tooltip nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
-        *ngIf="!isViewMode && (isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(customerForm.get('status')?.value)) || isAdmin || isApproved || isApprovedFN"
-        class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
-        <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft
-      </button>
+          <button nz-tooltip nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
+          *ngIf="!isViewMode && ((isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(customerForm.get('status')?.value)) || isAdmin || isApproved || isApprovedFN)"
+          class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
+          <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft
+        </button>
       <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || isAdmin)"
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit
@@ -216,7 +216,6 @@
         *ngIf="isViewMode && 
      (
        (isApproved && customerForm.get('status')?.value === 'Pending Approved By ACC') ||
-       (isApprovedFN && customerForm.get('status')?.value === 'Approved By ACC') ||
        isAdmin
      ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(customerForm.get('status')?.value)"
         class="mr-2" nz-button nzType="primary" (click)="checkApprove($event)">
@@ -228,7 +227,6 @@
         *ngIf="isViewMode && 
      (
        (isApproved && customerForm.get('status')?.value === 'Pending Approved By ACC') ||
-       (isApprovedFN && customerForm.get('status')?.value === 'Approved By ACC') ||
        isAdmin
      ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(customerForm.get('status')?.value)"
         nz-button nzType="primary" nzDanger (click)="reject($event)">

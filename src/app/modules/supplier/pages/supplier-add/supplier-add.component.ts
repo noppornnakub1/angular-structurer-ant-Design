@@ -267,38 +267,27 @@ export class SupplierAddComponent {
       company: ['', Validators.required],
     });
 
-    // this.route.paramMap.subscribe(params => {
-    //   const id = params.get('id');
-    //   if (id) {
-    //     this.suppilerId = +id;
-    //     this.loadSupplierData(this.suppilerId);
-    //     this.isIDTemp = this.suppilerId;
-    //   }
-    // });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
         this.suppilerId = +id;
 
-        // ใช้ forkJoin เพื่อรอให้ข้อมูลทั้งสองถูกโหลดครบ
         forkJoin({
           supplierData: this.supplierService.findSupplierByIdV2(this.suppilerId),
           postCodes: this.postCodeService.getPostCodes()
         }).subscribe(({ supplierData, postCodes }) => {
           console.log(supplierData);
-          
+
           this.supplierForm.patchValue({
             ...supplierData,
             postalCode: supplierData.postalCode + '-' + supplierData.subdistrict
           });
 
-          // โหลดข้อมูลรหัสไปรษณีย์
           this.items_provinces = postCodes;
           this.filteredItemsProvince = postCodes;
 
           console.log('ข้อมูลโหลดเสร็จแล้ว:', this.items_provinces);
 
-          // เรียกใช้ onPostalCodeChange หลังจากที่ข้อมูลโหลดครบ
           if (this.supplierForm.value.postalCode && this.supplierForm.value.postId) {
             const merge = this.supplierForm.value.postalCode;
             console.log(merge);
@@ -344,7 +333,7 @@ export class SupplierAddComponent {
       if (value === '1F' || value === 'OSEA') {
         this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
         this.supplierForm.patchValue({
-          prefix: ''  
+          prefix: ''
         });
       } else {
         this.filteredItemsPrefix = this.item_prefix;
@@ -485,28 +474,28 @@ export class SupplierAddComponent {
 
   onFileSelectNew(event: Event, fileType: string, labelText: string, isFromFilesBankAdd: boolean = false): void {
     const input = event.target as HTMLInputElement;
-  
+
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
       let fileToUpdate;
-  
+
       if (isFromFilesBankAdd) {
         fileToUpdate = this.filesBankAdd.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
       } else {
         fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
       }
-  
+
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
-  
+
         if (fileToUpdate && 'fileId' in fileToUpdate) {
           const fileId = fileToUpdate.fileId;
           if (fileId) {
             const supbankId = fileToUpdate.supbankId ?? (isFromFilesBankAdd ? this.supplierBankFormAdd.get('supbankId')?.value : this.supplierBankForm.get('supbankId')?.value);
-  
+
             const existingEntry = this.fileIdsToRemoveMapping.find(entry => entry.SupbankId === supbankId && entry.FileId === fileId);
-  
+
             if (existingEntry) {
               existingEntry.IsNewUpload = true;
             } else {
@@ -516,7 +505,7 @@ export class SupplierAddComponent {
                 IsNewUpload: true
               });
             }
-  
+
             if (isFromFilesBankAdd) {
               if (!this.fileIdsToRemoveBankAdd.includes(fileId)) {
                 this.fileIdsToRemoveBankAdd.push(fileId);
@@ -529,7 +518,7 @@ export class SupplierAddComponent {
           }
         }
       }
-  
+
       const newFile: SelectedFile = {
         file: selectedFile,
         fileType: fileType,
@@ -537,16 +526,16 @@ export class SupplierAddComponent {
         filePath: '',
         labelText: labelText
       };
-  
+
       if (isFromFilesBankAdd) {
         this.selectedFilesAdd.push(newFile);
       } else {
         this.selectedNewFilesSupplier.push(newFile);
       }
-  
+
       this._cdr.detectChanges();
     }
-  }  
+  }
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
     const input = event.target as HTMLInputElement;
@@ -663,28 +652,28 @@ export class SupplierAddComponent {
 
   validateTaxId(event: any): void {
     const input = event.target.value;
-    const numericValue = this.validationService.validateTaxId(input);  // เรียกใช้ฟังก์ชันจาก service
+    const numericValue = this.validationService.validateTaxId(input);
     this.supplierForm.patchValue({ taxId: numericValue });
     event.target.value = numericValue;
   }
 
   validateTel(event: any): void {
     const input = event.target.value;
-    const numericValue = this.validationService.validateTel(input);  // เรียกใช้ฟังก์ชันจาก service
+    const numericValue = this.validationService.validateTel(input);
     event.target.value = numericValue;
     this.supplierForm.patchValue({ tel: numericValue });
   }
 
   validateMobile(event: any): void {
     const input = event.target.value;
-    const numericValue = this.validationService.validateTel(input);  // เรียกใช้ฟังก์ชันจาก service
+    const numericValue = this.validationService.validateTel(input);
     event.target.value = numericValue;
     this.supplierForm.patchValue({ mobile: numericValue });
   }
 
   validateSite(event: any): void {
     const input = event.target.value;
-    const numericValue = this.validationService.validateSite(input);  // เรียกใช้ฟังก์ชันจาก service
+    const numericValue = this.validationService.validateSite(input);
     event.target.value = numericValue;
     this.supplierForm.patchValue({ site: numericValue });
   }
@@ -879,7 +868,7 @@ export class SupplierAddComponent {
   loadSupplierData(id: number): void {
     this.supplierService.findSupplierByIdV2(id).subscribe((data: any) => {
       console.log(data);
-      
+
       const postalCode = data?.postalCode || '';
       const subdistrict = data?.subdistrict || '';
       const postalCodeCombination = postalCode && subdistrict ? postalCode + '-' + subdistrict : postalCode;
@@ -889,7 +878,7 @@ export class SupplierAddComponent {
       });
       this.idreq = data.userId
       console.log(this.supplierForm.value);
-      
+
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({
           fileId: file.fileId,
@@ -903,15 +892,12 @@ export class SupplierAddComponent {
 
         const missingFiles = this.files.filter(file => {
           const existingFile = this.filess.find(f => f.labelText === file.labelText);
-          return !existingFile || !existingFile.filePath; // กรองไฟล์ที่ไม่มี filePath (แสดงว่าผู้ใช้อาจยังไม่ได้อัปโหลด)
+          return !existingFile || !existingFile.filePath;
         });
         console.log(missingFiles);
 
-
-        // รวมรายการไฟล์จาก API กับไฟล์ที่ยังไม่ได้อัปโหลด
         this.displayFiles = [...this.filess, ...missingFiles];
       } else {
-        // ถ้าไม่มีไฟล์จาก API ให้แสดงรายการที่เตรียมไว้ทั้งหมด
         this.displayFiles = this.files;
       }
 
@@ -934,7 +920,6 @@ export class SupplierAddComponent {
           this.listOfGroup.push({ group_name: bankData.supplierGroup });
         }
         console.log(this.listOfGroup);
-
 
         this.supplierBankForm.patchValue({
           supbankId: bankData.SupbankId,
@@ -960,7 +945,6 @@ export class SupplierAddComponent {
           labelText: file.LabelText
         }));
       }
-
 
       if (data.supplierBank.length > 1) {
         const bankDataAdd = data.supplierBank[1];
@@ -1049,19 +1033,6 @@ export class SupplierAddComponent {
     }
   }
 
-  // onPostalCodeChange(value: any): void {
-  //   if (value && value.postalCode) {
-  //     this.supplierForm.patchValue({
-  //       postalCode: value.postalCode,
-  //       district: value.district,
-  //       subdistrict: value.subdistrict,
-  //       province: value.province
-  //     });
-  //   } else {
-  //     console.warn('Invalid value for postal code:', value);
-  //   }
-  //   this.cdr.markForCheck();
-  // }
   onPostalCodeChange(value: any): void {
     console.log(value);
     let selectedItemId: any;
@@ -1078,16 +1049,14 @@ export class SupplierAddComponent {
       selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
       console.log(selectedItemId, "selectedItemId");
     }
-    // selectedItem = selectedItemId
-    if(selectedItemId){
-      // แก้ไขค่า subdistrict และ filteredItemsProvince
+    if (selectedItemId) {
       selectedItemId.subdistrict = subdistrict;
       selectedItemId.district = district;
       selectedItemId.district = province;
       this.filteredItemsProvince = [...this.items_provinces];
 
       this.supplierForm.patchValue({
-        postalCode: selectedItemId.postalCode+'-'+selectedItemId.subdistrict
+        postalCode: selectedItemId.postalCode + '-' + selectedItemId.subdistrict
       });
     }
     else if (selectedItem) {
@@ -1123,7 +1092,7 @@ export class SupplierAddComponent {
 
       this.assignPostId(formData);
       console.log(formData);
-      
+
       if (this.suppilerId) {
         this.onUpdate(formData);
       } else {
@@ -1449,75 +1418,75 @@ export class SupplierAddComponent {
     const supplierBankData: any[] = [];
 
     if (this.supplierBankForm.valid) {
-        const bankFormValue = this.supplierBankForm.value;
-        supplierBankData.push(bankFormValue);
+      const bankFormValue = this.supplierBankForm.value;
+      supplierBankData.push(bankFormValue);
     } else {
-        console.log('Supplier Bank Form is invalid:', this.supplierBankForm.errors);
+      console.log('Supplier Bank Form is invalid:', this.supplierBankForm.errors);
     }
 
     if (this.supplierBankFormAdd.valid) {
-        const bankFormValueAdd = this.supplierBankFormAdd.value;
-        supplierBankData.push(bankFormValueAdd);
+      const bankFormValueAdd = this.supplierBankFormAdd.value;
+      supplierBankData.push(bankFormValueAdd);
     } else {
-        console.log('Supplier Bank Form Add is invalid:', this.supplierBankFormAdd.errors);
+      console.log('Supplier Bank Form Add is invalid:', this.supplierBankFormAdd.errors);
     }
 
     if (supplierBankData.length > 0) {
-        const formData = new FormData();
-        const supplierBankJson = JSON.stringify(supplierBankData);
+      const formData = new FormData();
+      const supplierBankJson = JSON.stringify(supplierBankData);
 
-        const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
-            SupbankId: file.SupbankId,
-            FileId: file.FileId,
-            IsNewUpload: file.IsNewUpload || false
-        }));
-        
-        const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
+      const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
+        SupbankId: file.SupbankId,
+        FileId: file.FileId,
+        IsNewUpload: file.IsNewUpload || false
+      }));
 
-        formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
-        formData.append('supplierBankJson', supplierBankJson);
+      const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
 
-        const labelTextsGrouped: { [key: string]: string[] } = {};
-        this.selectedNewFilesSupplier?.forEach(selectedFile => {
-            if (!labelTextsGrouped[selectedFile.fileType]) {
-                labelTextsGrouped[selectedFile.fileType] = [];
-            }
-            labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
-        });
+      formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
+      formData.append('supplierBankJson', supplierBankJson);
 
-        this.selectedFilesAdd?.forEach(selectedFile => {
-            if (!labelTextsGrouped[selectedFile.fileType]) {
-                labelTextsGrouped[selectedFile.fileType] = [];
-            }
-            labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
-        });
+      const labelTextsGrouped: { [key: string]: string[] } = {};
+      this.selectedNewFilesSupplier?.forEach(selectedFile => {
+        if (!labelTextsGrouped[selectedFile.fileType]) {
+          labelTextsGrouped[selectedFile.fileType] = [];
+        }
+        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
+      });
 
-        const labelTextsJson = JSON.stringify(labelTextsGrouped);
-        formData.append('labelTextsJson', labelTextsJson);
+      this.selectedFilesAdd?.forEach(selectedFile => {
+        if (!labelTextsGrouped[selectedFile.fileType]) {
+          labelTextsGrouped[selectedFile.fileType] = [];
+        }
+        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
+      });
 
-        this.selectedNewFilesSupplier?.forEach(selectedFile => {
-            formData.append('Files', selectedFile.file, selectedFile.file.name);
-        });
+      const labelTextsJson = JSON.stringify(labelTextsGrouped);
+      formData.append('labelTextsJson', labelTextsJson);
 
-        this.selectedFilesAdd?.forEach(selectedFile => {
-            formData.append('Files', selectedFile.file, selectedFile.file.name);
-        });
+      this.selectedNewFilesSupplier?.forEach(selectedFile => {
+        formData.append('Files', selectedFile.file, selectedFile.file.name);
+      });
 
-        this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
-            next: (response) => {
-                Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');
-            },
-            error: (err) => {
-                Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
-                console.error('Error updating bank data with files:', err);
-            }
-        });
+      this.selectedFilesAdd?.forEach(selectedFile => {
+        formData.append('Files', selectedFile.file, selectedFile.file.name);
+      });
+
+      this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
+        next: (response) => {
+          Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');
+        },
+        error: (err) => {
+          Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
+          console.error('Error updating bank data with files:', err);
+        }
+      });
     } else {
-        this.supplierBankForm.markAllAsTouched();
-        this.supplierBankFormAdd.markAllAsTouched();
-        Swal.fire('Error!', 'Please fill in all required fields.', 'error');
+      this.supplierBankForm.markAllAsTouched();
+      this.supplierBankFormAdd.markAllAsTouched();
+      Swal.fire('Error!', 'Please fill in all required fields.', 'error');
     }
-}
+  }
 
   prepareBankFormData(bankFormValue: any): FormData {
     const formData = new FormData();
@@ -2160,11 +2129,10 @@ export class SupplierAddComponent {
     const supplierType = this.supplierForm.get('supplierType')?.value;
     const taxId = this.supplierForm.get('tax_Id')?.value;
     const userId = this.supplierForm.get('id')?.value;
-    console.log(userId,taxId,supplierType);
-    
+    console.log(userId, taxId, supplierType);
+
     if ((supplierType && taxId.length >= 10) && userId == 0) {
-      console.log("checkAndCallApi",supplierType,taxId);
-      // ถ้ามีค่าในทั้ง Supplier Type และ Tax ID ให้เรียก API ที่ต้องการ
+      console.log("checkAndCallApi", supplierType, taxId);
       this.callApiWithSupplierTypeAndTaxId(supplierType, taxId);
     }
   }
@@ -2174,22 +2142,19 @@ export class SupplierAddComponent {
       taxId: taxId,
       supplierType: supplierType
     };
-    
+
     this.supplierService.CheckDuplicateSupplierByTaxIdAndType(formData).subscribe({
       next: (response: string) => {
-        // ถ้า response เป็นข้อความ "No duplicate supplier found."
         if (response.includes('No duplicate supplier found')) {
-          // ไม่พบข้อมูลซ้ำ ทำงานต่อไป
           console.log('No duplicate supplier found.');
-        } 
+        }
       },
       error: (err) => {
         console.error('Error occurred:', err);
-        // ถ้าเกิดข้อผิดพลาด ให้แสดง Swal แสดงข้อผิดพลาด
         Swal.fire({
           icon: 'warning',
           title: 'ข้อมูลซ้ำ',
-          text: err, // แสดงข้อความจาก API
+          text: err,
           confirmButtonText: 'ปิด'
         });
       }

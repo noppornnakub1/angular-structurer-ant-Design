@@ -4,9 +4,6 @@ import { CustomerService } from '../../services/customer.service';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { SharedModule } from '../../../../shared/shared.module';
 import { Router } from '@angular/router';
-
-import { AuthMockupService } from '../../../../core/mockup-api/auth-mockup.service';
-import { IUser } from '../../../user-manager/interface/user.interface';
 import { AuthService } from '../../../authentication/services/auth.service';
 import { IRole } from '../../../user-manager/interface/role.interface';
 
@@ -28,10 +25,8 @@ export class CustomerComponent implements OnInit {
   filters = { name: '', customer_num: '', tax_Id: '', status: '' };
   pageIndex: number = 1;
   pageSize: number = 10;
-  statusOptions: string[] = ['All', 'Draft', 'Cancel','Pending Approved By ACC','Pending Approved By FN', 'Approved By ACC', 'Approve By FN','Reject By ACC','Reject By FN','Pending Sync.'];
+  statusOptions: string[] = ['All', 'Draft', 'Cancel', 'Pending Approved By ACC', 'Pending Approved By FN', 'Approved By ACC', 'Approve By FN', 'Reject By ACC', 'Reject By FN', 'Pending Sync.'];
   selectedStatus: string = 'All';
-
-
 
   listOfColumn = [
     {
@@ -46,7 +41,7 @@ export class CustomerComponent implements OnInit {
     },
     {
       title: 'Customer Number',
-      compare: (a: ICustomer, b: ICustomer) =>  a.customerNum.localeCompare(b.customerNum),
+      compare: (a: ICustomer, b: ICustomer) => a.customerNum.localeCompare(b.customerNum),
       priority: 3
     },
     {
@@ -75,7 +70,7 @@ export class CustomerComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
 
-  constructor(private customerService: CustomerService,private cdr: ChangeDetectorRef) { }
+  constructor(private customerService: CustomerService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.checkRole();
@@ -105,11 +100,9 @@ export class CustomerComponent implements OnInit {
           this.listOfData = response;
           this.changeStatusIfNeeded();
           this.applyFilters();
-          // this.filteredData = response;
           this._cdr.markForCheck();
         },
         error: () => {
-          // Handle error
         }
       });
     }
@@ -119,11 +112,9 @@ export class CustomerComponent implements OnInit {
           this.listOfData = response;
           this.changeStatusIfNeeded();
           this.applyFilters();
-          // this.filteredData = response;
           this._cdr.markForCheck();
         },
         error: () => {
-          // Handle error
         }
       });
     }
@@ -133,11 +124,9 @@ export class CustomerComponent implements OnInit {
           this.listOfData = response;
           this.changeStatusIfNeeded();
           this.applyFilters();
-          // this.filteredData = response;
           this._cdr.markForCheck();
         },
         error: () => {
-          // Handle error
         }
       });
     }
@@ -147,12 +136,9 @@ export class CustomerComponent implements OnInit {
           this.listOfData = response;
           this.changeStatusIfNeeded();
           this.applyFilters();
-          // this.filteredData = response;
-          // this.total = response.length;
           this._cdr.markForCheck();
         },
         error: () => {
-          // Handle error
         }
       });
     }
@@ -172,8 +158,6 @@ export class CustomerComponent implements OnInit {
 
   applyFilters(): void {
     const { name, customer_num, tax_Id } = this.filters;
-
-    // ตรวจสอบให้แน่ใจว่าค่าการค้นหาไม่เป็น null หรือ undefined ก่อนการแปลงเป็นตัวพิมพ์เล็ก
     const lowerCaseName = name ? name.toLowerCase() : '';
     const lowerCaseCustomerNum = customer_num ? customer_num.toLowerCase() : '';
     const lowerCaseTaxId = tax_Id ? tax_Id.toLowerCase() : '';
@@ -191,10 +175,10 @@ export class CustomerComponent implements OnInit {
       );
     });
 
-    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อมีการกรองข้อมูลใหม่
+    this.pageIndex = 1;
     this.updateDisplayData();
-}
-  
+  }
+
   onStatusChange(status: string): void {
     this.selectedStatus = status;
     this.applyFilters();
@@ -207,7 +191,7 @@ export class CustomerComponent implements OnInit {
 
   onPageSizeChange(pageSize: number): void {
     this.pageSize = pageSize;
-    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อเปลี่ยนขนาดหน้า
+    this.pageIndex = 1;
     this.updateDisplayData();
   }
 
@@ -215,26 +199,24 @@ export class CustomerComponent implements OnInit {
     const startIndex = (this.pageIndex - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.displayData = this.filteredData.slice(startIndex, endIndex);
-    console.log(this.displayData);
-    
+
     this._cdr.markForCheck();
   }
 
   sortData(event: any): void {
     const sortField = event.key as keyof ICustomer;
     const sortOrder = event.value;
-  
+
     if (sortField && sortOrder) {
       this.displayData = this.filteredData.sort((a, b) => {
         const comparison = a[sortField] > b[sortField] ? 1 : -1;
         return sortOrder === 'ascend' ? comparison : -comparison;
       });
     } else {
-      this.displayData = [...this.filteredData]; // Reset to original data if no sorting is applied
+      this.displayData = [...this.filteredData];
     }
     this.cdr.detectChanges();
   }
-
 
   addData(): void {
     this._router.navigate(['/feature/customer/add']);
@@ -246,5 +228,4 @@ export class CustomerComponent implements OnInit {
   viewCustomer(id: number): void {
     this._router.navigate(['/feature/customer/view', id]);
   }
-
 }

@@ -200,11 +200,9 @@
             </div>
           </td>
           <td *ngIf="this.customerId != null" class="text-center">
-            <!-- แสดงไอคอนเสมอ และตรวจสอบเงื่อนไขเพื่อแสดงลิงก์ดาวน์โหลด -->
             <a *ngIf="file.filePath && file.filePath !== ''" [href]="getDownloadUrl(file.filePath)" target="_blank">
               <span class="material-symbols-outlined">description</span>
             </a>
-            <!-- แสดงไอคอนโดยไม่มีลิงก์หากไม่มี filePath -->
             <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
           </td>
         </tr>

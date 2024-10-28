@@ -89,7 +89,7 @@ export class CustomerService {
       params += params ? `&company=${company}` : `?company=${company}`;
     }
 
-    return this._http.get<CustomerSupplier>(`/Customer/FindDataHistoryByUserID${params}`);
+    return this._http.get<CustomerSupplier>(`/Customer/GetCustomerSupplierHistory${params}`);
   }
 
   findDataOldCustomer(num?: string, name?: string, site?: string): Observable<DataOld> {
@@ -151,7 +151,7 @@ export class CustomerService {
       params += params ? `&status=${status}` : `?status=${status}`;
     }
 
-    return this._http.get<CustomerSupplier>(`/Customer/FindDataHistoryByApprover${params}`);
+    return this._http.get<CustomerSupplier>(`/Customer/GetCustomerSupplierHistory${params}`);
   }
 
   FindDataHistoryByApproverFN(id?: number, company?: string, status?: string): Observable<CustomerSupplier> {
@@ -170,7 +170,7 @@ export class CustomerService {
       params += params ? `&status=${status}` : `?status=${status}`;
     }
 
-    return this._http.get<CustomerSupplier>(`/Customer/FindDataHistoryByApproverFN${params}`);
+    return this._http.get<CustomerSupplier>(`/Customer/GetCustomerSupplierHistory${params}`);
   }
 
   uploadFile(file: any): Observable<any> {

@@ -107,6 +107,7 @@ export class SupplierComponent implements OnInit {
       this.supplierService.findDataByUserCompanyACC(currentUser.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
+          this.selectedStatus = 'Pending Approved By ACC'
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();
@@ -119,6 +120,7 @@ export class SupplierComponent implements OnInit {
       this.supplierService.findDataByUserCompanyFN(currentUser.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
+          this.selectedStatus = 'Pending Approved By FN'
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();

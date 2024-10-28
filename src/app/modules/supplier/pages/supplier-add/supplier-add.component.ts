@@ -234,7 +234,7 @@ export class SupplierAddComponent {
       subdistrict: [null],
       tel: ['', Validators.required],
       email: ['', Validators.required],
-      supplierNum: [''],
+      supplierNum: [{ value: '', disabled: true }],
       supplierType: ['', Validators.required],
       site: ['00000', Validators.required],
       vat: [''],
@@ -350,9 +350,12 @@ export class SupplierAddComponent {
         this.filteredItemsPrefix = this.item_prefix;
       }
 
-      
-
+      this.checkAndCallApi();
       this._cdr.detectChanges();
+    });
+
+    this.supplierForm.get('tax_Id')?.valueChanges.subscribe(value => {
+      this.checkAndCallApi();
     });
 
     this.supplierForm.get('paymentMethod')?.valueChanges.subscribe(value => {
@@ -1279,7 +1282,7 @@ export class SupplierAddComponent {
     this.supplierForm.markAllAsTouched();
     if (this.emailError !== '') {
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Email ไม่ถูกต้อง',
         text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
         confirmButtonText: 'ปิด'
@@ -1724,7 +1727,7 @@ export class SupplierAddComponent {
     this.validateEmail()
     if (this.emailError != '') {
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Email ไม่ถูกต้อง',
         text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
         confirmButtonText: 'ปิด'
@@ -2151,5 +2154,45 @@ export class SupplierAddComponent {
         console.error('Error sending email', error);
       }
     );
+  }
+
+  checkAndCallApi(): void {
+    const supplierType = this.supplierForm.get('supplierType')?.value;
+    const taxId = this.supplierForm.get('tax_Id')?.value;
+    const userId = this.supplierForm.get('id')?.value;
+    console.log(userId,taxId,supplierType);
+    
+    if ((supplierType && taxId.length >= 10) && userId == 0) {
+      console.log("checkAndCallApi",supplierType,taxId);
+      // ถ้ามีค่าในทั้ง Supplier Type และ Tax ID ให้เรียก API ที่ต้องการ
+      this.callApiWithSupplierTypeAndTaxId(supplierType, taxId);
+    }
+  }
+
+  callApiWithSupplierTypeAndTaxId(supplierType: string, taxId: string): void {
+    const formData = {
+      taxId: taxId,
+      supplierType: supplierType
+    };
+    
+    this.supplierService.CheckDuplicateSupplierByTaxIdAndType(formData).subscribe({
+      next: (response: string) => {
+        // ถ้า response เป็นข้อความ "No duplicate supplier found."
+        if (response.includes('No duplicate supplier found')) {
+          // ไม่พบข้อมูลซ้ำ ทำงานต่อไป
+          console.log('No duplicate supplier found.');
+        } 
+      },
+      error: (err) => {
+        console.error('Error occurred:', err);
+        // ถ้าเกิดข้อผิดพลาด ให้แสดง Swal แสดงข้อผิดพลาด
+        Swal.fire({
+          icon: 'warning',
+          title: 'ข้อมูลซ้ำ',
+          text: err, // แสดงข้อความจาก API
+          confirmButtonText: 'ปิด'
+        });
+      }
+    });
   }
 }

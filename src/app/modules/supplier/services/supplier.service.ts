@@ -146,4 +146,8 @@ export class SupplierService {
   GetAllGroups() {
     return this._http.get(`/Supplier/GetAllGroups`);
   }
+
+  CheckDuplicateSupplierByTaxIdAndType(formData: any): Observable<any> {
+    return this._http.post(`/Supplier/CheckDuplicateSupplier`, formData, { responseType: 'text' });
+  }
 }

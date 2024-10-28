@@ -10,13 +10,13 @@
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Supplier Number</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="Supplier Number" [(ngModel)]="filters.supplier_num" (input)="applyFilters()"/>
+        <input nz-input placeholder="Supplier Number" [(ngModel)]="filters.supplier_num" (input)="applyFilters()" />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>TaxID</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="Tax" [(ngModel)]="filters.tax_Id" (input)="applyFilters()"/>
+        <input nz-input placeholder="Tax" [(ngModel)]="filters.tax_Id" (input)="applyFilters()" />
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
@@ -29,8 +29,8 @@
   <div class="mt-5 display-flex justify-center ">
     <button nz-button nzType="primary" class="mr-2" (click)="applyFilters()"><span nz-icon nzType="search"
         nzTheme="outline"></span>ค้นหา</button>
-    <button *ngIf="isUser || isAdmin" nz-button class="add-user-button" nzType="default" (click)="addData()"><span nz-icon nzType="user-add"
-        nzTheme="outline"></span>เพิ่มข้อมูล</button>
+    <button *ngIf="isUser || isAdmin" nz-button class="add-user-button" nzType="default" (click)="addData()"><span
+        nz-icon nzType="user-add" nzTheme="outline"></span>เพิ่มข้อมูล</button>
   </div>
 </div>
 <div class="content-data-table mt-3">
@@ -54,9 +54,11 @@
         <td class="text-center">
           <button *ngIf="isApproved || isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
             (click)="viewSupplier(data.id)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
-          <button *ngIf="isApproved || isAdmin || (isUser && (data.status === 'Draft' || data.status === 'Reject By ACC' || data.status === 'Reject By FN'))" nz-button nzType="primary"
-            class="mr-1 button-yellow" nzShape="round" (click)="editSupplier(data.id)"><span nz-icon nzType="edit"
-              nzTheme="outline"></span>Edit</button>
+          <button
+            *ngIf="(isApproved || isAdmin || (isUser && (data.status === 'Draft' || data.status === 'Reject By ACC' || data.status === 'Reject By FN'))) && data.status !== 'Success'"
+            nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round" (click)="editSupplier(data.id)">
+            <span nz-icon nzType="edit" nzTheme="outline"></span>Edit
+          </button>
         </td>
       </tr>
     </tbody>

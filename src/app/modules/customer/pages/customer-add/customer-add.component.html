@@ -16,7 +16,8 @@
         </nz-select>
       </div>
 
-      <div *ngIf="!isOverseaCustomer() && (isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="8" class="pr-3">
+      <div *ngIf="!isOverseaCustomer() && (isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="8"
+        class="pr-3">
         <nz-form-label nzNoColon>Customer Number<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Customer Number = ระบบจะ running number 
           ให้ตามประเภทของ Customer" class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -37,13 +38,15 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)" (blur)="onSiteBlur()"/>
+          <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)"
+            (blur)="onSiteBlur()" />
         </nz-input-group>
       </div>
       <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
 
       </div> -->
-      <div *ngIf="!isOverseaCustomer() && !(isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="8" class="pr-3">
+      <div *ngIf="!isOverseaCustomer() && !(isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12"
+        [nzLg]="8" class="pr-3">
       </div>
       <div *ngIf="isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
 
@@ -56,8 +59,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="idcard" class="form-input">
-          <input nz-input type="text" placeholder="Tax ID" formControlName="taxId" (input)="validateTaxId($event)"
-             />
+          <input nz-input type="text" placeholder="Tax ID" formControlName="taxId" (input)="validateTaxId($event)" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="4" class="pr-3 mt-3">
@@ -77,8 +79,20 @@
           <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Address<span style="color: red;">*</span>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Number.<span style="color: red;">*</span>
+          <span nz-tooltip
+            nzTooltipTitle="Number : ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูล บ้านเลขที่"
+            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+            info
+          </span>
+        </nz-form-label>
+        <nz-input-group nzPrefixIcon="home" class="form-input">
+          <input nz-input placeholder="Address" formControlName="addressSup" />
+        </nz-input-group>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="18" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Address
           <span nz-tooltip
             nzTooltipTitle="ADDRESS : ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูลตั้งแต่ บ้านเลขที่,อาคาร(ถ้ามี),ชั้น(ถ้ามี), เลขที่ห้อง(ถ้ามี),หมู่(ถ้ามี),หมู่บ้าน(ถ้ามี),ถนน(ถ้ามี),ซอย(ถ้ามี),ตรอก(ถ้ามี) และอื่นๆ"
             class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -86,7 +100,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Address" formControlName="addressSup" />
+          <input nz-input placeholder="Address" formControlName="addressDetail" />
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
@@ -150,7 +164,7 @@
           <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" />
         </nz-input-group>
       </div>
-      <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Company<span style="color: red;">*</span>
         </nz-form-label>
         <nz-select formControlName="company" nzPlaceHolder="Select Company" class="custom-select">
@@ -176,13 +190,13 @@
               <nz-space>
                 <div>
                   <span>{{ file.fileName }} (Already Uploaded)</span>
-                  <button class="ml-2" style="background-color: #1CB6E0; border: #1CB6E0;" nz-button nzType="primary" (click)="removeFile(file)">Remove</button>
+                  <button class="ml-2" style="background-color: #1CB6E0; border: #1CB6E0;" nz-button nzType="primary"
+                    (click)="removeFile(file)">Remove</button>
                 </div>
               </nz-space>
             </div>
             <div *ngIf="!file.filePath || file.filePath === ''">
-              <input class="choose" type="file"
-                (change)="onFileSelected($event, file)" />
+              <input class="choose" type="file" (change)="onFileSelected($event, file)" />
             </div>
           </td>
           <td *ngIf="this.customerId != null" class="text-center">
@@ -202,11 +216,11 @@
       <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || isAdmin)" nz-button
         nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
           nzTheme="outline"></span>Cancel</button>
-          <button nz-tooltip nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
-          *ngIf="!isViewMode && ((isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(customerForm.get('status')?.value)) || isAdmin || isApproved || isApprovedFN)"
-          class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
-          <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft
-        </button>
+      <button nz-tooltip nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
+        *ngIf="!isViewMode && ((isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(customerForm.get('status')?.value)) || isAdmin || isApproved || isApprovedFN)"
+        class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
+        <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft
+      </button>
       <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || isAdmin)"
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit

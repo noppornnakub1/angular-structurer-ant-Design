@@ -108,7 +108,8 @@ export class CustomerAddComponent implements OnInit {
       fileCertificate: [''],
       path: [''],
       prefix: [''],
-      postId: ['']
+      postId: [''],
+      addressDetail: ['']
     });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -337,7 +338,6 @@ export class CustomerAddComponent implements OnInit {
           district: '-',
           subdistrict: '-',
           site: '',
-          company: '-'
         });
       }
     });
@@ -920,11 +920,21 @@ export class CustomerAddComponent implements OnInit {
         this.typeCode = foundItem.codeFrom;
       }
 
-      const tax = this.customerForm.value.taxId.trim();
-      const type = this.typeCode.trim();
-      const key = `${tax}-${type}`;
+      const name = this.customerForm.value.name.trim(); // ตัดช่องว่างต้นและท้าย
+      const site = this.customerForm.value.site.trim(); // ตัดช่องว่างต้นและท้าย
+      const company = this.customerForm.value.company.trim(); // ตัดช่องว่างต้นและท้าย
+
+      // ตรวจสอบว่า name เป็นภาษาอังกฤษหรือไม่
+      const isEnglish = /^[A-Za-z\s]+$/.test(name);
+      const cleanedName = isEnglish ? name.replace(/\s+/g, '').toUpperCase() : name.replace(/\s+/g, '');
+      const isEnglishCompany = /^[A-Za-z\s]+$/.test(company);
+      const cleanedCompany = isEnglishCompany ? company.replace(/\s+/g, '').toUpperCase() : name.replace(/\s+/g, '');
+      const key = cleanedCompany+ site + cleanedName;
+      // const tax = this.customerForm.value.taxId.trim();
+      // const type = this.typeCode.trim();
+      // const key = `${tax}-${type}`;
       console.log('804', key);
-      console.log('805', this.typeCode);
+      // console.log('805', this.typeCode);
 
       this.customerService.CheckDupplicateCustomer(key).subscribe({
         next: (response: any) => {
@@ -932,7 +942,7 @@ export class CustomerAddComponent implements OnInit {
             Swal.fire({
               icon: 'error',
               title: 'ข้อมูลซ้ำ',
-              text: 'มีข้อมูล Supplier นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ TaxID และ Type อีกครั้ง',
+              text: 'มีข้อมูล Customer นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ Name, Site และ อีกครั้ง',
               confirmButtonText: 'ปิด'
             });
             this.isCheckingDuplicate = false;
@@ -1144,7 +1154,7 @@ export class CustomerAddComponent implements OnInit {
       await this.CheckDupplicateData();
 
       // รอให้ approve() ทำงานเสร็จก่อนดำเนินการต่อ
-      await this.approve(event);
+      // await this.approve(event);
     } catch (error) {
       console.error('Error occurred during approval:', error);
     }

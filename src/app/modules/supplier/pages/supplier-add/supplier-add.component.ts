@@ -1375,10 +1375,10 @@ export class SupplierAddComponent {
     formData.append('PostalCode', formValue.postalCode);
     formData.append('Tel', formValue.tel);
     formData.append('Email', formValue.email);
-    formData.append('SupplierNum', formValue.supplierNum);
+    formData.append('SupplierNum', formValue.supplierNum || '');
     formData.append('SupplierType', formValue.supplierType);
     formData.append('Site', formValue.site);
-    formData.append('Vat', '-');
+    formData.append('Vat', formValue.vat);
     formData.append('Status', formValue.status);
     formData.append('PaymentMethod', formValue.paymentMethod);
     formData.append('Company', formValue.company);
@@ -1893,7 +1893,7 @@ export class SupplierAddComponent {
 
   sendEmailNotification(): void {
     const supplierNum = this.supplierForm.get('supplierNum')?.value;
-    const supplierName = this.supplierForm.get('supplierName')?.value;
+    const supplierName = this.supplierForm.get('name')?.value;
     const TaxID = this.supplierForm.get('tax_Id')?.value;
     if (this.supplierForm.get('status')?.value === 'Pending Approved By ACC' && this.supplierBankForm.valid == false) {
       const company = this.supplierForm.get('company')?.value;
@@ -1938,9 +1938,9 @@ export class SupplierAddComponent {
             const to = approver.email;
             const subject = 'OnePortal Notification';
             const body = `
-            <p>เรียน ส่วนงานการเงิน/p>
+            <p>เรียน ส่วนงานการเงิน</p>
             <br>
-            <p>ราได้รับคำขอเปิด Supplier: ${supplierName} Tax ID:${TaxID} ของคุณได้รับการอนุมัติจากบัญชีแล้ว</p>
+            <p>เราได้รับคำขอเปิด Supplier: ${supplierName} Tax ID:${TaxID} ของคุณได้รับการอนุมัติจากบัญชีแล้ว</p>
             <br>
             <p>สถานะคำขอของคุณ: ${this.supplierForm.get('status')?.value}</p>
             <br>

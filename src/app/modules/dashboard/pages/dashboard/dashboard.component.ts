@@ -211,7 +211,7 @@ export class DashboardComponent {
     else if (currentUser.role == 3) {
       const userId = currentUser.userId;
       const company = currentUser.company;
-      this.customerService.FindDataHistoryByApprover(userId, company, 'Pending Approved By ACC').subscribe({
+      this.customerService.FindDataHistoryByApprover(userId, company, 'Pending Approved By ACC','ACC').subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.applyFilters();
@@ -224,7 +224,7 @@ export class DashboardComponent {
     else if (currentUser.role == 4) {
       const userId = currentUser.userId;
       const company = currentUser.company;
-      this.customerService.FindDataHistoryByApproverFN(userId, company, 'Approved By ACC').subscribe({
+      this.customerService.FindDataHistoryByApproverFN(userId, company, 'Approved By ACC','ACC').subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.applyFilters();

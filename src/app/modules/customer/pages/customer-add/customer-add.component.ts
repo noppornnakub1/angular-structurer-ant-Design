@@ -173,6 +173,16 @@ export class CustomerAddComponent implements OnInit {
       this.updateNameWithPrefixChange();
       this._cdr.detectChanges();
     });
+
+    this.customerForm.get('company')?.valueChanges.subscribe(value => {
+      this.checkAndCallApi();
+    });
+    this.customerForm.get('name')?.valueChanges.subscribe(value => {
+      this.checkAndCallApi();
+    });
+    this.customerForm.get('site')?.valueChanges.subscribe(value => {
+      this.checkAndCallApi();
+    });
     this.checkRole();
     this.getDataCompany()
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
@@ -994,6 +1004,7 @@ export class CustomerAddComponent implements OnInit {
     return `${environment.uploads_url}/${fileName}`;
   }
 
+
   extractFileName(filePath: string): string {
     return filePath.split('/').pop() || '';
   }
@@ -1053,6 +1064,46 @@ export class CustomerAddComponent implements OnInit {
         this._cdr.markForCheck();
       },
       error: () => {
+      }
+    });
+  }
+
+  checkAndCallApi(): void {
+    const company = this.customerForm.get('company')?.value;
+    const site = this.customerForm.get('site')?.value;
+    const name = this.customerForm.get('name')?.value;
+    const userId = this.customerForm.get('id')?.value;
+    console.log(company,site,name);
+    
+    if ((company && site && name) && userId == 0) {
+      this.callApiWitCompanySiteAndName(company, site,name);
+    }
+  }
+
+  callApiWitCompanySiteAndName(company: string, site: string, name: string): void {
+    const formData = {
+      Company: company,
+      Site: site,
+      Name: name
+    };
+    
+    this.customerService.CheckDuplicateSCustomerByConpanySiteAndName(formData).subscribe({
+      next: (response: string) => {
+        // ถ้า response เป็นข้อความ "No duplicate supplier found."
+        if (response.includes('No duplicate Customer found.')) {
+          // ไม่พบข้อมูลซ้ำ ทำงานต่อไป
+          console.log('No duplicate Customer found.');
+        } 
+      },
+      error: (err) => {
+        console.error('Error occurred:', err);
+        // ถ้าเกิดข้อผิดพลาด ให้แสดง Swal แสดงข้อผิดพลาด
+        Swal.fire({
+          icon: 'warning',
+          title: 'ข้อมูลซ้ำ',
+          text: err, // แสดงข้อความจาก API
+          confirmButtonText: 'ปิด'
+        });
       }
     });
   }

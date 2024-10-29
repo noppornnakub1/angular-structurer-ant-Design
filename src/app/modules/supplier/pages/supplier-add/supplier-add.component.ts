@@ -332,10 +332,6 @@ export class SupplierAddComponent {
       this._cdr.detectChanges();
     });
 
-    this.supplierForm.get('tax_Id')?.valueChanges.subscribe(value => {
-      this.checkAndCallApi();
-    });
-
     this.supplierForm.get('paymentMethod')?.valueChanges.subscribe(value => {
       this.toggleSupplierBankForm(value);
     });

@@ -150,4 +150,8 @@ export class SupplierService {
   CheckDuplicateSupplierByTaxIdAndType(formData: any): Observable<any> {
     return this._http.post(`/Supplier/CheckDuplicateSupplier`, formData, { responseType: 'text' });
   }
+
+  GetMaxSupplierNum() : Observable<any>{
+    return this._http.post(`/BankMasterData/updateSupplierNumInSqlServer`,{});
+  }
 }

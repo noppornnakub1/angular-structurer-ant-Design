@@ -95,8 +95,8 @@ export class CustomerAddComponent implements OnInit {
       subdistrict: ['', Validators.required],
       province: ['', Validators.required],
       postalCode: ['', Validators.required],
-      tel: ['', Validators.required],
-      email: ['', Validators.required],
+      tel: ['-', Validators.required],
+      email: ['-', Validators.required],
       customerId: ['0', Validators.required],
       customerNum: ['',],
       customerType: ['', Validators.required],
@@ -666,10 +666,12 @@ export class CustomerAddComponent implements OnInit {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, approve it!'
+      confirmButtonText: 'Yes, approve it!',
+      cancelButtonText: 'Cancel' // เพิ่มปุ่ม Cancel
     });
 
     if (result.isConfirmed) {
+      // หากผู้ใช้กดปุ่ม "Yes, approve it!"
       await this.setStatusAndSubmit("Approved By ACC");
       Swal.fire({
         icon: 'success',
@@ -680,8 +682,18 @@ export class CustomerAddComponent implements OnInit {
       }).then(() => {
         this.router.navigate(['/feature/customer']);
       });
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      // หากผู้ใช้กดปุ่ม "Cancel"
+      this.customerForm.patchValue({ customerNum: '' });
+      Swal.fire({
+        icon: 'info',
+        title: 'Cancelled',
+        text: 'Your customer number has been cleared.',
+        showConfirmButton: false,
+        timer: 1500
+      });
     }
-  }
+}
 
   reject(event: Event): void {
     event.preventDefault();
@@ -883,9 +895,9 @@ export class CustomerAddComponent implements OnInit {
         next: (response: any) => {
           if (response && response.length > 0) {
             Swal.fire({
-              icon: 'error',
+              icon: 'warning',
               title: 'ข้อมูลซ้ำ',
-              text: 'มีข้อมูล Customer นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ Name, Site และ อีกครั้ง',
+              text: 'มีข้อมูล Customer นี้อยู่ในฐานข้อมูล Oracle อยู่แล้ว โปรดตรวจสอบ Name, Site และ อีกครั้ง',
               confirmButtonText: 'ปิด'
             });
             this.isCheckingDuplicate = false;
@@ -1042,7 +1054,6 @@ export class CustomerAddComponent implements OnInit {
 
   async checkApprove(event: Event): Promise<void> {
     try {
-      await this.CheckDupplicateData();
       await this.approve(event);
     } catch (error) {
       console.error('Error occurred during approval:', error);
@@ -1105,6 +1116,7 @@ export class CustomerAddComponent implements OnInit {
           text: err, // แสดงข้อความจาก API
           confirmButtonText: 'ปิด'
         });
+        this.customerForm.patchValue({ company: '' });
       }
     });
   }

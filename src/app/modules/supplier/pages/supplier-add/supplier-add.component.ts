@@ -190,7 +190,7 @@ export class SupplierAddComponent {
   filesBankAdd = [
     { fileName: 'หนังสือยินยอมการโอนเงิน', fileType: 'gchGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'gchGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' },
-    { fileName: 'สำเนาหน้า Book Bank', fileType: 'gchGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank' },
+    { fileName: 'สำเนาหน้า Book Bank', fileType: 'gchGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank]' },
   ];
   file: any;
   filess: Array<{ fileName: string; fileType: string; filePath: string; labelText: string; }> = [];
@@ -221,63 +221,79 @@ export class SupplierAddComponent {
   ) { }
 
   ngOnInit(): void {
-    this.initializeForms();
-    this.handleRouteParams();
-    this.initializeViewMode();
-    this.loadStaticData();
-    this.setupFormListeners();
-
-    this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
-
-    this.checkRole();
-  }
-
-  private initializeForms(): void {
     this.supplierForm = this.fb.group({
-      id: [0], prefix: ['', Validators.required], name: ['', Validators.required],
-      tax_Id: ['', Validators.required], addressSup: ['', Validators.required],
-      postalCode: [null, Validators.required], province: [null], district: [null],
-      subdistrict: [null], tel: ['', Validators.required], email: ['', Validators.required],
-      supplierNum: [{ value: '', disabled: true }], supplierType: ['', Validators.required],
-      site: ['00000', Validators.required], vat: [''], status: ['', Validators.required],
-      paymentMethod: ['', Validators.required], company: ['', Validators.required],
-      type: ['Supplier', Validators.required], userId: [''], mobile: ['', Validators.required],
+      id: [0],
+      prefix: ['', Validators.required],
+      name: ['', Validators.required],
+      tax_Id: ['', Validators.required],
+      addressSup: ['', Validators.required],
+      postalCode: [null, Validators.required],
+      province: [null],
+      district: [null],
+      subdistrict: [null],
+      tel: ['', Validators.required],
+      email: ['', Validators.required],
+      supplierNum: [{ value: '', disabled: true }],
+      supplierType: ['', Validators.required],
+      site: ['00000', Validators.required],
+      vat: [''],
+      status: ['', Validators.required],
+      paymentMethod: ['', Validators.required],
+      company: ['', Validators.required],
+      type: ['Supplier', Validators.required],
+      userId: [''],
+      mobile: ['', Validators.required],
       postId: ['']
     });
-
-    this.supplierBankForm = this.createBankFormGroup();
-    this.supplierBankFormAdd = this.createBankFormGroup();
-  }
-
-  private createBankFormGroup(): FormGroup {
-    return this.fb.group({
-      supbankId: [0], supplierId: [, Validators.required],
-      nameBank: ['', Validators.required], branch: ['', Validators.required],
-      accountNum: ['', Validators.required], supplierGroup: ['', Validators.required],
-      accountName: ['', Validators.required], company: ['', Validators.required]
+    this.supplierBankForm = this.fb.group({
+      supbankId: [0],
+      supplierId: [, Validators.required],
+      nameBank: ['', Validators.required],
+      branch: ['', Validators.required],
+      accountNum: ['', Validators.required],
+      supplierGroup: ['', Validators.required],
+      accountName: ['', Validators.required],
+      company: ['', Validators.required],
     });
-  }
-
-  private handleRouteParams(): void {
+    this.supplierBankFormAdd = this.fb.group({
+      supbankId: [0],
+      supplierId: [, Validators.required],
+      nameBank: ['', Validators.required],
+      branch: ['', Validators.required],
+      accountNum: ['', Validators.required],
+      supplierGroup: ['', Validators.required],
+      accountName: ['', Validators.required],
+      company: ['', Validators.required],
+    });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
         this.suppilerId = +id;
+        forkJoin({
+          supplierData: this.supplierService.findSupplierByIdV2(this.suppilerId),
+          postCodes: this.postCodeService.getPostCodes()
+        }).subscribe(({ supplierData, postCodes }) => {       
+          this.supplierForm.patchValue({
+            ...supplierData,
+            postalCode: supplierData.postalCode + '-' + supplierData.subdistrict
+          });
+          this.items_provinces = postCodes;
+          this.filteredItemsProvince = postCodes;
+          if (this.supplierForm.value.postalCode && this.supplierForm.value.postId) {
+            const merge = this.supplierForm.value.postalCode;
+            this.onPostalCodeChange(merge);
+          }
+        });
         this.loadSupplierData(this.suppilerId);
+        this.isIDTemp = this.suppilerId;
       }
     });
-  }
-
-  private initializeViewMode(): void {
     if (this.router.url.includes('/view/')) {
       this.isViewMode = true;
       this.supplierForm.disable();
       this.supplierBankForm.disable();
       this.supplierBankFormAdd.disable();
     }
-  }
-
-  private loadStaticData(): void {
     this.postCodeService.getPostCodes().subscribe(data => {
       this.items_provinces = data;
       this.filteredItemsProvince = data;
@@ -285,85 +301,132 @@ export class SupplierAddComponent {
     this.prefixService.getPrefix().subscribe(data => {
       this.item_prefix = data;
       this.filteredItemsPrefix = data;
-      this.supplierForm.patchValue({ prefix: this.item_prefix[0]?.name || '' });
+
+      this.supplierForm.patchValue({
+        prefix: this.item_prefix.length > 0 ? this.item_prefix[0].name : ''
+      });
     });
+    this.showSupplierBankForm = false;
+    this.showSupplierBankFormAdd = false;
     this.getSupplierType();
     this.getDataBank();
     this.getDataPaymentMethod();
     this.getDataVAT();
     this.getDataCompany();
-  }
 
-  private setupFormListeners(): void {
     this.supplierForm.get('supplierType')?.valueChanges.subscribe(value => {
-      this.onSupplierTypeChange(value);
+      const supplierTypeId = this.getSupplierTypeId(value);
+      if (supplierTypeId) {
+        this.loadSupplierType(supplierTypeId);
+      }
+      if (value === '1F' || value === 'OSEA') {
+        this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
+        this.supplierForm.patchValue({
+          prefix: ''  
+        });
+      } else {
+        this.filteredItemsPrefix = this.item_prefix;
+      }
+
+      this.checkAndCallApi();
       this._cdr.detectChanges();
     });
 
-    this.supplierForm.get('tax_Id')?.valueChanges.subscribe(() => this.checkAndCallApi());
-    this.supplierForm.get('paymentMethod')?.valueChanges.subscribe(value => this.toggleSupplierBankForm(value));
-    this.supplierForm.get('name')?.valueChanges.subscribe((value: string) => {
-      this.updateAccountNames(value);
+    this.supplierForm.get('paymentMethod')?.valueChanges.subscribe(value => {
+      this.toggleSupplierBankForm(value);
     });
-    this.supplierForm.get('prefix')?.valueChanges.subscribe(prefix => {
+
+    this.supplierForm.get('name')?.valueChanges.subscribe((value: string) => {
+      this.supplierBankForm.patchValue({ accountName: this.supplierForm.value.name });
+      this.supplierBankFormAdd.patchValue({ accountName: this.supplierForm.value.name });
+      this._cdr.detectChanges();
+    });
+
+    this.supplierForm.get('prefix')?.valueChanges.subscribe((prefix: string) => {
       this.selectedPrefix = prefix;
       this.updateNameWithPrefixChange();
       this._cdr.detectChanges();
+    });
+
+    this.supplierBankForm.get('supplierGroup')?.valueChanges.subscribe(value => {
+      if (value === 'ALL Group') {
+        this.filesBank = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]' },
+          { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [ONE Group]' },
+          { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]' },
+          { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [GCH Group]' }
+        ];
+      }
+      else if (value === 'ONE GROUP') {
+        this.filesBank = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]' },
+          { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [ONE Group]' },
+        ];
+      }
+      else if (value === 'GCH GROUP') {
+        this.filesBank = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]' },
+          { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [GCH Group]' }
+        ];
+      }
+      else if (value === 'ACT') {
+        this.filesBank = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'actGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [ACT]' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'actGroupCertificationFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [ACT]' },
+          { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'actGroupBookBankFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [ACT]' },
+        ];
+      }
+    });
+
+    this.supplierBankFormAdd.get('supplierGroup')?.valueChanges.subscribe(value => {
+      if (this.isLoadingFromAPI) {
+        return;
+      }
+      if (value === 'ALL Group') {
+        this.filesBankAdd = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]' },
+          { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [ONE Group]' },
+          { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]' },
+          { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [GCH Group]' }
+        ];
+      }
+      else if (value === 'ONE GROUP') {
+        this.filesBankAdd = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]' },
+          { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [ONE Group]' },
+        ];
+      }
+      else if (value === 'GCH GROUP') {
+        this.filesBankAdd = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]' },
+          { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [GCH Group]' }
+        ];
+      }
+      else if (value === 'ACT') {
+        this.filesBankAdd = [
+          { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'actGroupConsentFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [ACT]' },
+          { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'actGroupCertificationFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [ACT]' },
+          { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'actGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank [ACT]' },
+        ];
+      }
     });
 
     this.supplierBankForm.get('supplierGroup')?.valueChanges.subscribe((selectedGroup: string) => {
       if (selectedGroup === 'ALL Group') {
         this.showSupplierBankFormAdd = false;
       }
-      this.setFilesBank(selectedGroup, 'filesBank');
       this.updateFilteredSupplierGroups(selectedGroup);
     });
-
-    this.supplierBankFormAdd.get('supplierGroup')?.valueChanges.subscribe(value => {
-      if (!this.isLoadingFromAPI) {
-        this.setFilesBank(value, 'filesBankAdd');
-      }
-    });
-  }
-
-  updateAccountNames(value: string): void {
-    this.supplierBankForm.patchValue({ accountName: value });
-    this.supplierBankFormAdd.patchValue({ accountName: value });
-    this._cdr.detectChanges();
-  }
-
-  private fileBankMapping: { [key: string]: { fileName: string; fileType: string; labelText: string; filePath: string }[] } = {
-    'ALL Group': [
-      { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]', filePath: '' },
-      { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', filePath: '' },
-      { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ONE Group]', filePath: '' },
-      { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]', filePath: '' },
-      { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', filePath: '' },
-      { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [GCH Group]', filePath: '' },
-    ],
-    'ONE GROUP': [
-      { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]', filePath: '' },
-      { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', filePath: '' },
-      { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ONE Group]', filePath: '' },
-    ],
-    'GCH GROUP': [
-      { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]', filePath: '' },
-      { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', filePath: '' },
-      { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [GCH Group]', filePath: '' },
-    ],
-    'ACT': [
-      { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'actGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ACT]', filePath: '' },
-      { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'actGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', filePath: '' },
-      { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'actGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ACT]', filePath: '' },
-    ]
-  };
-
-  private setFilesBank(value: string, target: 'filesBank' | 'filesBankAdd'): void {
-    if (this.fileBankMapping[value]) {
-      this[target] = this.fileBankMapping[value];
-    } else {
-      this[target] = [];
-    }
+    this.checkRole();
+    this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
   }
 
   onFileSelectSupplier(event: Event, fileType: string, labelText: string): void {
@@ -395,28 +458,28 @@ export class SupplierAddComponent {
 
   onFileSelectNew(event: Event, fileType: string, labelText: string, isFromFilesBankAdd: boolean = false): void {
     const input = event.target as HTMLInputElement;
-
+  
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
       let fileToUpdate;
-
+  
       if (isFromFilesBankAdd) {
         fileToUpdate = this.filesBankAdd.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
       } else {
         fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
       }
-
+  
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
-
+  
         if (fileToUpdate && 'fileId' in fileToUpdate) {
           const fileId = fileToUpdate.fileId;
           if (fileId) {
             const supbankId = fileToUpdate.supbankId ?? (isFromFilesBankAdd ? this.supplierBankFormAdd.get('supbankId')?.value : this.supplierBankForm.get('supbankId')?.value);
-
+  
             const existingEntry = this.fileIdsToRemoveMapping.find(entry => entry.SupbankId === supbankId && entry.FileId === fileId);
-
+  
             if (existingEntry) {
               existingEntry.IsNewUpload = true;
             } else {
@@ -426,7 +489,7 @@ export class SupplierAddComponent {
                 IsNewUpload: true
               });
             }
-
+  
             if (isFromFilesBankAdd) {
               if (!this.fileIdsToRemoveBankAdd.includes(fileId)) {
                 this.fileIdsToRemoveBankAdd.push(fileId);
@@ -439,7 +502,7 @@ export class SupplierAddComponent {
           }
         }
       }
-
+  
       const newFile: SelectedFile = {
         file: selectedFile,
         fileType: fileType,
@@ -447,16 +510,16 @@ export class SupplierAddComponent {
         filePath: '',
         labelText: labelText
       };
-
+  
       if (isFromFilesBankAdd) {
         this.selectedFilesAdd.push(newFile);
       } else {
         this.selectedNewFilesSupplier.push(newFile);
       }
-
+  
       this._cdr.detectChanges();
     }
-  }
+  }  
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
     const input = event.target as HTMLInputElement;
@@ -784,7 +847,7 @@ export class SupplierAddComponent {
         ...data,
         postalCode: postalCodeCombination
       });
-      this.idreq = data.userId
+      this.idreq = data.userId 
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({
           fileId: file.fileId,
@@ -937,14 +1000,14 @@ export class SupplierAddComponent {
     if (selectedItem == null || selectedItem == undefined) {
       selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
     }
-    if (selectedItemId) {
+    if(selectedItemId){
       selectedItemId.subdistrict = subdistrict;
       selectedItemId.district = district;
       selectedItemId.district = province;
       this.filteredItemsProvince = [...this.items_provinces];
 
       this.supplierForm.patchValue({
-        postalCode: selectedItemId.postalCode + '-' + selectedItemId.subdistrict
+        postalCode: selectedItemId.postalCode+'-'+selectedItemId.subdistrict
       });
     }
     else if (selectedItem) {
@@ -987,6 +1050,7 @@ export class SupplierAddComponent {
           next: (response) => {
             if (response && response.supplier_id) {
               this.handleAddResponse(response);
+              this.getMaxSupplierNum();
             }
           },
           error: (err) => {
@@ -1297,73 +1361,73 @@ export class SupplierAddComponent {
     const supplierBankData: any[] = [];
 
     if (this.supplierBankForm.valid) {
-      const bankFormValue = this.supplierBankForm.value;
-      supplierBankData.push(bankFormValue);
+        const bankFormValue = this.supplierBankForm.value;
+        supplierBankData.push(bankFormValue);
     } else {
     }
 
     if (this.supplierBankFormAdd.valid) {
-      const bankFormValueAdd = this.supplierBankFormAdd.value;
-      supplierBankData.push(bankFormValueAdd);
+        const bankFormValueAdd = this.supplierBankFormAdd.value;
+        supplierBankData.push(bankFormValueAdd);
     } else {
     }
 
     if (supplierBankData.length > 0) {
-      const formData = new FormData();
-      const supplierBankJson = JSON.stringify(supplierBankData);
+        const formData = new FormData();
+        const supplierBankJson = JSON.stringify(supplierBankData);
 
-      const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
-        SupbankId: file.SupbankId,
-        FileId: file.FileId,
-        IsNewUpload: file.IsNewUpload || false
-      }));
+        const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
+            SupbankId: file.SupbankId,
+            FileId: file.FileId,
+            IsNewUpload: file.IsNewUpload || false
+        }));
+        
+        const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
 
-      const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
+        formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
+        formData.append('supplierBankJson', supplierBankJson);
 
-      formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
-      formData.append('supplierBankJson', supplierBankJson);
+        const labelTextsGrouped: { [key: string]: string[] } = {};
+        this.selectedNewFilesSupplier?.forEach(selectedFile => {
+            if (!labelTextsGrouped[selectedFile.fileType]) {
+                labelTextsGrouped[selectedFile.fileType] = [];
+            }
+            labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
+        });
 
-      const labelTextsGrouped: { [key: string]: string[] } = {};
-      this.selectedNewFilesSupplier?.forEach(selectedFile => {
-        if (!labelTextsGrouped[selectedFile.fileType]) {
-          labelTextsGrouped[selectedFile.fileType] = [];
-        }
-        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
-      });
+        this.selectedFilesAdd?.forEach(selectedFile => {
+            if (!labelTextsGrouped[selectedFile.fileType]) {
+                labelTextsGrouped[selectedFile.fileType] = [];
+            }
+            labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
+        });
 
-      this.selectedFilesAdd?.forEach(selectedFile => {
-        if (!labelTextsGrouped[selectedFile.fileType]) {
-          labelTextsGrouped[selectedFile.fileType] = [];
-        }
-        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
-      });
+        const labelTextsJson = JSON.stringify(labelTextsGrouped);
+        formData.append('labelTextsJson', labelTextsJson);
 
-      const labelTextsJson = JSON.stringify(labelTextsGrouped);
-      formData.append('labelTextsJson', labelTextsJson);
+        this.selectedNewFilesSupplier?.forEach(selectedFile => {
+            formData.append('Files', selectedFile.file, selectedFile.file.name);
+        });
 
-      this.selectedNewFilesSupplier?.forEach(selectedFile => {
-        formData.append('Files', selectedFile.file, selectedFile.file.name);
-      });
+        this.selectedFilesAdd?.forEach(selectedFile => {
+            formData.append('Files', selectedFile.file, selectedFile.file.name);
+        });
 
-      this.selectedFilesAdd?.forEach(selectedFile => {
-        formData.append('Files', selectedFile.file, selectedFile.file.name);
-      });
-
-      this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
-        next: (response) => {
-          Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');
-        },
-        error: (err) => {
-          Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
-          console.error('Error updating bank data with files:', err);
-        }
-      });
+        this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
+            next: (response) => {
+                Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');
+            },
+            error: (err) => {
+                Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
+                console.error('Error updating bank data with files:', err);
+            }
+        });
     } else {
-      this.supplierBankForm.markAllAsTouched();
-      this.supplierBankFormAdd.markAllAsTouched();
-      Swal.fire('Error!', 'Please fill in all required fields.', 'error');
+        this.supplierBankForm.markAllAsTouched();
+        this.supplierBankFormAdd.markAllAsTouched();
+        Swal.fire('Error!', 'Please fill in all required fields.', 'error');
     }
-  }
+}
 
   prepareBankFormData(bankFormValue: any): FormData {
     const formData = new FormData();
@@ -1665,6 +1729,17 @@ export class SupplierAddComponent {
         const newStatus = currentStatus === 'Approved By ACC' ? 'Approved By FN' : 'Approved By ACC';
         this.setStatusAndSubmit(newStatus);
       }
+      else if (result.dismiss === Swal.DismissReason.cancel) {
+        // หากผู้ใช้กดปุ่ม "Cancel"
+        this.supplierForm.patchValue({ supplierNum: '' });
+        Swal.fire({
+          icon: 'info',
+          title: 'Cancelled',
+          text: 'Your customer number has been cleared.',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
     });
   }
 
@@ -1841,7 +1916,7 @@ export class SupplierAddComponent {
     const CheckcurrentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     const roleId = CheckcurrentUser.role
     return new Promise((resolve, reject) => {
-      if (this.supplierForm.value.vat === '-' && roleId == 3) {
+      if(this.supplierForm.value.vat === '-' && roleId == 3){
         Swal.fire({
           icon: 'warning',
           title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
@@ -2033,11 +2108,11 @@ export class SupplierAddComponent {
       taxId: taxId,
       supplierType: supplierType
     };
-
+    
     this.supplierService.CheckDuplicateSupplierByTaxIdAndType(formData).subscribe({
       next: (response: string) => {
         if (response.includes('No duplicate supplier found')) {
-        }
+        } 
       },
       error: (err) => {
         console.error('Error occurred:', err);
@@ -2047,6 +2122,17 @@ export class SupplierAddComponent {
           text: err,
           confirmButtonText: 'ปิด'
         });
+        this.supplierForm.patchValue({ tax_Id: ' ' });
+      }
+    });
+  }
+
+  getMaxSupplierNum(): void {
+    this.supplierService.GetMaxSupplierNum().subscribe({
+      next: (response: any) => {
+        console.log(response);
+      },
+      error: () => {
       }
     });
   }

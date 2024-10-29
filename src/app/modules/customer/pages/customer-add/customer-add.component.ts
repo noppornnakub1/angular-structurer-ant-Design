@@ -308,6 +308,8 @@ export class CustomerAddComponent implements OnInit {
         postalCode: postalCodeCombination
       });
       this.originalData = { ...data };
+      console.log(this.originalData);
+      
       this.idreq = data.userId
       this.filess = [
         { fileName: 'ใบขอเปิด Customer', fileType: 'fileReq', filePath: this.customerForm.value.fileReq || '' },
@@ -416,7 +418,7 @@ export class CustomerAddComponent implements OnInit {
               await this.UploadFile();
             }
             this.insertLog();
-            this.getMaxCustomerNum();
+            // this.getMaxCustomerNum(); พี่หนึ่งอย่าพึ่งลบ ขอลองทำก่อนนะครับ
             Swal.fire({
               icon: 'success',
               title: 'Saved!',
@@ -584,12 +586,12 @@ export class CustomerAddComponent implements OnInit {
     event.preventDefault();
     const result = await Swal.fire({
       title: 'Are you sure?',
-      text: "Do you want to Approve?",
+      text: "Do you want to save save?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, approve it!'
+      confirmButtonText: 'Yes, Save it!'
     });
 
     if (result.isConfirmed) {

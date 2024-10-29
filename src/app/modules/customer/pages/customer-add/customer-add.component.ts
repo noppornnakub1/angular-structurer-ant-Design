@@ -1054,6 +1054,7 @@ export class CustomerAddComponent implements OnInit {
 
   async checkApprove(event: Event): Promise<void> {
     try {
+      await this.CheckDupplicateData();
       await this.approve(event);
     } catch (error) {
       console.error('Error occurred during approval:', error);

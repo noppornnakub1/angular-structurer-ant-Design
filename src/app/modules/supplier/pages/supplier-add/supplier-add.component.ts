@@ -220,18 +220,20 @@ export class SupplierAddComponent {
     private userService: UserService
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.initializeForms();
-    this.handleRouteParams();
+  
+    await this.handleRouteParams();
+    
     this.initializeViewMode();
     this.loadStaticData();
     this.setupFormListeners();
-
+  
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
-
+  
     this.checkRole();
   }
-
+    
   private initializeForms(): void {
     this.supplierForm = this.fb.group({
       id: [0], prefix: ['', Validators.required], name: ['', Validators.required],
@@ -258,15 +260,37 @@ export class SupplierAddComponent {
     });
   }
 
-  private handleRouteParams(): void {
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.suppilerId = +id;
-        this.loadSupplierData(this.suppilerId);
-      }
+  private handleRouteParams(): Promise<void> {
+    return new Promise((resolve) => {
+      this.route.paramMap.subscribe(params => {
+        const id = params.get('id');
+        if (id) {
+          this.suppilerId = +id;
+          forkJoin({
+            supplierData: this.supplierService.findSupplierByIdV2(this.suppilerId),
+            postCodes: this.postCodeService.getPostCodes()
+          }).subscribe(({ supplierData, postCodes }) => {       
+            this.supplierForm.patchValue({
+              ...supplierData,
+              postalCode: supplierData.postalCode + '-' + supplierData.subdistrict
+            });
+            this.items_provinces = postCodes;
+            this.filteredItemsProvince = postCodes;
+            if (this.supplierForm.value.postalCode && this.supplierForm.value.postId) {
+              const merge = this.supplierForm.value.postalCode;
+              this.onPostalCodeChange(merge);
+            }
+            resolve();
+          });
+  
+          this.loadSupplierData(this.suppilerId);
+          this.isIDTemp = this.suppilerId;
+        } else {
+          resolve();
+        }
+      });
     });
-  }
+  }  
 
   private initializeViewMode(): void {
     if (this.router.url.includes('/view/')) {
@@ -1203,7 +1227,7 @@ export class SupplierAddComponent {
 
     const selectedPostItem = this.items_provinces.find(item => {
       const postalCode = formValue.postalCode.split('-')[0];
-      return item.postalCode === postalCode && this.isSubdistrictMatching(item);
+      return item.postalCode === postalCode || this.isSubdistrictMatching(item);
     });
 
     if (selectedPostItem) {

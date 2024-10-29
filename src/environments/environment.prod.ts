@@ -1,8 +1,8 @@
 export const environment = {
-  production: false,
-  api_url: 'https://localhost:7126/api',
-  uploads_url: 'http://localhost:7126/uploads',
-  name: 'development environment',
+  production: true,
+  api_url: 'http://10.10.0.28:8088/api',
+  uploads_url: 'http://10.10.0.28:8088/uploads',
+  name: 'production environment',
   i18_name: '',
   code: 1001,
 };

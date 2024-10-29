@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../authentication/services/auth.service';
 import { CustomerService } from '../../../customer/services/customer.service';
 import { IRole } from '../../../user-manager/interface/role.interface';
-import { SupplierService } from '../../../supplier/services/supplier.service';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
@@ -100,7 +99,6 @@ export class DashboardComponent {
       compare: null,
       priority: 1
     },
-
   ];
 
   listOfColumnOld = [
@@ -133,8 +131,7 @@ export class DashboardComponent {
       title: 'Action',
       compare: null,
       priority: 1
-    },
-
+    }
   ];
 
   private readonly _router = inject(Router);
@@ -169,36 +166,22 @@ export class DashboardComponent {
     this.authService.currenttRole.subscribe(user => {
       if (user && user.action) {
         this.currentUser = user;
-        console.log("151", this.currentUser);
-
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
-        console.log("this.isAdmin", this.isAdmin);
-        console.log("this.isApproved", this.isApproved);
-        console.log("this.isUser", this.isUser);
-        console.log("this.isApprovedFN", this.isApprovedFN);
       } else {
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        console.log("184", currentUser);
         this.authService.getRole(currentUser.role)
         this.authService.currenttRole.subscribe(user => {
           if (user && user.action) {
             this.currentUser = user;
-            console.log("189", this.currentUser);
-
             this.isAdmin = user.action.includes('admin');
             this.isApproved = user.action.includes('approved');
             this.isApprovedFN = user.action.includes('approvedFN');
             this.isUser = user.action.includes('user');
-            console.log("this.isAdmin", this.isAdmin);
-            console.log("this.isApproved", this.isApproved);
-            console.log("this.isUser", this.isUser);
-            console.log("this.isApprovedFN", this.isApprovedFN);
           }
         });
-        // สามารถเพิ่มการจัดการกรณีที่ไม่มี user เช่น redirect ไปยังหน้า login หรือแสดงข้อความ
       }
     });
   }

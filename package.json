@@ -1,6 +1,6 @@
 {
   "name": "angualar-structure",
-  "version": "0.0.0.6",
+  "version": "0.0.0.8",
   "scripts": {
     "ng": "ng",
     "dev": "ng serve --host 0.0.0.0 --configuration=dev",
@@ -13,7 +13,7 @@
     "build:qa": "node build-version.js && ng build --base-href=/angular-structure/ --configuration=qa --build-optimizer --aot --output-hashing=all",
     "build:sit": "node build-version.js && ng build --base-href=/angular-structure/ --configuration=sit --build-optimizer --aot --output-hashing=all",
     "build:uat": "node build-version.js && ng build --base-href=/angular-structure/ --configuration=uat --build-optimizer --aot --output-hashing=all",
-    "build:prod": "node build-version.js && ng build --base-href=/angular-structure/ --configuration=production --build-optimizer --aot --output-hashing=all",
+    "build:prod": "ng build --configuration production --output-hashing=all --delete-output-path",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

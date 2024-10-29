@@ -416,7 +416,7 @@ export class CustomerAddComponent implements OnInit {
               await this.UploadFile();
             }
             this.insertLog();
-
+            this.getMaxCustomerNum();
             Swal.fire({
               icon: 'success',
               title: 'Saved!',
@@ -875,10 +875,10 @@ export class CustomerAddComponent implements OnInit {
 
       const isEnglish = /^[A-Za-z\s]+$/.test(name);
       const cleanedName = isEnglish ? name.replace(/\s+/g, '').toUpperCase() : name.replace(/\s+/g, '');
-      const isEnglishCompany = /^[A-Za-z\s]+$/.test(company);
-      const cleanedCompany = isEnglishCompany ? company.replace(/\s+/g, '').toUpperCase() : name.replace(/\s+/g, '');
-      const key = cleanedCompany+ site + cleanedName;
 
+      const key = company+ site + cleanedName;
+      console.log(key);
+      
       this.customerService.CheckDupplicateCustomer(key).subscribe({
         next: (response: any) => {
           if (response && response.length > 0) {
@@ -1043,6 +1043,7 @@ export class CustomerAddComponent implements OnInit {
   async checkApprove(event: Event): Promise<void> {
     try {
       await this.CheckDupplicateData();
+      await this.approve(event);
     } catch (error) {
       console.error('Error occurred during approval:', error);
     }
@@ -1104,6 +1105,16 @@ export class CustomerAddComponent implements OnInit {
           text: err, // แสดงข้อความจาก API
           confirmButtonText: 'ปิด'
         });
+      }
+    });
+  }
+
+  getMaxCustomerNum(): void {
+    this.customerService.GetMaxCustomerNum().subscribe({
+      next: (response: any) => {
+        console.log(response);
+      },
+      error: () => {
       }
     });
   }

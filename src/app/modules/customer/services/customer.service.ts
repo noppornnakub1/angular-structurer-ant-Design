@@ -135,7 +135,7 @@ export class CustomerService {
     return this._http.get(`/TempNumKey/findbyKey/${num}`);
   }
 
-  FindDataHistoryByApprover(id?: number, company?: string, status?: string): Observable<CustomerSupplier> {
+  FindDataHistoryByApprover(id?: number, company?: string, status?: string, ownerType?: string): Observable<CustomerSupplier> {
     // ตรวจสอบเงื่อนไขว่าเราจะส่งค่าอะไรบ้าง
     let params = '';
 
@@ -149,12 +149,16 @@ export class CustomerService {
 
     if (status) {
       params += params ? `&status=${status}` : `?status=${status}`;
+    }
+
+    if (ownerType) {
+      params += params ? `&ownerType=${ownerType}` : `?ownerType=${ownerType}`;
     }
 
     return this._http.get<CustomerSupplier>(`/Customer/GetCustomerSupplierHistory${params}`);
   }
 
-  FindDataHistoryByApproverFN(id?: number, company?: string, status?: string): Observable<CustomerSupplier> {
+  FindDataHistoryByApproverFN(id?: number, company?: string, status?: string, ownerType?: string): Observable<CustomerSupplier> {
     // ตรวจสอบเงื่อนไขว่าเราจะส่งค่าอะไรบ้าง
     let params = '';
 
@@ -168,6 +172,10 @@ export class CustomerService {
 
     if (status) {
       params += params ? `&status=${status}` : `?status=${status}`;
+    }
+
+    if (ownerType) {
+      params += params ? `&ownerType=${ownerType}` : `?ownerType=${ownerType}`;
     }
 
     return this._http.get<CustomerSupplier>(`/Customer/GetCustomerSupplierHistory${params}`);
@@ -175,5 +183,10 @@ export class CustomerService {
 
   uploadFile(file: any): Observable<any> {
     return this._http.post(`/Customer/upload`, file);
+  }
+
+  
+  CheckDuplicateSCustomerByConpanySiteAndName(formData: any): Observable<any> {
+    return this._http.post(`/Customer/CheckDuplicateCustomer`, formData, { responseType: 'text' });
   }
 }

@@ -80,15 +80,15 @@
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Number.<span style="color: red;">*</span>
+        <nz-form-label nzNoColon>No.<span style="color: red;">*</span>
           <span nz-tooltip
-            nzTooltipTitle="Number : ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูล บ้านเลขที่"
+            nzTooltipTitle="No. : ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูล บ้านเลขที่"
             class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Address" formControlName="addressSup" />
+          <input nz-input placeholder="Address" formControlName="addressSup" maxlength="30"/>
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="18" class="pr-3 mt-3">

@@ -222,9 +222,7 @@ export class SupplierAddComponent {
 
   async ngOnInit(): Promise<void> {
     this.initializeForms();
-  
     await this.handleRouteParams();
-    
     this.initializeViewMode();
     this.loadStaticData();
     this.setupFormListeners();
@@ -324,7 +322,6 @@ export class SupplierAddComponent {
       this._cdr.detectChanges();
     });
 
-    this.supplierForm.get('tax_Id')?.valueChanges.subscribe(() => this.checkAndCallApi());
     this.supplierForm.get('paymentMethod')?.valueChanges.subscribe(value => this.toggleSupplierBankForm(value));
     this.supplierForm.get('name')?.valueChanges.subscribe((value: string) => {
       this.updateAccountNames(value);

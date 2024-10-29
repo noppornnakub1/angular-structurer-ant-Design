@@ -188,7 +188,6 @@ export class DashboardComponent {
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log("169", currentUser);
 
     if (!currentUser) {
       console.error('Current user is not available in local storage');
@@ -200,7 +199,6 @@ export class DashboardComponent {
       this.customerService.findDataHistoryByUserId(userId, company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(this.listOfData);
           this.applyFilters();
           this._cdr.markForCheck();
         },
@@ -211,7 +209,7 @@ export class DashboardComponent {
     else if (currentUser.role == 3) {
       const userId = currentUser.userId;
       const company = currentUser.company;
-      this.customerService.FindDataHistoryByApprover(userId, company, 'Pending Approved By ACC','ACC').subscribe({
+      this.customerService.FindDataHistoryByApprover(userId, company, 'Pending Approved By ACC', 'ACC').subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.applyFilters();
@@ -224,7 +222,7 @@ export class DashboardComponent {
     else if (currentUser.role == 4) {
       const userId = currentUser.userId;
       const company = currentUser.company;
-      this.customerService.FindDataHistoryByApproverFN(userId, company, 'Approved By ACC','ACC').subscribe({
+      this.customerService.FindDataHistoryByApproverFN(userId, company, 'Approved By ACC', 'ACC').subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.applyFilters();
@@ -236,14 +234,10 @@ export class DashboardComponent {
     }
     else {
       const userId = currentUser.userId;
-      console.log(userId);
-
       const company = undefined;
       this.customerService.findDataHistoryByUserId(userId, company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(this.listOfData);
-
           this.applyFilters();
           this._cdr.markForCheck();
         },
@@ -257,7 +251,6 @@ export class DashboardComponent {
     if (this.selectedTypeOld === 'Customer') {
       this.customerService.findDataOldCustomer(this.filtersOld.num, this.filtersOld.name, this.filtersOld.site).subscribe({
         next: (response: any) => {
-          console.log(response);
           this.listOfDataOld = response
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
@@ -272,8 +265,6 @@ export class DashboardComponent {
       this.customerService.findDataOldSupplier(this.filtersOld.num, this.filtersOld.name, this.filtersOld.tax_Id).subscribe({
         next: (response: any) => {
           this.listOfDataOld = response
-          console.log(this.listOfDataOld);
-
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
           this.updateDisplayDataOld();
@@ -292,32 +283,28 @@ export class DashboardComponent {
       });
       return;
     }
-
   }
 
   applyFilters(): void {
     const { name, num, tax_Id, source } = this.filters;
-
-    // แปลงข้อมูลที่กรอกในฟิลด์เป็นตัวพิมพ์เล็กเพื่อให้ไม่สนใจการพิมพ์เล็กหรือพิมพ์ใหญ่
     const lowerCaseName = name ? name.toLowerCase() : '';
     const lowerCaseNum = num ? num.toLowerCase() : '';
     const lowerCaseTaxId = tax_Id ? tax_Id.toLowerCase() : '';
 
     this.filteredData = this.listOfData.filter(data => {
-      // ตรวจสอบและแปลงข้อมูลที่ต้องการกรองให้เป็นตัวพิมพ์เล็กเช่นกัน
       const dataName = data.name ? data.name.toLowerCase() : '';
       const dataNum = data.num ? data.num.toLowerCase() : '';
       const dataTaxId = data.taxId ? data.taxId.toLowerCase() : '';
 
       return (
-        dataName.includes(lowerCaseName) &&  // ตรวจสอบชื่อที่ค้นหาตรงกับข้อมูลหรือไม่
-        dataNum.includes(lowerCaseNum) &&  // ตรวจสอบเลขที่
-        dataTaxId.includes(lowerCaseTaxId) &&  // ตรวจสอบ taxId
-        (this.selectedType === 'All' || data.source === this.selectedType) // ตรวจสอบสถานะ source
+        dataName.includes(lowerCaseName) &&
+        dataNum.includes(lowerCaseNum) &&
+        dataTaxId.includes(lowerCaseTaxId) &&
+        (this.selectedType === 'All' || data.source === this.selectedType)
       );
     });
 
-    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อมีการกรองข้อมูลใหม่
+    this.pageIndex = 1;
     this.updateDisplayData();
   }
 
@@ -381,18 +368,13 @@ export class DashboardComponent {
     const startIndex = (this.pageIndexOld - 1) * this.pageSizeOld;
     const endIndex = startIndex + this.pageSizeOld;
     this.displayDataOld = this.filteredDataOld.slice(startIndex, endIndex);
-    console.log(this.displayDataOld);
-
     this._cdr.markForCheck();
   }
 
   showModal(data: any): void {
-    console.log('Data sent to modal:', data);
     if (data) {
       this.selectedData = data;
       this.isVisible = true;
-      console.log('Selected Data:', this.selectedData);
-      console.log('Modal is visible:', this.isVisible);
     } else {
       console.error('Data is null or undefined');
     }
@@ -403,8 +385,6 @@ export class DashboardComponent {
   }
 
   openModal(data: any): void {
-    console.log(data);
-
     this.modalDataService.setData(data);
     this.modal.create({
       nzTitle: 'Customer/Supplier Details',
@@ -414,8 +394,6 @@ export class DashboardComponent {
   }
 
   openModalold(data: any): void {
-    console.log(data);
-
     this.modalDataService.setData(data);
     this.modal.create({
       nzTitle: 'Customer/Supplier Details',

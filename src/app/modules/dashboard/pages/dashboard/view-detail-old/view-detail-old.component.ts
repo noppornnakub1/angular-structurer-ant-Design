@@ -13,7 +13,5 @@ export class ViewDetailOldComponent {
 
   constructor(private modalDataService: ModalDataService) {
     this.data = this.modalDataService.getData();
-    console.log(this.data);
-    
   }
 }

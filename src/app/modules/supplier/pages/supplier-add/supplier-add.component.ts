@@ -215,7 +215,6 @@ export class SupplierAddComponent {
     private cdr: ChangeDetectorRef,
     private bankMasterService: BankMasterService,
     private emailService: EmailService,
-    private modal: NzModalService,
     private prefixService: prefixService,
     private validationService: ValidationService,
     private userService: UserService
@@ -266,43 +265,22 @@ export class SupplierAddComponent {
       accountName: ['', Validators.required],
       company: ['', Validators.required],
     });
-
-    // this.route.paramMap.subscribe(params => {
-    //   const id = params.get('id');
-    //   if (id) {
-    //     this.suppilerId = +id;
-    //     this.loadSupplierData(this.suppilerId);
-    //     this.isIDTemp = this.suppilerId;
-    //   }
-    // });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
         this.suppilerId = +id;
-
-        // ใช้ forkJoin เพื่อรอให้ข้อมูลทั้งสองถูกโหลดครบ
         forkJoin({
           supplierData: this.supplierService.findSupplierByIdV2(this.suppilerId),
           postCodes: this.postCodeService.getPostCodes()
-        }).subscribe(({ supplierData, postCodes }) => {
-          console.log(supplierData);
-          
+        }).subscribe(({ supplierData, postCodes }) => {       
           this.supplierForm.patchValue({
             ...supplierData,
             postalCode: supplierData.postalCode + '-' + supplierData.subdistrict
           });
-
-          // โหลดข้อมูลรหัสไปรษณีย์
           this.items_provinces = postCodes;
           this.filteredItemsProvince = postCodes;
-
-          console.log('ข้อมูลโหลดเสร็จแล้ว:', this.items_provinces);
-
-          // เรียกใช้ onPostalCodeChange หลังจากที่ข้อมูลโหลดครบ
           if (this.supplierForm.value.postalCode && this.supplierForm.value.postId) {
             const merge = this.supplierForm.value.postalCode;
-            console.log(merge);
-
             this.onPostalCodeChange(merge);
           }
         });
@@ -453,7 +431,6 @@ export class SupplierAddComponent {
     });
     this.checkRole();
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
-
   }
 
   onFileSelectSupplier(event: Event, fileType: string, labelText: string): void {
@@ -663,28 +640,28 @@ export class SupplierAddComponent {
 
   validateTaxId(event: any): void {
     const input = event.target.value;
-    const numericValue = this.validationService.validateTaxId(input);  // เรียกใช้ฟังก์ชันจาก service
+    const numericValue = this.validationService.validateTaxId(input);
     this.supplierForm.patchValue({ taxId: numericValue });
     event.target.value = numericValue;
   }
 
   validateTel(event: any): void {
     const input = event.target.value;
-    const numericValue = this.validationService.validateTel(input);  // เรียกใช้ฟังก์ชันจาก service
+    const numericValue = this.validationService.validateTel(input);
     event.target.value = numericValue;
     this.supplierForm.patchValue({ tel: numericValue });
   }
 
   validateMobile(event: any): void {
     const input = event.target.value;
-    const numericValue = this.validationService.validateTel(input);  // เรียกใช้ฟังก์ชันจาก service
+    const numericValue = this.validationService.validateTel(input);
     event.target.value = numericValue;
     this.supplierForm.patchValue({ mobile: numericValue });
   }
 
   validateSite(event: any): void {
     const input = event.target.value;
-    const numericValue = this.validationService.validateSite(input);  // เรียกใช้ฟังก์ชันจาก service
+    const numericValue = this.validationService.validateSite(input);
     event.target.value = numericValue;
     this.supplierForm.patchValue({ site: numericValue });
   }
@@ -808,21 +785,16 @@ export class SupplierAddComponent {
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
-
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
       }
-
     });
   }
 
   removeFile(file: any, isForBank: boolean = false): void {
-    console.log('Removing file:', file);
-    console.log('Is for Bank:', isForBank);
-
     if (file.fileId) {
       const supbankId = file.supbankId || (isForBank ? this.supplierBankForm.get('supbankId')?.value : this.supplierBankFormAdd.get('supbankId')?.value);
 
@@ -844,13 +816,7 @@ export class SupplierAddComponent {
         this.selectedNewFilesSupplier = this.selectedNewFilesSupplier.filter(f => f.fileType !== file.fileType || f.labelText !== file.labelText);
       }
 
-      const combinedFileIdsToRemove = [
-        ...this.fileIdsToRemove,
-        ...this.fileIdsToRemoveForBank
-      ];
-
       this.fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemoveMapping);
-      console.log('File IDs to Remove JSON:', this.fileIdsToRemoveJson);
 
       this._cdr.detectChanges();
     }
@@ -878,8 +844,6 @@ export class SupplierAddComponent {
 
   loadSupplierData(id: number): void {
     this.supplierService.findSupplierByIdV2(id).subscribe((data: any) => {
-      console.log(data);
-      
       const postalCode = data?.postalCode || '';
       const subdistrict = data?.subdistrict || '';
       const postalCodeCombination = postalCode && subdistrict ? postalCode + '-' + subdistrict : postalCode;
@@ -887,9 +851,7 @@ export class SupplierAddComponent {
         ...data,
         postalCode: postalCodeCombination
       });
-      this.idreq = data.userId
-      console.log(this.supplierForm.value);
-      
+      this.idreq = data.userId 
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({
           fileId: file.fileId,
@@ -898,20 +860,12 @@ export class SupplierAddComponent {
           filePath: file.filePath,
           labelText: file.labelText || ''
         }));
-
-        console.log(this.filess);
-
         const missingFiles = this.files.filter(file => {
           const existingFile = this.filess.find(f => f.labelText === file.labelText);
-          return !existingFile || !existingFile.filePath; // กรองไฟล์ที่ไม่มี filePath (แสดงว่าผู้ใช้อาจยังไม่ได้อัปโหลด)
+          return !existingFile || !existingFile.filePath;
         });
-        console.log(missingFiles);
-
-
-        // รวมรายการไฟล์จาก API กับไฟล์ที่ยังไม่ได้อัปโหลด
         this.displayFiles = [...this.filess, ...missingFiles];
       } else {
-        // ถ้าไม่มีไฟล์จาก API ให้แสดงรายการที่เตรียมไว้ทั้งหมด
         this.displayFiles = this.files;
       }
 
@@ -925,17 +879,12 @@ export class SupplierAddComponent {
   loadSupplierBank(id: number): void {
     this.supplierService.findSupplierBankBySupplierIdV2(id).subscribe((data: any) => {
       this._cdr.detectChanges();
-      console.log("Data from API:", data);
-
       if (data.supplierBank.length > 0) {
         const bankData = data.supplierBank[0];
 
         if (bankData.supplierGroup && !this.listOfGroup.some(group => group.group_name === bankData.supplierGroup)) {
           this.listOfGroup.push({ group_name: bankData.supplierGroup });
         }
-        console.log(this.listOfGroup);
-
-
         this.supplierBankForm.patchValue({
           supbankId: bankData.SupbankId,
           supplierId: bankData.SupplierId,
@@ -964,10 +913,8 @@ export class SupplierAddComponent {
 
       if (data.supplierBank.length > 1) {
         const bankDataAdd = data.supplierBank[1];
-        console.log("SupplierBank[1] data:", bankDataAdd);
         this.isLoadingFromAPI = true;
         this.selectedSupplierGroupAdd = bankDataAdd.SupplierGroup;
-
         this.supplierBankFormAdd.patchValue({
           supbankId: bankDataAdd.SupbankId,
           supplierId: bankDataAdd.SupplierId,
@@ -986,8 +933,6 @@ export class SupplierAddComponent {
       }
 
       if (data.supplierBankFilesForSupbankId2 && data.supplierBankFilesForSupbankId2.length > 0) {
-        console.log("Files from API for supbankId2:", data.supplierBankFilesForSupbankId2);
-
         this.filesBankAdd = data.supplierBankFilesForSupbankId2.map((file: any) => ({
           fileId: file.FileId,
           supbankId: file.SupbankId,
@@ -1049,38 +994,17 @@ export class SupplierAddComponent {
     }
   }
 
-  // onPostalCodeChange(value: any): void {
-  //   if (value && value.postalCode) {
-  //     this.supplierForm.patchValue({
-  //       postalCode: value.postalCode,
-  //       district: value.district,
-  //       subdistrict: value.subdistrict,
-  //       province: value.province
-  //     });
-  //   } else {
-  //     console.warn('Invalid value for postal code:', value);
-  //   }
-  //   this.cdr.markForCheck();
-  // }
   onPostalCodeChange(value: any): void {
-    console.log(value);
     let selectedItemId: any;
     const [postalCode, subdistrict] = value.split('-');
     const postId = this.supplierForm.value.postId
     const district = this.supplierForm.value.district
     const province = this.supplierForm.value.province
-    console.log(postalCode, subdistrict, postId);
-    console.log(this.items_provinces);
-
     let selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
-    console.log(selectedItem, 'selectedItem');
     if (selectedItem == null || selectedItem == undefined) {
       selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
-      console.log(selectedItemId, "selectedItemId");
     }
-    // selectedItem = selectedItemId
     if(selectedItemId){
-      // แก้ไขค่า subdistrict และ filteredItemsProvince
       selectedItemId.subdistrict = subdistrict;
       selectedItemId.district = district;
       selectedItemId.district = province;
@@ -1106,8 +1030,6 @@ export class SupplierAddComponent {
   }
 
   async onSubmit(): Promise<void> {
-    const formValue = { ...this.supplierForm.value };
-
     if (this.isViewMode) {
       this.toggleFormState(true);
     }
@@ -1122,8 +1044,7 @@ export class SupplierAddComponent {
       const formData = this.prepareFormData();
 
       this.assignPostId(formData);
-      console.log(formData);
-      
+
       if (this.suppilerId) {
         this.onUpdate(formData);
       } else {
@@ -1209,8 +1130,6 @@ export class SupplierAddComponent {
 
       for (let selectedFile of this.selectedNewFilesSupplier) {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
-        console.log('Selected File Label Text:', selectedFile.labelText);
-
         if (!labelTextsGrouped[bankFormValue.supplierGroup]) {
           labelTextsGrouped[bankFormValue.supplierGroup] = [];
         }
@@ -1232,7 +1151,6 @@ export class SupplierAddComponent {
 
       for (let selectedFile of this.selectedFilesAdd) {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
-        console.log('Selected Add File Label Text:', selectedFile.labelText);
 
         if (!labelTextsGrouped[bankFormValueAdd.supplierGroup]) {
           labelTextsGrouped[bankFormValueAdd.supplierGroup] = [];
@@ -1262,7 +1180,6 @@ export class SupplierAddComponent {
         Swal.fire('Error!', 'There was an error saving your data.', 'error');
       }
     } else {
-      console.log('No valid form data to send.');
     }
   }
 
@@ -1298,8 +1215,6 @@ export class SupplierAddComponent {
 
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
-
-      console.log('File IDs to Remove JSON:', fileIdsToRemoveJson);
 
       this.supplierService.updateDataWithFiles(this.suppilerId, formData).subscribe({
         next: (response) => {
@@ -1452,14 +1367,12 @@ export class SupplierAddComponent {
         const bankFormValue = this.supplierBankForm.value;
         supplierBankData.push(bankFormValue);
     } else {
-        console.log('Supplier Bank Form is invalid:', this.supplierBankForm.errors);
     }
 
     if (this.supplierBankFormAdd.valid) {
         const bankFormValueAdd = this.supplierBankFormAdd.value;
         supplierBankData.push(bankFormValueAdd);
     } else {
-        console.log('Supplier Bank Form Add is invalid:', this.supplierBankFormAdd.errors);
     }
 
     if (supplierBankData.length > 0) {
@@ -1537,8 +1450,6 @@ export class SupplierAddComponent {
       formData.append('Files', selectedFile.file, selectedFile.file.name);
       labelTexts.push(selectedFile.labelText);
     }
-
-    const removedFileIdsString = filesToRemoveBank.join(', ');
 
     for (let fileId of filesToRemoveBank) {
       formData.append('FileIdsToRemove', fileId.toString());
@@ -2083,8 +1994,6 @@ export class SupplierAddComponent {
             const newCustomerNum = `${prefix}${nextNum}`;
             this.newSupnum = newCustomerNum;
             this.supplierForm.patchValue({ supplierNum: newCustomerNum });
-            console.log(this.supplierForm.value);
-
           }
           this._cdr.markForCheck();
           resolve();
@@ -2154,7 +2063,6 @@ export class SupplierAddComponent {
     const supplierNum = this.supplierForm.get('supplierNum')?.value;
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
       this.emailreq = data.email
-      console.log(this.emailreq);
       this._cdr.markForCheck();
     });
 
@@ -2182,11 +2090,7 @@ export class SupplierAddComponent {
     const supplierType = this.supplierForm.get('supplierType')?.value;
     const taxId = this.supplierForm.get('tax_Id')?.value;
     const userId = this.supplierForm.get('id')?.value;
-    console.log(userId,taxId,supplierType);
-    
     if ((supplierType && taxId.length >= 10) && userId == 0) {
-      console.log("checkAndCallApi",supplierType,taxId);
-      // ถ้ามีค่าในทั้ง Supplier Type และ Tax ID ให้เรียก API ที่ต้องการ
       this.callApiWithSupplierTypeAndTaxId(supplierType, taxId);
     }
   }
@@ -2199,19 +2103,15 @@ export class SupplierAddComponent {
     
     this.supplierService.CheckDuplicateSupplierByTaxIdAndType(formData).subscribe({
       next: (response: string) => {
-        // ถ้า response เป็นข้อความ "No duplicate supplier found."
         if (response.includes('No duplicate supplier found')) {
-          // ไม่พบข้อมูลซ้ำ ทำงานต่อไป
-          console.log('No duplicate supplier found.');
         } 
       },
       error: (err) => {
         console.error('Error occurred:', err);
-        // ถ้าเกิดข้อผิดพลาด ให้แสดง Swal แสดงข้อผิดพลาด
         Swal.fire({
           icon: 'warning',
           title: 'ข้อมูลซ้ำ',
-          text: err, // แสดงข้อความจาก API
+          text: err,
           confirmButtonText: 'ปิด'
         });
       }

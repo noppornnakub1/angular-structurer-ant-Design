@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit, Input, inject, ChangeDetectorRef, Inject } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, Input, inject, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NzModalModule, NzModalRef } from 'ng-zorro-antd/modal';
@@ -15,7 +15,6 @@ import { Router } from '@angular/router';
 import { ModalDataService } from '../../../../../shared/constants/ModalDataService';
 import { RoleService } from '../../../services/role.service';
 import { IRole } from '../../../interface/role.interface';
-
 
 @Component({
   selector: 'app-add-user-model',
@@ -38,7 +37,7 @@ export class AddUserModelComponent implements OnInit {
   @Output() handleOk = new EventEmitter<any>();
   @Output() handleCancel = new EventEmitter<void>();
   @Input() modalInstance!: NzModalRef;
-  @Input() userId!: number; // กำหนด input property นี้
+  @Input() userId!: number;
   listOfCompany: DataCompany[] = [];
   filteredDataompany: DataCompany[] = [];
   listOfRole: IRole[] = [];
@@ -97,7 +96,7 @@ export class AddUserModelComponent implements OnInit {
 
   getCurrentDate(): string {
     const now = new Date();
-    return now.toISOString(); // ใช้ ISO string เพื่อให้ตรงกับรูปแบบที่ต้องการ
+    return now.toISOString();
   }
 
   save(): void {
@@ -114,17 +113,14 @@ export class AddUserModelComponent implements OnInit {
         this.submitForm();
       }
     });
-
   }
 
   submitForm(): void {
     if (this.validateForm.valid) {
-      // const formData = this.validateForm.value;
       const formData = this.validateForm.getRawValue();
-      const selectedCompanies = formData.company; // This will be an array of selected companies
+      const selectedCompanies = formData.company;
 
       formData.company = selectedCompanies.join(',');
-      // ทำการส่งข้อมูล formData ไปยัง API ของคุณ
       if (this.userId) {
         this.onUpdate(formData);
       }
@@ -184,7 +180,6 @@ export class AddUserModelComponent implements OnInit {
         this._cdr.markForCheck();
       },
       error: () => {
-        // Handle error
       }
     });
   }
@@ -192,23 +187,17 @@ export class AddUserModelComponent implements OnInit {
   getDataRole(): void {
     this.roleService.getRoles().subscribe({
       next: (response: any) => {
-        console.log(response);
-        
         this.listOfRole = response;
         this.filteredDataRole = [...this.listOfRole];
         this._cdr.markForCheck();
       },
       error: () => {
-        // Handle error
       }
     });
   }
 
   loadUserData(id: number): void {
     this.userService.findUserById(id).subscribe((data: any) => {
-      // แปลง company จาก string เป็น array
-      console.log(data);
-      
       const companyArray = data.company.split(',');
       this.validateForm.patchValue({
         UserId: data.UserId,
@@ -221,15 +210,11 @@ export class AddUserModelComponent implements OnInit {
         UpdateDate: data.updateDate,
         username: data.username,
         password: data.password,
-        company: companyArray // ใช้ array แทน string
+        company: companyArray
       });
       this.CheckRole = this.validateForm.value.role
       const roleInfo = this.listOfRole.find(role => role.id === this.validateForm.value.role );
       this.validateForm.value.role = roleInfo?.roleName
-      console.log(this.validateForm.value);
-      console.log(this.CheckRole);
-      
-      
       this._cdr.markForCheck();
     });
   }

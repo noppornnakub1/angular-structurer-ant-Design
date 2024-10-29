@@ -1,5 +1,4 @@
-import { ChangeDetectorRef, Component, Inject, inject, OnInit } from '@angular/core';
-import { SharedModule } from '../../../../shared/shared.module';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { IUser } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
@@ -14,10 +13,8 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../authentication/services/auth.service';
 import { IRole } from '../../interface/role.interface';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { RoleService } from '../../services/role.service';
 import { ModalDataService } from '../../../../shared/constants/ModalDataService';
-
 
 @Component({
   selector: 'app-user',
@@ -53,11 +50,11 @@ export class UserComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
 
-  constructor(private userService: UserService, 
-    private modalService: NzModalService, 
+  constructor(private userService: UserService,
+    private modalService: NzModalService,
     private fb: FormBuilder,
-    private roleService : RoleService,
-    private modalDataService: ModalDataService,) {}
+    private roleService: RoleService,
+    private modalDataService: ModalDataService,) { }
 
   ngOnInit(): void {
     this.filterForm = this.fb.group({
@@ -83,16 +80,12 @@ export class UserComponent implements OnInit {
   getUser(): void {
     this.userService.getUser().subscribe({
       next: (response: any) => {
-        
         this.listOfData = response
-        console.log(response);
-        
         this.filteredData = [...this.listOfData];
-        this.updateDisplayData(); 
+        this.updateDisplayData();
         this._cdr.markForCheck();
       },
       error: () => {
-        // Handle error
       }
     });
   }
@@ -102,7 +95,6 @@ export class UserComponent implements OnInit {
       this.listOfDataRole = data;
     });
   }
-
 
   hasRole(roleId: number): boolean {
     return this.roles.some(r => r.id === roleId);
@@ -128,7 +120,7 @@ export class UserComponent implements OnInit {
       nzContent: AddUserModelComponent,
       nzFooter: null
     });
-  
+
     modal.afterOpen.subscribe(() => {
       const instance = modal.getContentComponent();
       instance.modalInstance = modal;
@@ -136,9 +128,7 @@ export class UserComponent implements OnInit {
   }
 
   editUser(id: number): void {
-    console.log(id);
-    
-    this.modalDataService.setUserId(id); // เซ็ตค่า user ID
+    this.modalDataService.setUserId(id);
     const modal: NzModalRef = this.modalService.create({
       nzTitle: 'Edit User',
       nzContent: AddUserModelComponent,
@@ -162,7 +152,7 @@ export class UserComponent implements OnInit {
 
   onPageSizeChange(pageSize: number): void {
     this.pageSize = pageSize;
-    this.pageIndex = 1; // รีเซ็ต pageIndex เมื่อเปลี่ยนขนาดหน้า
+    this.pageIndex = 1;
     this.updateDisplayData();
   }
 
@@ -171,5 +161,5 @@ export class UserComponent implements OnInit {
     const endIndex = startIndex + this.pageSize;
     this.displayData = this.filteredData.slice(startIndex, endIndex);
     this._cdr.markForCheck();
-}
+  }
 }

@@ -614,7 +614,7 @@ export class CustomerAddComponent implements OnInit {
       await Swal.fire({
         icon: 'success',
         title: 'Updated!',
-        text: 'Your data has been updatedXXXX5.',
+        text: 'Your data has been updated.',
         showConfirmButton: false,
         timer: 1500
       }).then(() => {
@@ -884,7 +884,7 @@ export class CustomerAddComponent implements OnInit {
           confirmButtonText: 'ปิด'
         });
         this.isCheckingDuplicate = false;
-        return reject('Form is not validxxx');
+        return reject('Form is not valid');
       }
 
       const foundItem = this.filteredDataType.find(item => item.code === this.customerForm.value.customerType);

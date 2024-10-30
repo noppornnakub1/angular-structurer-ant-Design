@@ -1899,7 +1899,7 @@ export class SupplierAddComponent {
           confirmButtonText: 'ปิด'
         });
         this.isCheckingDuplicate = false;
-        return reject('Form is not validxxx');
+        return reject('Form is not valid');
       }
 
       const foundItem = this.filteredDataType.find(item => item.code === this.supplierForm.value.supplierType);

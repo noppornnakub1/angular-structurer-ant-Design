@@ -851,7 +851,9 @@ export class SupplierAddComponent {
           accountName: bankData.AccountName,
           company: bankData.Company
         });
-
+        console.log(this.supplierBankForm.value);
+        this.selectedSupplierGroup = this.supplierBankForm.value.supplierGroup
+        
         this.showSupplierBankForm = true;
       }
 
@@ -1187,6 +1189,8 @@ export class SupplierAddComponent {
             this.sendEmailNotification();
             this.sendEmailNotificationRequester();
           } else {
+            console.log("เข้าไม่เข้า");
+            
             this.onUpdateSupplierBank();
             this.insertLog();
             Swal.fire({
@@ -1323,7 +1327,11 @@ export class SupplierAddComponent {
   }
 
   onUpdateSupplierBank(): void {
+    console.log("เข้า bank ");
+    
     const supplierBankData: any[] = [];
+    console.log(this.supplierBankForm);
+    console.log(this.supplierBankFormAdd);
 
     if (this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
@@ -1346,7 +1354,8 @@ export class SupplierAddComponent {
         FileId: file.FileId,
         IsNewUpload: file.IsNewUpload || false
       }));
-
+      console.log(fileIdsToRemoveWithStatus);
+      
       const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
 
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);

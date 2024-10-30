@@ -33,7 +33,6 @@
         nz-icon nzType="user-add" nzTheme="outline"></span>เพิ่มข้อมูล</button>
   </div>
 </div>
-
 <div class="content-data-table mt-3">
   <nz-table #datatable nzBordered [nzData]="displayData" [nzFrontPagination]="false" [nzTotal]="filteredData.length"
     [nzPageIndex]="pageIndex" [nzPageSize]="pageSize" (nzPageIndexChange)="onPageIndexChange($event)"
@@ -41,7 +40,6 @@
 
     <thead>
       <tr>
-        <!-- ใช้ ng-container เพื่อทำงานร่วมกับ *ngFor และ *ngIf -->
         <ng-container *ngFor="let column of listOfColumn">
           <th *ngIf="isApproved || isAdmin || !(column.title === 'Customer Number' && isUser)" [nzSortFn]="column.compare"
             [nzSortPriority]="column.priority">
@@ -50,15 +48,11 @@
         </ng-container>
       </tr>
     </thead>
-
     <tbody>
       <tr *ngFor="let data of datatable.data; let i = index">
         <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
         <td>{{ data.name }}</td>
-
-        <!-- ซ่อนคอลัมน์ Customer Number เมื่อเป็น user และ status ไม่ใช่ Success -->
         <td  class="text-center" *ngIf="isApproved || isAdmin || (isUser && (data.status === 'Success'))">{{ data.customerNum }}</td>
-
         <td class="text-center">{{ data.site }}</td>
         <td>{{ data.taxId }}</td>
         <td>{{ data.company }}</td>
@@ -74,9 +68,5 @@
         </td>
       </tr>
     </tbody>
-
   </nz-table>
-  <!-- <nz-pagination [nzPageSize]="pageSize" [nzTotal]="filteredData.length" [(nzPageIndex)]="pageIndex"
-    [nzShowSizeChanger]="true" [nzPageSizeOptions]="[10, 20, 50]" (nzPageSizeChange)="onPageSizeChange($event)"
-    (nzPageIndexChange)="onPageIndexChange($event)"></nz-pagination> -->
 </div>

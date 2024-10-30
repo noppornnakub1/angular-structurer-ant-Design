@@ -15,7 +15,6 @@
             [nzValue]="type.code"></nz-option>
         </nz-select>
       </div>
-
       <div *ngIf="!isOverseaCustomer() && (isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="8"
         class="pr-3">
         <nz-form-label nzNoColon>Customer Number<span style="color: red;">*</span>
@@ -28,7 +27,6 @@
           <input nz-input placeholder="Customer Number" formControlName="customerNum" readonly />
         </nz-input-group>
       </div>
-
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="9" class="pr-3 ">
         <nz-form-label nzNoColon>Site<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Site = สำนักงานใหญ่ คือ 00000 , สาขาย่อยจะ running ตามสาขา 
@@ -42,14 +40,10 @@
             (blur)="onSiteBlur()" />
         </nz-input-group>
       </div>
-      <!-- <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-
-      </div> -->
       <div *ngIf="!isOverseaCustomer() && !(isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12"
         [nzLg]="8" class="pr-3">
       </div>
       <div *ngIf="isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="7" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Tax ID<span style="color: red;">*</span>
@@ -88,7 +82,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Address" formControlName="addressSup" maxlength="30"/>
+          <input nz-input placeholder="Address" formControlName="addressSup" maxlength="30" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="18" class="pr-3 mt-3">
@@ -223,7 +217,6 @@
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit
       </button>
-      <!-- Approve Button -->
       <button
         *ngIf="isViewMode && 
      (
@@ -232,8 +225,6 @@
         class="mr-2" nz-button nzType="primary" (click)="checkApprove($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
-
-      <!-- Reject Button -->
       <button
         *ngIf="isViewMode && 
      (
@@ -244,10 +235,7 @@
       </button>
     </div>
   </div>
-
 </form>
-
-
 <div *ngIf="isViewMode" class="content-card mt-3">
   <nz-divider nzText="History Info"></nz-divider>
   <nz-table #basicTable nzBordered [nzData]="logs">

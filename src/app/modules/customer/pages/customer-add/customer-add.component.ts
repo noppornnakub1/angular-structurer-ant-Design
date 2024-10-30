@@ -185,10 +185,10 @@ export class CustomerAddComponent implements OnInit {
 
   // onNameInput(event: any): void {
   //   let input = event.target.value;
-  
+
   //   // ลบตัวอักษรพิเศษที่ไม่ต้องการออก (. # % @ หรืออื่นๆที่คุณไม่ต้องการ)
   //   input = input.replace(/[^\w\sก-๙]/g, '');
-  
+
   //   // อัปเดตค่าที่ถูกลบตัวอักษรพิเศษแล้วกลับไปในฟิลด์
   //   this.customerForm.get('name')?.setValue(input);
   // }
@@ -594,7 +594,7 @@ export class CustomerAddComponent implements OnInit {
     event.preventDefault();
     const result = await Swal.fire({
       title: 'Are you sure?',
-      text: "Do you want to save save?",
+      text: "Do you want to save?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -610,10 +610,11 @@ export class CustomerAddComponent implements OnInit {
       else {
         await this.setStatusAndSubmit('Draft');
       }
+      
       await Swal.fire({
         icon: 'success',
         title: 'Updated!',
-        text: 'Your data has been updatedXXXX.',
+        text: 'Your data has been updatedXXXX5.',
         showConfirmButton: false,
         timer: 1500
       }).then(() => {

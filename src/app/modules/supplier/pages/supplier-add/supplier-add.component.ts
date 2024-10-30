@@ -1732,7 +1732,7 @@ export class SupplierAddComponent {
         }).then((result) => {
           if (result.isConfirmed) {
             const currentStatus = this.supplierForm.get('status')?.value;
-            const newStatus = currentStatus === 'Approved By ACC' ? 'Reject By FN' : 'Reject By ACC';
+            const newStatus = currentStatus === 'Approved By ACC' ? 'Pending Approved By ACC' : 'Reject By ACC';
             this.reasonTemp = rejectReason;
             this.setStatusAndSubmit(newStatus);
           }
@@ -1952,29 +1952,35 @@ export class SupplierAddComponent {
 
   getNumMaxSupplier(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.supplierService.GetNumMaxSupplier(this.typeCode).subscribe({
-        next: (response: any) => {
-          if (!response || response.length === 0 || response.num === null) {
-            this.supplierForm.patchValue({ supplierNum: '' });
-          } else {
-            const max = response.num;
-            const maxStr = String(max);
-            const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
-            const prefix = matchResult ? matchResult[1] : '';
-            const numPart = matchResult ? matchResult[2] : '0';
-            const nextNum = String(parseInt(numPart, 10) + 1).padStart(numPart.length, '0');
-            const newCustomerNum = `${prefix}${nextNum}`;
-            this.newSupnum = newCustomerNum;
-            this.supplierForm.patchValue({ supplierNum: newCustomerNum });
+      const num = this.supplierForm.value.supplierNum
+      if (num !== null || num !== '') {
+        resolve();
+      }
+      else {
+        this.supplierService.GetNumMaxSupplier(this.typeCode).subscribe({
+          next: (response: any) => {
+            if (!response || response.length === 0 || response.num === null) {
+              this.supplierForm.patchValue({ supplierNum: '' });
+            } else {
+              const max = response.num;
+              const maxStr = String(max);
+              const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
+              const prefix = matchResult ? matchResult[1] : '';
+              const numPart = matchResult ? matchResult[2] : '0';
+              const nextNum = String(parseInt(numPart, 10) + 1).padStart(numPart.length, '0');
+              const newCustomerNum = `${prefix}${nextNum}`;
+              this.newSupnum = newCustomerNum;
+              this.supplierForm.patchValue({ supplierNum: newCustomerNum });
+            }
+            this._cdr.markForCheck();
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error while fetching max supplier number', err);
+            reject(err);
           }
-          this._cdr.markForCheck();
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error while fetching max supplier number', err);
-          reject(err);
-        }
-      });
+        });
+      }
     });
   }
 

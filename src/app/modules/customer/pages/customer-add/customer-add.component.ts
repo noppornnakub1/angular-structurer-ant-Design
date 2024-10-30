@@ -13,12 +13,13 @@ import { ICustomerType } from '../../interface/customerType.interface';
 import { DataCompany, DataLocation, prefix } from '../../../supplier/pages/supplier-add/supplier-add.component';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
-import { debounceTime, distinctUntilChanged, forkJoin } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { ValidationService } from '../../../../shared/constants/ValidationService';
 import { UserService } from '../../../user-manager/services/user.service';
 import { SupplierService } from '../../../supplier/services/supplier.service';
 import { environment } from '../../../../../environments/environment';
+import { Observable, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-customer-add',
@@ -97,7 +98,7 @@ export class CustomerAddComponent implements OnInit {
       tel: ['-', Validators.required],
       email: ['-', Validators.required],
       customerId: ['0', Validators.required],
-      customerNum: ['',],
+      customerNum: [''],
       customerType: ['', Validators.required],
       site: ['', Validators.required],
       status: ['', Validators.required],
@@ -110,47 +111,59 @@ export class CustomerAddComponent implements OnInit {
       postId: [''],
       addressDetail: ['']
     });
+
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-      if (id) {
-        this.customerId = +id;
-
-        forkJoin({
-          customerData: this.customerService.findCustomerById(this.customerId),
-          postCodes: this.postCodeService.getPostCodes()
-        }).subscribe(({ customerData, postCodes }) => {
+      this.customerId = id ? +id : null;
+    
+      const requests: Partial<{ customerData: Observable<any>; postCodes: Observable<any> }> = {
+        postCodes: this.postCodeService.getPostCodes()
+      };
+    
+      if (this.customerId !== null) {
+        requests.customerData = this.customerService.findCustomerById(this.customerId);
+      }
+    
+      forkJoin(requests).subscribe(({ customerData, postCodes }) => {
+        if (customerData) {
           this.customerForm.patchValue({
             ...customerData,
             postalCode: customerData.postalCode + '-' + customerData.subdistrict
           });
-
-          this.items_provinces = postCodes;
-          this.filteredItemsProvince = postCodes;
-
-          if (this.customerForm.value.postalCode && this.customerForm.value.postId) {
-            const merge = this.customerForm.value.postalCode;
-
-            this.onPostalCodeChange(merge);
-          }
-        });
+        }
+    
+        this.items_provinces = postCodes;
+        this.filteredItemsProvince = postCodes;
+    
+        if (this.customerForm.value.postalCode && this.customerForm.value.postId) {
+          const merge = this.customerForm.value.postalCode;
+          this.onPostalCodeChange(merge);
+        }
+      });
+    
+      if (this.customerId !== null) {
+        this.loadCustomerData(this.customerId);
       }
-      this.loadCustomerData(this.customerId!);
-    });
+    });    
+
     if (this.router.url.includes('/view/')) {
       this.isViewMode = true;
       this.customerForm.disable();
     }
+
     this.postCodeService.getPostCodes().subscribe(data => {
       this.items_provinces = data;
       this.filteredItemsProvince = data;
     });
+
     this.prefixService.getPrefix().subscribe(data => {
       this.item_prefix = data;
       this.filteredItemsPrefix = data;
     });
-    this.getCustomerType();
-    this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
 
+    this.getCustomerType();
+
+    this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
       const customerTypeId = this.getCustomerTypeId(value);
 
       if (customerTypeId) {
@@ -167,6 +180,7 @@ export class CustomerAddComponent implements OnInit {
 
       this._cdr.detectChanges();
     });
+
     this.customerForm.get('prefix')?.valueChanges.subscribe((prefix: string) => {
       this.selectedPrefix = prefix;
       this.updateNameWithPrefixChange();
@@ -178,7 +192,7 @@ export class CustomerAddComponent implements OnInit {
     });
 
     this.checkRole();
-    this.getDataCompany()
+    this.getDataCompany();
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
   }
 
@@ -596,7 +610,7 @@ export class CustomerAddComponent implements OnInit {
       else {
         await this.setStatusAndSubmit('Draft');
       }
-      
+
       await Swal.fire({
         icon: 'success',
         title: 'Updated!',

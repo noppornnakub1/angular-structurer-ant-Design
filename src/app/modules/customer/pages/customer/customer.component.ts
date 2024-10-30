@@ -27,7 +27,7 @@ export class CustomerComponent implements OnInit {
   pageSize: number = 10;
   statusOptions: string[] = ['All', 'Draft', 'Cancel', 'Pending Approved By ACC', 'Pending Approved By FN', 'Approved By ACC', 'Approve By FN', 'Reject By ACC', 'Reject By FN', 'Pending Sync.'];
   selectedStatus: string = 'All';
-
+  hasCustomerNumber: boolean = false;
   listOfColumn = [
     {
       title: 'No.',
@@ -80,6 +80,7 @@ export class CustomerComponent implements OnInit {
   ngOnInit(): void {
     this.checkRole();
     this.getData();
+  
   }
 
   checkRole(): void {
@@ -139,6 +140,11 @@ export class CustomerComponent implements OnInit {
       this.customerService.findDataByUserId(currentUser.userId).subscribe({
         next: (response: any) => {
           this.listOfData = response;
+          console.log(this.listOfData);
+          
+          this.hasCustomerNumber = this.listOfData.some(data => data.customerNum);
+          console.log(this.hasCustomerNumber);
+          
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();

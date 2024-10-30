@@ -40,19 +40,19 @@
 
     <thead>
       <tr>
-        <ng-container *ngFor="let column of listOfColumn">
-          <th *ngIf="isApproved || isAdmin || !(column.title === 'Customer Number' && isUser)" [nzSortFn]="column.compare"
-            [nzSortPriority]="column.priority">
-            {{ column.title }}
-          </th>
-        </ng-container>
+          <ng-container *ngFor="let column of listOfColumn">
+            <th *ngIf="isApproved || isAdmin || !(column.title === 'Customer Number' && isUser && !hasCustomerNumber)" [nzSortFn]="column.compare"
+              [nzSortPriority]="column.priority">
+              {{ column.title }}
+            </th>
+          </ng-container>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let data of datatable.data; let i = index">
         <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
         <td>{{ data.name }}</td>
-        <td  class="text-center" *ngIf="isApproved || isAdmin || (isUser && (data.status === 'Success'))">{{ data.customerNum }}</td>
+        <td class="text-center">{{ data.customerNum || '' }}</td>
         <td class="text-center">{{ data.site }}</td>
         <td>{{ data.taxId }}</td>
         <td>{{ data.company }}</td>

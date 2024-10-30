@@ -634,7 +634,9 @@ export class CustomerAddComponent implements OnInit {
       });
       return;
     }
-    if (this.customerForm.invalid ) {
+    console.log(this.customerForm.valid);
+    
+    if (!this.isFormValidWithoutCustomerNum()) {
       Swal.fire({
         icon: 'warning',
         title: 'ข้อมูลไม่ถูกต้อง',
@@ -1072,7 +1074,7 @@ export class CustomerAddComponent implements OnInit {
   async checkApprove(event: Event): Promise<void> {
     try {
       await this.CheckDupplicateData();
-      await this.approve(event);
+      // await this.approve(event);
     } catch (error) {
       console.error('Error occurred during approval:', error);
     }

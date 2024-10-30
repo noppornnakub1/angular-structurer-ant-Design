@@ -447,13 +447,13 @@ export class CustomerAddComponent implements OnInit {
 
       if (this.emailError !== '') {
         Swal.fire({
-          icon: 'error',
+          icon: 'warning',
           title: 'Email ไม่ถูกต้อง',
           text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
           confirmButtonText: 'ปิด'
         });
       } else {
-        Swal.fire('Error!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+        Swal.fire('warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
       }
     }
   }
@@ -627,9 +627,18 @@ export class CustomerAddComponent implements OnInit {
     this.validateEmail();
     if (this.emailError && this.emailError.trim() !== '') {
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Email ไม่ถูกต้อง',
         text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
+        confirmButtonText: 'ปิด'
+      });
+      return;
+    }
+    if (this.customerForm.invalid ) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ข้อมูลไม่ถูกต้อง',
+        text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
         confirmButtonText: 'ปิด'
       });
       return;

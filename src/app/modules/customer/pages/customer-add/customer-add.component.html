@@ -37,7 +37,7 @@
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
           <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)"
-            (blur)="onSiteBlur()" />
+            (blur)="onSiteBlur()" required/>
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaCustomer() && !(isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12"

@@ -25,7 +25,6 @@ export class CustomerService {
   }
 
   updateData(id: number, data: ICustomer): Observable<any> {
-    console.log(`Updating data for Customer ID: ${id}`, data);
     return this._http.put(`/Customer/UpdateCustomer?id=${id}`, data);
   }
 
@@ -121,10 +120,9 @@ export class CustomerService {
       params = params.set('name', name);
     }
     if (tax) {
-      params = params.set('tax', tax); // กำหนดชื่อพารามิเตอร์ให้ตรงกับใน backend
+      params = params.set('tax', tax);
     }
 
-    // ส่ง request ไปยัง backend พร้อมพารามิเตอร์
     return this._http.get<DataOld>('/BankMasterData/KEY_SUPPLIER', { params });
   }
 
@@ -136,7 +134,6 @@ export class CustomerService {
   }
 
   FindDataHistoryByApprover(id?: number, company?: string, status?: string, ownerType?: string): Observable<CustomerSupplier> {
-    // ตรวจสอบเงื่อนไขว่าเราจะส่งค่าอะไรบ้าง
     let params = '';
 
     if (id) {

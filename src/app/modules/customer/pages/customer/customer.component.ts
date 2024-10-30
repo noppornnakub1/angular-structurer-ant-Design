@@ -55,6 +55,11 @@ export class CustomerComponent implements OnInit {
       priority: 2
     },
     {
+      title: 'Compny',
+      compare: (a: ICustomer, b: ICustomer) => a.company.localeCompare(b.company),
+      priority: 1
+    },
+    {
       title: 'Status',
       compare: (a: ICustomer, b: ICustomer) => a.status.localeCompare(b.status),
       priority: 1

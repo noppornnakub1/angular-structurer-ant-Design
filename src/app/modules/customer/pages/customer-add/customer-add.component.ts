@@ -160,7 +160,7 @@ export class CustomerAddComponent implements OnInit {
       if (value === '1F' || value === 'OSEA') {
         this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
         this.customerForm.patchValue({
-          prefix: ''  
+          prefix: ''
         });
       } else {
         this.filteredItemsPrefix = this.item_prefix;
@@ -177,16 +177,21 @@ export class CustomerAddComponent implements OnInit {
     this.customerForm.get('company')?.valueChanges.subscribe(value => {
       this.checkAndCallApi();
     });
-    this.customerForm.get('name')?.valueChanges.subscribe(value => {
-      this.checkAndCallApi();
-    });
-    this.customerForm.get('site')?.valueChanges.subscribe(value => {
-      this.checkAndCallApi();
-    });
+
     this.checkRole();
     this.getDataCompany()
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
   }
+
+  // onNameInput(event: any): void {
+  //   let input = event.target.value;
+  
+  //   // ลบตัวอักษรพิเศษที่ไม่ต้องการออก (. # % @ หรืออื่นๆที่คุณไม่ต้องการ)
+  //   input = input.replace(/[^\w\sก-๙]/g, '');
+  
+  //   // อัปเดตค่าที่ถูกลบตัวอักษรพิเศษแล้วกลับไปในฟิลด์
+  //   this.customerForm.get('name')?.setValue(input);
+  // }
 
   onNameBlur(): void {
     const nameControl = this.customerForm.get('name');
@@ -198,7 +203,7 @@ export class CustomerAddComponent implements OnInit {
 
     nameValue = nameValue.replace(/^บริษัท /, '')
       .replace(/\s?จำกัด\s?\(มหาชน\)/g, '')
-      .replace(/\s?จำกัด/g, '')              
+      .replace(/\s?จำกัด/g, '')
       .replace(/^คุณ /, '')
       .replace(/^ห้างหุ้นส่วนสามัญ/, '')
       .replace(/^ห้างหุ้นส่วนจำกัด/, '');
@@ -216,6 +221,7 @@ export class CustomerAddComponent implements OnInit {
     } else {
       nameControl?.setValue(nameValue.trim());
     }
+    this.checkAndCallApi();
   }
 
   onSiteBlur(): void {
@@ -235,6 +241,8 @@ export class CustomerAddComponent implements OnInit {
       });
       return;
     }
+
+    this.checkAndCallApi();
   }
 
   updateNameWithPrefixChange(): void {
@@ -308,6 +316,8 @@ export class CustomerAddComponent implements OnInit {
         postalCode: postalCodeCombination
       });
       this.originalData = { ...data };
+      console.log(this.originalData);
+
       this.idreq = data.userId
       this.filess = [
         { fileName: 'ใบขอเปิด Customer', fileType: 'fileReq', filePath: this.customerForm.value.fileReq || '' },
@@ -416,7 +426,7 @@ export class CustomerAddComponent implements OnInit {
               await this.UploadFile();
             }
             this.insertLog();
-            this.getMaxCustomerNum();
+            // this.getMaxCustomerNum(); พี่หนึ่งอย่าพึ่งลบ ขอลองทำก่อนนะครับ
             Swal.fire({
               icon: 'success',
               title: 'Saved!',
@@ -584,12 +594,12 @@ export class CustomerAddComponent implements OnInit {
     event.preventDefault();
     const result = await Swal.fire({
       title: 'Are you sure?',
-      text: "Do you want to Approve?",
+      text: "Do you want to save save?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, approve it!'
+      confirmButtonText: 'Yes, Save it!'
     });
 
     if (result.isConfirmed) {
@@ -693,7 +703,7 @@ export class CustomerAddComponent implements OnInit {
         timer: 1500
       });
     }
-}
+  }
 
   reject(event: Event): void {
     event.preventDefault();
@@ -888,9 +898,9 @@ export class CustomerAddComponent implements OnInit {
       const isEnglish = /^[A-Za-z\s]+$/.test(name);
       const cleanedName = isEnglish ? name.replace(/\s+/g, '').toUpperCase() : name.replace(/\s+/g, '');
 
-      const key = company+ site + cleanedName;
+      const key = company + site + cleanedName;
       console.log(key);
-      
+
       this.customerService.CheckDupplicateCustomer(key).subscribe({
         next: (response: any) => {
           if (response && response.length > 0) {
@@ -1086,10 +1096,10 @@ export class CustomerAddComponent implements OnInit {
     const site = this.customerForm.get('site')?.value;
     const name = this.customerForm.get('name')?.value;
     const userId = this.customerForm.get('id')?.value;
-    console.log(company,site,name);
-    
+    console.log(company, site, name);
+
     if ((company && site && name) && userId == 0) {
-      this.callApiWitCompanySiteAndName(company, site,name);
+      this.callApiWitCompanySiteAndName(company, site, name);
     }
   }
 
@@ -1099,14 +1109,14 @@ export class CustomerAddComponent implements OnInit {
       Site: site,
       Name: name
     };
-    
+
     this.customerService.CheckDuplicateSCustomerByConpanySiteAndName(formData).subscribe({
       next: (response: string) => {
         // ถ้า response เป็นข้อความ "No duplicate supplier found."
         if (response.includes('No duplicate Customer found.')) {
           // ไม่พบข้อมูลซ้ำ ทำงานต่อไป
           console.log('No duplicate Customer found.');
-        } 
+        }
       },
       error: (err) => {
         console.error('Error occurred:', err);

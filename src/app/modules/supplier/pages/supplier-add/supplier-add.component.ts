@@ -1008,7 +1008,7 @@ export class SupplierAddComponent {
           next: (response) => {
             if (response && response.supplier_id) {
               this.handleAddResponse(response);
-              this.getMaxSupplierNum();
+              // this.getMaxSupplierNum(); พี่หนึ่งอย่าพึ่งลบขอลองทำก่อนครับ
             }
           },
           error: (err) => {

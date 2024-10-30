@@ -45,7 +45,6 @@ export class CustomerAddComponent implements OnInit {
   logs: any[] = [];
   reasonTemp: string = '';
   selectType: string = '';
-  private readonly _router = inject(Router);
   private readonly authService = inject(AuthService)
   private _cdr = inject(ChangeDetectorRef);
   emailError: string = '';
@@ -183,16 +182,6 @@ export class CustomerAddComponent implements OnInit {
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
   }
 
-  // onNameInput(event: any): void {
-  //   let input = event.target.value;
-
-  //   // ลบตัวอักษรพิเศษที่ไม่ต้องการออก (. # % @ หรืออื่นๆที่คุณไม่ต้องการ)
-  //   input = input.replace(/[^\w\sก-๙]/g, '');
-
-  //   // อัปเดตค่าที่ถูกลบตัวอักษรพิเศษแล้วกลับไปในฟิลด์
-  //   this.customerForm.get('name')?.setValue(input);
-  // }
-
   onNameBlur(): void {
     const nameControl = this.customerForm.get('name');
     let nameValue = nameControl?.value || '';
@@ -316,8 +305,6 @@ export class CustomerAddComponent implements OnInit {
         postalCode: postalCodeCombination
       });
       this.originalData = { ...data };
-      console.log(this.originalData);
-
       this.idreq = data.userId
       this.filess = [
         { fileName: 'ใบขอเปิด Customer', fileType: 'fileReq', filePath: this.customerForm.value.fileReq || '' },
@@ -426,7 +413,6 @@ export class CustomerAddComponent implements OnInit {
               await this.UploadFile();
             }
             this.insertLog();
-            // this.getMaxCustomerNum(); พี่หนึ่งอย่าพึ่งลบ ขอลองทำก่อนนะครับ
             Swal.fire({
               icon: 'success',
               title: 'Saved!',
@@ -678,11 +664,10 @@ export class CustomerAddComponent implements OnInit {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, approve it!',
-      cancelButtonText: 'Cancel' // เพิ่มปุ่ม Cancel
+      cancelButtonText: 'Cancel'
     });
 
     if (result.isConfirmed) {
-      // หากผู้ใช้กดปุ่ม "Yes, approve it!"
       await this.setStatusAndSubmit("Approved By ACC");
       Swal.fire({
         icon: 'success',
@@ -694,7 +679,6 @@ export class CustomerAddComponent implements OnInit {
         this.router.navigate(['/feature/customer']);
       });
     } else if (result.dismiss === Swal.DismissReason.cancel) {
-      // หากผู้ใช้กดปุ่ม "Cancel"
       this.customerForm.patchValue({ customerNum: '' });
       Swal.fire({
         icon: 'info',
@@ -900,7 +884,6 @@ export class CustomerAddComponent implements OnInit {
       const cleanedName = isEnglish ? name.replace(/\s+/g, '').toUpperCase() : name.replace(/\s+/g, '');
 
       const key = company + site + cleanedName;
-      console.log(key);
 
       this.customerService.CheckDupplicateCustomer(key).subscribe({
         next: (response: any) => {
@@ -1097,7 +1080,6 @@ export class CustomerAddComponent implements OnInit {
     const site = this.customerForm.get('site')?.value;
     const name = this.customerForm.get('name')?.value;
     const userId = this.customerForm.get('id')?.value;
-    console.log(company, site, name);
 
     if ((company && site && name) && userId == 0) {
       this.callApiWitCompanySiteAndName(company, site, name);
@@ -1113,19 +1095,15 @@ export class CustomerAddComponent implements OnInit {
 
     this.customerService.CheckDuplicateSCustomerByConpanySiteAndName(formData).subscribe({
       next: (response: string) => {
-        // ถ้า response เป็นข้อความ "No duplicate supplier found."
         if (response.includes('No duplicate Customer found.')) {
-          // ไม่พบข้อมูลซ้ำ ทำงานต่อไป
-          console.log('No duplicate Customer found.');
         }
       },
       error: (err) => {
         console.error('Error occurred:', err);
-        // ถ้าเกิดข้อผิดพลาด ให้แสดง Swal แสดงข้อผิดพลาด
         Swal.fire({
           icon: 'warning',
           title: 'ข้อมูลซ้ำ',
-          text: err, // แสดงข้อความจาก API
+          text: err,
           confirmButtonText: 'ปิด'
         });
         this.customerForm.patchValue({ company: '' });
@@ -1136,7 +1114,6 @@ export class CustomerAddComponent implements OnInit {
   getMaxCustomerNum(): void {
     this.customerService.GetMaxCustomerNum().subscribe({
       next: (response: any) => {
-        console.log(response);
       },
       error: () => {
       }

@@ -1198,7 +1198,6 @@ export class SupplierAddComponent {
             this.sendEmailNotificationRequester();
           }
           const status = this.supplierForm.value.status
-          console.log(status);
           if (this.isApproved && status === 'Pending Approved By ACC') {
             this.router.navigate([`/feature/supplier/view/${this.suppilerId}`]);
           } else {
@@ -2100,7 +2099,6 @@ export class SupplierAddComponent {
   getMaxSupplierNum(): void {
     this.supplierService.GetMaxSupplierNum().subscribe({
       next: (response: any) => {
-        console.log(response);
       },
       error: () => {
       }

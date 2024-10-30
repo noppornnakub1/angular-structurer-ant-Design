@@ -317,6 +317,8 @@ export class SupplierAddComponent {
   }
 
   private setupFormListeners(): void {
+
+    this.toggleSupplierBankForm(this.supplierForm.value.paymentMethod)
     this.supplierForm.get('supplierType')?.valueChanges.subscribe(value => {
       this.onSupplierTypeChange(value);
       this._cdr.detectChanges();
@@ -1544,6 +1546,8 @@ export class SupplierAddComponent {
     this.supplierService.GetAllGroups().subscribe({
       next: (response: any) => {
         this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
+        console.log(this.listOfGroup);
+        
         this._cdr.markForCheck();
       },
       error: () => {

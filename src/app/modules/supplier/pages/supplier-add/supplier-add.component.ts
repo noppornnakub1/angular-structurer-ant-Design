@@ -226,12 +226,12 @@ export class SupplierAddComponent {
     this.initializeViewMode();
     this.loadStaticData();
     this.setupFormListeners();
-  
+
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
-  
+
     this.checkRole();
   }
-    
+
   private initializeForms(): void {
     this.supplierForm = this.fb.group({
       id: [0], prefix: ['', Validators.required], name: ['', Validators.required],
@@ -267,7 +267,7 @@ export class SupplierAddComponent {
           forkJoin({
             supplierData: this.supplierService.findSupplierByIdV2(this.suppilerId),
             postCodes: this.postCodeService.getPostCodes()
-          }).subscribe(({ supplierData, postCodes }) => {       
+          }).subscribe(({ supplierData, postCodes }) => {
             this.supplierForm.patchValue({
               ...supplierData,
               postalCode: supplierData.postalCode + '-' + supplierData.subdistrict
@@ -280,7 +280,7 @@ export class SupplierAddComponent {
             }
             resolve();
           });
-  
+
           this.loadSupplierData(this.suppilerId);
           this.isIDTemp = this.suppilerId;
         } else {
@@ -288,7 +288,7 @@ export class SupplierAddComponent {
         }
       });
     });
-  }  
+  }
 
   private initializeViewMode(): void {
     if (this.router.url.includes('/view/')) {
@@ -416,28 +416,28 @@ export class SupplierAddComponent {
 
   onFileSelectNew(event: Event, fileType: string, labelText: string, isFromFilesBankAdd: boolean = false): void {
     const input = event.target as HTMLInputElement;
-  
+
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
       let fileToUpdate;
-  
+
       if (isFromFilesBankAdd) {
         fileToUpdate = this.filesBankAdd.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
       } else {
         fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
       }
-  
+
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
-  
+
         if (fileToUpdate && 'fileId' in fileToUpdate) {
           const fileId = fileToUpdate.fileId;
           if (fileId) {
             const supbankId = fileToUpdate.supbankId ?? (isFromFilesBankAdd ? this.supplierBankFormAdd.get('supbankId')?.value : this.supplierBankForm.get('supbankId')?.value);
-  
+
             const existingEntry = this.fileIdsToRemoveMapping.find(entry => entry.SupbankId === supbankId && entry.FileId === fileId);
-  
+
             if (existingEntry) {
               existingEntry.IsNewUpload = true;
             } else {
@@ -447,7 +447,7 @@ export class SupplierAddComponent {
                 IsNewUpload: true
               });
             }
-  
+
             if (isFromFilesBankAdd) {
               if (!this.fileIdsToRemoveBankAdd.includes(fileId)) {
                 this.fileIdsToRemoveBankAdd.push(fileId);
@@ -460,7 +460,7 @@ export class SupplierAddComponent {
           }
         }
       }
-  
+
       const newFile: SelectedFile = {
         file: selectedFile,
         fileType: fileType,
@@ -468,16 +468,16 @@ export class SupplierAddComponent {
         filePath: '',
         labelText: labelText
       };
-  
+
       if (isFromFilesBankAdd) {
         this.selectedFilesAdd.push(newFile);
       } else {
         this.selectedNewFilesSupplier.push(newFile);
       }
-  
+
       this._cdr.detectChanges();
     }
-  }  
+  }
 
   onFileSelect(event: Event, fileType: string, labelText: string) {
     const input = event.target as HTMLInputElement;
@@ -805,7 +805,7 @@ export class SupplierAddComponent {
         ...data,
         postalCode: postalCodeCombination
       });
-      this.idreq = data.userId 
+      this.idreq = data.userId
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({
           fileId: file.fileId,
@@ -958,14 +958,14 @@ export class SupplierAddComponent {
     if (selectedItem == null || selectedItem == undefined) {
       selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
     }
-    if(selectedItemId){
+    if (selectedItemId) {
       selectedItemId.subdistrict = subdistrict;
       selectedItemId.district = district;
       selectedItemId.district = province;
       this.filteredItemsProvince = [...this.items_provinces];
 
       this.supplierForm.patchValue({
-        postalCode: selectedItemId.postalCode+'-'+selectedItemId.subdistrict
+        postalCode: selectedItemId.postalCode + '-' + selectedItemId.subdistrict
       });
     }
     else if (selectedItem) {
@@ -1197,8 +1197,14 @@ export class SupplierAddComponent {
             this.sendEmailNotification();
             this.sendEmailNotificationRequester();
           }
+          const status = this.supplierForm.value.status
+          console.log(status);
+          if (this.isApproved && status === 'Pending Approved By ACC') {
+            this.router.navigate([`/feature/supplier/view/${this.suppilerId}`]);
+          } else {
+            this.router.navigate(['/feature/supplier']);
+          }
 
-          this.router.navigate(['/feature/supplier']);
         },
         error: (err) => {
           Swal.fire('Error!', 'There was an error saving your data.', 'error');
@@ -1319,73 +1325,73 @@ export class SupplierAddComponent {
     const supplierBankData: any[] = [];
 
     if (this.supplierBankForm.valid) {
-        const bankFormValue = this.supplierBankForm.value;
-        supplierBankData.push(bankFormValue);
+      const bankFormValue = this.supplierBankForm.value;
+      supplierBankData.push(bankFormValue);
     } else {
     }
 
     if (this.supplierBankFormAdd.valid) {
-        const bankFormValueAdd = this.supplierBankFormAdd.value;
-        supplierBankData.push(bankFormValueAdd);
+      const bankFormValueAdd = this.supplierBankFormAdd.value;
+      supplierBankData.push(bankFormValueAdd);
     } else {
     }
 
     if (supplierBankData.length > 0) {
-        const formData = new FormData();
-        const supplierBankJson = JSON.stringify(supplierBankData);
+      const formData = new FormData();
+      const supplierBankJson = JSON.stringify(supplierBankData);
 
-        const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
-            SupbankId: file.SupbankId,
-            FileId: file.FileId,
-            IsNewUpload: file.IsNewUpload || false
-        }));
-        
-        const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
+      const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
+        SupbankId: file.SupbankId,
+        FileId: file.FileId,
+        IsNewUpload: file.IsNewUpload || false
+      }));
 
-        formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
-        formData.append('supplierBankJson', supplierBankJson);
+      const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
 
-        const labelTextsGrouped: { [key: string]: string[] } = {};
-        this.selectedNewFilesSupplier?.forEach(selectedFile => {
-            if (!labelTextsGrouped[selectedFile.fileType]) {
-                labelTextsGrouped[selectedFile.fileType] = [];
-            }
-            labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
-        });
+      formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
+      formData.append('supplierBankJson', supplierBankJson);
 
-        this.selectedFilesAdd?.forEach(selectedFile => {
-            if (!labelTextsGrouped[selectedFile.fileType]) {
-                labelTextsGrouped[selectedFile.fileType] = [];
-            }
-            labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
-        });
+      const labelTextsGrouped: { [key: string]: string[] } = {};
+      this.selectedNewFilesSupplier?.forEach(selectedFile => {
+        if (!labelTextsGrouped[selectedFile.fileType]) {
+          labelTextsGrouped[selectedFile.fileType] = [];
+        }
+        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
+      });
 
-        const labelTextsJson = JSON.stringify(labelTextsGrouped);
-        formData.append('labelTextsJson', labelTextsJson);
+      this.selectedFilesAdd?.forEach(selectedFile => {
+        if (!labelTextsGrouped[selectedFile.fileType]) {
+          labelTextsGrouped[selectedFile.fileType] = [];
+        }
+        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
+      });
 
-        this.selectedNewFilesSupplier?.forEach(selectedFile => {
-            formData.append('Files', selectedFile.file, selectedFile.file.name);
-        });
+      const labelTextsJson = JSON.stringify(labelTextsGrouped);
+      formData.append('labelTextsJson', labelTextsJson);
 
-        this.selectedFilesAdd?.forEach(selectedFile => {
-            formData.append('Files', selectedFile.file, selectedFile.file.name);
-        });
+      this.selectedNewFilesSupplier?.forEach(selectedFile => {
+        formData.append('Files', selectedFile.file, selectedFile.file.name);
+      });
 
-        this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
-            next: (response) => {
-                Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');
-            },
-            error: (err) => {
-                Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
-                console.error('Error updating bank data with files:', err);
-            }
-        });
+      this.selectedFilesAdd?.forEach(selectedFile => {
+        formData.append('Files', selectedFile.file, selectedFile.file.name);
+      });
+
+      this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
+        next: (response) => {
+          Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');
+        },
+        error: (err) => {
+          Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
+          console.error('Error updating bank data with files:', err);
+        }
+      });
     } else {
-        this.supplierBankForm.markAllAsTouched();
-        this.supplierBankFormAdd.markAllAsTouched();
-        Swal.fire('Error!', 'Please fill in all required fields.', 'error');
+      this.supplierBankForm.markAllAsTouched();
+      this.supplierBankFormAdd.markAllAsTouched();
+      Swal.fire('Error!', 'Please fill in all required fields.', 'error');
     }
-}
+  }
 
   prepareBankFormData(bankFormValue: any): FormData {
     const formData = new FormData();
@@ -1874,7 +1880,7 @@ export class SupplierAddComponent {
     const CheckcurrentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     const roleId = CheckcurrentUser.role
     return new Promise((resolve, reject) => {
-      if(this.supplierForm.value.vat === '-' && roleId == 3){
+      if (this.supplierForm.value.vat === '-' && roleId == 3) {
         Swal.fire({
           icon: 'warning',
           title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
@@ -2066,11 +2072,11 @@ export class SupplierAddComponent {
       taxId: taxId,
       supplierType: supplierType
     };
-    
+
     this.supplierService.CheckDuplicateSupplierByTaxIdAndType(formData).subscribe({
       next: (response: string) => {
         if (response.includes('No duplicate supplier found')) {
-        } 
+        }
       },
       error: (err) => {
         console.error('Error occurred:', err);

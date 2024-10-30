@@ -13,7 +13,7 @@ import { ICustomerType } from '../../interface/customerType.interface';
 import { DataCompany, DataLocation, prefix } from '../../../supplier/pages/supplier-add/supplier-add.component';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, lastValueFrom } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { ValidationService } from '../../../../shared/constants/ValidationService';
 import { UserService } from '../../../user-manager/services/user.service';
@@ -881,103 +881,6 @@ export class CustomerAddComponent implements OnInit {
     return this.selectType === 'OSEA';
   }
 
-  CheckDupplicateData(): Promise<void> {
-    this.isCheckingDuplicate = true;
-
-    return new Promise((resolve, reject) => {
-      if (!this.isFormValidWithoutCustomerNum()) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-          text: 'โปรดกรอกข้อมูลในฟอร์มให้ครบทุกช่องที่จำเป็น',
-          confirmButtonText: 'ปิด'
-        });
-        this.isCheckingDuplicate = false;
-        return reject('Form is not valid');
-      }
-
-      const foundItem = this.filteredDataType.find(item => item.code === this.customerForm.value.customerType);
-      if (foundItem) {
-        this.typeCode = foundItem.codeFrom;
-      }
-
-      const name = this.customerForm.value.name.trim();
-      const site = this.customerForm.value.site.trim();
-      const company = this.customerForm.value.company.trim();
-
-      const isEnglish = /^[A-Za-z\s]+$/.test(name);
-      const cleanedName = isEnglish ? name.replace(/\s+/g, '').toUpperCase() : name.replace(/\s+/g, '');
-
-      const key = company + site + cleanedName;
-
-      this.customerService.CheckDupplicateCustomer(key).subscribe({
-        next: (response: any) => {
-          if (response && response.length > 0) {
-            Swal.fire({
-              icon: 'warning',
-              title: 'ข้อมูลซ้ำ',
-              text: 'มีข้อมูล Customer นี้อยู่ในฐานข้อมูล Oracle อยู่แล้ว โปรดตรวจสอบ Name, Site และ อีกครั้ง',
-              confirmButtonText: 'ปิด'
-            });
-            this.isCheckingDuplicate = false;
-            reject('Duplicate data found');
-          } else {
-            this.getNumMaxCustomer().then(() => {
-              this.isCheckingDuplicate = false;
-              resolve();
-            }).catch(err => {
-              this.isCheckingDuplicate = false;
-              reject(err);
-            });
-          }
-        },
-        error: (err) => {
-          if (err === 'No data found.') {
-            this.getNumMaxCustomer().then(() => {
-              this.isCheckingDuplicate = false;
-              resolve();
-            }).catch(err => {
-              this.isCheckingDuplicate = false;
-              reject(err);
-            });
-          } else {
-            this.isCheckingDuplicate = false;
-            reject(err);
-          }
-        }
-      });
-    });
-  }
-
-  getNumMaxCustomer(): Promise<void> {
-    return new Promise((resolve, reject) => {
-
-      this.customerService.GetNumMaxCustomer(this.typeCode).subscribe({
-        next: (response: any) => {
-
-          if (!response || response.length === 0 || response.num === null) {
-            this.customerForm.patchValue({ customerNum: '' });
-          } else {
-            const max = response.num;
-            const maxStr = String(max);
-            const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
-            const prefix = matchResult ? matchResult[1] : '';
-            const numPart = matchResult ? matchResult[2] : '0';
-            const nextNum = String(parseInt(numPart, 10) + 1).padStart(numPart.length, '0');
-            const newCustomerNum = `${prefix}${nextNum}`;
-            this.newCusnum = newCustomerNum;
-            this.customerForm.patchValue({ customerNum: newCustomerNum });
-          }
-          this._cdr.markForCheck();
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error while fetching max supplier number', err);
-          reject(err);
-        }
-      });
-    });
-  }
 
   isFormValidWithoutCustomerNum(): boolean {
     const requiredFields = [
@@ -1073,8 +976,7 @@ export class CustomerAddComponent implements OnInit {
 
   async checkApprove(event: Event): Promise<void> {
     try {
-      await this.CheckDupplicateData();
-      // await this.approve(event);
+      await this.approve(event);
     } catch (error) {
       console.error('Error occurred during approval:', error);
     }

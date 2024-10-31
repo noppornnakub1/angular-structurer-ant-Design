@@ -86,11 +86,13 @@
         </thead>
         <tbody>
           <tr *ngFor="let data of displayData; let i = index">
-            <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+            <td style="text-align: right;">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
             <td>{{ data.name }}</td>
             <td>{{ data.num }}</td>
-            <td>{{ data.taxId }}</td>
+            <td class="text-center">{{ data.taxId }}</td>
             <td>{{ data.paymentMethod }}</td>
+            <td>{{ data.site }}</td>
+            <td>{{ data.company }}</td>
             <td>{{ data.source }}</td>
             <td class="text-center">
               <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
@@ -122,6 +124,10 @@
             <td *ngIf="!data.TAX"></td>
             <td *ngIf="data.PAYMENT_MEDTHOD">{{ data.PAYMENT_MEDTHOD }}</td>
             <td *ngIf="!data.PAYMENT_MEDTHOD"></td>
+            <td *ngIf="data.SITE">{{ data.SITE }}</td>
+            <td *ngIf="!data.SITE"></td>
+            <td *ngIf="data.OU_SHORT_NAME">{{ data.OU_SHORT_NAME }}</td>
+            <td *ngIf="!data.OU_SHORT_NAME"></td>
             <td class="text-center">
               <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
                 (click)="openModalold(data)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>

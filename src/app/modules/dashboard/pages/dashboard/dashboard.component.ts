@@ -90,6 +90,16 @@ export class DashboardComponent {
       priority: 2
     },
     {
+      title: 'Site',
+      compare: (a: CustomerSupplier, b: CustomerSupplier) => a.site.localeCompare(b.site),
+      priority: 2
+    },
+    {
+      title: 'Company',
+      compare: (a: CustomerSupplier, b: CustomerSupplier) => a.company.localeCompare(b.company),
+      priority: 2
+    },
+    {
       title: 'Type',
       compare: (a: CustomerSupplier, b: CustomerSupplier) => a.source.localeCompare(b.source),
       priority: 2
@@ -125,6 +135,16 @@ export class DashboardComponent {
     {
       title: 'Payment Method',
       compare: (a: DataOld, b: DataOld) => a.PAYMENT_MEDTHOD ?? ''.localeCompare(b.PAYMENT_MEDTHOD ?? ''),
+      priority: 2
+    },
+    {
+      title: 'Site',
+      compare: (a: DataOld, b: DataOld) => a.SITE ?? ''.localeCompare(b.SITE ?? ''),
+      priority: 2
+    },
+    {
+      title: 'Company',
+      compare: (a: DataOld, b: DataOld) => a.OU_SHORT_NAME ?? ''.localeCompare(b.OU_SHORT_NAME ?? ''),
       priority: 2
     },
     {
@@ -254,6 +274,7 @@ export class DashboardComponent {
           this.listOfDataOld = response
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
+          
           this.updateDisplayDataOld();
           this._cdr.markForCheck();
         },
@@ -267,6 +288,7 @@ export class DashboardComponent {
           this.listOfDataOld = response
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
+
           this.updateDisplayDataOld();
           this._cdr.markForCheck();
         },

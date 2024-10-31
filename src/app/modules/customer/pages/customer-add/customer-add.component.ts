@@ -59,8 +59,8 @@ export class CustomerAddComponent implements OnInit {
   filteredItemsPrefix: prefix[] = [];
   selectedPrefix: string = '';
   files = [
-    { fileName: 'ใบขอเปิด Customer', status: null, filePath: '' },
-    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', status: null, filePath: '' },
+    { fileName: 'ใบขอเปิด Customer', fileType: 'fileReq', filePath: '' },
+    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: '' },
   ];
   file: any;
   filess: Array<{ fileName: string; fileType: string; filePath: string }> = [];
@@ -115,15 +115,15 @@ export class CustomerAddComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       this.customerId = id ? +id : null;
-    
+
       const requests: Partial<{ customerData: Observable<any>; postCodes: Observable<any> }> = {
         postCodes: this.postCodeService.getPostCodes()
       };
-    
+
       if (this.customerId !== null) {
         requests.customerData = this.customerService.findCustomerById(this.customerId);
       }
-    
+
       forkJoin(requests).subscribe(({ customerData, postCodes }) => {
         if (customerData) {
           this.customerForm.patchValue({
@@ -131,20 +131,20 @@ export class CustomerAddComponent implements OnInit {
             postalCode: customerData.postalCode + '-' + customerData.subdistrict
           });
         }
-    
+
         this.items_provinces = postCodes;
         this.filteredItemsProvince = postCodes;
-    
+
         if (this.customerForm.value.postalCode && this.customerForm.value.postId) {
           const merge = this.customerForm.value.postalCode;
           this.onPostalCodeChange(merge);
         }
       });
-    
+
       if (this.customerId !== null) {
         this.loadCustomerData(this.customerId);
       }
-    });    
+    });
 
     if (this.router.url.includes('/view/')) {
       this.isViewMode = true;
@@ -635,7 +635,7 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     console.log(this.customerForm.valid);
-    
+
     if (!this.isFormValidWithoutCustomerNum()) {
       Swal.fire({
         icon: 'warning',
@@ -901,15 +901,21 @@ export class CustomerAddComponent implements OnInit {
   onFileSelected(event: Event, file: any): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
+
       const selectedFile = input.files[0];
-      this.listfile.push(selectedFile);
-      if (this.listfile.length > 0) {
-        this.customerForm.patchValue({ fileReq: this.listfile[0].name });
+      console.log('Selected file:', selectedFile);
+
+      // ตรวจสอบว่าเป็นไฟล์ประเภทไหนจาก fileName ที่ตั้งค่าไว้ใน files[]
+      if (file.fileName === 'ใบขอเปิด Customer') {
+        this.customerForm.patchValue({ fileReq: selectedFile.name });
+      } else if (file.fileName === 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน') {
+        this.customerForm.patchValue({ fileCertificate: selectedFile.name });
       }
 
-      if (this.listfile.length > 1) {
-        this.customerForm.patchValue({ fileCertificate: this.listfile[1].name });
-      }
+      // อัปเดต filePath ของไฟล์ที่เกี่ยวข้องใน displayFiles
+      file.filePath = selectedFile.name;
+
+      console.log('Updated form:', this.customerForm.value);
     }
   }
 

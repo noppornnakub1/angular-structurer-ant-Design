@@ -853,7 +853,7 @@ export class SupplierAddComponent {
         });
         console.log(this.supplierBankForm.value);
         this.selectedSupplierGroup = this.supplierBankForm.value.supplierGroup
-        
+
         this.showSupplierBankForm = true;
       }
 
@@ -1186,7 +1186,7 @@ export class SupplierAddComponent {
               timer: 1500
             });
             this.sendEmailNotification();
-            this.sendEmailNotificationRequester();
+
           } else {
             this.onUpdateSupplierBank();
             this.insertLog();
@@ -1303,7 +1303,14 @@ export class SupplierAddComponent {
   getEventLogs(SupplierId: number): void {
     this.supplierService.getLog(SupplierId).subscribe(
       (data) => {
-        this.logs = data;
+        // แปลงเวลาในแต่ละรายการใน logs ให้เป็นรูปแบบ DD/MM/YYYY HH:mm:ss
+        this.logs = data.map(log => {
+          return {
+            ...log,
+            time: this.formatDateTime(log.time) // ใช้ฟังก์ชันแปลงเวลา
+          };
+        });
+        console.log(this.logs);
       },
       (error) => {
         console.error('Error fetching logs', error);
@@ -1325,7 +1332,7 @@ export class SupplierAddComponent {
 
   onUpdateSupplierBank(): void {
     console.log("เข้า bank ");
-    
+
     const supplierBankData: any[] = [];
     console.log(this.supplierBankForm);
     console.log(this.supplierBankFormAdd);
@@ -1352,7 +1359,7 @@ export class SupplierAddComponent {
         IsNewUpload: file.IsNewUpload || false
       }));
       console.log(fileIdsToRemoveWithStatus);
-      
+
       const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
 
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
@@ -1444,6 +1451,8 @@ export class SupplierAddComponent {
 
     if (this.showSupplierBankForm = true) {
       if (this.supplierForm.valid) {
+        const currentDate = new Date();
+        currentDate.setHours(currentDate.getHours() + 7); // เพิ่ม 7 ชั่วโมงเพื่อให้ตรงกับเวลาในประเทศไทย
         const log = {
           id: 0,
           userId: currentUser.userId || 0,
@@ -1452,7 +1461,7 @@ export class SupplierAddComponent {
           status: this.supplierForm.get('status')?.value || 'Draft',
           customerId: 0,
           supplierId: this.isIDTemp || 0,
-          time: new Date().toISOString(),
+          time: currentDate,
           rejectReason: this.reasonTemp
         };
         this.supplierService.insertLog(log).subscribe({
@@ -1553,7 +1562,7 @@ export class SupplierAddComponent {
       next: (response: any) => {
         this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
         console.log(this.listOfGroup);
-        
+
         this._cdr.markForCheck();
       },
       error: () => {
@@ -1808,6 +1817,7 @@ export class SupplierAddComponent {
 
             this.emailService.sendEmail(to, subject, body).subscribe(
               (response) => {
+                this.sendEmailNotificationRequester();
               },
               (error) => {
                 console.error('Error sending email', error);
@@ -2046,21 +2056,30 @@ export class SupplierAddComponent {
 
   sendEmailNotificationRequester(): void {
     const supplierNum = this.supplierForm.get('supplierNum')?.value;
+    const TaxID = this.supplierForm.get('tax_Id')?.value;
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
       this.emailreq = data.email
       this._cdr.markForCheck();
     });
 
     const to = this.emailreq;
-    const subject = 'OnePortal Notification';
+    const subject = 'OnePortal Notification'; 
     const body = `
-        <p>สถานะของ Supplier Number:${supplierNum}</p>
-        <br>
-        <p>ได้เปลี่ยนเป็น ${this.supplierForm.get('status')?.value} สามารถเข้ามาตรวจสอบได้ในระบบ</p>
-        <br>
-        <p>ขอแสดงความนับถือ</p>
-        <p>OnePortal</p>
-        <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+            <p>เรียน [ผู้ขอเปิด Supplier]</p>
+            <br>
+            <p>เรื่อง : คำขอเปิด Supplier ใหม่</p>
+            <br>
+            <p>คำขอเปิด Supplier ใหม่ ของท่าน ส่งให้ส่วนงานบัญชีเรียบร้อยแล้ว</p>
+            <br>
+            <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
+            <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
+            <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+            <br>
+            <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ <a>http://10.10.0.28:8085/</a></p>
+            <br>
+            <p>Best Regards</p>
+            <p>OnePortal</p>
+            <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
 
     this.emailService.sendEmail(to, subject, body).subscribe(
       (response) => {
@@ -2111,5 +2130,19 @@ export class SupplierAddComponent {
       error: () => {
       }
     });
+  }
+
+  formatDateTime(dateTime: string): string {
+    const date = new Date(dateTime);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // เดือนเริ่มจาก 0 ต้องบวกเพิ่ม 1
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   }
 }

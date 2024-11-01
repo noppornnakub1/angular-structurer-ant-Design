@@ -522,6 +522,8 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     if (this.customerForm.valid) {
+      const currentDate = new Date();
+      currentDate.setHours(currentDate.getHours() + 7); // เพิ่ม 7 ชั่วโมงเพื่อให้ตรงกับเวลาในประเทศไทย
       const log = {
         Id: 0,
         UserId: currentUser.userId || 0,
@@ -530,7 +532,7 @@ export class CustomerAddComponent implements OnInit {
         Status: this.customerForm.get('status')?.value || 'Draft',
         CustomerId: this.customerId || 0,
         SupplierId: 0,
-        Time: new Date().toISOString(),
+        Time: currentDate,
         RejectReason: this.reasonTemp
       };
       this.customerService.insertLog(log).subscribe({
@@ -548,7 +550,14 @@ export class CustomerAddComponent implements OnInit {
   getEventLogs(customerId: number): void {
     this.customerService.getLog(customerId).subscribe(
       (data) => {
-        this.logs = data;
+        // แปลงเวลาในแต่ละรายการใน logs ให้เป็นรูปแบบ DD/MM/YYYY HH:mm:ss
+        this.logs = data.map(log => {
+          return {
+            ...log,
+            time: this.formatDateTime(log.time) // ใช้ฟังก์ชันแปลงเวลา
+          };
+        });
+        console.log(this.logs);
       },
       (error) => {
         console.error('Error fetching logs', error);
@@ -1051,5 +1060,19 @@ export class CustomerAddComponent implements OnInit {
       error: () => {
       }
     });
+  }
+
+  formatDateTime(dateTime: string): string {
+    const date = new Date(dateTime);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // เดือนเริ่มจาก 0 ต้องบวกเพิ่ม 1
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   }
 }

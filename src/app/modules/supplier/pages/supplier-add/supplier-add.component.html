@@ -30,7 +30,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="number" class="form-input">
-          <input nz-input placeholder="Supplier Number" formControlName="supplierNum" [disabled]="true" readonly/>
+          <input nz-input placeholder="Supplier Number" formControlName="supplierNum" [disabled]="true" readonly />
         </nz-input-group>
       </div>
       <div *ngIf="!isOneTime" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
@@ -58,7 +58,8 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="idcard" class="form-input">
-          <input nz-input type="text" placeholder="Tax ID" formControlName="tax_Id" (input)="validateTaxId($event)" (blur)="checkAndCallApi()"/>
+          <input nz-input type="text" placeholder="Tax ID" formControlName="tax_Id" (input)="validateTaxId($event)"
+            (blur)="checkAndCallApi()" />
         </nz-input-group>
       </div>
 
@@ -254,25 +255,25 @@
 
       <button
         *ngIf="isViewMode && 
-  (
-    (isApproved && supplierForm.get('status')?.value === 'Pending Approved By ACC') ||
-    (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
-    isAdmin
-  ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)"
-        class="mr-2" nz-button nzType="primary" (click)="checkApprove($event)">
+        (
+          (isApproved && supplierForm.get('status')?.value === 'Pending Approved By ACC') ||
+          (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
+          isAdmin
+        ) && !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)"
+              class="mr-2" nz-button nzType="primary" (click)="checkApprove($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Approve
       </button>
 
       <button
         *ngIf="isViewMode && 
-      (
-        (isApproved && supplierForm.get('status')?.value === 'Pending Approved By ACC') ||
-        (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
-        isAdmin
-      ) && 
-      !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)"
-        nz-button nzType="primary" nzDanger (click)="reject($event)">
-        <span nz-icon nzType="close" nzTheme="outline"></span>Reject
+        (
+          (isApproved && supplierForm.get('status')?.value === 'Pending Approved By ACC') ||
+          (isApprovedFN && supplierForm.get('status')?.value === 'Approved By ACC') ||
+          isAdmin
+        ) && 
+        !['Approved By FN', 'Reject By FN', 'Reject By ACC', 'Cancel', 'Draft'].includes(supplierForm.get('status')?.value)"
+          nz-button nzType="primary" nzDanger (click)="reject($event)">
+          <span nz-icon nzType="close" nzTheme="outline"></span>Reject
       </button>
     </div>
   </div>

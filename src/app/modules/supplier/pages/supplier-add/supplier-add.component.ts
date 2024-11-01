@@ -1711,7 +1711,7 @@ export class SupplierAddComponent {
         Swal.fire({
           icon: 'info',
           title: 'Cancelled',
-          text: 'Your customer number has been cleared.',
+          text: 'Your Supplier number has been cleared.',
           showConfirmButton: false,
           timer: 1500
         });
@@ -1722,7 +1722,7 @@ export class SupplierAddComponent {
   async checkApprove(event: Event) {
     try {
       this.supplierForm.value.supplierNum = '-'
-      await this.CheckDupplicateData();
+      // await this.CheckDupplicateData();
       await this.approve(event);
     } catch (error) {
       console.error('Error occurred:', error);

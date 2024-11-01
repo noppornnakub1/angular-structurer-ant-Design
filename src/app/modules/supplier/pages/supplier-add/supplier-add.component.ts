@@ -679,7 +679,7 @@ export class SupplierAddComponent {
       console.error('Current user is not available in local storage');
       return;
     }
-    this.getGruopName();
+    this.getGruopName(currentUser.company);
     this.showSupplierBankForm = this.paymentMethods.includes(value);
 
     if (this.showSupplierBankForm) {
@@ -851,6 +851,7 @@ export class SupplierAddComponent {
           accountName: bankData.AccountName,
           company: bankData.Company
         });
+        console.log(this.supplierBankForm.value);
         this.selectedSupplierGroup = this.supplierBankForm.value.supplierGroup
 
         this.showSupplierBankForm = true;
@@ -1185,7 +1186,7 @@ export class SupplierAddComponent {
               timer: 1500
             });
             this.sendEmailNotification();
-
+            this.sendEmailNotificationRequester();
           } else {
             this.onUpdateSupplierBank();
             this.insertLog();
@@ -1302,12 +1303,14 @@ export class SupplierAddComponent {
   getEventLogs(SupplierId: number): void {
     this.supplierService.getLog(SupplierId).subscribe(
       (data) => {
+        // แปลงเวลาในแต่ละรายการใน logs ให้เป็นรูปแบบ DD/MM/YYYY HH:mm:ss
         this.logs = data.map(log => {
           return {
             ...log,
-            time: this.formatDateTime(log.time)
+            time: this.formatDateTime(log.time) // ใช้ฟังก์ชันแปลงเวลา
           };
         });
+        console.log(this.logs);
       },
       (error) => {
         console.error('Error fetching logs', error);
@@ -1328,7 +1331,11 @@ export class SupplierAddComponent {
   }
 
   onUpdateSupplierBank(): void {
+    console.log("เข้า bank ");
+
     const supplierBankData: any[] = [];
+    console.log(this.supplierBankForm);
+    console.log(this.supplierBankFormAdd);
 
     if (this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
@@ -1351,6 +1358,7 @@ export class SupplierAddComponent {
         FileId: file.FileId,
         IsNewUpload: file.IsNewUpload || false
       }));
+      console.log(fileIdsToRemoveWithStatus);
 
       const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
 
@@ -1549,10 +1557,12 @@ export class SupplierAddComponent {
     });
   }
 
-  getGruopName(): void {
+  getGruopName(company: string): void {
     this.supplierService.GetAllGroups().subscribe({
       next: (response: any) => {
         this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
+        console.log(this.listOfGroup);
+
         this._cdr.markForCheck();
       },
       error: () => {
@@ -1807,7 +1817,6 @@ export class SupplierAddComponent {
 
             this.emailService.sendEmail(to, subject, body).subscribe(
               (response) => {
-                this.sendEmailNotificationRequester();
               },
               (error) => {
                 console.error('Error sending email', error);
@@ -2047,29 +2056,121 @@ export class SupplierAddComponent {
   sendEmailNotificationRequester(): void {
     const supplierNum = this.supplierForm.get('supplierNum')?.value;
     const TaxID = this.supplierForm.get('tax_Id')?.value;
+    const status = this.supplierForm.get('status')?.value;
+    let name = ''
+    let to = ''
+    let subject = ''
+    let body = ''
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
       this.emailreq = data.email
+      name = data.firstname
       this._cdr.markForCheck();
     });
-
-    const to = this.emailreq;
-    const subject = 'OnePortal Notification'; 
-    const body = `
-            <p>เรียน [ผู้ขอเปิด Supplier]</p>
-            <br>
-            <p>เรื่อง : คำขอเปิด Supplier ใหม่</p>
-            <br>
-            <p>คำขอเปิด Supplier ใหม่ ของท่าน ส่งให้ส่วนงานบัญชีเรียบร้อยแล้ว</p>
-            <br>
-            <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
-            <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
-            <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
-            <br>
-            <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ <a>http://10.10.0.28:8085/</a></p>
-            <br>
-            <p>Best Regards</p>
-            <p>OnePortal</p>
-            <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+    if(status === 'Pending Approved By ACC'){
+      to = this.emailreq;
+      subject = 'OnePortal Notification';
+      body = `
+      <p>เรียน ${name}</p>
+      <br>
+      <p>เรื่อง : คำขอเปิด Supplier ใหม่</p>
+      <br>
+      <p>คำขอเปิด Supplier ใหม่ ของท่าน ส่งให้ส่วนงานบัญชีเรียบร้อยแล้ว</p>
+      <br>
+      <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
+      <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
+      <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+      <br>
+      <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+      <br>
+      <p>Best Regards</p>
+      <p>OnePortal</p>
+      <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+    }
+    if(status === 'Pending Approved By ACC'){
+      to = this.emailreq;
+      subject = 'OnePortal Notification';
+      body = `
+      <p>เรียน คุณ${name}</p>
+      <br>
+      <p>เรื่อง : คำขอเปิด Supplier ใหม่</p>
+      <br>
+      <p>คำขอเปิด Supplier ใหม่ ของท่าน ส่งให้ส่วนงานบัญชีเรียบร้อยแล้ว</p>
+      <br>
+      <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
+      <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
+      <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+      <br>
+      <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+      <br>
+      <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี [เบอร์กลางบัญชี]</p>
+      <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
+      <br>
+      <p>Best Regards</p>
+      <p>OnePortal</p>
+      <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+    }
+    else if(status === 'Approved By ACC' || status === 'Reject By ACC'){
+      to = this.emailreq;
+      subject = 'OnePortal Notification';
+      body = `
+      <p>เรียน คุณ${name}</p>
+      <br>
+      <p>เรื่อง : มีการเปลี่ยนแปลงสถานะคำขอเปิด Supplier ของท่าน</p>
+      <br>
+      <p>คำขอ Supplier ของท่าน ${status} โดยส่วนงานบัญชี</p>
+      <br>
+      <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
+      <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
+      <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+      <br>
+      <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+      <br>
+      <p>Best Regards</p>
+      <p>OnePortal</p>
+      <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+    }
+    else if(status === 'Reject By FN'){
+      to = this.emailreq;
+      subject = 'OnePortal Notification';
+      body = `
+      <p>เรียน คุณ${name}</p>
+      <br>
+      <p>เรื่อง : มีการเปลี่ยนแปลงสถานะคำขอเปิด Supplier ของท่าน</p>
+      <br>
+      <p>คำขอ Supplier ของท่าน ${status} โดยส่วนงานการเงิน</p>
+      <br>
+      <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
+      <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
+      <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+      <br>
+      <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+      <br>
+      <p>Best Regards</p>
+      <p>OnePortal</p>
+      <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+    }
+    else if(status === 'Approved By FN'){
+      to = this.emailreq;
+      subject = 'OnePortal Notification';
+      body = `
+      <p>เรียน คุณ${name}</p>
+      <br>
+      <p>เรื่อง : มีการเปลี่ยนแปลงสถานะคำขอเปิด Supplier ของท่าน</p>
+      <br>
+      <p>คำขอ Supplier ของท่าน ได้รับการอนุมัติ เรียบร้อยแล้ว อยู่ระหว่างการนำข้อมูลเข้าระบบ ERP Oracle </p>
+      <br>
+      <p>Supplier Number : ${this.supplierForm.get('supplierNum')?.value}</p>
+      <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
+      <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
+      <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+      <br>
+      <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+      <br>
+      <p>Best Regards</p>
+      <p>OnePortal</p>
+      <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+    }
+    
 
     this.emailService.sendEmail(to, subject, body).subscribe(
       (response) => {

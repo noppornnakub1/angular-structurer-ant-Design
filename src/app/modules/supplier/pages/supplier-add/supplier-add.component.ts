@@ -1012,7 +1012,6 @@ export class SupplierAddComponent {
           next: (response) => {
             if (response && response.supplier_id) {
               this.handleAddResponse(response);
-              // this.getMaxSupplierNum(); พี่หนึ่งอย่าพึ่งลบขอลองทำก่อนครับ
             }
           },
           error: (err) => {
@@ -1189,8 +1188,6 @@ export class SupplierAddComponent {
             this.sendEmailNotification();
             this.sendEmailNotificationRequester();
           } else {
-            console.log("เข้าไม่เข้า");
-            
             this.onUpdateSupplierBank();
             this.insertLog();
             Swal.fire({
@@ -1706,7 +1703,6 @@ export class SupplierAddComponent {
         this.setStatusAndSubmit(newStatus);
       }
       else if (result.dismiss === Swal.DismissReason.cancel) {
-        // หากผู้ใช้กดปุ่ม "Cancel"
         this.supplierForm.patchValue({ supplierNum: '' });
         Swal.fire({
           icon: 'info',
@@ -1722,7 +1718,6 @@ export class SupplierAddComponent {
   async checkApprove(event: Event) {
     try {
       this.supplierForm.value.supplierNum = '-'
-      // await this.CheckDupplicateData();
       await this.approve(event);
     } catch (error) {
       console.error('Error occurred:', error);

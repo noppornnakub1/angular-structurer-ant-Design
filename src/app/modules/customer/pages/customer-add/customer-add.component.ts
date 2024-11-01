@@ -550,14 +550,12 @@ export class CustomerAddComponent implements OnInit {
   getEventLogs(customerId: number): void {
     this.customerService.getLog(customerId).subscribe(
       (data) => {
-        // แปลงเวลาในแต่ละรายการใน logs ให้เป็นรูปแบบ DD/MM/YYYY HH:mm:ss
         this.logs = data.map(log => {
           return {
             ...log,
-            time: this.formatDateTime(log.time) // ใช้ฟังก์ชันแปลงเวลา
+            time: this.formatDateTime(log.time)
           };
         });
-        console.log(this.logs);
       },
       (error) => {
         console.error('Error fetching logs', error);
@@ -643,7 +641,6 @@ export class CustomerAddComponent implements OnInit {
       });
       return;
     }
-    console.log(this.customerForm.valid);
 
     if (!this.isFormValidWithoutCustomerNum()) {
       Swal.fire({
@@ -912,19 +909,14 @@ export class CustomerAddComponent implements OnInit {
     if (input.files && input.files.length > 0) {
 
       const selectedFile = input.files[0];
-      console.log('Selected file:', selectedFile);
 
-      // ตรวจสอบว่าเป็นไฟล์ประเภทไหนจาก fileName ที่ตั้งค่าไว้ใน files[]
       if (file.fileName === 'ใบขอเปิด Customer') {
         this.customerForm.patchValue({ fileReq: selectedFile.name });
       } else if (file.fileName === 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน') {
         this.customerForm.patchValue({ fileCertificate: selectedFile.name });
       }
 
-      // อัปเดต filePath ของไฟล์ที่เกี่ยวข้องใน displayFiles
       file.filePath = selectedFile.name;
-
-      console.log('Updated form:', this.customerForm.value);
     }
   }
 

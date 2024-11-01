@@ -85,7 +85,7 @@ export class CustomerAddComponent implements OnInit {
     private supplierService: SupplierService,
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.customerForm = this.fb.group({
       id: [0],
       name: ['', Validators.required],
@@ -112,39 +112,7 @@ export class CustomerAddComponent implements OnInit {
       addressDetail: ['']
     });
 
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      this.customerId = id ? +id : null;
-
-      const requests: Partial<{ customerData: Observable<any>; postCodes: Observable<any> }> = {
-        postCodes: this.postCodeService.getPostCodes()
-      };
-
-      if (this.customerId !== null) {
-        requests.customerData = this.customerService.findCustomerById(this.customerId);
-      }
-
-      forkJoin(requests).subscribe(({ customerData, postCodes }) => {
-        if (customerData) {
-          this.customerForm.patchValue({
-            ...customerData,
-            postalCode: customerData.postalCode + '-' + customerData.subdistrict
-          });
-        }
-
-        this.items_provinces = postCodes;
-        this.filteredItemsProvince = postCodes;
-
-        if (this.customerForm.value.postalCode && this.customerForm.value.postId) {
-          const merge = this.customerForm.value.postalCode;
-          this.onPostalCodeChange(merge);
-        }
-      });
-
-      if (this.customerId !== null) {
-        this.loadCustomerData(this.customerId);
-      }
-    });
+    await this.handleRouteParams();
 
     if (this.router.url.includes('/view/')) {
       this.isViewMode = true;
@@ -194,6 +162,41 @@ export class CustomerAddComponent implements OnInit {
     this.checkRole();
     this.getDataCompany();
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
+  }
+
+  private handleRouteParams(): Promise<void> {
+    return new Promise((resolve) => {
+      this.route.paramMap.subscribe(params => {
+        const id = params.get('id');
+        if (id) {
+          this.customerId = +id;
+          forkJoin({
+            customerData: this.customerService.findCustomerById(this.customerId),
+            postCodes: this.postCodeService.getPostCodes()
+          }).subscribe(({ customerData, postCodes }) => {
+            this.customerForm.patchValue({
+              ...customerData,
+              postalCode: customerData.postalCode + '-' + customerData.subdistrict
+            });
+            this.items_provinces = postCodes;
+            this.filteredItemsProvince = postCodes;
+            console.log("โหลดข้อมูลจัง customerForm.value",this.customerForm.value);
+            console.log("โหลดข้อมูลจัง potalCode",this.items_provinces);
+            
+            if (this.customerForm.value.postalCode && this.customerForm.value.postId) {
+              const merge = this.customerForm.value.postalCode;
+              this.onPostalCodeChange(merge);
+            }
+            resolve();
+          });
+
+          this.loadCustomerData(this.customerId);
+
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 
   onNameBlur(): void {
@@ -363,15 +366,25 @@ export class CustomerAddComponent implements OnInit {
 
   onPostalCodeChange(value: any): void {
     let selectedItemId: any;
+    let selectedItem: any;
     const [postalCode, subdistrict] = value.split('-');
+    const potalCodeold = this.customerForm.value.potalCode
     const postId = this.customerForm.value.postId
     const district = this.customerForm.value.district
     const province = this.customerForm.value.province
+    console.log(potalCodeold,postalCode,subdistrict,postId,district,province);
+    
+    selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+      console.log("selectedItem=เลือกใหม่",selectedItem);
 
-    let selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+    if(potalCodeold === '' || potalCodeold == undefined){
+      selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+      console.log("selectedItem=Post=ว่าง",selectedItem);
+    }
     if (selectedItem == null || selectedItem == undefined) {
       selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
     }
+    console.log("selectedItemId",selectedItemId);
     if (selectedItemId) {
       selectedItemId.subdistrict = subdistrict;
       selectedItemId.district = district;
@@ -397,6 +410,11 @@ export class CustomerAddComponent implements OnInit {
     return item.subdistrict === currentSubdistrict;
   }
 
+  isdistrictMatching(item: DataLocation): boolean {
+    const currentdistrict = this.customerForm.get('district')?.value;
+    return item.district === currentdistrict;
+  }
+
   async onSubmit(): Promise<void> {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
@@ -409,7 +427,7 @@ export class CustomerAddComponent implements OnInit {
 
       const selectedPostItem = this.items_provinces.find(item =>
         item.postalCode === formValue.postalCode &&
-        this.isSubdistrictMatching(item)
+        this.isSubdistrictMatching(item) 
       );
 
       if (selectedPostItem) {
@@ -483,11 +501,14 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     const formValue = { ...this.customerForm.value };
-
+    console.log(this.customerForm.value); 
     const selectedPostItem = this.items_provinces.find(item => {
       const postalCode = formValue.postalCode.split('-')[0];
-      return item.postalCode === postalCode || this.isSubdistrictMatching(item);
+      return item.postalCode === postalCode && (this.isSubdistrictMatching(item)&&this.isdistrictMatching(item));
     });
+
+    console.log(selectedPostItem);
+    
 
     if (selectedPostItem) {
       formValue.postalCode = selectedPostItem.postalCode;

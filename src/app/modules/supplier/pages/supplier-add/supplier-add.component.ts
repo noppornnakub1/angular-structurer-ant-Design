@@ -1570,7 +1570,7 @@ export class SupplierAddComponent {
     });
   }
 
-  getDataCompany(): void {
+  getDataCompany( ): void {
     const CheckcurrentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     const userCompanies = CheckcurrentUser.company ? CheckcurrentUser.company.split(',') : [];
 
@@ -1804,6 +1804,10 @@ export class SupplierAddComponent {
             const subject = 'OnePortal Notification';
             const body = `
             <p>เรียน ส่วนงานบัญชี</p>
+            <br>
+            <p>เรื่อง : คำขอเปิด Supplier ใหม่</p>
+            <br>
+            <p>มีคำขอเปิด Supplier ใหม่ จาก คุณ [ชื่อผู้ขอ Request] </p>
             <br>
             <p>เราได้รับคำขอเปิด Supplier: ${supplierName} Tax ID:${TaxID} ของคุณแล้ว</p>
             <br>

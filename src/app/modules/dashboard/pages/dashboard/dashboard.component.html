@@ -117,7 +117,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let data of displayDataOld; let i = index">
-            <td style="text-align: center;">{{ (pageIndexOld - 1) * pageSizeOld + i + 1 }}</td>
+            <td style="text-align: right;">{{ (pageIndexOld - 1) * pageSizeOld + i + 1 }}</td>
             <td>{{ data.NAME }}</td>
             <td>{{ data.NUM }}</td>
             <td *ngIf="data.TAX">{{ data.TAX }}</td>

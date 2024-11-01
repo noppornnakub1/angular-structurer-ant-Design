@@ -140,7 +140,10 @@ export class CustomerComponent implements OnInit {
       this.customerService.findDataByUserId(currentUser.userId).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          this.hasCustomerNumber = this.listOfData.some(data => data.customerNum);
+          this.hasCustomerNumber = this.listOfData.some(data => data.customerNum && data.status === 'Success');
+          console.log(this.listOfData);
+          console.log(this.hasCustomerNumber);
+          
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();

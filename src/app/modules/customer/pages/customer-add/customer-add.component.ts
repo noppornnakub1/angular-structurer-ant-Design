@@ -180,8 +180,6 @@ export class CustomerAddComponent implements OnInit {
             });
             this.items_provinces = postCodes;
             this.filteredItemsProvince = postCodes;
-            console.log("โหลดข้อมูลจัง customerForm.value",this.customerForm.value);
-            console.log("โหลดข้อมูลจัง potalCode",this.items_provinces);
             
             if (this.customerForm.value.postalCode && this.customerForm.value.postId) {
               const merge = this.customerForm.value.postalCode;
@@ -372,19 +370,15 @@ export class CustomerAddComponent implements OnInit {
     const postId = this.customerForm.value.postId
     const district = this.customerForm.value.district
     const province = this.customerForm.value.province
-    console.log(potalCodeold,postalCode,subdistrict,postId,district,province);
     
     selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
-      console.log("selectedItem=เลือกใหม่",selectedItem);
 
     if(potalCodeold === '' || potalCodeold == undefined){
       selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
-      console.log("selectedItem=Post=ว่าง",selectedItem);
     }
     if (selectedItem == null || selectedItem == undefined) {
       selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
     }
-    console.log("selectedItemId",selectedItemId);
     if (selectedItemId) {
       selectedItemId.subdistrict = subdistrict;
       selectedItemId.district = district;
@@ -501,14 +495,10 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     const formValue = { ...this.customerForm.value };
-    console.log(this.customerForm.value); 
     const selectedPostItem = this.items_provinces.find(item => {
       const postalCode = formValue.postalCode.split('-')[0];
       return item.postalCode === postalCode && (this.isSubdistrictMatching(item)&&this.isdistrictMatching(item));
     });
-
-    console.log(selectedPostItem);
-    
 
     if (selectedPostItem) {
       formValue.postalCode = selectedPostItem.postalCode;
@@ -544,7 +534,7 @@ export class CustomerAddComponent implements OnInit {
     }
     if (this.customerForm.valid) {
       const currentDate = new Date();
-      currentDate.setHours(currentDate.getHours() + 7); // เพิ่ม 7 ชั่วโมงเพื่อให้ตรงกับเวลาในประเทศไทย
+      currentDate.setHours(currentDate.getHours() + 7);
       const log = {
         Id: 0,
         UserId: currentUser.userId || 0,

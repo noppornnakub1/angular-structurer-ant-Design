@@ -851,7 +851,6 @@ export class SupplierAddComponent {
           accountName: bankData.AccountName,
           company: bankData.Company
         });
-        console.log(this.supplierBankForm.value);
         this.selectedSupplierGroup = this.supplierBankForm.value.supplierGroup
 
         this.showSupplierBankForm = true;
@@ -1303,14 +1302,12 @@ export class SupplierAddComponent {
   getEventLogs(SupplierId: number): void {
     this.supplierService.getLog(SupplierId).subscribe(
       (data) => {
-        // แปลงเวลาในแต่ละรายการใน logs ให้เป็นรูปแบบ DD/MM/YYYY HH:mm:ss
         this.logs = data.map(log => {
           return {
             ...log,
-            time: this.formatDateTime(log.time) // ใช้ฟังก์ชันแปลงเวลา
+            time: this.formatDateTime(log.time)
           };
         });
-        console.log(this.logs);
       },
       (error) => {
         console.error('Error fetching logs', error);
@@ -1331,11 +1328,7 @@ export class SupplierAddComponent {
   }
 
   onUpdateSupplierBank(): void {
-    console.log("เข้า bank ");
-
     const supplierBankData: any[] = [];
-    console.log(this.supplierBankForm);
-    console.log(this.supplierBankFormAdd);
 
     if (this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
@@ -1358,7 +1351,6 @@ export class SupplierAddComponent {
         FileId: file.FileId,
         IsNewUpload: file.IsNewUpload || false
       }));
-      console.log(fileIdsToRemoveWithStatus);
 
       const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
 
@@ -1561,8 +1553,6 @@ export class SupplierAddComponent {
     this.supplierService.GetAllGroups().subscribe({
       next: (response: any) => {
         this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
-        console.log(this.listOfGroup);
-
         this._cdr.markForCheck();
       },
       error: () => {

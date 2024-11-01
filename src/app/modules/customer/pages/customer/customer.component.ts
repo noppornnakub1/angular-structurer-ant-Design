@@ -141,8 +141,6 @@ export class CustomerComponent implements OnInit {
         next: (response: any) => {
           this.listOfData = response;
           this.hasCustomerNumber = this.listOfData.some(data => data.customerNum && data.status === 'Success');
-          console.log(this.listOfData);
-          console.log(this.hasCustomerNumber);
           
           this.changeStatusIfNeeded();
           this.applyFilters();

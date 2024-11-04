@@ -421,7 +421,8 @@ export class SupplierAddComponent {
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
       let fileToUpdate;
-
+    console.log(isFromFilesBankAdd);
+    
       if (isFromFilesBankAdd) {
         fileToUpdate = this.filesBankAdd.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
       } else {
@@ -472,6 +473,8 @@ export class SupplierAddComponent {
 
       if (isFromFilesBankAdd) {
         this.selectedFilesAdd.push(newFile);
+        console.log(this.selectedFilesAdd);
+        
       } else {
         this.selectedNewFilesSupplier.push(newFile);
       }
@@ -690,7 +693,9 @@ export class SupplierAddComponent {
   showBankCopy() {
     this.showSupplierBankFormAdd = true;
     if (this.showSupplierBankFormAdd) {
+      this.updateFilteredSupplierGroups(this.supplierBankForm.value.supplierGroup)
       this.supplierBankFormAdd.patchValue({ accountName: this.supplierForm.value.name });
+      
     }
   }
 
@@ -1336,7 +1341,15 @@ export class SupplierAddComponent {
 
   onUpdateSupplierBank(): void {
     const supplierBankData: any[] = [];
-
+    const company = this.supplierForm.value.company
+    if(this.supplierBankFormAdd.invalid && this.supplierBankForm.valid){
+      console.log("this.supplierBankFormAdd.value.supplierId",this.supplierBankFormAdd.value.supplierId);
+      if(this.supplierBankFormAdd.value.supplierId === null || this.supplierBankFormAdd.value.supplierId === ''){
+        this.supplierBankFormAdd.patchValue({ supplierId: this.isIDTemp });
+        this.supplierBankFormAdd.patchValue({ company: company });
+      }
+    }
+    console.log("1349",this.supplierBankFormAdd);
     if (this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
       supplierBankData.push(bankFormValue);
@@ -1348,11 +1361,13 @@ export class SupplierAddComponent {
       supplierBankData.push(bankFormValueAdd);
     } else {
     }
-
+    console.log(supplierBankData);
+    
     if (supplierBankData.length > 0) {
       const formData = new FormData();
       const supplierBankJson = JSON.stringify(supplierBankData);
-
+      console.log(supplierBankJson);
+      
       const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
         SupbankId: file.SupbankId,
         FileId: file.FileId,
@@ -2018,7 +2033,7 @@ export class SupplierAddComponent {
   }
 
   updateFilteredSupplierGroups(selectedGroup: string): void {
-    this.filteredListOfGroup = this.listOfGroup.filter(group => {
+    this.listOfGroup = this.listOfGroup.filter(group => {
       return group.group_name !== selectedGroup && group.group_name !== 'ALL Group';
     });
 

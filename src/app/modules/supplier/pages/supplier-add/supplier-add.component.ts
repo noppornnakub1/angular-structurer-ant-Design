@@ -836,6 +836,7 @@ export class SupplierAddComponent {
       this._cdr.detectChanges();
       if (data.supplierBank.length > 0) {
         const bankData = data.supplierBank[0];
+        console.log(data);
 
         if (bankData.supplierGroup && !this.listOfGroup.some(group => group.group_name === bankData.supplierGroup)) {
           this.listOfGroup.push({ group_name: bankData.supplierGroup });
@@ -871,6 +872,7 @@ export class SupplierAddComponent {
         const bankDataAdd = data.supplierBank[1];
         this.isLoadingFromAPI = true;
         this.selectedSupplierGroupAdd = bankDataAdd.SupplierGroup;
+
         this.supplierBankFormAdd.patchValue({
           supbankId: bankDataAdd.SupbankId,
           supplierId: bankDataAdd.SupplierId,
@@ -883,6 +885,7 @@ export class SupplierAddComponent {
         });
 
         this.showSupplierBankFormAdd = true;
+        this._cdr.detectChanges();
         setTimeout(() => {
           this.isLoadingFromAPI = false;
         }, 1000);
@@ -1272,8 +1275,13 @@ export class SupplierAddComponent {
       labelTexts.push(selectedFile.labelText);
     }
 
+    // for (let file of this.fileIdsToRemove) {
+    //   fileIds.push(file.FileId);
+    // } code เก่า
     for (let file of this.fileIdsToRemove) {
-      fileIds.push(file.FileId);
+      if (file.FileId !== undefined) {
+        fileIds.push(file.FileId);
+      }
     }
 
     formData.append('LabelTextsJson', JSON.stringify(labelTexts));
@@ -1559,7 +1567,7 @@ export class SupplierAddComponent {
     });
   }
 
-  getDataCompany( ): void {
+  getDataCompany(): void {
     const CheckcurrentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     const userCompanies = CheckcurrentUser.company ? CheckcurrentUser.company.split(',') : [];
 
@@ -2059,7 +2067,7 @@ export class SupplierAddComponent {
       name = data.firstname
       this._cdr.markForCheck();
     });
-    if(status === 'Pending Approved By ACC'){
+    if (status === 'Pending Approved By ACC') {
       to = this.emailreq;
       subject = 'OnePortal Notification';
       body = `
@@ -2079,7 +2087,7 @@ export class SupplierAddComponent {
       <p>OnePortal</p>
       <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
     }
-    if(status === 'Pending Approved By ACC'){
+    if (status === 'Pending Approved By ACC') {
       to = this.emailreq;
       subject = 'OnePortal Notification';
       body = `
@@ -2102,7 +2110,7 @@ export class SupplierAddComponent {
       <p>OnePortal</p>
       <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
     }
-    else if(status === 'Approved By ACC' || status === 'Reject By ACC'){
+    else if (status === 'Approved By ACC' || status === 'Reject By ACC') {
       to = this.emailreq;
       subject = 'OnePortal Notification';
       body = `
@@ -2122,7 +2130,7 @@ export class SupplierAddComponent {
       <p>OnePortal</p>
       <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
     }
-    else if(status === 'Reject By FN'){
+    else if (status === 'Reject By FN') {
       to = this.emailreq;
       subject = 'OnePortal Notification';
       body = `
@@ -2142,7 +2150,7 @@ export class SupplierAddComponent {
       <p>OnePortal</p>
       <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
     }
-    else if(status === 'Approved By FN'){
+    else if (status === 'Approved By FN') {
       to = this.emailreq;
       subject = 'OnePortal Notification';
       body = `
@@ -2163,7 +2171,7 @@ export class SupplierAddComponent {
       <p>OnePortal</p>
       <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
     }
-    
+
 
     this.emailService.sendEmail(to, subject, body).subscribe(
       (response) => {

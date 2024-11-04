@@ -307,7 +307,6 @@ export class SupplierAddComponent {
     this.prefixService.getPrefix().subscribe(data => {
       this.item_prefix = data;
       this.filteredItemsPrefix = data;
-      // this.supplierForm.patchValue({ prefix: this.item_prefix[0]?.name || '' });
     });
     this.getSupplierType();
     this.getDataBank();

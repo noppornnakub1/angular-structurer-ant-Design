@@ -19,7 +19,6 @@ import { IRole } from '../../../user-manager/interface/role.interface';
 import { BankMasterService } from '../../../../shared/constants/bank-master.service';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../../../shared/constants/email.service';
-import { NzModalService } from 'ng-zorro-antd/modal';
 import { debounceTime, distinctUntilChanged, forkJoin } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
@@ -167,7 +166,6 @@ export class SupplierAddComponent {
   fileIdsToRemoveBank: number[] = [];
   fileIdsToRemoveBankAdd: number[] = [];
   private _cdr = inject(ChangeDetectorRef);
-  private readonly _router = inject(Router);
   private readonly authService = inject(AuthService)
   listOfTypeVendor = [
     {
@@ -354,31 +352,6 @@ export class SupplierAddComponent {
     this._cdr.detectChanges();
   }
 
-  // private fileBankMapping: { [key: string]: { fileName: string; fileType: string; labelText: string; filePath: string }[] } = {
-  //   'ALL Group': [
-  //     { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]', filePath: '' },
-  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', filePath: '' },
-  //     { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ONE Group]', filePath: '' },
-  //     { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]', filePath: '' },
-  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', filePath: '' },
-  //     { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [GCH Group]', filePath: '' },
-  //   ],
-  //   'ONE GROUP': [
-  //     { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]', filePath: '' },
-  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', filePath: '' },
-  //     { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ONE Group]', filePath: '' },
-  //   ],
-  //   'GCH GROUP': [
-  //     { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]', filePath: '' },
-  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', filePath: '' },
-  //     { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [GCH Group]', filePath: '' },
-  //   ],
-  //   'ACT': [
-  //     { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'actGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ACT]', filePath: '' },
-  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'actGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', filePath: '' },
-  //     { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'actGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ACT]', filePath: '' },
-  //   ]
-  // };
   private mapFilesToGroups(): void {
     this.fileBankMapping = this.listSupplierBankFileTemplates.reduce((acc: { [key: string]: any[] }, file: any) => {
       if (!acc[file.groupName]) {
@@ -392,7 +365,6 @@ export class SupplierAddComponent {
       });
       return acc;
     }, {});
-  
   }
 
   private setFilesBank(value: string, target: 'filesBank' | 'filesBankAdd'): void {
@@ -692,7 +664,7 @@ export class SupplierAddComponent {
       console.error('Current user is not available in local storage');
       return;
     }
-    this.getGruopName(currentUser.company);
+    this.getGruopName();
     this.showSupplierBankForm = this.paymentMethods.includes(value);
 
     if (this.showSupplierBankForm) {
@@ -1289,9 +1261,6 @@ export class SupplierAddComponent {
       labelTexts.push(selectedFile.labelText);
     }
 
-    // for (let file of this.fileIdsToRemove) {
-    //   fileIds.push(file.FileId);
-    // } code เก่า
     for (let file of this.fileIdsToRemove) {
       if (file.FileId !== undefined) {
         fileIds.push(file.FileId);
@@ -1471,7 +1440,7 @@ export class SupplierAddComponent {
     if (this.showSupplierBankForm = true) {
       if (this.supplierForm.valid) {
         const currentDate = new Date();
-        currentDate.setHours(currentDate.getHours() + 7); // เพิ่ม 7 ชั่วโมงเพื่อให้ตรงกับเวลาในประเทศไทย
+        currentDate.setHours(currentDate.getHours() + 7);
         const log = {
           id: 0,
           userId: currentUser.userId || 0,
@@ -1576,7 +1545,7 @@ export class SupplierAddComponent {
     });
   }
 
-  getGruopName(company: string): void {
+  getGruopName(): void {
     this.supplierService.GetAllGroups().subscribe({
       next: (response: any) => {
         this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
@@ -2193,7 +2162,7 @@ export class SupplierAddComponent {
     const date = new Date(dateTime);
 
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // เดือนเริ่มจาก 0 ต้องบวกเพิ่ม 1
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
 
     const hours = String(date.getHours()).padStart(2, '0');
@@ -2206,7 +2175,6 @@ export class SupplierAddComponent {
   GetSupplierFileTemplates(): void {
     this.supplierService.GetSupplierFileTemplates().subscribe({
       next: (response: any) => {
-        // สมมติว่า response คือข้อมูลที่ดึงมาจาก API
         this.files = response.map((file: any) => ({
           fileName: file.fileName,
           fileType: file.fileType,
@@ -2217,7 +2185,6 @@ export class SupplierAddComponent {
         this._cdr.markForCheck();
       },
       error: () => {
-        // จัดการกับ error ถ้ามี
       }
     });
   }
@@ -2225,7 +2192,6 @@ export class SupplierAddComponent {
   GetSupplierBankFileTemplates(): void {
     this.supplierService.GetSupplierBankFileTemplates().subscribe({
       next: (response: any) => {
-        // สมมติว่า response คือข้อมูลที่ดึงมาจาก API
         this.listSupplierBankFileTemplates = response.map((file: any) => ({
           templateId: file.templateId,
           groupName: file.groupName,
@@ -2238,7 +2204,6 @@ export class SupplierAddComponent {
         this._cdr.markForCheck();
       },
       error: () => {
-        // จัดการกับ error ถ้ามี
       }
     });
   }

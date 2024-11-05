@@ -20,6 +20,10 @@ export class SupplierService {
     return this._http.post(`/Supplier/AddSupplierWithFiles`, formData);
   }
 
+  addOrUpdateDataWithFiles(formData: FormData): Observable<any> {
+    return this._http.post(`/Supplier/AddOrUpdateSupplierWithFiles`, formData);
+  }
+
   findSupplierById(id: number): Observable<ISupplier> {
     return this._http.get<ISupplier>(`/Supplier/FindSupplierByID?id=${id}`);
   }

@@ -678,7 +678,7 @@ export class SupplierAddComponent {
     if (this.showSupplierBankFormAdd) {
       this.updateFilteredSupplierGroups(this.supplierBankForm.value.supplierGroup)
       this.supplierBankFormAdd.patchValue({ accountName: this.supplierForm.value.name });
-      
+
     }
   }
 
@@ -1320,8 +1320,8 @@ export class SupplierAddComponent {
   onUpdateSupplierBank(): void {
     const supplierBankData: any[] = [];
     const company = this.supplierForm.value.company
-    if(this.supplierBankFormAdd.invalid && this.supplierBankForm.valid){
-      if(this.supplierBankFormAdd.value.supplierId === null || this.supplierBankFormAdd.value.supplierId === ''){
+    if (this.supplierBankFormAdd.invalid && this.supplierBankForm.valid) {
+      if (this.supplierBankFormAdd.value.supplierId === null || this.supplierBankFormAdd.value.supplierId === '') {
         this.supplierBankFormAdd.patchValue({ supplierId: this.isIDTemp });
         this.supplierBankFormAdd.patchValue({ company: company });
       }
@@ -1337,11 +1337,11 @@ export class SupplierAddComponent {
       supplierBankData.push(bankFormValueAdd);
     } else {
     }
-    
+
     if (supplierBankData.length > 0) {
       const formData = new FormData();
       const supplierBankJson = JSON.stringify(supplierBankData);
-      
+
       const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
         SupbankId: file.SupbankId,
         FileId: file.FileId,
@@ -1611,7 +1611,7 @@ export class SupplierAddComponent {
       return;
     }
     if (this.showSupplierBankForm) {
-      if(!this.isFormValidBank()){
+      if (!this.isFormValidBank()) {
         Swal.fire({
           icon: 'warning',
           title: 'ข้อมูลไม่ถูกต้อง',
@@ -1620,10 +1620,10 @@ export class SupplierAddComponent {
         });
         return;
       }
-      
+
     }
     if (this.showSupplierBankFormAdd) {
-      if(!this.isFormValidBankAdd()){
+      if (!this.isFormValidBankAdd()) {
         Swal.fire({
           icon: 'warning',
           title: 'ข้อมูลไม่ถูกต้อง',
@@ -1632,7 +1632,7 @@ export class SupplierAddComponent {
         });
         return;
       }
-      
+
     }
     else {
       try {
@@ -1951,7 +1951,7 @@ export class SupplierAddComponent {
   }
 
   updateFilteredSupplierGroups(selectedGroup: string): void {
-    if(this.showSupplierBankFormAdd){
+    if (this.showSupplierBankFormAdd) {
       this.listOfGroup = this.listOfGroup.filter(group => {
         return group.group_name !== selectedGroup && group.group_name !== 'ALL Group';
       });

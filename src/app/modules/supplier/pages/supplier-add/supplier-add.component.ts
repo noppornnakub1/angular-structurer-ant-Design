@@ -224,7 +224,6 @@ export class SupplierAddComponent {
     this.setupFormListeners();
 
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
-    console.log("this.displayFiles",this.displayFiles);
     
     this.checkRole(); 
   }
@@ -318,7 +317,13 @@ export class SupplierAddComponent {
 
     this.toggleSupplierBankForm(this.supplierForm.value.paymentMethod)
     this.supplierForm.get('supplierType')?.valueChanges.subscribe(value => {
+      const supplierTypeId = this.getSupplierTypeId(value);
+
+      if (supplierTypeId) {
+        this.loadSupplierType(supplierTypeId);
+      }
       this.onSupplierTypeChange(value);
+      
       this._cdr.detectChanges();
     });
 
@@ -809,7 +814,6 @@ export class SupplierAddComponent {
           return !existingFile || !existingFile.filePath;
         });
         this.displayFiles = [...this.filess, ...missingFiles];
-        console.log(this.filess);
         
       } else {
         this.displayFiles = this.files;
@@ -987,7 +991,7 @@ export class SupplierAddComponent {
     }
 
     this.isSubmitting = true;
-
+    
     if (this.supplierForm.valid) {
       const formData = this.prepareFormData();
 
@@ -1603,10 +1607,7 @@ export class SupplierAddComponent {
   }
 
   async checkSave(event: Event) {
-    console.log("เข้าไม่เข้า");
-
     this.validateEmail()
-    console.log(this.emailError);
     if (this.emailError != '') {
       Swal.fire({
         icon: 'warning',
@@ -1618,8 +1619,6 @@ export class SupplierAddComponent {
     }
     else {
       try {
-        console.log("เข้า else");
-
         await this.save(event);
       } catch (error) {
         console.error('Error occurred:', error);
@@ -1657,7 +1656,6 @@ export class SupplierAddComponent {
     });
     if (result.isConfirmed) {
       if (this.suppilerId == null) {
-        console.log("suppilerId == null");
         this.setStatusAndSubmit('Draft');
       } else {
         if (this.isApproved) {
@@ -1791,7 +1789,6 @@ export class SupplierAddComponent {
     const TaxID = this.supplierForm.get('tax_Id')?.value;
     if (this.supplierForm.get('status')?.value === 'Pending Approved By ACC' && this.supplierBankForm.valid == false) {
       const company = this.supplierForm.get('company')?.value;
-
       this.supplierService.findApproversByCompany(company).subscribe(
         (approvers) => {
           approvers.forEach((approver: any) => {

@@ -355,31 +355,6 @@ export class SupplierAddComponent {
     this._cdr.detectChanges();
   }
 
-  // private fileBankMapping: { [key: string]: { fileName: string; fileType: string; labelText: string; filePath: string }[] } = {
-  //   'ALL Group': [
-  //     { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]', filePath: '' },
-  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', filePath: '' },
-  //     { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ONE Group]', filePath: '' },
-  //     { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]', filePath: '' },
-  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', filePath: '' },
-  //     { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [GCH Group]', filePath: '' },
-  //   ],
-  //   'ONE GROUP': [
-  //     { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]', filePath: '' },
-  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', filePath: '' },
-  //     { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ONE Group]', filePath: '' },
-  //   ],
-  //   'GCH GROUP': [
-  //     { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]', filePath: '' },
-  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', filePath: '' },
-  //     { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [GCH Group]', filePath: '' },
-  //   ],
-  //   'ACT': [
-  //     { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'actGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ACT]', filePath: '' },
-  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'actGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', filePath: '' },
-  //     { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'actGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ACT]', filePath: '' },
-  //   ]
-  // };
   private mapFilesToGroups(): void {
     this.fileBankMapping = this.listSupplierBankFileTemplates.reduce((acc: { [key: string]: any[] }, file: any) => {
       if (!acc[file.groupName]) {

@@ -224,8 +224,9 @@ export class SupplierAddComponent {
     this.setupFormListeners();
 
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
-
-    this.checkRole();
+    console.log("this.displayFiles",this.displayFiles);
+    
+    this.checkRole(); 
   }
 
   private initializeForms(): void {
@@ -808,6 +809,8 @@ export class SupplierAddComponent {
           return !existingFile || !existingFile.filePath;
         });
         this.displayFiles = [...this.filess, ...missingFiles];
+        console.log(this.filess);
+        
       } else {
         this.displayFiles = this.files;
       }
@@ -1600,7 +1603,10 @@ export class SupplierAddComponent {
   }
 
   async checkSave(event: Event) {
+    console.log("เข้าไม่เข้า");
+
     this.validateEmail()
+    console.log(this.emailError);
     if (this.emailError != '') {
       Swal.fire({
         icon: 'warning',
@@ -1610,32 +1616,10 @@ export class SupplierAddComponent {
       });
       return;
     }
-    if (this.showSupplierBankForm) {
-      if (!this.isFormValidBank()) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'ข้อมูลไม่ถูกต้อง',
-          text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-          confirmButtonText: 'ปิด'
-        });
-        return;
-      }
-
-    }
-    if (this.showSupplierBankFormAdd) {
-      if (!this.isFormValidBankAdd()) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'ข้อมูลไม่ถูกต้อง',
-          text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-          confirmButtonText: 'ปิด'
-        });
-        return;
-      }
-
-    }
     else {
       try {
+        console.log("เข้า else");
+
         await this.save(event);
       } catch (error) {
         console.error('Error occurred:', error);
@@ -1673,6 +1657,7 @@ export class SupplierAddComponent {
     });
     if (result.isConfirmed) {
       if (this.suppilerId == null) {
+        console.log("suppilerId == null");
         this.setStatusAndSubmit('Draft');
       } else {
         if (this.isApproved) {
@@ -2181,7 +2166,7 @@ export class SupplierAddComponent {
           filePath: file.filePath,
           labelText: file.labelText
         }));
-        this.displayFiles = this.files
+        this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
         this._cdr.markForCheck();
       },
       error: () => {

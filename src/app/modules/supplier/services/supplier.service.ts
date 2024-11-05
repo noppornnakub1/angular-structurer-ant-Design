@@ -154,4 +154,12 @@ export class SupplierService {
   GetMaxSupplierNum() : Observable<any>{
     return this._http.post(`/BankMasterData/updateSupplierNumInSqlServer`,{});
   }
+
+  GetSupplierFileTemplates() {
+    return this._http.get(`/Supplier/GetSupplierFileTemplates`);
+  }
+
+  GetSupplierBankFileTemplates() {
+    return this._http.get(`/SupplierBank/GetSupplierBankFileTemplates`);
+  }
 }

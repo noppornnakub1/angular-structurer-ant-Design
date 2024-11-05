@@ -177,11 +177,8 @@ export class SupplierAddComponent {
       title: 'One Time',
     },
   ];
-  files = [
-    { fileName: 'ใบขอเปิด Supplier', fileType: '', filePath: '', labelText: 'ใบขอเปิด Supplier' },
-    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: '', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' },
-  ];
-
+  files: any[] = [];
+  listSupplierBankFileTemplates: any[] = [];
   filesBank = [
     { fileName: 'หนังสือยินยอมการโอนเงิน', fileType: '', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: '', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' },
@@ -192,6 +189,7 @@ export class SupplierAddComponent {
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'gchGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' },
     { fileName: 'สำเนาหน้า Book Bank', fileType: 'gchGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank]' },
   ];
+  private fileBankMapping: { [key: string]: { fileName: string; fileType: string; labelText: string; filePath: string }[] } = {};
   file: any;
   filess: Array<{ fileName: string; fileType: string; filePath: string; labelText: string; }> = [];
   displayFiles: Array<{ fileType: string; fileName: string; filePath: string; labelText: string; }> = [];
@@ -313,6 +311,8 @@ export class SupplierAddComponent {
     this.getDataPaymentMethod();
     this.getDataVAT();
     this.getDataCompany();
+    this.GetSupplierFileTemplates();
+    this.GetSupplierBankFileTemplates();
   }
 
   private setupFormListeners(): void {
@@ -354,31 +354,46 @@ export class SupplierAddComponent {
     this._cdr.detectChanges();
   }
 
-  private fileBankMapping: { [key: string]: { fileName: string; fileType: string; labelText: string; filePath: string }[] } = {
-    'ALL Group': [
-      { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]', filePath: '' },
-      { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', filePath: '' },
-      { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ONE Group]', filePath: '' },
-      { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]', filePath: '' },
-      { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', filePath: '' },
-      { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [GCH Group]', filePath: '' },
-    ],
-    'ONE GROUP': [
-      { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]', filePath: '' },
-      { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', filePath: '' },
-      { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ONE Group]', filePath: '' },
-    ],
-    'GCH GROUP': [
-      { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]', filePath: '' },
-      { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', filePath: '' },
-      { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [GCH Group]', filePath: '' },
-    ],
-    'ACT': [
-      { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'actGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ACT]', filePath: '' },
-      { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'actGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', filePath: '' },
-      { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'actGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ACT]', filePath: '' },
-    ]
-  };
+  // private fileBankMapping: { [key: string]: { fileName: string; fileType: string; labelText: string; filePath: string }[] } = {
+  //   'ALL Group': [
+  //     { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]', filePath: '' },
+  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', filePath: '' },
+  //     { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ONE Group]', filePath: '' },
+  //     { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]', filePath: '' },
+  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', filePath: '' },
+  //     { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [GCH Group]', filePath: '' },
+  //   ],
+  //   'ONE GROUP': [
+  //     { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'oneGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ONE Group]', filePath: '' },
+  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'oneGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', filePath: '' },
+  //     { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'oneGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ONE Group]', filePath: '' },
+  //   ],
+  //   'GCH GROUP': [
+  //     { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [GCH Group]', filePath: '' },
+  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', filePath: '' },
+  //     { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [GCH Group]', filePath: '' },
+  //   ],
+  //   'ACT': [
+  //     { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'actGroupConsentFile', labelText: 'หนังสือยินยอมการโอนเงิน [ACT]', filePath: '' },
+  //     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'actGroupCertificationFile', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', filePath: '' },
+  //     { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'actGroupBookBankFile', labelText: 'สำเนาหน้า Book Bank [ACT]', filePath: '' },
+  //   ]
+  // };
+  private mapFilesToGroups(): void {
+    this.fileBankMapping = this.listSupplierBankFileTemplates.reduce((acc: { [key: string]: any[] }, file: any) => {
+      if (!acc[file.groupName]) {
+        acc[file.groupName] = [];
+      }
+      acc[file.groupName].push({
+        fileName: file.fileName,
+        fileType: file.fileType,
+        labelText: file.labelText,
+        filePath: file.filePath
+      });
+      return acc;
+    }, {});
+  
+  }
 
   private setFilesBank(value: string, target: 'filesBank' | 'filesBankAdd'): void {
     if (this.fileBankMapping[value]) {
@@ -421,8 +436,6 @@ export class SupplierAddComponent {
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
       let fileToUpdate;
-    console.log(isFromFilesBankAdd);
-    
       if (isFromFilesBankAdd) {
         fileToUpdate = this.filesBankAdd.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
       } else {
@@ -473,8 +486,6 @@ export class SupplierAddComponent {
 
       if (isFromFilesBankAdd) {
         this.selectedFilesAdd.push(newFile);
-        console.log(this.selectedFilesAdd);
-        
       } else {
         this.selectedNewFilesSupplier.push(newFile);
       }
@@ -841,8 +852,6 @@ export class SupplierAddComponent {
       this._cdr.detectChanges();
       if (data.supplierBank.length > 0) {
         const bankData = data.supplierBank[0];
-        console.log(data);
-
         if (bankData.supplierGroup && !this.listOfGroup.some(group => group.group_name === bankData.supplierGroup)) {
           this.listOfGroup.push({ group_name: bankData.supplierGroup });
         }
@@ -1343,13 +1352,11 @@ export class SupplierAddComponent {
     const supplierBankData: any[] = [];
     const company = this.supplierForm.value.company
     if(this.supplierBankFormAdd.invalid && this.supplierBankForm.valid){
-      console.log("this.supplierBankFormAdd.value.supplierId",this.supplierBankFormAdd.value.supplierId);
       if(this.supplierBankFormAdd.value.supplierId === null || this.supplierBankFormAdd.value.supplierId === ''){
         this.supplierBankFormAdd.patchValue({ supplierId: this.isIDTemp });
         this.supplierBankFormAdd.patchValue({ company: company });
       }
     }
-    console.log("1349",this.supplierBankFormAdd);
     if (this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
       supplierBankData.push(bankFormValue);
@@ -1361,12 +1368,10 @@ export class SupplierAddComponent {
       supplierBankData.push(bankFormValueAdd);
     } else {
     }
-    console.log(supplierBankData);
     
     if (supplierBankData.length > 0) {
       const formData = new FormData();
       const supplierBankJson = JSON.stringify(supplierBankData);
-      console.log(supplierBankJson);
       
       const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
         SupbankId: file.SupbankId,
@@ -1635,6 +1640,30 @@ export class SupplierAddComponent {
         confirmButtonText: 'ปิด'
       });
       return;
+    }
+    if (this.showSupplierBankForm) {
+      if(!this.isFormValidBank()){
+        Swal.fire({
+          icon: 'warning',
+          title: 'ข้อมูลไม่ถูกต้อง',
+          text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+          confirmButtonText: 'ปิด'
+        });
+        return;
+      }
+      
+    }
+    if (this.showSupplierBankFormAdd) {
+      if(!this.isFormValidBankAdd()){
+        Swal.fire({
+          icon: 'warning',
+          title: 'ข้อมูลไม่ถูกต้อง',
+          text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+          confirmButtonText: 'ปิด'
+        });
+        return;
+      }
+      
     }
     else {
       try {
@@ -1907,114 +1936,6 @@ export class SupplierAddComponent {
     }
   }
 
-  CheckDupplicateData(): Promise<void> {
-    this.isCheckingDuplicate = true;
-    const CheckcurrentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const roleId = CheckcurrentUser.role
-    return new Promise((resolve, reject) => {
-      if (this.supplierForm.value.vat === '-' && roleId == 3) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-          text: 'กรุณากรอก Vat ก่อนดำเนินการต่อ',
-          confirmButtonText: 'ปิด'
-        });
-        this.isCheckingDuplicate = false;
-        return reject('Form is not warning');
-      }
-
-      if (!this.isFormValidWithoutSupplierNum()) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-          text: 'โปรดกรอกข้อมูลในฟอร์มให้ครบทุกช่องที่จำเป็น',
-          confirmButtonText: 'ปิด'
-        });
-        this.isCheckingDuplicate = false;
-        return reject('Form is not valid');
-      }
-
-      const foundItem = this.filteredDataType.find(item => item.code === this.supplierForm.value.supplierType);
-      if (foundItem) {
-        this.typeCode = foundItem.codeFrom;
-      }
-
-      const tax = this.supplierForm.value.tax_Id.trim();
-      const type = this.typeCode.trim();
-      const key = `${tax}-${type}`;
-
-      this.supplierService.CheckDupplicateSupplier(key).subscribe({
-        next: (response: any) => {
-          if (response && response.length > 0) {
-            Swal.fire({
-              icon: 'error',
-              title: 'ข้อมูลซ้ำ',
-              text: 'มีข้อมูล Supplier นี้อยู่ในฐานข้อมูลอยู่แล้ว โปรดตรวจสอบ TaxID และ Type อีกครั้ง',
-              confirmButtonText: 'ปิด'
-            });
-            this.isCheckingDuplicate = false;
-            reject('Duplicate data found');
-          } else {
-            this.getNumMaxSupplier().then(() => {
-              this.isCheckingDuplicate = false;
-              resolve();
-            }).catch(err => {
-              this.isCheckingDuplicate = false;
-              reject(err);
-            });
-          }
-        },
-        error: (err) => {
-          if (err === 'No data found.') {
-            this.getNumMaxSupplier().then(() => {
-              this.isCheckingDuplicate = false;
-              resolve();
-            }).catch(err => {
-              this.isCheckingDuplicate = false;
-              reject(err);
-            });
-          } else {
-            this.isCheckingDuplicate = false;
-            reject(err);
-          }
-        }
-      });
-    });
-  }
-
-  getNumMaxSupplier(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const num = this.supplierForm.value.supplierNum
-      if (num !== null || num !== '') {
-        resolve();
-      }
-      else {
-        this.supplierService.GetNumMaxSupplier(this.typeCode).subscribe({
-          next: (response: any) => {
-            if (!response || response.length === 0 || response.num === null) {
-              this.supplierForm.patchValue({ supplierNum: '' });
-            } else {
-              const max = response.num;
-              const maxStr = String(max);
-              const matchResult = maxStr.match(/^(\d*[A-Za-z]+)(\d+)$/);
-              const prefix = matchResult ? matchResult[1] : '';
-              const numPart = matchResult ? matchResult[2] : '0';
-              const nextNum = String(parseInt(numPart, 10) + 1).padStart(numPart.length, '0');
-              const newCustomerNum = `${prefix}${nextNum}`;
-              this.newSupnum = newCustomerNum;
-              this.supplierForm.patchValue({ supplierNum: newCustomerNum });
-            }
-            this._cdr.markForCheck();
-            resolve();
-          },
-          error: (err) => {
-            console.error('Error while fetching max supplier number', err);
-            reject(err);
-          }
-        });
-      }
-    });
-  }
 
   isFormValidWithoutSupplierNum(): boolean {
     const requiredFields = [
@@ -2032,11 +1953,40 @@ export class SupplierAddComponent {
     return true;
   }
 
-  updateFilteredSupplierGroups(selectedGroup: string): void {
-    this.listOfGroup = this.listOfGroup.filter(group => {
-      return group.group_name !== selectedGroup && group.group_name !== 'ALL Group';
-    });
+  isFormValidBank(): boolean {
+    const requiredFields = [
+      'supplierGroup', 'nameBank', 'branch', 'accountNum', 'accountName',
+    ];
 
+    for (const field of requiredFields) {
+      if (!this.supplierBankForm.get(field)?.value) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  isFormValidBankAdd(): boolean {
+    const requiredFields = [
+      'supplierGroup', 'nameBank', 'branch', 'accountNum', 'accountName',
+    ];
+
+    for (const field of requiredFields) {
+      if (!this.supplierBankFormAdd.get(field)?.value) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  updateFilteredSupplierGroups(selectedGroup: string): void {
+    if(this.showSupplierBankFormAdd){
+      this.listOfGroup = this.listOfGroup.filter(group => {
+        return group.group_name !== selectedGroup && group.group_name !== 'ALL Group';
+      });
+    }
     this.supplierBankFormAdd.get('supplierGroup')?.setValue('');
   }
 
@@ -2251,5 +2201,45 @@ export class SupplierAddComponent {
     const seconds = String(date.getSeconds()).padStart(2, '0');
 
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  }
+
+  GetSupplierFileTemplates(): void {
+    this.supplierService.GetSupplierFileTemplates().subscribe({
+      next: (response: any) => {
+        // สมมติว่า response คือข้อมูลที่ดึงมาจาก API
+        this.files = response.map((file: any) => ({
+          fileName: file.fileName,
+          fileType: file.fileType,
+          filePath: file.filePath,
+          labelText: file.labelText
+        }));
+        this.displayFiles = this.files
+        this._cdr.markForCheck();
+      },
+      error: () => {
+        // จัดการกับ error ถ้ามี
+      }
+    });
+  }
+
+  GetSupplierBankFileTemplates(): void {
+    this.supplierService.GetSupplierBankFileTemplates().subscribe({
+      next: (response: any) => {
+        // สมมติว่า response คือข้อมูลที่ดึงมาจาก API
+        this.listSupplierBankFileTemplates = response.map((file: any) => ({
+          templateId: file.templateId,
+          groupName: file.groupName,
+          fileName: file.fileName,
+          fileType: file.fileType,
+          filePath: file.filePath,
+          labelText: file.labelText
+        }));
+        this.mapFilesToGroups();
+        this._cdr.markForCheck();
+      },
+      error: () => {
+        // จัดการกับ error ถ้ามี
+      }
+    });
   }
 }

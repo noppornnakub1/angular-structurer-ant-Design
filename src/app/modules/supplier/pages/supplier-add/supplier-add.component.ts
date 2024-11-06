@@ -995,7 +995,7 @@ export class SupplierAddComponent {
 
     if (this.supplierForm.valid) {
       const formData = this.prepareFormData();
-      this.assignPostId(formData);
+      // this.assignPostId(formData);
 
       if (this.suppilerId) {
         await this.onUpdate(formData);

@@ -995,8 +995,6 @@ export class SupplierAddComponent {
 
     if (this.supplierForm.valid) {
       const formData = this.prepareFormData();
-      // this.assignPostId(formData);
-
       if (this.suppilerId) {
         await this.onUpdate(formData);
       } else {
@@ -1014,15 +1012,6 @@ export class SupplierAddComponent {
     this.supplierForm[isEnabled ? 'enable' : 'disable']();
     this.supplierBankForm[isEnabled ? 'enable' : 'disable']();
     this.supplierBankFormAdd[isEnabled ? 'enable' : 'disable']();
-  }
-
-  private assignPostId(formData: any): void {
-    const selectedPostItem = this.items_provinces.find(
-      item => item.postalCode === formData.postalCode && this.isSubdistrictMatching(item)
-    );
-    if (selectedPostItem) {
-      formData.postId = selectedPostItem.postId;
-    }
   }
 
   private async handleAddResponse(response: any): Promise<void> {

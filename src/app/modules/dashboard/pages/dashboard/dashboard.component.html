@@ -91,9 +91,9 @@
             <td>{{ data.num }}</td>
             <td class="text-center">{{ data.taxId }}</td>
             <td>{{ data.paymentMethod }}</td>
-            <td>{{ data.site }}</td>
-            <td>{{ data.company }}</td>
-            <td>{{ data.source }}</td>
+            <td class="text-center">{{ data.site }}</td>
+            <td class="text-center">{{ data.company }}</td>
+            <td class="text-center">{{ data.source }}</td>
             <td class="text-center">
               <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
                 (click)="openModal(data)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
@@ -120,13 +120,13 @@
             <td style="text-align: right;">{{ (pageIndexOld - 1) * pageSizeOld + i + 1 }}</td>
             <td>{{ data.NAME }}</td>
             <td>{{ data.NUM }}</td>
-            <td *ngIf="data.TAX">{{ data.TAX }}</td>
-            <td *ngIf="!data.TAX"></td>
+            <td class="text-center" *ngIf="data.TAX">{{ data.TAX }}</td>
+            <td class="text-center" *ngIf="!data.TAX"></td>
             <td *ngIf="data.PAYMENT_MEDTHOD">{{ data.PAYMENT_MEDTHOD }}</td>
             <td *ngIf="!data.PAYMENT_MEDTHOD"></td>
-            <td *ngIf="data.SITE">{{ data.SITE }}</td>
+            <td class="text-center" *ngIf="data.SITE">{{ data.SITE }}</td>
             <td *ngIf="!data.SITE"></td>
-            <td *ngIf="data.OU_SHORT_NAME">{{ data.OU_SHORT_NAME }}</td>
+            <td class="text-center" *ngIf="data.OU_SHORT_NAME">{{ data.OU_SHORT_NAME }}</td>
             <td *ngIf="!data.OU_SHORT_NAME"></td>
             <td class="text-center">
               <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"

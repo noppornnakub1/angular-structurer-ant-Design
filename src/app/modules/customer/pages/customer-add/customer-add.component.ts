@@ -20,6 +20,7 @@ import { UserService } from '../../../user-manager/services/user.service';
 import { SupplierService } from '../../../supplier/services/supplier.service';
 import { environment } from '../../../../../environments/environment';
 import { Observable, forkJoin } from 'rxjs';
+import { ICustomer } from '../../interface/customer.interface';
 
 @Component({
   selector: 'app-customer-add',
@@ -163,32 +164,34 @@ export class CustomerAddComponent implements OnInit {
     this.getDataCompany();
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
   }
-
-  private handleRouteParams(): Promise<void> {
+  private itemsProvincesLoaded = false;
+  private async handleRouteParams(): Promise<void> {
     return new Promise((resolve) => {
-      this.route.paramMap.subscribe(params => {
+      this.route.paramMap.subscribe(async (params) => {
         const id = params.get('id');
         if (id) {
           this.customerId = +id;
-          forkJoin({
+          const { customerData, postCodes } = await forkJoin({
             customerData: this.customerService.findCustomerById(this.customerId),
             postCodes: this.postCodeService.getPostCodes()
-          }).subscribe(({ customerData, postCodes }) => {
-            this.customerForm.patchValue({
-              ...customerData,
-              postalCode: customerData.postalCode + '-' + customerData.subdistrict
-            });
-            this.items_provinces = postCodes;
-            this.filteredItemsProvince = postCodes;
-            
-            if (this.customerForm.value.postalCode && this.customerForm.value.postId) {
-              const merge = this.customerForm.value.postalCode;
-              this.onPostalCodeChange(merge);
-            }
-            resolve();
+          }).toPromise() as { customerData: ICustomer; postCodes: DataLocation[] };
+
+          this.customerForm.patchValue({
+            ...customerData,
+            postalCode: customerData.postalCode + '-' + customerData.subdistrict
           });
 
+          this.items_provinces = postCodes;
+          this.filteredItemsProvince = postCodes;
+          this.itemsProvincesLoaded = true;
+
+          if (this.customerForm.value.postalCode && this.customerForm.value.postId) {
+            const merge = this.customerForm.value.postalCode;
+            this.onPostalCodeChange(merge);
+          }
+
           this.loadCustomerData(this.customerId);
+          resolve();
 
         } else {
           resolve();
@@ -286,6 +289,13 @@ export class CustomerAddComponent implements OnInit {
     event.target.value = numericValue;
   }
 
+  onTaxIdBlur(): void {
+    const numericValue = this.customerForm.value.taxId
+    if (numericValue.length < 13) {
+      Swal.fire('แจ้งเตือน!', 'เลข Tax ID ไม่ครบ 13 หลัก ขอให้คุณตรวจสอบ แต่หากถูกต้องแล้ว ดำเนินการกรอกช่องอื่นได้เลย', 'warning');
+    }
+  }
+
   validateTel(event: any): void {
     const input = event.target.value;
     const numericValue = this.validationService.validateTel(input);
@@ -364,17 +374,21 @@ export class CustomerAddComponent implements OnInit {
   }
 
   onPostalCodeChange(value: any): void {
+    if (!this.itemsProvincesLoaded || !this.items_provinces || this.items_provinces.length === 0) {
+      console.warn('Items provinces are not loaded yet. Skipping onPostalCodeChange.');
+      return;
+    }
     let selectedItemId: any;
     let selectedItem: any;
     const [postalCode, subdistrict] = value.split('-');
-    const potalCodeold = this.customerForm.value.potalCode
+    const potalCodeold = this.customerForm.value.postalCode
     const postId = this.customerForm.value.postId
     const district = this.customerForm.value.district
     const province = this.customerForm.value.province
-    
+
     selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
 
-    if(potalCodeold === '' || potalCodeold == undefined){
+    if (potalCodeold === '' || potalCodeold == undefined) {
       selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
     }
     if (selectedItem == null || selectedItem == undefined) {
@@ -422,7 +436,7 @@ export class CustomerAddComponent implements OnInit {
 
       const selectedPostItem = this.items_provinces.find(item =>
         item.postalCode === formValue.postalCode &&
-        this.isSubdistrictMatching(item) 
+        this.isSubdistrictMatching(item)
       );
 
       if (selectedPostItem) {
@@ -498,7 +512,7 @@ export class CustomerAddComponent implements OnInit {
     const formValue = { ...this.customerForm.value };
     const selectedPostItem = this.items_provinces.find(item => {
       const postalCode = formValue.postalCode.split('-')[0];
-      return item.postalCode === postalCode && (this.isSubdistrictMatching(item)&&this.isdistrictMatching(item));
+      return item.postalCode === postalCode && (this.isSubdistrictMatching(item) && this.isdistrictMatching(item));
     });
 
     if (selectedPostItem) {

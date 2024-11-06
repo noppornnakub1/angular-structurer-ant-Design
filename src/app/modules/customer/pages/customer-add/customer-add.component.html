@@ -53,7 +53,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="idcard" class="form-input">
-          <input nz-input type="text" placeholder="Tax ID" formControlName="taxId" (input)="validateTaxId($event)" />
+          <input nz-input type="text" placeholder="Tax ID" formControlName="taxId" (input)="validateTaxId($event)" (blur)="onTaxIdBlur()"/>
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="4" class="pr-3 mt-3">

@@ -88,6 +88,10 @@ export class SupplierService {
     return this._http.post(`/SupplierBank/InsertOrUpdateSupplierBanksWithFiles`, formData);
   }
 
+  saveSupplierBanksWithFiles(formData: FormData): Observable<any> {
+    return this._http.post(`/SupplierBank/SaveSupplierBanksWithFiles`, formData);
+  }
+
   updateBankData(id: number, data: DataBank): Observable<any> {
     return this._http.put(`/SupplierBank/UpdateSupplierBank/${id}`, data);
   }

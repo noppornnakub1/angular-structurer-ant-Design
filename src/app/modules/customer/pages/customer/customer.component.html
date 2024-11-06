@@ -41,7 +41,7 @@
     <thead>
       <tr>
           <ng-container *ngFor="let column of listOfColumn">
-            <th *ngIf="isAdmin || !(column.title === 'Customer Number' && (isUser || isApproved ) && !hasCustomerNumber)" [nzSortFn]="column.compare"
+            <th [nzSortFn]="column.compare"
               [nzSortPriority]="column.priority">
               {{ column.title }}
             </th>

@@ -183,7 +183,6 @@ export class CustomerAddComponent implements OnInit {
 
           this.items_provinces = postCodes;
           this.filteredItemsProvince = postCodes;
-          this.itemsProvincesLoaded = true;
 
           if (this.customerForm.value.postalCode && this.customerForm.value.postId) {
             const merge = this.customerForm.value.postalCode;
@@ -374,7 +373,7 @@ export class CustomerAddComponent implements OnInit {
   }
 
   onPostalCodeChange(value: any): void {
-    if (!this.itemsProvincesLoaded || !this.items_provinces || this.items_provinces.length === 0) {
+    if (!this.items_provinces || this.items_provinces.length === 0) {
       console.warn('Items provinces are not loaded yet. Skipping onPostalCodeChange.');
       return;
     }

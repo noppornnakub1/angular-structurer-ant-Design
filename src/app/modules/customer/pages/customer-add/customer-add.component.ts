@@ -108,7 +108,7 @@ export class CustomerAddComponent implements OnInit {
       fileCertificate: [''],
       path: [''],
       prefix: [''],
-      postId: [''],
+      postId: [0],
       addressDetail: ['']
     });
 
@@ -343,6 +343,7 @@ export class CustomerAddComponent implements OnInit {
           district: '-',
           subdistrict: '-',
           site: '',
+          postId: 0
         });
       }
     });

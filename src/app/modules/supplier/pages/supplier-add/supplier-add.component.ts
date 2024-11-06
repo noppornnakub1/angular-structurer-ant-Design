@@ -268,6 +268,7 @@ export class SupplierAddComponent {
               ...supplierData,
               postalCode: supplierData.postalCode + '-' + supplierData.subdistrict
             });
+            this.selectedPrefix = this.supplierForm.value.prefix
             this.items_provinces = postCodes;
             this.filteredItemsProvince = postCodes;
             if (this.supplierForm.value.postalCode && this.supplierForm.value.postId) {

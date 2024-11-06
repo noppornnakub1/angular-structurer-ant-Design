@@ -387,7 +387,8 @@ export class CustomerAddComponent implements OnInit {
     const province = this.customerForm.value.province
 
     selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
-
+    console.log(selectedItem);
+    
     if (potalCodeold === '' || potalCodeold == undefined) {
       selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
     }
@@ -408,7 +409,8 @@ export class CustomerAddComponent implements OnInit {
       this.customerForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
-        province: selectedItem.province
+        province: selectedItem.province,
+        postId: selectedItem.postId
       });
       this.cdr.markForCheck();
     }

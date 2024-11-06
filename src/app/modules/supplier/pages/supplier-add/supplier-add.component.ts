@@ -949,11 +949,18 @@ export class SupplierAddComponent {
 
   onPostalCodeChange(value: any): void {
     let selectedItemId: any;
+    let selectedItem: any;
     const [postalCode, subdistrict] = value.split('-');
+    const potalCodeold = this.supplierForm.value.postalCode
     const postId = this.supplierForm.value.postId
     const district = this.supplierForm.value.district
     const province = this.supplierForm.value.province
-    let selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+    selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+    console.log(selectedItem);
+    
+    if (potalCodeold === '' || potalCodeold == undefined) {
+      selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+    }
     if (selectedItem == null || selectedItem == undefined) {
       selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
     }
@@ -971,7 +978,8 @@ export class SupplierAddComponent {
       this.supplierForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
-        province: selectedItem.province
+        province: selectedItem.province,
+        postId: selectedItem.postId
       });
       this.cdr.markForCheck();
     }

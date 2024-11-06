@@ -54,8 +54,8 @@
         <td>{{ data.name }}</td>
         <td class="text-center" *ngIf="isAdmin || ((isApproved || isUser) && (data.status === 'Success'))">{{ data.customerNum || '' }}</td>
         <td class="text-center">{{ data.site }}</td>
-        <td>{{ data.taxId }}</td>
-        <td>{{ data.company }}</td>
+        <td class="text-center">{{ data.taxId }}</td>
+        <td class="text-center">{{ data.company }}</td>
         <td>{{ data.status }}</td>
         <td class="text-center">
           <button *ngIf="isApproved || isUser || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"

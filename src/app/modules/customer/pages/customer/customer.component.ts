@@ -55,7 +55,7 @@ export class CustomerComponent implements OnInit {
       priority: 2
     },
     {
-      title: 'Compny',
+      title: 'Company',
       compare: (a: ICustomer, b: ICustomer) => a.company.localeCompare(b.company),
       priority: 1
     },
@@ -116,6 +116,7 @@ export class CustomerComponent implements OnInit {
       this.customerService.findDataByUserCompanyACC(currentUser.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
+          this.hasCustomerNumber = this.listOfData.some(data => data.customerNum && data.status === 'Success');
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();

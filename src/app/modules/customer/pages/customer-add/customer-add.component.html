@@ -205,7 +205,7 @@
     <div class="mt-5 display-flex justify-center ">
       <button nz-button nzType="default" class="mr-2" (click)="backClicked($event)"><span nz-icon nzType="rollback"
           nzTheme="outline"></span>ย้อนกลับ</button>
-      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || (isAdmin && customerForm.get('status')?.value !== 'Approved By ACC'))" nz-button
+      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || ((isAdmin || isApproved) && customerForm.get('status')?.value === 'Pending Approved By ACC'))" nz-button
         nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
           nzTheme="outline"></span>Cancel</button>
       <button nz-tooltip nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
@@ -213,7 +213,7 @@
         class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft
       </button>
-      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || (isAdmin && customerForm.get('status')?.value !== 'Approved By ACC'))"
+      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || ((isAdmin || isApproved) && customerForm.get('status')?.value === 'Pending Approved By ACC'))"
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit
       </button>

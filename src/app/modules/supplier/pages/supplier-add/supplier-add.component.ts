@@ -2069,33 +2069,30 @@ export class SupplierAddComponent {
     const supplierType = this.supplierForm.get('supplierType')?.value;
     const taxId = this.supplierForm.get('tax_Id')?.value;
     const userId = this.supplierForm.get('id')?.value;
-    if ((supplierType && taxId.length >= 10) && userId == 0) {
-      this.callApiWithSupplierTypeAndTaxId(supplierType, taxId);
-    }
-  }
-
-  callApiWithSupplierTypeAndTaxId(supplierType: string, taxId: string): void {
-    const formData = {
-      taxId: taxId,
-      supplierType: supplierType
-    };
-
-    this.supplierService.CheckDuplicateSupplierByTaxIdAndType(formData).subscribe({
-      next: (response: string) => {
-        if (response.includes('No duplicate supplier found')) {
+    if ((supplierType && taxId) && userId == 0) {
+      const formData = {
+        taxId: taxId,
+        supplierType: supplierType
+      };
+      this.supplierService.CheckDuplicateSupplierByTaxIdAndType(formData).subscribe({
+        next: (response: string) => {
+          if (response.includes('No duplicate supplier found')) {
+          }
+          this._cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error occurred:', err);
+          Swal.fire({
+            icon: 'warning',
+            title: 'ข้อมูลซ้ำ',
+            text: err,
+            confirmButtonText: 'ปิด'
+          });
+          this.supplierForm.patchValue({ tax_Id: ' ' });
+          this._cdr.detectChanges();
         }
-      },
-      error: (err) => {
-        console.error('Error occurred:', err);
-        Swal.fire({
-          icon: 'warning',
-          title: 'ข้อมูลซ้ำ',
-          text: err,
-          confirmButtonText: 'ปิด'
-        });
-        this.supplierForm.patchValue({ tax_Id: ' ' });
-      }
-    });
+      });
+    }
   }
 
   getMaxSupplierNum(): void {

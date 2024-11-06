@@ -949,18 +949,25 @@ export class SupplierAddComponent {
 
   onPostalCodeChange(value: any): void {
     let selectedItemId: any;
+    let selectedItem: any;
     const [postalCode, subdistrict] = value.split('-');
+    const potalCodeold = this.supplierForm.value.postalCode
     const postId = this.supplierForm.value.postId
     const district = this.supplierForm.value.district
     const province = this.supplierForm.value.province
-    let selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+    selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+    console.log(selectedItem);
+    
+    if (potalCodeold === '' || potalCodeold == undefined) {
+      selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+    }
     if (selectedItem == null || selectedItem == undefined) {
       selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
     }
     if (selectedItemId) {
       selectedItemId.subdistrict = subdistrict;
       selectedItemId.district = district;
-      selectedItemId.district = province;
+      selectedItemId.province = province;
       this.filteredItemsProvince = [...this.items_provinces];
 
       this.supplierForm.patchValue({
@@ -971,7 +978,8 @@ export class SupplierAddComponent {
       this.supplierForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
-        province: selectedItem.province
+        province: selectedItem.province,
+        postId: selectedItem.postId
       });
       this.cdr.markForCheck();
     }
@@ -995,12 +1003,11 @@ export class SupplierAddComponent {
 
     if (this.supplierForm.valid) {
       const formData = this.prepareFormData();
-      this.assignPostId(formData);
 
       if (!this.validateBankForms()) return;
 
       if (this.suppilerId) {
-        this.onUpdate(formData);
+        await this.onUpdate(formData);
       } else {
         this.supplierService.addOrUpdateDataWithFiles(null, formData).subscribe({
           next: (response) => {
@@ -1026,22 +1033,13 @@ export class SupplierAddComponent {
     this.supplierBankFormAdd[isEnabled ? 'enable' : 'disable']();
   }
 
-  private assignPostId(formData: any): void {
-    const selectedPostItem = this.items_provinces.find(
-      item => item.postalCode === formData.postalCode && this.isSubdistrictMatching(item)
-    );
-    if (selectedPostItem) {
-      formData.postId = selectedPostItem.postId;
-    }
-  }
-
   private async handleAddResponse(response: any): Promise<void> {
     if (response && response.supplier_id) {
       this.updateSupplierBankForm(response);
 
       await this.handleBankForms();
 
-      this.insertLog();
+      await this.insertLog();
 
       Swal.fire({
         icon: 'success',
@@ -1211,16 +1209,17 @@ export class SupplierAddComponent {
     }
 
     const formValue = { ...this.supplierForm.value };
+    const postalCode = formValue.postalCode.split('-')[0];
+    formValue.postalCode = postalCode
+    // const selectedPostItem = this.items_provinces.find(item => {
+    //   const postalCode = formValue.postalCode.split('-')[0];
+    //   return item.postalCode === postalCode || this.isSubdistrictMatching(item);
+    // });
 
-    const selectedPostItem = this.items_provinces.find(item => {
-      const postalCode = formValue.postalCode.split('-')[0];
-      return item.postalCode === postalCode || this.isSubdistrictMatching(item);
-    });
-
-    if (selectedPostItem) {
-      formValue.postalCode = selectedPostItem.postalCode;
-      formValue.postId = selectedPostItem.postId;
-    }
+    // if (selectedPostItem) {
+    //   formValue.postalCode = selectedPostItem.postalCode;
+    //   formValue.postId = selectedPostItem.postId;
+    // }
 
     formValue.user_id = currentUser.userId;
 

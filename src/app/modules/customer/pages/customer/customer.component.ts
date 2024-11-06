@@ -80,7 +80,7 @@ export class CustomerComponent implements OnInit {
   ngOnInit(): void {
     this.checkRole();
     this.getData();
-  
+
   }
 
   checkRole(): void {
@@ -103,7 +103,17 @@ export class CustomerComponent implements OnInit {
     if (currentUser.role == 1) {
       this.customerService.getData().subscribe({
         next: (response: any) => {
-          this.listOfData = response;
+          this.listOfData = response.map((item: any) => {
+            let site = item.site;
+            if (item.site === '00000') {
+              // ตรวจสอบเงื่อนไขเพิ่มเติม
+              site = item.customerType === 'OSEA' ? 'Head Office' : 'สำนักงานใหญ่';
+            }
+            return {
+              ...item,
+              site: site
+            };
+          });
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();
@@ -115,7 +125,17 @@ export class CustomerComponent implements OnInit {
     else if (currentUser.role == 3) {
       this.customerService.findDataByUserCompanyACC(currentUser.company).subscribe({
         next: (response: any) => {
-          this.listOfData = response;
+          this.listOfData = response.map((item: any) => {
+            let site = item.site;
+            if (item.site === '00000') {
+              // ตรวจสอบเงื่อนไขเพิ่มเติม
+              site = item.customerType === 'OSEA' ? 'Head Office' : 'สำนักงานใหญ่';
+            }
+            return {
+              ...item,
+              site: site
+            };
+          });
           this.hasCustomerNumber = this.listOfData.some(data => data.customerNum && data.status === 'Success');
           this.changeStatusIfNeeded();
           this.applyFilters();
@@ -128,7 +148,17 @@ export class CustomerComponent implements OnInit {
     else if (currentUser.role == 4) {
       this.customerService.findDataByUserCompanyFN(currentUser.company).subscribe({
         next: (response: any) => {
-          this.listOfData = response;
+          this.listOfData = response.map((item: any) => {
+            let site = item.site;
+            if (item.site === '00000') {
+              // ตรวจสอบเงื่อนไขเพิ่มเติม
+              site = item.customerType === 'OSEA' ? 'Head Office' : 'สำนักงานใหญ่';
+            }
+            return {
+              ...item,
+              site: site
+            };
+          });
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();
@@ -140,9 +170,19 @@ export class CustomerComponent implements OnInit {
     else {
       this.customerService.findDataByUserId(currentUser.userId).subscribe({
         next: (response: any) => {
-          this.listOfData = response;
+          this.listOfData = response.map((item: any) => {
+            let site = item.site;
+            if (item.site === '00000') {
+              // ตรวจสอบเงื่อนไขเพิ่มเติม
+              site = item.customerType === 'OSEA' ? 'Head Office' : 'สำนักงานใหญ่';
+            }
+            return {
+              ...item,
+              site: site
+            };
+          });
           this.hasCustomerNumber = this.listOfData.some(data => data.customerNum && data.status === 'Success');
-          
+
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();

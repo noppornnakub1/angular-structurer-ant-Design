@@ -986,33 +986,24 @@ export class SupplierAddComponent {
     if (this.isViewMode) {
       this.toggleFormState(true);
     }
-  
+
     if (this.supplierForm.value.email === '-') {
       this.emailError = '';
     }
-  
+
     this.isSubmitting = true;
-  
+
     if (this.supplierForm.valid) {
       const formData = this.prepareFormData();
       this.assignPostId(formData);
-  
+
       if (this.suppilerId) {
-        this.onUpdate(formData);
+        await this.onUpdate(formData);
       } else {
         if (!this.validateBankForms()) return;
-  
-        this.supplierService.addDataWithFiles(formData).subscribe({
-          next: (response) => {
-            if (response && response.supplier_id) {
-              this.handleAddResponse(response);
-            }
-          },
-          error: (err) => {
-            console.error('Error saving supplier data:', err);
-            Swal.fire('warning!', err, 'warning');
-          }
-        });
+
+        Response = await this.supplierService.addDataWithFiles(formData).toPromise();
+        this.handleAddResponse(Response); 
       }
     } else {
       this.handleInvalidForm();
@@ -1040,7 +1031,7 @@ export class SupplierAddComponent {
 
       await this.handleBankForms();
 
-      this.insertLog();
+      await this.insertLog();
 
       Swal.fire({
         icon: 'success',
@@ -1194,10 +1185,10 @@ export class SupplierAddComponent {
   onUpdate(formValue: any): void {
     if (formValue && this.suppilerId) {
       const formData = this.prepareFormData();
-  
+
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
-  
+
       this.supplierService.addOrUpdateDataWithFiles(this.suppilerId, formData).subscribe({
         next: (response) => {
           this.handleUpdateResponse();

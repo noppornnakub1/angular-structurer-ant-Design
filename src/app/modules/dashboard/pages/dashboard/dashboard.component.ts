@@ -271,13 +271,7 @@ export class DashboardComponent {
     if (this.selectedTypeOld === 'Customer') {
       this.customerService.findDataOldCustomer(this.filtersOld.num, this.filtersOld.name, this.filtersOld.site).subscribe({
         next: (response: any) => {
-          // แปลงค่า site ให้เป็น '00000' ถ้าเป็น 'สำนักงานใหญ่'
-          this.listOfDataOld = response.map((item: any) => {
-            return {
-              ...item,
-              SITE: item.SITE === 'สำนักงานใหญ่' ? '00000' : item.SITE
-            };
-          });
+          this.listOfDataOld = response
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
 

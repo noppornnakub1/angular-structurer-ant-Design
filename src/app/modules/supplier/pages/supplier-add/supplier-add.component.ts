@@ -1013,7 +1013,7 @@ export class SupplierAddComponent {
           next: (response) => {
             if (response && response.supplier_id) {
               this.handleAddResponse(response);
-              this.showSuccessNotification();
+              // this.showSuccessNotification();
             }
           },
           error: (err) => {
@@ -1587,6 +1587,17 @@ export class SupplierAddComponent {
       });
       return;
     }
+    // if (this.showSupplierBankForm) {
+    //   if(!this.isFormValidWithoutSupplierIdCompanyBank){
+    //     Swal.fire({
+    //       icon: 'warning',
+    //       title: 'ข้อมูลไม่ถูกต้อง',
+    //       text: 'โปรดตรวจสอบให้แน่ใจว่าคุณได้กรอกข้อมูล Bank ครบแล้ว',
+    //       confirmButtonText: 'ปิด'
+    //     });
+    //   }
+    //   return;
+    // }
     else {
       try {
         await this.save(event);
@@ -1913,7 +1924,7 @@ export class SupplierAddComponent {
 
   isFormValidWithoutSupplierIdCompanyBank(): boolean {
     const requiredFields = [
-      'accountName', 'accountNum', 'branch', 'nameBank',
+      'supplierGroup','accountName', 'accountNum', 'branch', 'nameBank',
     ];
 
     for (const field of requiredFields) {
@@ -1928,7 +1939,7 @@ export class SupplierAddComponent {
 
   isFormValidWithoutSupplierIdCompanyBankAdd(): boolean {
     const requiredFields = [
-      'accountName', 'accountNum', 'branch', 'nameBank',
+      'supplierGroup','accountName', 'accountNum', 'branch', 'nameBank',
     ];
 
     for (const field of requiredFields) {

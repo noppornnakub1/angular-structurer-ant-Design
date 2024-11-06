@@ -152,6 +152,7 @@ export class SupplierAddComponent {
   emailError: string = '';
   isOneTime = false;
   typeCode: string = '';
+  fileIdsToRemoveForBankJson: string = '';
   newSupnum: string = '';
   selectedFileSupplier: File | null = null;
   selectedFile: File | null = null;
@@ -754,8 +755,9 @@ export class SupplierAddComponent {
         this.fileIdsToRemove.push(file.fileId);
       }
 
-      this.fileIdsToRemoveMapping = this.fileIdsToRemoveMapping || [];
-      this.fileIdsToRemoveMapping.push({ SupbankId: supbankId, FileId: file.fileId });
+      if (!this.fileIdsToRemoveMapping.find(item => item.FileId === file.fileId && item.SupbankId === supbankId)) {
+        this.fileIdsToRemoveMapping.push({ SupbankId: supbankId, FileId: file.fileId });
+      }
 
       file.filePath = '';
       file.fileName = '';
@@ -766,7 +768,8 @@ export class SupplierAddComponent {
         this.selectedNewFilesSupplier = this.selectedNewFilesSupplier.filter(f => f.fileType !== file.fileType || f.labelText !== file.labelText);
       }
 
-      this.fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemoveMapping);
+      this.fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemoveMapping.filter(item => !isForBank));
+      this.fileIdsToRemoveForBankJson = JSON.stringify(this.fileIdsToRemoveMapping.filter(item => isForBank));
 
       this._cdr.detectChanges();
     }
@@ -956,8 +959,7 @@ export class SupplierAddComponent {
     const district = this.supplierForm.value.district
     const province = this.supplierForm.value.province
     selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
-    console.log(selectedItem);
-    
+
     if (potalCodeold === '' || potalCodeold == undefined) {
       selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
     }
@@ -1211,15 +1213,6 @@ export class SupplierAddComponent {
     const formValue = { ...this.supplierForm.value };
     const postalCode = formValue.postalCode.split('-')[0];
     formValue.postalCode = postalCode
-    // const selectedPostItem = this.items_provinces.find(item => {
-    //   const postalCode = formValue.postalCode.split('-')[0];
-    //   return item.postalCode === postalCode || this.isSubdistrictMatching(item);
-    // });
-
-    // if (selectedPostItem) {
-    //   formValue.postalCode = selectedPostItem.postalCode;
-    //   formValue.postId = selectedPostItem.postId;
-    // }
 
     formValue.user_id = currentUser.userId;
 
@@ -1336,13 +1329,8 @@ export class SupplierAddComponent {
       const formData = new FormData();
       formData.append('supplierBankJson', JSON.stringify(supplierBankData));
 
-      const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
-        SupbankId: file.SupbankId,
-        FileId: file.FileId,
-        IsNewUpload: file.IsNewUpload || false
-      }));
-
-      formData.append('fileIdsToRemoveJson', JSON.stringify(fileIdsToRemoveWithStatus));
+      formData.append('fileIdsToRemoveForBankJson', this.fileIdsToRemoveForBankJson);
+      formData.append('fileIdsToRemoveJson', this.fileIdsToRemoveForBankJson);
 
       const labelTextsGrouped: { [key: string]: string[] } = {};
       [...this.selectedNewFilesSupplier, ...this.selectedFilesAdd].forEach(selectedFile => {

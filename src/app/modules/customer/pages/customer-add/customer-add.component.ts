@@ -387,7 +387,6 @@ export class CustomerAddComponent implements OnInit {
     const province = this.customerForm.value.province
 
     selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
-    console.log(selectedItem);
     
     if (potalCodeold === '' || potalCodeold == undefined) {
       selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
@@ -503,7 +502,6 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     const formValue = { ...this.customerForm.value };
-    console.log(this.customerForm.value);
     const postalCode = formValue.postalCode.split('-')[0];
 
     formValue.postalCode = postalCode;

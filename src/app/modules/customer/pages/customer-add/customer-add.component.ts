@@ -397,7 +397,7 @@ export class CustomerAddComponent implements OnInit {
     if (selectedItemId) {
       selectedItemId.subdistrict = subdistrict;
       selectedItemId.district = district;
-      selectedItemId.district = province;
+      selectedItemId.province = province;
       this.filteredItemsProvince = [...this.items_provinces];
 
       this.customerForm.patchValue({
@@ -433,15 +433,6 @@ export class CustomerAddComponent implements OnInit {
 
     if (this.customerForm.valid) {
       const formValue = this.prepareFormData();
-
-      const selectedPostItem = this.items_provinces.find(item =>
-        item.postalCode === formValue.postalCode &&
-        this.isSubdistrictMatching(item)
-      );
-
-      if (selectedPostItem) {
-        formValue.postId = selectedPostItem.postId;
-      }
 
       if (this.customerId) {
         await this.onUpdate();
@@ -510,15 +501,11 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     const formValue = { ...this.customerForm.value };
-    const selectedPostItem = this.items_provinces.find(item => {
-      const postalCode = formValue.postalCode.split('-')[0];
-      return item.postalCode === postalCode && (this.isSubdistrictMatching(item) && this.isdistrictMatching(item));
-    });
+    console.log(this.customerForm.value);
+    const postalCode = formValue.postalCode.split('-')[0];
 
-    if (selectedPostItem) {
-      formValue.postalCode = selectedPostItem.postalCode;
-      formValue.postId = selectedPostItem.postId;
-    }
+    formValue.postalCode = postalCode;
+    
     if (this.listDataByTaxId) {
       formValue.id = 0
     }

@@ -960,7 +960,7 @@ export class SupplierAddComponent {
     if (selectedItemId) {
       selectedItemId.subdistrict = subdistrict;
       selectedItemId.district = district;
-      selectedItemId.district = province;
+      selectedItemId.province = province;
       this.filteredItemsProvince = [...this.items_provinces];
 
       this.supplierForm.patchValue({
@@ -1201,16 +1201,17 @@ export class SupplierAddComponent {
     }
 
     const formValue = { ...this.supplierForm.value };
+    const postalCode = formValue.postalCode.split('-')[0];
+    formValue.postalCode = postalCode
+    // const selectedPostItem = this.items_provinces.find(item => {
+    //   const postalCode = formValue.postalCode.split('-')[0];
+    //   return item.postalCode === postalCode || this.isSubdistrictMatching(item);
+    // });
 
-    const selectedPostItem = this.items_provinces.find(item => {
-      const postalCode = formValue.postalCode.split('-')[0];
-      return item.postalCode === postalCode || this.isSubdistrictMatching(item);
-    });
-
-    if (selectedPostItem) {
-      formValue.postalCode = selectedPostItem.postalCode;
-      formValue.postId = selectedPostItem.postId;
-    }
+    // if (selectedPostItem) {
+    //   formValue.postalCode = selectedPostItem.postalCode;
+    //   formValue.postId = selectedPostItem.postId;
+    // }
 
     formValue.user_id = currentUser.userId;
 

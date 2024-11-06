@@ -224,8 +224,8 @@ export class SupplierAddComponent {
     this.setupFormListeners();
 
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
-    
-    this.checkRole(); 
+
+    this.checkRole();
   }
 
   private initializeForms(): void {
@@ -323,7 +323,7 @@ export class SupplierAddComponent {
         this.loadSupplierType(supplierTypeId);
       }
       this.onSupplierTypeChange(value);
-      
+
       this._cdr.detectChanges();
     });
 
@@ -814,7 +814,7 @@ export class SupplierAddComponent {
           return !existingFile || !existingFile.filePath;
         });
         this.displayFiles = [...this.filess, ...missingFiles];
-        
+
       } else {
         this.displayFiles = this.files;
       }
@@ -985,23 +985,22 @@ export class SupplierAddComponent {
     if (this.isViewMode) {
       this.toggleFormState(true);
     }
-
+  
     if (this.supplierForm.value.email === '-') {
       this.emailError = '';
     }
-
+  
     this.isSubmitting = true;
-    
+  
     if (this.supplierForm.valid) {
       const formData = this.prepareFormData();
-
       this.assignPostId(formData);
-
+  
       if (this.suppilerId) {
         this.onUpdate(formData);
       } else {
         if (!this.validateBankForms()) return;
-
+  
         this.supplierService.addDataWithFiles(formData).subscribe({
           next: (response) => {
             if (response && response.supplier_id) {
@@ -1161,46 +1160,47 @@ export class SupplierAddComponent {
     }
   }
 
+  private showSuccessNotification(): void {
+    Swal.fire({
+      icon: 'success',
+      title: 'Updated!',
+      text: 'Your data has been updated.',
+      showConfirmButton: false,
+      timer: 1500
+    });
+  }
+
+  private handleUpdateResponse(): void {
+    if (!this.showSupplierBankForm) {
+      this.insertLog();
+      this.sendEmailNotification();
+      this.sendEmailNotificationRequester();
+    } else {
+      this.onUpdateSupplierBank();
+      this.insertLog();
+      this.sendEmailNotification();
+      this.sendEmailNotificationRequester();
+    }
+
+    const status = this.supplierForm.value.status;
+    if (this.isApproved && status === 'Pending Approved By ACC') {
+      this.router.navigate([`/feature/supplier/view/${this.suppilerId}`]);
+    } else {
+      this.router.navigate(['/feature/supplier']);
+    }
+  }
+
   onUpdate(formValue: any): void {
     if (formValue && this.suppilerId) {
       const formData = this.prepareFormData();
-
+  
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
-
-      this.supplierService.updateDataWithFiles(this.suppilerId, formData).subscribe({
+  
+      this.supplierService.addOrUpdateDataWithFiles(this.suppilerId, formData).subscribe({
         next: (response) => {
-          if (!this.showSupplierBankForm) {
-            this.insertLog();
-            Swal.fire({
-              icon: 'success',
-              title: 'Updated!',
-              text: 'Your data has been updated.',
-              showConfirmButton: false,
-              timer: 1500
-            });
-            this.sendEmailNotification();
-            this.sendEmailNotificationRequester();
-          } else {
-            this.onUpdateSupplierBank();
-            this.insertLog();
-            Swal.fire({
-              icon: 'success',
-              title: 'Updated!',
-              text: 'Your data has been updated.',
-              showConfirmButton: false,
-              timer: 1500
-            });
-            this.sendEmailNotification();
-            this.sendEmailNotificationRequester();
-          }
-          const status = this.supplierForm.value.status
-          if (this.isApproved && status === 'Pending Approved By ACC') {
-            this.router.navigate([`/feature/supplier/view/${this.suppilerId}`]);
-          } else {
-            this.router.navigate(['/feature/supplier']);
-          }
-
+          this.handleUpdateResponse();
+          this.showSuccessNotification();
         },
         error: (err) => {
           Swal.fire('Error!', 'There was an error saving your data.', 'error');

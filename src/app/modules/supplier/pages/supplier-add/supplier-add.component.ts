@@ -1057,74 +1057,60 @@ export class SupplierAddComponent {
     const supplierBankData = [];
     let mainSupplierId: number | undefined;
     let mainCompany: string | undefined;
-
+  
     const labelTextsGrouped: { [key: string]: string[] } = {};
-
+  
     if (this.showSupplierBankForm && this.supplierBankForm.valid) {
       const bankFormValue = this.supplierBankForm.value;
-      if (!bankFormValue.supplierId || bankFormValue.supplierId === 0) {
-        bankFormValue.supplierId = 0;
-      }
-
+      bankFormValue.supplierId = bankFormValue.supplierId || 0;
       mainSupplierId = bankFormValue.supplierId;
       mainCompany = bankFormValue.company;
-
+  
       supplierBankData.push(bankFormValue);
-
-      for (let selectedFile of this.selectedNewFilesSupplier) {
+  
+      this.selectedNewFilesSupplier.forEach(selectedFile => {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
         if (!labelTextsGrouped[bankFormValue.supplierGroup]) {
           labelTextsGrouped[bankFormValue.supplierGroup] = [];
         }
         labelTextsGrouped[bankFormValue.supplierGroup].push(selectedFile.labelText);
-      }
+      });
     }
-
+  
     if (this.showSupplierBankFormAdd) {
       const bankFormValueAdd = this.supplierBankFormAdd.value;
-      if (!bankFormValueAdd.supplierId || bankFormValueAdd.supplierId === 0) {
-        bankFormValueAdd.supplierId = mainSupplierId || 0;
-      }
-
-      if (!bankFormValueAdd.company && mainCompany) {
-        bankFormValueAdd.company = mainCompany;
-      }
-
+      bankFormValueAdd.supplierId = bankFormValueAdd.supplierId || mainSupplierId || 0;
+      bankFormValueAdd.company = bankFormValueAdd.company || mainCompany;
       supplierBankData.push(bankFormValueAdd);
-
-      for (let selectedFile of this.selectedFilesAdd) {
+  
+      this.selectedFilesAdd.forEach(selectedFile => {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
-
         if (!labelTextsGrouped[bankFormValueAdd.supplierGroup]) {
           labelTextsGrouped[bankFormValueAdd.supplierGroup] = [];
         }
         labelTextsGrouped[bankFormValueAdd.supplierGroup].push(selectedFile.labelText);
-      }
+      });
     }
-
+  
     supplierBankData.forEach(bank => {
       const group = bank.supplierGroup;
       if (labelTextsGrouped[group]) {
         bank.LabelTextsV2 = { [group]: labelTextsGrouped[group] };
       }
     });
-
+  
     if (supplierBankData.length > 0) {
-      const supplierBankJson = JSON.stringify(supplierBankData);
-
-      formData.append('supplierBankJson', supplierBankJson);
-
+      formData.append('supplierBankJson', JSON.stringify(supplierBankData));
       formData.append('LabelTextsJson', JSON.stringify(labelTextsGrouped));
-
+  
       try {
-        await this.supplierService.addOrUpdateBankDataWithFiles(formData).toPromise();
+        await this.supplierService.saveSupplierBanksWithFiles(formData).toPromise();
       } catch (error) {
         console.error('Error sending data to backend:', error);
         Swal.fire('Error!', 'There was an error saving your data.', 'error');
       }
-    } else {
     }
-  }
+  }  
 
   private validateBankForms(): boolean {
     if (this.showSupplierBankForm && !this.isFormValidWithoutSupplierIdCompanyBank()) {
@@ -1318,70 +1304,50 @@ export class SupplierAddComponent {
 
   onUpdateSupplierBank(): void {
     const supplierBankData: any[] = [];
-    const company = this.supplierForm.value.company
+    const company = this.supplierForm.value.company;
+  
     if (this.supplierBankFormAdd.invalid && this.supplierBankForm.valid) {
-      if (this.supplierBankFormAdd.value.supplierId === null || this.supplierBankFormAdd.value.supplierId === '') {
-        this.supplierBankFormAdd.patchValue({ supplierId: this.isIDTemp });
-        this.supplierBankFormAdd.patchValue({ company: company });
+      if (!this.supplierBankFormAdd.value.supplierId) {
+        this.supplierBankFormAdd.patchValue({ supplierId: this.isIDTemp, company });
       }
     }
+  
     if (this.supplierBankForm.valid) {
-      const bankFormValue = this.supplierBankForm.value;
-      supplierBankData.push(bankFormValue);
-    } else {
+      supplierBankData.push(this.supplierBankForm.value);
     }
-
+  
     if (this.supplierBankFormAdd.valid) {
-      const bankFormValueAdd = this.supplierBankFormAdd.value;
-      supplierBankData.push(bankFormValueAdd);
-    } else {
+      supplierBankData.push(this.supplierBankFormAdd.value);
     }
-
+  
     if (supplierBankData.length > 0) {
       const formData = new FormData();
-      const supplierBankJson = JSON.stringify(supplierBankData);
-
+      formData.append('supplierBankJson', JSON.stringify(supplierBankData));
+  
       const fileIdsToRemoveWithStatus = this.fileIdsToRemoveMapping.map(file => ({
         SupbankId: file.SupbankId,
         FileId: file.FileId,
         IsNewUpload: file.IsNewUpload || false
       }));
-
-      const fileIdsToRemoveJson = JSON.stringify(fileIdsToRemoveWithStatus);
-
-      formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
-      formData.append('supplierBankJson', supplierBankJson);
-
+  
+      formData.append('fileIdsToRemoveJson', JSON.stringify(fileIdsToRemoveWithStatus));
+  
       const labelTextsGrouped: { [key: string]: string[] } = {};
-      this.selectedNewFilesSupplier?.forEach(selectedFile => {
+      [...this.selectedNewFilesSupplier, ...this.selectedFilesAdd].forEach(selectedFile => {
         if (!labelTextsGrouped[selectedFile.fileType]) {
           labelTextsGrouped[selectedFile.fileType] = [];
         }
         labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
       });
-
-      this.selectedFilesAdd?.forEach(selectedFile => {
-        if (!labelTextsGrouped[selectedFile.fileType]) {
-          labelTextsGrouped[selectedFile.fileType] = [];
-        }
-        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
-      });
-
-      const labelTextsJson = JSON.stringify(labelTextsGrouped);
-      formData.append('labelTextsJson', labelTextsJson);
-
-      this.selectedNewFilesSupplier?.forEach(selectedFile => {
+  
+      formData.append('LabelTextsJson', JSON.stringify(labelTextsGrouped));
+  
+      [...this.selectedNewFilesSupplier, ...this.selectedFilesAdd].forEach(selectedFile => {
         formData.append('Files', selectedFile.file, selectedFile.file.name);
       });
-
-      this.selectedFilesAdd?.forEach(selectedFile => {
-        formData.append('Files', selectedFile.file, selectedFile.file.name);
-      });
-
-      this.supplierService.insertOrUpdateBankDataWithFiles(formData).subscribe({
-        next: (response) => {
-          Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success');
-        },
+  
+      this.supplierService.saveSupplierBanksWithFiles(formData).subscribe({
+        next: () => Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success'),
         error: (err) => {
           Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
           console.error('Error updating bank data with files:', err);
@@ -1392,7 +1358,7 @@ export class SupplierAddComponent {
       this.supplierBankFormAdd.markAllAsTouched();
       Swal.fire('Error!', 'Please fill in all required fields.', 'error');
     }
-  }
+  }  
 
   prepareBankFormData(bankFormValue: any): FormData {
     const formData = new FormData();

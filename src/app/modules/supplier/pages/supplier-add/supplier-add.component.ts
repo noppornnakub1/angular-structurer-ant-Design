@@ -1569,23 +1569,23 @@ export class SupplierAddComponent {
 
   async checkSave(event: Event) {
     this.validateEmail()
-    if (this.emailError != '') {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Email ไม่ถูกต้อง',
-        text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
-        confirmButtonText: 'ปิด'
-      });
-      return;
-    }
+    // if (this.emailError != '') {
+    //   Swal.fire({
+    //     icon: 'warning',
+    //     title: 'Email ไม่ถูกต้อง',
+    //     text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
+    //     confirmButtonText: 'ปิด'
+    //   });
+    //   return;
+    // }
     if (this.showSupplierBankForm && !this.isFormValidWithoutSupplierIdCompanyBank()) {
-      this.submittedFormLottoRisk$.next(true);
       await Swal.fire({
         icon: 'warning',
         title: 'ข้อมูลไม่ถูกต้อง',
         text: 'โปรดตรวจสอบให้แน่ใจว่าคุณได้กรอกข้อมูล Bank ครบแล้ว',
         confirmButtonText: 'ปิด'
       });
+      this.submittedFormLottoRisk$.next(true);
       return;
     }
     if (this.showSupplierBankFormAdd && !this.isFormValidWithoutSupplierIdCompanyBankAdd()) {
@@ -2197,7 +2197,7 @@ export class SupplierAddComponent {
     let mainSupplierId: number | undefined;
     let mainCompany: string | undefined;
     const labelTextsGrouped: { [key: string]: string[] } = {};
-    const supplierBankFilesMetadata: { supplierGroup: string, fileName: string }[] = [];
+    const supplierBankFilesMetadata: { supplierGroup: string, fileName: string, labelText: string }[] = [];
 
     if (this.showSupplierBankForm) {
       const bankFormValue = { ...this.supplierBankForm.value };
@@ -2212,7 +2212,8 @@ export class SupplierAddComponent {
 
         supplierBankFilesMetadata.push({
           supplierGroup: bankFormValue.supplierGroup,
-          fileName: selectedFile.file.name
+          fileName: selectedFile.file.name,
+          labelText:selectedFile.labelText
         });
 
         if (!labelTextsGrouped[bankFormValue.supplierGroup]) {
@@ -2234,7 +2235,8 @@ export class SupplierAddComponent {
 
         supplierBankFilesMetadata.push({
           supplierGroup: bankFormValueAdd.supplierGroup,
-          fileName: selectedFile.file.name
+          fileName: selectedFile.file.name,
+          labelText:selectedFile.labelText
         });
 
         if (!labelTextsGrouped[bankFormValueAdd.supplierGroup]) {

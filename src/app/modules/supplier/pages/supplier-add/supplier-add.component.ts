@@ -1011,10 +1011,10 @@ export class SupplierAddComponent {
       if (this.suppilerId) {
         await this.onUpdate(formData);
       } else {
-        this.supplierService.addOrUpdateDataWithFiles(null, formData).subscribe({
+        this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
           next: (response) => {
             if (response && response.supplier_id) {
-              this.handleAddResponse(response);
+              // this.handleAddResponse(response);
               // this.showSuccessNotification();
             }
           },
@@ -1185,9 +1185,9 @@ export class SupplierAddComponent {
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
 
-      this.supplierService.addOrUpdateDataWithFiles(this.suppilerId, formData).subscribe({
+      this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
         next: (response) => {
-          this.handleUpdateResponse();
+          // this.handleUpdateResponse();
           this.showSuccessNotification();
         },
         error: (err) => {

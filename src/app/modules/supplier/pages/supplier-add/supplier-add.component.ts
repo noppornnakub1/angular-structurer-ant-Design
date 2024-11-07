@@ -234,8 +234,8 @@ export class SupplierAddComponent {
     this.supplierForm = this.fb.group({
       id: [0], prefix: ['', Validators.required], name: ['', Validators.required],
       tax_Id: ['', Validators.required], addressSup: ['', Validators.required],
-      postalCode: [null, Validators.required], province: [null], district: [null],
-      subdistrict: [null], tel: ['', Validators.required], email: ['', Validators.required],
+      postalCode: [null, Validators.required], province: [null , Validators.required], district: [null , Validators.required],
+      subdistrict: [null , Validators.required], tel: ['', Validators.required], email: ['', Validators.required],
       supplierNum: [{ value: '', disabled: true }], supplierType: ['', Validators.required],
       site: ['00000', Validators.required], vat: [''], status: ['', Validators.required],
       paymentMethod: ['', Validators.required], company: ['', Validators.required],
@@ -1010,7 +1010,6 @@ export class SupplierAddComponent {
       formData.forEach((value, key) => {
         console.log(`${key}:`, value);
       });
-      if (!this.validateBankForms()) return;
 
       if (this.suppilerId) {
         await this.onUpdate(formData);
@@ -1580,6 +1579,7 @@ export class SupplierAddComponent {
       return;
     }
     if (this.showSupplierBankForm && !this.isFormValidWithoutSupplierIdCompanyBank()) {
+      this.submittedFormLottoRisk$.next(true);
       await Swal.fire({
         icon: 'warning',
         title: 'ข้อมูลไม่ถูกต้อง',
@@ -1589,6 +1589,7 @@ export class SupplierAddComponent {
       return;
     }
     if (this.showSupplierBankFormAdd && !this.isFormValidWithoutSupplierIdCompanyBankAdd()) {
+      this.submittedFormLottoRisk$.next(true);
       await Swal.fire({
         icon: 'warning',
         title: 'ข้อมูลไม่ถูกต้อง',
@@ -2248,8 +2249,18 @@ export class SupplierAddComponent {
     return formData;
   }
 
-  isFieldValidRisk(field: string): boolean {
+  isFieldValidSupplier(field: string): boolean {
     const control = this.supplierForm.get(field);
+    return !!control?.invalid && (!!control?.touched || (!!control?.untouched && this.submittedFormLottoRisk$.value));
+  }
+
+  isFieldValidSupplierBank(field: string): boolean {
+    const control = this.supplierBankForm.get(field);
+    return !!control?.invalid && (!!control?.touched || (!!control?.untouched && this.submittedFormLottoRisk$.value));
+  }
+
+  isFieldValidSupplierBankAdd(field: string): boolean {
+    const control = this.supplierBankFormAdd.get(field);
     return !!control?.invalid && (!!control?.touched || (!!control?.untouched && this.submittedFormLottoRisk$.value));
   }
 

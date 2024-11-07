@@ -27,6 +27,10 @@ export class SupplierService {
     return this._http.post(url, formData);
   }
 
+  addOrUpdateSupplierWithBankAndFiles(formData: FormData): Observable<any> {
+    return this._http.post(`/Supplier/AddOrUpdateSupplierWithBankAndFiles`, formData);
+  }
+
   findSupplierById(id: number): Observable<ISupplier> {
     return this._http.get<ISupplier>(`/Supplier/FindSupplierByID?id=${id}`);
   }

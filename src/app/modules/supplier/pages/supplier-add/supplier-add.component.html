@@ -57,10 +57,15 @@
             info
           </span>
         </nz-form-label>
-        <nz-input-group nzPrefixIcon="idcard" class="form-input">
+        <nz-input-group nzPrefixIcon="idcard" class="form-input"
+        [ngStyle]="isFieldValidRisk('tax_Id') ? {border: '1px solid red', borderRadius: '7px'} : null">
           <input nz-input type="text" placeholder="Tax ID" formControlName="tax_Id" (input)="validateTaxId($event)"
             (blur)="checkAndCallApi()" />
         </nz-input-group>
+        <div nz-form-explain *ngIf="supplierForm.get('tax_Id')?.invalid && supplierForm.get('tax_Id')?.touched"
+          style="color: red;">
+          Tax Id is required
+        </div>
       </div>
 
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">

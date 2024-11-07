@@ -1575,17 +1575,24 @@ export class SupplierAddComponent {
       });
       return;
     }
-    // if (this.showSupplierBankForm) {
-    //   if(!this.isFormValidWithoutSupplierIdCompanyBank){
-    //     Swal.fire({
-    //       icon: 'warning',
-    //       title: 'ข้อมูลไม่ถูกต้อง',
-    //       text: 'โปรดตรวจสอบให้แน่ใจว่าคุณได้กรอกข้อมูล Bank ครบแล้ว',
-    //       confirmButtonText: 'ปิด'
-    //     });
-    //   }
-    //   return;
-    // }
+    if (this.showSupplierBankForm && !this.isFormValidWithoutSupplierIdCompanyBank()) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'ข้อมูลไม่ถูกต้อง',
+        text: 'โปรดตรวจสอบให้แน่ใจว่าคุณได้กรอกข้อมูล Bank ครบแล้ว',
+        confirmButtonText: 'ปิด'
+      });
+      return;
+    }
+    if (this.showSupplierBankFormAdd && !this.isFormValidWithoutSupplierIdCompanyBankAdd()) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'ข้อมูลไม่ถูกต้อง',
+        text: 'โปรดตรวจสอบให้แน่ใจว่าคุณได้กรอกข้อมูล Bank ครบแล้ว',
+        confirmButtonText: 'ปิด'
+      });
+      return;
+    }
     else {
       try {
         await this.save(event);
@@ -1594,6 +1601,7 @@ export class SupplierAddComponent {
       }
     }
   }
+
 
   cancel(event: Event): void {
     event.preventDefault();
@@ -1912,7 +1920,7 @@ export class SupplierAddComponent {
 
   isFormValidWithoutSupplierIdCompanyBank(): boolean {
     const requiredFields = [
-      'supplierGroup','accountName', 'accountNum', 'branch', 'nameBank',
+      'supplierGroup', 'accountName', 'accountNum', 'branch', 'nameBank',
     ];
 
     for (const field of requiredFields) {
@@ -1927,7 +1935,7 @@ export class SupplierAddComponent {
 
   isFormValidWithoutSupplierIdCompanyBankAdd(): boolean {
     const requiredFields = [
-      'supplierGroup','accountName', 'accountNum', 'branch', 'nameBank',
+      'supplierGroup', 'accountName', 'accountNum', 'branch', 'nameBank',
     ];
 
     for (const field of requiredFields) {

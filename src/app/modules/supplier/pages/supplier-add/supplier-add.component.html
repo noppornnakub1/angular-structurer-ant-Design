@@ -101,6 +101,10 @@
           [ngStyle]="isFieldValidSupplier('name') ? {border: '1px solid red', borderRadius: '7px'} : null">
           <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" />
         </nz-input-group>
+        <div nz-form-explain *ngIf="supplierForm.get('name')?.invalid && supplierForm.get('name')?.touched"
+          style="color: red;">
+          Required
+        </div>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="24" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Address<span style="color: red;">*</span>
@@ -149,6 +153,10 @@
           [ngStyle]="isFieldValidSupplier('province') ? {border: '1px solid red', borderRadius: '7px'} : null">
           <input nz-input placeholder="Province" formControlName="province" />
         </nz-input-group>
+        <div nz-form-explain *ngIf="supplierForm.get('province')?.invalid && supplierForm.get('province')?.touched"
+            style="color: red;">
+            Required
+          </div>
       </div>
       <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>District<span style="color: red;">*</span></nz-form-label>
@@ -156,6 +164,10 @@
           [ngStyle]="isFieldValidSupplier('district') ? {border: '1px solid red', borderRadius: '7px'} : null">
           <input nz-input placeholder="District" formControlName="district" />
         </nz-input-group>
+        <div nz-form-explain *ngIf="supplierForm.get('district')?.invalid && supplierForm.get('district')?.touched"
+          style="color: red;">
+          Required
+        </div>
       </div>
       <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Subdistrict<span style="color: red;">*</span></nz-form-label>
@@ -163,6 +175,11 @@
           [ngStyle]="isFieldValidSupplier('subdistrict') ? {border: '1px solid red', borderRadius: '7px'} : null">
           <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
         </nz-input-group>
+        <div nz-form-explain
+          *ngIf="supplierForm.get('subdistrict')?.invalid && supplierForm.get('subdistrict')?.touched"
+          style="color: red;">
+          Required
+        </div>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
         <nz-form-label nzNoColon>Telephone<span style="color: red;">*</span>
@@ -375,7 +392,8 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch<span
                 style="color: red;">*</span></nz-form-label>
-            <nz-form-control [nzSpan]="24"  [ngStyle]="isFieldValidSupplierBank('branch') ? {border: '1px solid red', borderRadius: '7px'} : null">
+            <nz-form-control [nzSpan]="24"
+              [ngStyle]="isFieldValidSupplierBank('branch') ? {border: '1px solid red', borderRadius: '7px'} : null">
               <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input"
                 (input)="validateBranch($event)" />
             </nz-form-control>
@@ -385,7 +403,8 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon style="padding: 0px;">Account
               Number<span style="color: red;">*</span></nz-form-label>
-            <nz-form-control [nzSpan]="24" [ngStyle]="isFieldValidSupplierBank('accountNum') ? {border: '1px solid red', borderRadius: '7px'} : null">
+            <nz-form-control [nzSpan]="24"
+              [ngStyle]="isFieldValidSupplierBank('accountNum') ? {border: '1px solid red', borderRadius: '7px'} : null">
               <input nz-input id="accountNumber" placeholder="Account Number" formControlName="accountNum"
                 class="form-input" (input)="validateAccountNum($event)" />
             </nz-form-control>
@@ -395,7 +414,8 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon style="padding: 0px;">Account
               Name<span style="color: red;">*</span></nz-form-label>
-            <nz-form-control [nzSpan]="24" [ngStyle]="isFieldValidSupplierBank('accountName') ? {border: '1px solid red', borderRadius: '7px'} : null">
+            <nz-form-control [nzSpan]="24"
+              [ngStyle]="isFieldValidSupplierBank('accountName') ? {border: '1px solid red', borderRadius: '7px'} : null">
               <input nz-input id="accountName" placeholder="Account Name" formControlName="accountName"
                 class="form-input" readonly />
             </nz-form-control>
@@ -447,7 +467,8 @@
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
               <nz-form-label nzNoColon>Supplier Group<span style="color: red;">*</span></nz-form-label>
               <nz-select [(ngModel)]="selectedSupplierGroupAdd" formControlName="supplierGroup"
-                nzPlaceHolder="Select Supplier Group" class="custom-select" [ngStyle]="isFieldValidSupplierBankAdd('supplierGroup') ? {border: '1px solid red', borderRadius: '7px'} : null">
+                nzPlaceHolder="Select Supplier Group" class="custom-select"
+                [ngStyle]="isFieldValidSupplierBankAdd('supplierGroup') ? {border: '1px solid red', borderRadius: '7px'} : null">
                 <nz-option *ngFor="let type of listOfGroup" [nzLabel]="type.group_name"
                   [nzValue]="type.group_name"></nz-option>
               </nz-select>
@@ -456,7 +477,8 @@
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="bankName" nzNoColon style="padding: 0px;">Bank Name<span
                     style="color: red;">*</span></nz-form-label>
-                <nz-select formControlName="nameBank" nzPlaceHolder="Select bankName" class="custom-select" [ngStyle]="isFieldValidSupplierBankAdd('nameBank') ? {border: '1px solid red', borderRadius: '7px'} : null">
+                <nz-select formControlName="nameBank" nzPlaceHolder="Select bankName" class="custom-select"
+                  [ngStyle]="isFieldValidSupplierBankAdd('nameBank') ? {border: '1px solid red', borderRadius: '7px'} : null">
                   <nz-option *ngFor="let type of listOfBank" [nzLabel]="type.shortBankName+' : '+type.alternateBankName"
                     [nzValue]="type.shortBankName"></nz-option>
                 </nz-select>
@@ -466,7 +488,8 @@
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch<span
                     style="color: red;">*</span></nz-form-label>
-                <nz-form-control [nzSpan]="24" [ngStyle]="isFieldValidSupplierBankAdd('branch') ? {border: '1px solid red', borderRadius: '7px'} : null">
+                <nz-form-control [nzSpan]="24"
+                  [ngStyle]="isFieldValidSupplierBankAdd('branch') ? {border: '1px solid red', borderRadius: '7px'} : null">
                   <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input"
                     (input)="validateBranchAdd($event)" />
                 </nz-form-control>
@@ -476,7 +499,8 @@
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon style="padding: 0px;">Account
                   Number<span style="color: red;">*</span></nz-form-label>
-                <nz-form-control [nzSpan]="24" [ngStyle]="isFieldValidSupplierBankAdd('accountNum') ? {border: '1px solid red', borderRadius: '7px'} : null">
+                <nz-form-control [nzSpan]="24"
+                  [ngStyle]="isFieldValidSupplierBankAdd('accountNum') ? {border: '1px solid red', borderRadius: '7px'} : null">
                   <input nz-input id="accountNumber" placeholder="Account Number" formControlName="accountNum"
                     class="form-input" (input)="validateAccountNumAdd($event)" />
                 </nz-form-control>
@@ -486,7 +510,8 @@
               <nz-form-item>
                 <nz-form-label [nzSpan]="24" nzFor="accountName" nzNoColon style="padding: 0px;">Account
                   Name<span style="color: red;">*</span></nz-form-label>
-                <nz-form-control [nzSpan]="24" [ngStyle]="isFieldValidSupplierBankAdd('accountName') ? {border: '1px solid red', borderRadius: '7px'} : null">
+                <nz-form-control [nzSpan]="24"
+                  [ngStyle]="isFieldValidSupplierBankAdd('accountName') ? {border: '1px solid red', borderRadius: '7px'} : null">
                   <input nz-input id="accountName" placeholder="Account Name" formControlName="accountName"
                     class="form-input" readonly />
                 </nz-form-control>

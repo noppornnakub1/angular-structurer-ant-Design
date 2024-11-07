@@ -1004,8 +1004,11 @@ export class SupplierAddComponent {
     this.isSubmitting = true;
 
     if (this.supplierForm.valid) {
-      const formData = this.prepareFormData();
-
+      const formData = this.prepareFormAddData();
+      console.log(formData);
+      formData.forEach((value, key) => {
+        console.log(`${key}:`, value);
+      });
       if (!this.validateBankForms()) return;
 
       if (this.suppilerId) {
@@ -2162,5 +2165,92 @@ export class SupplierAddComponent {
       error: () => {
       }
     });
+  }
+
+  prepareFormAddData(): FormData {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    if (!currentUser || !currentUser.userId) {
+      console.error('Current user is not available in local storage');
+      return new FormData();
+    }
+
+    const formValue = { ...this.supplierForm.value };
+    const postalCode = formValue.postalCode.split('-')[0];
+    formValue.postalCode = postalCode
+
+    formValue.user_id = currentUser.userId;
+    const supplierFrom = formValue
+    const formData = new FormData();
+
+    formData.append('groupName', 'SupplierFile');
+
+    const fileIdsToRemove = this.fileIdsToRemove || [];
+    formData.append('fileIdsToRemoveJson', JSON.stringify(fileIdsToRemove));
+
+    const labelTexts: string[] = [];
+    const fileIds: number[] = [];
+
+    for (let selectedFile of this.selectedFilesSupplier) {
+      formData.append('Files', selectedFile.file, selectedFile.file.name);
+      labelTexts.push(selectedFile.labelText);
+    }
+
+    for (let file of this.fileIdsToRemove) {
+      if (file.FileId !== undefined) {
+        fileIds.push(file.FileId);
+      }
+    }
+    
+    const supplierBankData = [];
+    let mainSupplierId: number | undefined;
+    let mainCompany: string | undefined;
+
+    const labelTextsGrouped: { [key: string]: string[] } = {};
+
+    if (this.showSupplierBankForm) {
+      const bankFormValue = this.supplierBankForm.value;
+      bankFormValue.supplierId = bankFormValue.supplierId || 0;
+      mainSupplierId = bankFormValue.supplierId;
+      mainCompany = bankFormValue.company;
+
+      supplierBankData.push(bankFormValue);
+
+      this.selectedNewFilesSupplier.forEach(selectedFile => {
+        formData.append('Files', selectedFile.file, selectedFile.file.name);
+        if (!labelTextsGrouped[bankFormValue.supplierGroup]) {
+          labelTextsGrouped[bankFormValue.supplierGroup] = [];
+        }
+        labelTextsGrouped[bankFormValue.supplierGroup].push(selectedFile.labelText);
+      });
+    }
+
+    if (this.showSupplierBankFormAdd) {
+      const bankFormValueAdd = this.supplierBankFormAdd.value;
+      bankFormValueAdd.supplierId = bankFormValueAdd.supplierId || mainSupplierId || 0;
+      bankFormValueAdd.company = bankFormValueAdd.company || mainCompany;
+      supplierBankData.push(bankFormValueAdd);
+
+      this.selectedFilesAdd.forEach(selectedFile => {
+        formData.append('Files', selectedFile.file, selectedFile.file.name);
+        if (!labelTextsGrouped[bankFormValueAdd.supplierGroup]) {
+          labelTextsGrouped[bankFormValueAdd.supplierGroup] = [];
+        }
+        labelTextsGrouped[bankFormValueAdd.supplierGroup].push(selectedFile.labelText);
+      });
+    }
+
+    supplierBankData.forEach(bank => {
+      const group = bank.supplierGroup;
+      if (labelTextsGrouped[group]) {
+        bank.LabelTextsV2 = { [group]: labelTextsGrouped[group] };
+      }
+    });
+
+    formData.append('supplierJson', JSON.stringify(supplierFrom));
+    formData.append('supplierBankJson', JSON.stringify(supplierBankData));
+    formData.append('fileIdsToRemoveJson', JSON.stringify(fileIds));
+
+    return formData;
   }
 }

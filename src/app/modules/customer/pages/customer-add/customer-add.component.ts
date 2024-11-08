@@ -70,6 +70,7 @@ export class CustomerAddComponent implements OnInit {
   uploadedFiles: any[] = [];
   idreq: number = 0;
   emailreq: string = '';
+  userData: any;
   isCheckingDuplicate: boolean = false;
   listOfCompany: DataCompany[] = [];
   filteredDataompany: DataCompany[] = [];
@@ -386,7 +387,7 @@ export class CustomerAddComponent implements OnInit {
     const province = this.customerForm.value.province
 
     selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
-    
+
     if (potalCodeold === '' || potalCodeold == undefined) {
       selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
     }
@@ -487,7 +488,8 @@ export class CustomerAddComponent implements OnInit {
       await this.customerService.updateData(this.customerId!, formValue).toPromise();
 
       this.insertLog();
-
+      this.sendEmailNotification();
+      this.sendEmailNotificationRequester();
     } catch (error) {
       console.error('Error during update process:', error);
     }
@@ -504,7 +506,7 @@ export class CustomerAddComponent implements OnInit {
     const postalCode = formValue.postalCode.split('-')[0];
 
     formValue.postalCode = postalCode;
-    
+
     if (this.listDataByTaxId) {
       formValue.id = 0
     }
@@ -828,18 +830,32 @@ export class CustomerAddComponent implements OnInit {
   sendEmailNotification(): void {
     if (this.customerForm.get('status')?.value === 'Pending Approved By ACC' && this.customerForm.valid) {
       const company = this.customerForm.get('company')?.value;
-      const customerNum = this.customerForm.get('customerNum')?.value;
+      const customerName = this.customerForm.get('name')?.value;
+      const TaxID = this.customerForm.get('taxId')?.value;
+      var name = ''
+      this.userService.findUserById(this.idreq).subscribe((data: any) => {
+        name = data.firstname
+        this._cdr.markForCheck();
+      });
       this.customerService.findApproversByCompany(company).subscribe(
         (approvers) => {
           approvers.forEach((approver: any) => {
             const to = approver.email;
             const subject = 'OnePortal Notification';
             const body = `
-            <p>สถานะของ Customer Number:${customerNum}</p>
+            <p>เรียน ส่วนงานบัญชี</p>
             <br>
-            <p>ได้เปลี่ยนเป็น ${this.customerForm.get('status')?.value} บกวนเข้ามาดำเนินการตรวจสอบและ Approve ในลำดับต่อไป</p>
+            <p>เรื่อง : คำขอเปิด Customer ใหม่</p>
             <br>
-            <p>ขอแสดงความนับถือ</p>
+            <p>มีคำขอเปิด Customer ใหม่ จาก คุณ ${name} </p>
+            <br>
+            <p>เราได้รับคำขอเปิด Supplier: ${customerName} Tax ID:${TaxID} ของคุณแล้ว</p>
+            <br>
+            <p>สถานะคำขอของคุณ: ${this.customerForm.get('status')?.value} </p>
+            <br>
+            <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ <a>http://10.10.0.28:8085/</a></p>
+            <br>
+            <p>Best Regards</p>
             <p>OnePortal</p>
             <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
 
@@ -967,25 +983,84 @@ export class CustomerAddComponent implements OnInit {
   }
 
   sendEmailNotificationRequester(): void {
-    const customerNum = this.customerForm.get('customerNum')?.value;
+    const status = this.customerForm.get('status')?.value;
+    var to = ''
+    var subject = ''
+    var body = ''
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
-      this.emailreq = data.email
+      this.userData = data
+      if (status === 'Pending Approved By ACC') {
+        to = this.userData.email;
+        subject = 'OnePortal Notification';
+        body = `
+        <p>เรียน คุณ${this.userData.firstname}</p>
+        <br>
+        <p>เรื่อง : คำขอเปิด Customer ใหม่</p>
+        <br>
+        <p>คำขอเปิด Customer ใหม่ ของท่าน ส่งให้ส่วนงานบัญชีเรียบร้อยแล้ว</p>
+        <br>
+        <p>Customer Name : ${this.customerForm.get('name')?.value}</p>
+        <p>Tax ID : ${this.customerForm.get('taxId')?.value} </p>
+        <p>Type: ${this.customerForm.get('customerType')?.value} </p>
+        <br>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/customer/view/${this.customerForm.get('id')?.value}</a></p>
+        <br>
+        <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี [เบอร์กลางบัญชี]</p>
+        <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
+        <br>
+        <p>Best Regards</p>
+        <p>OnePortal</p>
+        <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+      }
+      else if (status === 'Reject By ACC') {
+        to = this.userData.email;
+        subject = 'OnePortal Notification';
+        body = `
+        <p>เรียน คุณ${this.userData.firstname}</p>
+        <br>
+        <p>เรื่อง : มีการเปลี่ยนแปลงสถานะคำขอเปิด Customer ของท่าน</p>
+        <br>
+        <p>คำขอ Customer ของท่าน ${status} โดยส่วนงานบัญชี</p>
+        <br>
+        <p>Customer Name : ${this.customerForm.get('name')?.value}</p>
+        <p>Tax ID : ${this.customerForm.get('taxId')?.value} </p>
+        <p>Type: ${this.customerForm.get('customerType')?.value} </p>
+        <br>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/customer/view/${this.customerForm.get('id')?.value}</a></p>
+        <br>
+        <p>Best Regards</p>
+        <p>OnePortal</p>
+        <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+      }
+      else if (status === 'Approved By ACC') {
+        to = this.userData.email;
+        subject = 'OnePortal Notification';
+        body = `
+        <p>เรียน คุณ${this.userData.firstname}</p>
+        <br>
+        <p>เรื่อง : มีการเปลี่ยนแปลงสถานะคำขอเปิด Customer ของท่าน</p>
+        <br>
+        <p>คำขอ Customer ของท่าน ได้รับการอนุมัติ เรียบร้อยแล้ว อยู่ระหว่างการนำข้อมูลเข้าระบบ ERP Oracle </p>
+        <br>
+        <p>Customer Number : ${this.customerForm.get('customerNum')?.value}</p>
+        <p>Customer Name : ${this.customerForm.get('name')?.value}</p>
+        <p>Tax ID : ${this.customerForm.get('taxId')?.value} </p>
+        <p>Type: ${this.customerForm.get('customerType')?.value} </p>
+        <br>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/customer/view/${this.customerForm.get('id')?.value}</a></p>
+        <br>
+        <p>Best Regards</p>
+        <p>OnePortal</p>
+        <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+      }
+
       this._cdr.markForCheck();
     });
 
-    const to = this.emailreq;
-    const subject = 'OnePortal Notification';
-    const body = `
-        <p>สถานะของ Customer Number:${customerNum}</p>
-        <br>
-        <p>ได้เปลี่ยนเป็น ${this.customerForm.get('status')?.value} สามารถเข้ามาตรวจสอบได้ในระบบ</p>
-        <br>
-        <p>ขอแสดงความนับถือ</p>
-        <p>OnePortal</p>
-        <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
 
     this.emailService.sendEmail(to, subject, body).subscribe(
       (response) => {
+        console.log(response);
       },
       (error) => {
         console.error('Error sending email', error);

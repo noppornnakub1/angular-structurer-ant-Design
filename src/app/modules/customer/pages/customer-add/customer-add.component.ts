@@ -26,7 +26,7 @@ import { ICustomer } from '../../interface/customer.interface';
   selector: 'app-customer-add',
   standalone: true,
   imports: [SharedModule, NgZorroAntdModule, HttpClientModule],
-  providers: [PostCodeService],
+  // providers: [PostCodeService],
   templateUrl: './customer-add.component.html',
   styleUrl: './customer-add.component.scss'
 })

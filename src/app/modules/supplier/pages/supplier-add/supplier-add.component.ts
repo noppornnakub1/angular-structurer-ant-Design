@@ -1009,10 +1009,10 @@ export class SupplierAddComponent {
 
     if (this.supplierForm.valid) {
       const formData = this.prepareFormAddData();
-      // console.log(formData);
-      // formData.forEach((value, key) => {
-      //   console.log(`${key}:`, value);
-      // });
+      console.log(formData);
+      formData.forEach((value, key) => {
+        console.log(`${key}:`, value);
+      });
 
       if (this.suppilerId) {
         await this.onUpdate(formData);
@@ -2184,10 +2184,11 @@ export class SupplierAddComponent {
       console.error('Current user is not available in local storage');
       return new FormData();
     }
-
+    console.log('2187',currentUser.userId);
+    
     const formValue = { ...this.supplierForm.value };
     formValue.postalCode = formValue.postalCode.split('-')[0];
-    formValue.user_id = currentUser.userId;
+    formValue.UserId = currentUser.userId;
 
     const formData = new FormData();
     formData.append('groupName', 'SupplierFile');
@@ -2297,6 +2298,25 @@ export class SupplierAddComponent {
   isFieldValidSupplierBankAdd(field: string): boolean {
     const control = this.supplierBankFormAdd.get(field);
     return !!control?.invalid && (!!control?.touched || (!!control?.untouched && this.submittedFormLottoRisk$.value));
+  }
+
+  onEnterKeyPress(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // ป้องกันการทำงานแบบเดิมของ Enter
+      const form = event.target as HTMLInputElement;
+  
+      // ค้นหา element ถัดไป
+      const nextElement = form.nextElementSibling as HTMLElement | null;
+  
+      if (nextElement) {
+        // ถ้ามี element ถัดไป ให้โฟกัสที่มัน
+        nextElement.focus();
+      } else {
+        // ถ้าไม่มี element ถัดไป ให้ย้ายไปที่ฟิลด์แรกในฟอร์ม
+        const firstElement = form.closest('form')?.querySelector('input');
+        firstElement?.focus();
+      }
+    }
   }
 
 }

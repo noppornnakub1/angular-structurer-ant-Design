@@ -1207,19 +1207,19 @@ export class SupplierAddComponent {
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
 
-      // this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
-      //   next: (response) => {
-      //     // this.handleUpdateResponse();
-      //     this.insertLog();
-      //     this.showSuccessNotification();
-      //     this.sendEmailNotification();
-      //     this.sendEmailNotificationRequester();
-      //   },
-      //   error: (err) => {
-      //     Swal.fire('Error!', 'There was an error Update your data.', 'error');
-      //     console.error('Error updating data with files:', err);
-      //   }
-      // });
+      this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
+        next: (response) => {
+          // this.handleUpdateResponse();
+          this.insertLog();
+          this.showSuccessNotification();
+          this.sendEmailNotification();
+          this.sendEmailNotificationRequester();
+        },
+        error: (err) => {
+          Swal.fire('Error!', 'There was an error Update your data.', 'error');
+          console.error('Error updating data with files:', err);
+        }
+      });
     } else {
       this.supplierForm.markAllAsTouched();
       this.supplierBankForm.markAllAsTouched();

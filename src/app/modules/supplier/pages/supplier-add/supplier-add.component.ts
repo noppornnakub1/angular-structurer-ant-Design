@@ -2184,11 +2184,16 @@ export class SupplierAddComponent {
     const formData = new FormData();
     formData.append('groupName', 'SupplierFile');
     formData.append('fileIdsToRemoveJson', JSON.stringify(this.fileIdsToRemove || []));
-
+    const SupplierFilesMetadata: { supplierGroup: string, fileName: string, labelText: string }[] = [];
     const labelTexts: string[] = [];
     for (const selectedFile of this.selectedFilesSupplier) {
       formData.append('SupplierFiles', selectedFile.file, selectedFile.file.name);
-      labelTexts.push(selectedFile.labelText);
+      SupplierFilesMetadata.push({
+        supplierGroup: 'SupplierFile',
+        fileName: selectedFile.file.name,
+        labelText:selectedFile.labelText
+      });
+      labelTexts.push(selectedFile.labelText);  
     }
 
     const fileIds = (this.fileIdsToRemove || []).map(file => file.FileId).filter(id => id !== undefined);
@@ -2198,6 +2203,7 @@ export class SupplierAddComponent {
     let mainCompany: string | undefined;
     const labelTextsGrouped: { [key: string]: string[] } = {};
     const supplierBankFilesMetadata: { supplierGroup: string, fileName: string, labelText: string }[] = [];
+   
 
     if (this.showSupplierBankForm) {
       const bankFormValue = { ...this.supplierBankForm.value };
@@ -2258,7 +2264,7 @@ export class SupplierAddComponent {
     formData.append('fileIdsToRemoveJson', JSON.stringify(fileIds));
 
     formData.append('SupplierBankFilesMetadata', JSON.stringify(supplierBankFilesMetadata));
-
+    formData.append('SupplierFilesMetadata', JSON.stringify(SupplierFilesMetadata));
     return formData;
   }
 

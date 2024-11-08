@@ -100,7 +100,7 @@ interface SelectedFile {
     NzIconModule,
     NzSpaceModule
   ],
-  providers: [PostCodeService],
+  // providers: [PostCodeService],
   templateUrl: './supplier-add.component.html',
   styleUrl: './supplier-add.component.scss'
 })
@@ -1007,10 +1007,10 @@ export class SupplierAddComponent {
 
     if (this.supplierForm.valid) {
       const formData = this.prepareFormAddData();
-      console.log(formData);
-      formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
-      });
+      // console.log(formData);
+      // formData.forEach((value, key) => {
+      //   console.log(`${key}:`, value);
+      // });
 
       if (this.suppilerId) {
         await this.onUpdate(formData);
@@ -1019,6 +1019,7 @@ export class SupplierAddComponent {
           next: (response) => {
             if (response) {
               // this.handleAddResponse(response);
+              this.insertLog();
               Swal.fire({
                 icon: 'success',
                 title: 'Saved!',
@@ -1199,22 +1200,26 @@ export class SupplierAddComponent {
   onUpdate(formValue: any): void {
     if (formValue && this.suppilerId) {
       const formData = this.prepareFormAddData();
-
+      console.log(formData);
+      formData.forEach((value, key) => {
+        console.log(`${key}:`, value);
+      });
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
 
-      this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
-        next: (response) => {
-          // this.handleUpdateResponse();
-          this.showSuccessNotification();
-          this.sendEmailNotification();
-          this.sendEmailNotificationRequester();
-        },
-        error: (err) => {
-          Swal.fire('Error!', 'There was an error Update your data.', 'error');
-          console.error('Error updating data with files:', err);
-        }
-      });
+      // this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
+      //   next: (response) => {
+      //     // this.handleUpdateResponse();
+      //     this.insertLog();
+      //     this.showSuccessNotification();
+      //     this.sendEmailNotification();
+      //     this.sendEmailNotificationRequester();
+      //   },
+      //   error: (err) => {
+      //     Swal.fire('Error!', 'There was an error Update your data.', 'error');
+      //     console.error('Error updating data with files:', err);
+      //   }
+      // });
     } else {
       this.supplierForm.markAllAsTouched();
       this.supplierBankForm.markAllAsTouched();

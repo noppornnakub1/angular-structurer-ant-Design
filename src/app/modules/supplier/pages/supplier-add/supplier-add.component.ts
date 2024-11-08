@@ -1021,7 +1021,7 @@ export class SupplierAddComponent {
           next: (response) => {
             if (response) {
               // this.handleAddResponse(response);
-              this.insertLog();
+              // this.insertLog();
               Swal.fire({
                 icon: 'success',
                 title: 'Saved!',
@@ -1056,7 +1056,7 @@ export class SupplierAddComponent {
 
       await this.handleBankForms();
 
-      await this.insertLog();
+      // await this.insertLog();
 
       Swal.fire({
         icon: 'success',
@@ -1212,7 +1212,7 @@ export class SupplierAddComponent {
       this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
         next: (response) => {
           // this.handleUpdateResponse();
-          this.insertLog();
+          // this.insertLog();
           this.showSuccessNotification();
           this.sendEmailNotification();
           this.sendEmailNotificationRequester();
@@ -2281,6 +2281,7 @@ export class SupplierAddComponent {
     formData.append('fileBankIdsToRemoveJson', this.fileIdsToRemoveForBankJson);
     formData.append('SupplierBankFilesMetadata', JSON.stringify(supplierBankFilesMetadata));
     formData.append('SupplierFilesMetadata', JSON.stringify(SupplierFilesMetadata));
+    formData.append('rejectReason', JSON.stringify(this.reasonTemp));
     return formData;
   }
 

@@ -1017,9 +1017,8 @@ export class SupplierAddComponent {
       } else {
         this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
           next: (response) => {
-            if (response && response.supplier_id) {
+            if (response) {
               // this.handleAddResponse(response);
-
               Swal.fire({
                 icon: 'success',
                 title: 'Saved!',
@@ -1199,7 +1198,7 @@ export class SupplierAddComponent {
 
   onUpdate(formValue: any): void {
     if (formValue && this.suppilerId) {
-      const formData = this.prepareFormData();
+      const formData = this.prepareFormAddData();
 
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);

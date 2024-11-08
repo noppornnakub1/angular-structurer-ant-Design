@@ -750,7 +750,8 @@ export class SupplierAddComponent {
   removeFile(file: any, isForBank: boolean = false): void {
     if (file.fileId) {
       const supbankId = file.supbankId || (isForBank ? this.supplierBankForm.get('supbankId')?.value : this.supplierBankFormAdd.get('supbankId')?.value);
-
+      console.log();
+      
       if (isForBank) {
         this.fileIdsToRemoveForBank.push(file.fileId);
       } else {
@@ -760,7 +761,8 @@ export class SupplierAddComponent {
       if (!this.fileIdsToRemoveMapping.find(item => item.FileId === file.fileId && item.SupbankId === supbankId)) {
         this.fileIdsToRemoveMapping.push({ SupbankId: supbankId, FileId: file.fileId });
       }
-
+      console.log(this.fileIdsToRemoveMapping);
+      
       file.filePath = '';
       file.fileName = '';
 
@@ -2203,7 +2205,11 @@ export class SupplierAddComponent {
     }
 
     const fileIds = (this.fileIdsToRemove || []).map(file => file.FileId).filter(id => id !== undefined);
-
+    const filesToRemoveBank: number[] = this.fileIdsToRemoveBank
+    console.log(this.fileIdsToRemoveForBankJson);
+    console.log(this.fileIdsToRemoveJson);
+    
+    
     const supplierBankData = [];
     let mainSupplierId: number | undefined;
     let mainCompany: string | undefined;
@@ -2221,7 +2227,7 @@ export class SupplierAddComponent {
 
       this.selectedNewFilesSupplier.forEach(selectedFile => {
         formData.append('SupplierBankFiles', selectedFile.file, selectedFile.file.name);
-
+  
         supplierBankFilesMetadata.push({
           supplierGroup: bankFormValue.supplierGroup,
           fileName: selectedFile.file.name,
@@ -2265,10 +2271,14 @@ export class SupplierAddComponent {
       }
     });
 
+    for (let fileId of filesToRemoveBank) {
+      formData.append('FileIdsToRemove', fileId.toString());
+    }
+
     formData.append('supplierJson', JSON.stringify(formValue));
     formData.append('supplierBankJson', JSON.stringify(supplierBankData));
     formData.append('fileIdsToRemoveJson', JSON.stringify(fileIds));
-
+    formData.append('fileBankIdsToRemoveJson', this.fileIdsToRemoveForBankJson);
     formData.append('SupplierBankFilesMetadata', JSON.stringify(supplierBankFilesMetadata));
     formData.append('SupplierFilesMetadata', JSON.stringify(SupplierFilesMetadata));
     return formData;

@@ -1,4 +1,4 @@
-<form [formGroup]="supplierForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" (keydown)="onEnterKeyPress($event)">
   <div class="content-card">
     <nz-divider nzText="Supplier Info"></nz-divider>
     <div nz-row nzGutter="16" class="mt-2">
@@ -354,7 +354,7 @@
   </div>
 </form>
 
-<form [formGroup]="supplierBankForm" *ngIf="showSupplierBankForm">
+<form [formGroup]="supplierBankForm" *ngIf="showSupplierBankForm" (keydown)="onEnterKeyPress($event)">
   <div class="content-card mt-3">
     <ng-container *ngIf="!isViewMode">
       <button *ngIf="!showSupplierBankFormAdd && selectedSupplierGroup !== 'ALL Group'" class="mr-2" nz-button
@@ -459,7 +459,7 @@
         </tr>
       </tbody>
     </nz-table>
-    <form [formGroup]="supplierBankFormAdd" *ngIf="showSupplierBankFormAdd">
+    <form [formGroup]="supplierBankFormAdd" *ngIf="showSupplierBankFormAdd" (keydown)="onEnterKeyPress($event)">
       <div class="content-card" style="padding: 0px;">
         <nz-divider nzText="Supplier Bank"></nz-divider>
         <div nz-row nzGutter="16">

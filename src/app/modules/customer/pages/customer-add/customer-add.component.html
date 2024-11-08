@@ -1,4 +1,4 @@
-<form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="customerForm" (ngSubmit)="onSubmit()" (keydown)="onEnterKeyPress($event)">
   <div class="content-card">
     <nz-divider nzText="Customer Info"></nz-divider>
     <div nz-row nzGutter="16" class="mt-2">

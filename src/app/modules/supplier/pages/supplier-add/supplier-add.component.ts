@@ -2184,7 +2184,6 @@ export class SupplierAddComponent {
       console.error('Current user is not available in local storage');
       return new FormData();
     }
-    console.log('2187',currentUser.userId);
     
     const formValue = { ...this.supplierForm.value };
     formValue.postalCode = formValue.postalCode.split('-')[0];
@@ -2302,19 +2301,19 @@ export class SupplierAddComponent {
 
   onEnterKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
-      event.preventDefault(); // ป้องกันการทำงานแบบเดิมของ Enter
-      const form = event.target as HTMLInputElement;
+      event.preventDefault();
   
-      // ค้นหา element ถัดไป
-      const nextElement = form.nextElementSibling as HTMLElement | null;
+      const targetElement = event.target as HTMLElement;
   
-      if (nextElement) {
-        // ถ้ามี element ถัดไป ให้โฟกัสที่มัน
-        nextElement.focus();
-      } else {
-        // ถ้าไม่มี element ถัดไป ให้ย้ายไปที่ฟิลด์แรกในฟอร์ม
-        const firstElement = form.closest('form')?.querySelector('input');
-        firstElement?.focus();
+      if (targetElement && targetElement.closest) {
+        const form = targetElement.closest('form') as HTMLFormElement;
+        const inputs = Array.from(form.querySelectorAll('input'));
+        const currentIndex = inputs.indexOf(targetElement as HTMLInputElement);
+  
+        if (currentIndex > -1 && currentIndex < inputs.length - 1) {
+          const nextInput = inputs[currentIndex + 1] as HTMLInputElement;
+          nextInput.focus();
+        }
       }
     }
   }

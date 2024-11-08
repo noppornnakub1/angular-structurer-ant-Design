@@ -1154,4 +1154,23 @@ export class CustomerAddComponent implements OnInit {
 
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   }
+
+  onEnterKeyPress(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+  
+      const targetElement = event.target as HTMLElement;
+  
+      if (targetElement && targetElement.closest) {
+        const form = targetElement.closest('form') as HTMLFormElement;
+        const inputs = Array.from(form.querySelectorAll('input'));
+        const currentIndex = inputs.indexOf(targetElement as HTMLInputElement);
+  
+        if (currentIndex > -1 && currentIndex < inputs.length - 1) {
+          const nextInput = inputs[currentIndex + 1] as HTMLInputElement;
+          nextInput.focus();
+        }
+      }
+    }
+  }
 }

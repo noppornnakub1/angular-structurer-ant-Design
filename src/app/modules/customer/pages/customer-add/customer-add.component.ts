@@ -134,16 +134,9 @@ export class CustomerAddComponent implements OnInit {
     this.getCustomerType();
 
     this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
-      const customerTypeId = this.getCustomerTypeId(value);
-
-      if (customerTypeId) {
-        this.loadCustomerType(customerTypeId);
-      }
       if (value === '1F' || value === 'OSEA') {
         this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
-        this.customerForm.patchValue({
-          prefix: ''
-        });
+        this.customerForm.patchValue({ prefix: '' });
       } else {
         this.filteredItemsPrefix = this.item_prefix;
       }
@@ -157,7 +150,7 @@ export class CustomerAddComponent implements OnInit {
       this._cdr.detectChanges();
     });
 
-    this.customerForm.get('company')?.valueChanges.subscribe(value => {
+    this.customerForm.get('company')?.valueChanges.subscribe(() => {
       this.checkAndCallApi();
     });
 
@@ -165,34 +158,42 @@ export class CustomerAddComponent implements OnInit {
     this.getDataCompany();
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
   }
-  private itemsProvincesLoaded = false;
+
   private async handleRouteParams(): Promise<void> {
     return new Promise((resolve) => {
       this.route.paramMap.subscribe(async (params) => {
         const id = params.get('id');
         if (id) {
           this.customerId = +id;
-          const { customerData, postCodes } = await forkJoin({
+
+          const data = await forkJoin({
             customerData: this.customerService.findCustomerById(this.customerId),
             postCodes: this.postCodeService.getPostCodes()
-          }).toPromise() as { customerData: ICustomer; postCodes: DataLocation[] };
+          }).toPromise();
 
-          this.customerForm.patchValue({
-            ...customerData,
-            postalCode: customerData.postalCode + '-' + customerData.subdistrict
-          });
+          if (data && 'CustomerInfo' in data.customerData && 'EventLogs' in data.customerData) {
+            const { CustomerInfo, EventLogs } = data.customerData as { CustomerInfo: any; EventLogs: any[] };
+            const postCodes = data.postCodes as DataLocation[];
 
-          this.items_provinces = postCodes;
-          this.filteredItemsProvince = postCodes;
+            this.customerForm.patchValue({
+              ...CustomerInfo,
+              postalCode: CustomerInfo.postalCode + '-' + CustomerInfo.subdistrict
+            });
 
-          if (this.customerForm.value.postalCode && this.customerForm.value.postId) {
-            const merge = this.customerForm.value.postalCode;
-            this.onPostalCodeChange(merge);
+            this.items_provinces = postCodes;
+            this.filteredItemsProvince = postCodes;
+
+            this.filess = [
+              { fileName: 'ใบขอเปิด Customer', fileType: 'fileReq', filePath: this.customerForm.value.fileReq || '' },
+              { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.customerForm.value.fileCertificate || '' }
+            ];
+            this.displayFiles = this.filess;
+            this.logs = EventLogs.map(log => ({ ...log, time: this.formatDateTime(log.Time) }));
+          } else {
+            console.error("Invalid data structure received for customerData");
           }
 
-          this.loadCustomerData(this.customerId);
           resolve();
-
         } else {
           resolve();
         }
@@ -833,13 +834,13 @@ export class CustomerAddComponent implements OnInit {
       const customerName = this.customerForm.get('name')?.value;
       const TaxID = this.customerForm.get('taxId')?.value;
       console.log(company);
-      
+
       var name = ''
       this.userService.findUserById(this.idreq).subscribe((data: any) => {
         name = data.firstname
         this.customerService.findApproversByCompany(company).subscribe(
           (approvers) => {
-            console.log('842',name);
+            console.log('842', name);
             approvers.forEach((approver: any) => {
               const to = approver.email;
               const subject = 'OnePortal Notification';
@@ -859,7 +860,7 @@ export class CustomerAddComponent implements OnInit {
               <p>Best Regards</p>
               <p>OnePortal</p>
               <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
-  
+
               this.emailService.sendEmail(to, subject, body).subscribe(
                 (response) => {
                   console.log(response);
@@ -876,7 +877,7 @@ export class CustomerAddComponent implements OnInit {
         );
         this._cdr.markForCheck();
       });
-      
+
     }
   }
 
@@ -1071,7 +1072,7 @@ export class CustomerAddComponent implements OnInit {
       this._cdr.markForCheck();
     });
 
-   
+
   }
 
   async checkApprove(event: Event): Promise<void> {
@@ -1155,14 +1156,14 @@ export class CustomerAddComponent implements OnInit {
   onEnterKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       event.preventDefault();
-  
+
       const targetElement = event.target as HTMLElement;
-  
+
       if (targetElement && targetElement.closest) {
         const form = targetElement.closest('form') as HTMLFormElement;
         const inputs = Array.from(form.querySelectorAll('input'));
         const currentIndex = inputs.indexOf(targetElement as HTMLInputElement);
-  
+
         if (currentIndex > -1 && currentIndex < inputs.length - 1) {
           const nextInput = inputs[currentIndex + 1] as HTMLInputElement;
           nextInput.focus();

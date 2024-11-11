@@ -55,10 +55,6 @@ export class SupplierService {
     return this._http.get(`/Supplier/GetSupplierType`);
   }
 
-  findSupplierBankBySupplierId(id: number): Observable<IsupplierType[]> {
-    return this._http.get<IsupplierType[]>(`/SupplierBank/FindSupplierBankBySupplierID?supplierid=${id}`);
-  }
-
   findSupplierBankBySupplierIdV2(id: number): Observable<any> {
     return this._http.get<any>(`/SupplierBank/FindSupplierBankBySupplierIDV2?supplierid=${id}`);
   }

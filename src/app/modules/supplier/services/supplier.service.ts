@@ -80,24 +80,8 @@ export class SupplierService {
     return this._http.post(`/SupplierBank/AddSupplierBank`, supplier);
   }
 
-  addBankDataWithFiles(formData: FormData): Observable<any> {
-    return this._http.post(`/SupplierBank/AddSupplierBanksWithFiles`, formData);
-  }
-
-  addOrUpdateBankDataWithFiles(formData: FormData): Observable<any> {
-    return this._http.post(`/SupplierBank/AddOrUpdateSupplierBanksWithFiles`, formData);
-  }
-
-  insertOrUpdateBankDataWithFiles(formData: FormData): Observable<any> {
-    return this._http.post(`/SupplierBank/InsertOrUpdateSupplierBanksWithFiles`, formData);
-  }
-
   saveSupplierBanksWithFiles(formData: FormData): Observable<any> {
     return this._http.post(`/SupplierBank/SaveSupplierBanksWithFiles`, formData);
-  }
-
-  updateBankData(id: number, data: DataBank): Observable<any> {
-    return this._http.put(`/SupplierBank/UpdateSupplierBank/${id}`, data);
   }
 
   updateBankDataWithFiles(id: number, formData: FormData): Observable<any> {

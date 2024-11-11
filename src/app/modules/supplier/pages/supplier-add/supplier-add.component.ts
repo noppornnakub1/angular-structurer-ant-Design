@@ -1164,6 +1164,7 @@ export class SupplierAddComponent {
   }
 
   private showSuccessNotification(): void {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     Swal.fire({
       icon: 'success',
       title: 'Updated!',
@@ -1172,7 +1173,7 @@ export class SupplierAddComponent {
       timer: 1500
     });
     const status = this.supplierForm.value.status;
-    if (this.isApproved && status === 'Pending Approved By ACC') {
+    if ((this.isApproved && status === 'Pending Approved By ACC') && currentUser.role == 3) {
       this.router.navigate([`/feature/supplier/view/${this.suppilerId}`]);
     } else {
       this.router.navigate(['/feature/supplier']);
@@ -1837,7 +1838,7 @@ export class SupplierAddComponent {
         }
       );
     }
-    else if (this.supplierForm.get('status')?.value === 'Approved By ACC' && !this.supplierBankForm.valid) {
+    else if ((this.supplierForm.get('status')?.value === 'Approved By ACC' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee' )) && !this.supplierBankForm.valid) {
       const company = this.supplierForm.get('company')?.value;
       this.supplierService.findApproversFNByCompany(company).subscribe(
         (approvers) => {
@@ -1984,6 +1985,7 @@ export class SupplierAddComponent {
 
   sendEmailNotificationRequester(): void {
     const status = this.supplierForm.get('status')?.value;
+    const paymentMethod = this.supplierForm.get('paymentMethod')?.value;
     var to = ''
     var subject = ''
     var body = ''
@@ -2015,7 +2017,50 @@ export class SupplierAddComponent {
         <p>OnePortal</p>
         <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
       }
-      else if (status === 'Approved By ACC' || status === 'Reject By ACC') {
+      else if (status === 'Approved By ACC') {
+        if(paymentMethod === 'Transfer' || paymentMethod ==='Transfer_Employee'){
+        to = this.userData.email;
+        subject = 'OnePortal Notification';
+        body = `
+        <p>เรียน คุณ${this.userData.firstname}</p>
+        <br>
+        <p>เรื่อง : มีการเปลี่ยนแปลงสถานะคำขอเปิด Supplier ของท่าน</p>
+        <br>
+        <p>คำขอ Supplier ของท่าน ${status} โดยส่วนงานบัญชี</p>
+        <br>
+        <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
+        <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
+        <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+        <br>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+        <br>
+        <p>Best Regards</p>
+        <p>OnePortal</p>
+        <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+        }
+        else{
+        to = this.userData.email;
+        subject = 'OnePortal Notification';
+        body = `
+        <p>เรียน คุณ${this.userData.firstname}</p>
+        <br>
+        <p>เรื่อง : มีการเปลี่ยนแปลงสถานะคำขอเปิด Supplier ของท่าน</p>
+        <br>
+        <p>คำขอ Supplier ของท่าน ได้รับการอนุมัติ เรียบร้อยแล้ว อยู่ระหว่างการนำข้อมูลเข้าระบบ ERP Oracle </p>
+        <br>
+        <p>Supplier Number : ${this.supplierForm.get('supplierNum')?.value}</p>
+        <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
+        <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
+        <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+        <br>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+        <br>
+        <p>Best Regards</p>
+        <p>OnePortal</p>
+        <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+        }
+      }
+      else if (status === 'Reject By ACC') {
         to = this.userData.email;
         subject = 'OnePortal Notification';
         body = `

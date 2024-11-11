@@ -828,50 +828,55 @@ export class CustomerAddComponent implements OnInit {
   }
 
   sendEmailNotification(): void {
-    if (this.customerForm.get('status')?.value === 'Pending Approved By ACC' && this.customerForm.valid) {
+    if (this.customerForm.get('status')?.value === 'Pending Approved By ACC') {
       const company = this.customerForm.get('company')?.value;
       const customerName = this.customerForm.get('name')?.value;
       const TaxID = this.customerForm.get('taxId')?.value;
+      console.log(company);
+      
       var name = ''
       this.userService.findUserById(this.idreq).subscribe((data: any) => {
         name = data.firstname
+        this.customerService.findApproversByCompany(company).subscribe(
+          (approvers) => {
+            console.log('842',name);
+            approvers.forEach((approver: any) => {
+              const to = approver.email;
+              const subject = 'OnePortal Notification';
+              const body = `
+              <p>เรียน ส่วนงานบัญชี</p>
+              <br>
+              <p>เรื่อง : คำขอเปิด Customer ใหม่</p>
+              <br>
+              <p>มีคำขอเปิด Customer ใหม่ จาก คุณ ${name} </p>
+              <br>
+              <p>เราได้รับคำขอเปิด Supplier: ${customerName} Tax ID:${TaxID} ของคุณแล้ว</p>
+              <br>
+              <p>สถานะคำขอของคุณ: ${this.customerForm.get('status')?.value} </p>
+              <br>
+              <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ <a>http://10.10.0.28:8085/</a></p>
+              <br>
+              <p>Best Regards</p>
+              <p>OnePortal</p>
+              <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
+  
+              this.emailService.sendEmail(to, subject, body).subscribe(
+                (response) => {
+                  console.log(response);
+                },
+                (error) => {
+                  console.error('Error sending email', error);
+                }
+              );
+            });
+          },
+          (error) => {
+            console.error('Error finding approvers', error);
+          }
+        );
         this._cdr.markForCheck();
       });
-      this.customerService.findApproversByCompany(company).subscribe(
-        (approvers) => {
-          approvers.forEach((approver: any) => {
-            const to = approver.email;
-            const subject = 'OnePortal Notification';
-            const body = `
-            <p>เรียน ส่วนงานบัญชี</p>
-            <br>
-            <p>เรื่อง : คำขอเปิด Customer ใหม่</p>
-            <br>
-            <p>มีคำขอเปิด Customer ใหม่ จาก คุณ ${name} </p>
-            <br>
-            <p>เราได้รับคำขอเปิด Supplier: ${customerName} Tax ID:${TaxID} ของคุณแล้ว</p>
-            <br>
-            <p>สถานะคำขอของคุณ: ${this.customerForm.get('status')?.value} </p>
-            <br>
-            <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ <a>http://10.10.0.28:8085/</a></p>
-            <br>
-            <p>Best Regards</p>
-            <p>OnePortal</p>
-            <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
-
-            this.emailService.sendEmail(to, subject, body).subscribe(
-              (response) => {
-              },
-              (error) => {
-                console.error('Error sending email', error);
-              }
-            );
-          });
-        },
-        (error) => {
-          console.error('Error finding approvers', error);
-        }
-      );
+      
     }
   }
 
@@ -989,7 +994,9 @@ export class CustomerAddComponent implements OnInit {
     var body = ''
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
       this.userData = data
+
       if (status === 'Pending Approved By ACC') {
+        console.log(this.userData.email);
         to = this.userData.email;
         subject = 'OnePortal Notification';
         body = `
@@ -1053,19 +1060,18 @@ export class CustomerAddComponent implements OnInit {
         <p>OnePortal</p>
         <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
       }
-
+      this.emailService.sendEmail(to, subject, body).subscribe(
+        (response) => {
+          console.log(response);
+        },
+        (error) => {
+          console.error('Error sending email', error);
+        }
+      );
       this._cdr.markForCheck();
     });
 
-
-    this.emailService.sendEmail(to, subject, body).subscribe(
-      (response) => {
-        console.log(response);
-      },
-      (error) => {
-        console.error('Error sending email', error);
-      }
-    );
+   
   }
 
   async checkApprove(event: Event): Promise<void> {

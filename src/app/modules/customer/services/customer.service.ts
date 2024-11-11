@@ -36,19 +36,6 @@ export class CustomerService {
     return this._http.get(`/Customer/GetCustomerType`);
   }
 
-  getTopCustomerByType(customerType: string): Observable<{ customer_num: string, code_from: string }> {
-    return this._http.get<{ customer_num: string, code_from: string }>(`/Customer/FindCustomerByTypeName?customerType=${customerType}`)
-      .pipe(
-        catchError(error => {
-          if (error.status === 404) {
-            return of({ customer_num: '000', code_from: '' }); // ในกรณีที่ไม่พบข้อมูลให้ return ค่า default
-          } else {
-            throw error;
-          }
-        })
-      );
-  }
-
   insertLog(log: any): Observable<any> {
     return this._http.post(`/EventLog/InsertLog`, log);
   }

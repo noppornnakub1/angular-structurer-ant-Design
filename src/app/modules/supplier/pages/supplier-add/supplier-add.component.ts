@@ -1164,6 +1164,7 @@ export class SupplierAddComponent {
   }
 
   private showSuccessNotification(): void {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     Swal.fire({
       icon: 'success',
       title: 'Updated!',
@@ -1172,7 +1173,7 @@ export class SupplierAddComponent {
       timer: 1500
     });
     const status = this.supplierForm.value.status;
-    if (this.isApproved && status === 'Pending Approved By ACC') {
+    if ((this.isApproved && status === 'Pending Approved By ACC') && currentUser.role == 3) {
       this.router.navigate([`/feature/supplier/view/${this.suppilerId}`]);
     } else {
       this.router.navigate(['/feature/supplier']);

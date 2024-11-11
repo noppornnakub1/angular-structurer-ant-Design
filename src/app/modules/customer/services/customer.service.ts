@@ -126,9 +126,6 @@ export class CustomerService {
     return this._http.get<DataOld>('/BankMasterData/KEY_SUPPLIER', { params });
   }
 
-  CheckDupplicateCustomer(key: string): Observable<any> {
-    return this._http.get(`/BankMasterData/CHECK_KEY_CUSTOMER?key=${key}`);
-  }
   GetNumMaxCustomer(num: string): Observable<any> {
     return this._http.get(`/TempNumKey/findbyKey/${num}`);
   }
@@ -185,9 +182,5 @@ export class CustomerService {
   
   CheckDuplicateSCustomerByConpanySiteAndName(formData: any): Observable<any> {
     return this._http.post(`/Customer/CheckDuplicateCustomer`, formData, { responseType: 'text' });
-  }
-
-  GetMaxCustomerNum() : Observable<any>{
-    return this._http.post(`/BankMasterData/updateCustomerInSqlServer`,{});
   }
 }

@@ -2118,15 +2118,6 @@ export class SupplierAddComponent {
     }
   }
 
-  getMaxSupplierNum(): void {
-    this.supplierService.GetMaxSupplierNum().subscribe({
-      next: (response: any) => {
-      },
-      error: () => {
-      }
-    });
-  }
-
   formatDateTime(dateTime: string): string {
     const date = new Date(dateTime);
 

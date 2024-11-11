@@ -1132,15 +1132,6 @@ export class CustomerAddComponent implements OnInit {
     });
   }
 
-  getMaxCustomerNum(): void {
-    this.customerService.GetMaxCustomerNum().subscribe({
-      next: (response: any) => {
-      },
-      error: () => {
-      }
-    });
-  }
-
   formatDateTime(dateTime: string): string {
     const date = new Date(dateTime);
 

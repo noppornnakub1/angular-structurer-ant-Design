@@ -151,9 +151,6 @@ export class SupplierService {
     return this._http.get(`/Supplier/GetGroupNames?company=${company}`);
   }
 
-  CheckDupplicateSupplier(key: string): Observable<any> {
-    return this._http.get(`/BankMasterData/CHECK_KEY_SUPPLIER?key=${key}`);
-  }
   GetNumMaxSupplier(num: string): Observable<any> {
     return this._http.get(`/TempNumKey/findbyKey/${num}`);
   }
@@ -164,10 +161,6 @@ export class SupplierService {
 
   CheckDuplicateSupplierByTaxIdAndType(formData: any): Observable<any> {
     return this._http.post(`/Supplier/CheckDuplicateSupplier`, formData, { responseType: 'text' });
-  }
-
-  GetMaxSupplierNum() : Observable<any>{
-    return this._http.post(`/BankMasterData/updateSupplierNumInSqlServer`,{});
   }
 
   GetSupplierFileTemplates() {

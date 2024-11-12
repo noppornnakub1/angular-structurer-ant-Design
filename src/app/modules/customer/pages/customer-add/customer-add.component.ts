@@ -114,12 +114,13 @@ export class CustomerAddComponent implements OnInit {
       addressDetail: ['']
     });
 
-    await this.handleRouteParams();
-
     if (this.router.url.includes('/view/')) {
       this.isViewMode = true;
       this.customerForm.disable();
     }
+
+    await this.getCustomerType();
+    await this.handleRouteParams();
 
     this.postCodeService.getPostCodes().subscribe(data => {
       this.items_provinces = data;
@@ -129,29 +130,6 @@ export class CustomerAddComponent implements OnInit {
     this.prefixService.getPrefix().subscribe(data => {
       this.item_prefix = data;
       this.filteredItemsPrefix = data;
-    });
-
-    this.getCustomerType();
-
-    this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
-      if (value === '1F' || value === 'OSEA') {
-        this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
-        this.customerForm.patchValue({ prefix: '' });
-      } else {
-        this.filteredItemsPrefix = this.item_prefix;
-      }
-
-      this._cdr.detectChanges();
-    });
-
-    this.customerForm.get('prefix')?.valueChanges.subscribe((prefix: string) => {
-      this.selectedPrefix = prefix;
-      this.updateNameWithPrefixChange();
-      this._cdr.detectChanges();
-    });
-
-    this.customerForm.get('company')?.valueChanges.subscribe(() => {
-      this.checkAndCallApi();
     });
 
     this.checkRole();
@@ -177,8 +155,19 @@ export class CustomerAddComponent implements OnInit {
 
             this.customerForm.patchValue({
               ...CustomerInfo,
-              postalCode: CustomerInfo.postalCode + '-' + CustomerInfo.subdistrict
+              customerNum: CustomerInfo.CustomerNum,
+              taxId: CustomerInfo.TaxId,
+              postalCode: CustomerInfo.postalCode + '-' + CustomerInfo.subdistrict,
+              prefix: CustomerInfo.Prefix,
+              name: CustomerInfo.Name,
+              addressSup: CustomerInfo.AddressSup,
+              addressDetail: CustomerInfo.AddressDetail
             });
+
+            const matchedType = this.listOfType.find(type => type.codeFrom === CustomerInfo.CodeFrom);
+            if (matchedType) {
+              this.customerForm.patchValue({ customerType: matchedType.code });
+            }
 
             this.items_provinces = postCodes;
             this.filteredItemsProvince = postCodes;
@@ -518,15 +507,20 @@ export class CustomerAddComponent implements OnInit {
     return formValue;
   }
 
-  getCustomerType(): void {
-    this.customerService.getCustomerType().subscribe({
-      next: (response: any) => {
-        this.listOfType = response;
-        this.filteredDataType = response;
-        this._cdr.markForCheck();
-      },
-      error: () => {
-      }
+  getCustomerType(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.customerService.getCustomerType().subscribe({
+        next: (response: any) => {
+          this.listOfType = response;
+          this.filteredDataType = response;
+          this._cdr.markForCheck();
+          resolve();
+        },
+        error: (err) => {
+          console.error("Error fetching customer types:", err);
+          reject(err);
+        }
+      });
     });
   }
 
@@ -833,14 +827,12 @@ export class CustomerAddComponent implements OnInit {
       const company = this.customerForm.get('company')?.value;
       const customerName = this.customerForm.get('name')?.value;
       const TaxID = this.customerForm.get('taxId')?.value;
-      console.log(company);
 
       var name = ''
       this.userService.findUserById(this.idreq).subscribe((data: any) => {
         name = data.firstname
         this.customerService.findApproversByCompany(company).subscribe(
           (approvers) => {
-            console.log('842', name);
             approvers.forEach((approver: any) => {
               const to = approver.email;
               const subject = 'OnePortal Notification';
@@ -863,7 +855,6 @@ export class CustomerAddComponent implements OnInit {
 
               this.emailService.sendEmail(to, subject, body).subscribe(
                 (response) => {
-                  console.log(response);
                 },
                 (error) => {
                   console.error('Error sending email', error);
@@ -914,7 +905,14 @@ export class CustomerAddComponent implements OnInit {
   }
 
   onCustomerTypeChange(value: string): void {
-    this.selectType = value;
+    const selectedType = this.listOfType.find(type => type.code === value);
+    if (selectedType) {
+      this.customerForm.patchValue({
+        customerType: selectedType.code,
+        codeFrom: selectedType.codeFrom,
+      });
+      this.selectType = selectedType.codeFrom;
+    }
   }
 
   isOverseaCustomer(): boolean {
@@ -997,7 +995,6 @@ export class CustomerAddComponent implements OnInit {
       this.userData = data
 
       if (status === 'Pending Approved By ACC') {
-        console.log(this.userData.email);
         to = this.userData.email;
         subject = 'OnePortal Notification';
         body = `
@@ -1063,7 +1060,6 @@ export class CustomerAddComponent implements OnInit {
       }
       this.emailService.sendEmail(to, subject, body).subscribe(
         (response) => {
-          console.log(response);
         },
         (error) => {
           console.error('Error sending email', error);

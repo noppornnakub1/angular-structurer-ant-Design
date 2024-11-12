@@ -11,9 +11,11 @@
         </nz-form-label>
         <nz-select formControlName="customerType" nzPlaceHolder="Select customer_type" class="custom-select"
           (ngModelChange)="onCustomerTypeChange($event)">
-          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.codeFrom+')'+' '+' '+type.meaning"
-            [nzValue]="type.code"></nz-option>
+          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.codeFrom+')' + ' ' + type.meaning"
+            [nzValue]="type.code">
+          </nz-option>
         </nz-select>
+        <div *ngIf="!listOfType.length">Loading customer types...</div>
       </div>
       <div *ngIf="!isOverseaCustomer() && (isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="8"
         class="pr-3">
@@ -37,7 +39,7 @@
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
           <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)"
-            (blur)="onSiteBlur()" required/>
+            (blur)="onSiteBlur()" required />
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaCustomer() && !(isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12"
@@ -53,7 +55,8 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="idcard" class="form-input">
-          <input nz-input type="text" placeholder="Tax ID" formControlName="taxId" (input)="validateTaxId($event)" (blur)="onTaxIdBlur()"/>
+          <input nz-input type="text" placeholder="Tax ID" formControlName="taxId" (input)="validateTaxId($event)"
+            (blur)="onTaxIdBlur()" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="4" class="pr-3 mt-3">
@@ -67,7 +70,7 @@
         <nz-select formControlName="prefix" nzPlaceHolder="Prefix" class="custom-select">
           <nz-option *ngFor="let type of filteredItemsPrefix" [nzLabel]="type.name" [nzValue]="type.name"></nz-option>
         </nz-select>
-      </div>
+      </div>      
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="13" class="pr-3" style="margin-top: 46px;">
         <nz-input-group nzPrefixIcon="user" class="form-input">
           <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" />
@@ -205,15 +208,17 @@
     <div class="mt-5 display-flex justify-center ">
       <button nz-button nzType="default" class="mr-2" (click)="backClicked($event)"><span nz-icon nzType="rollback"
           nzTheme="outline"></span>ย้อนกลับ</button>
-      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || ((isAdmin || isApproved) && customerForm.get('status')?.value === 'Pending Approved By ACC'))" nz-button
-        nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
+      <button
+        *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || ((isAdmin || isApproved) && customerForm.get('status')?.value === 'Pending Approved By ACC'))"
+        nz-button nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
           nzTheme="outline"></span>Cancel</button>
       <button nz-tooltip nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
         *ngIf="!isViewMode && ((isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(customerForm.get('status')?.value)) || isAdmin || isApproved)"
         class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft
       </button>
-      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || ((isAdmin || isApproved) && customerForm.get('status')?.value === 'Pending Approved By ACC'))"
+      <button
+        *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || ((isAdmin || isApproved) && customerForm.get('status')?.value === 'Pending Approved By ACC'))"
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit
       </button>
@@ -251,7 +256,7 @@
       <tr *ngFor="let log of logs">
         <td>{{ log.Username }}</td>
         <td>{{ log.Status }}</td>
-        <td>{{ log.reject_reason }}</td>
+        <td>{{ log.RejectReason }}</td>
         <td>{{ log.time | date:'short' }}</td>
       </tr>
     </tbody>

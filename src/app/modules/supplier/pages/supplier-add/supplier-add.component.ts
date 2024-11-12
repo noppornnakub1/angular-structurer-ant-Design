@@ -750,7 +750,6 @@ export class SupplierAddComponent {
   removeFile(file: any, isForBank: boolean = false): void {
     if (file.fileId) {
       const supbankId = file.supbankId || (isForBank ? this.supplierBankForm.get('supbankId')?.value : this.supplierBankFormAdd.get('supbankId')?.value);
-      console.log();
       
       if (isForBank) {
         this.fileIdsToRemoveForBank.push(file.fileId);
@@ -761,7 +760,6 @@ export class SupplierAddComponent {
       if (!this.fileIdsToRemoveMapping.find(item => item.FileId === file.fileId && item.SupbankId === supbankId)) {
         this.fileIdsToRemoveMapping.push({ SupbankId: supbankId, FileId: file.fileId });
       }
-      console.log(this.fileIdsToRemoveMapping);
       
       file.filePath = '';
       file.fileName = '';
@@ -1009,9 +1007,7 @@ export class SupplierAddComponent {
 
     if (this.supplierForm.valid) {
       const formData = this.prepareFormAddData();
-      console.log(formData);
       formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
       });
 
       if (this.suppilerId) {
@@ -1203,9 +1199,7 @@ export class SupplierAddComponent {
   onUpdate(formValue: any): void {
     if (formValue && this.suppilerId) {
       const formData = this.prepareFormAddData();
-      console.log(formData);
       formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
       });
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
@@ -1794,7 +1788,6 @@ export class SupplierAddComponent {
     const supplierNum = this.supplierForm.get('supplierNum')?.value;
     const supplierName = this.supplierForm.get('name')?.value;
     const TaxID = this.supplierForm.get('tax_Id')?.value;
-    console.log(this.supplierForm);
     var name = '';
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
       name = data.firstname
@@ -1991,9 +1984,6 @@ export class SupplierAddComponent {
     var body = ''
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
       this.userData = data
-      console.log(this.userData);
-      console.log(status);
-      console.log(this.userData.firstname,this.userData.email);
       if (status === 'Pending Approved By ACC') {
         to = this.userData.email;
         subject = 'OnePortal Notification';
@@ -2123,7 +2113,6 @@ export class SupplierAddComponent {
       }
       this.emailService.sendEmail(to, subject, body).subscribe(
         (response) => {
-          console.log(response); 
         },
         (error) => {
           console.error('Error sending email', error);
@@ -2242,10 +2231,7 @@ export class SupplierAddComponent {
 
     const fileIds = (this.fileIdsToRemove || []).map(file => file.FileId).filter(id => id !== undefined);
     const filesToRemoveBank: number[] = this.fileIdsToRemoveBank
-    console.log(this.fileIdsToRemoveForBankJson);
-    console.log(this.fileIdsToRemoveJson);
-    
-    
+
     const supplierBankData = [];
     let mainSupplierId: number | undefined;
     let mainCompany: string | undefined;

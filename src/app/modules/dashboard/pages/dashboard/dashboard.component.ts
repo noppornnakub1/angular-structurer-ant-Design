@@ -208,63 +208,48 @@ export class DashboardComponent {
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-
     if (!currentUser) {
       console.error('Current user is not available in local storage');
       return;
     }
-    if (currentUser.role == 1) {
-      const userId = undefined;
-      const company = undefined;
-      this.customerService.findDataHistoryByUserId(userId, company).subscribe({
-        next: (response: any) => {
-          this.listOfData = response;
-          this.applyFilters();
-          this._cdr.markForCheck();
-        },
-        error: () => {
-        }
-      });
+
+    let userId = currentUser.userId;
+    let company = currentUser.company;
+    let status = '';
+    let ownerType = '';
+
+    switch (currentUser.role) {
+      case 1:
+        userId = undefined;
+        company = undefined;
+        break;
+      case 3:
+        status = 'Pending Approved By ACC';
+        ownerType = 'ACC';
+        break;
+      case 4:
+        status = 'Approved By ACC';
+        ownerType = 'ACC';
+        break;
+      default:
+        userId = currentUser.userId;
+        company = undefined;
     }
-    else if (currentUser.role == 3) {
-      const userId = currentUser.userId;
-      const company = currentUser.company;
-      this.customerService.FindDataHistoryByApprover(userId, company, 'Pending Approved By ACC', 'ACC').subscribe({
-        next: (response: any) => {
-          this.listOfData = response;
-          this.applyFilters();
-          this._cdr.markForCheck();
-        },
-        error: () => {
-        }
-      });
-    }
-    else if (currentUser.role == 4) {
-      const userId = currentUser.userId;
-      const company = currentUser.company;
-      this.customerService.FindDataHistoryByApproverFN(userId, company, 'Approved By ACC', 'ACC').subscribe({
-        next: (response: any) => {
-          this.listOfData = response;
-          this.applyFilters();
-          this._cdr.markForCheck();
-        },
-        error: () => {
-        }
-      });
-    }
-    else {
-      const userId = currentUser.userId;
-      const company = undefined;
-      this.customerService.findDataHistoryByUserId(userId, company).subscribe({
-        next: (response: any) => {
-          this.listOfData = response;
-          this.applyFilters();
-          this._cdr.markForCheck();
-        },
-        error: () => {
-        }
-      });
-    }
+
+    this.fetchCustomerSupplierHistory(userId, company, status, ownerType);
+  }
+
+  fetchCustomerSupplierHistory(userId?: number, company?: string, status?: string, ownerType?: string): void {
+    this.customerService.getCustomerSupplierHistory(userId, company, status, ownerType).subscribe({
+      next: (response: any) => {
+        this.listOfData = response;
+        this.applyFilters();
+        this._cdr.markForCheck();
+      },
+      error: () => {
+        console.error('Failed to fetch customer supplier history');
+      }
+    });
   }
 
   searchDataOld(): void {

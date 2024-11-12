@@ -132,6 +132,29 @@ export class CustomerAddComponent implements OnInit {
       this.filteredItemsPrefix = data;
     });
 
+    this.getCustomerType();
+
+    this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
+      if (value === '1F' || value === 'OSEA') {
+        this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
+        this.customerForm.patchValue({ prefix: '' });
+      } else {
+        this.filteredItemsPrefix = this.item_prefix;
+      }
+
+      this._cdr.detectChanges();
+    });
+
+    this.customerForm.get('prefix')?.valueChanges.subscribe((prefix: string) => {
+      this.selectedPrefix = prefix;
+      this.updateNameWithPrefixChange();
+      this._cdr.detectChanges();
+    });
+
+    this.customerForm.get('company')?.valueChanges.subscribe(() => {
+      this.checkAndCallApi();
+    });
+
     this.checkRole();
     this.getDataCompany();
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
@@ -331,24 +354,6 @@ export class CustomerAddComponent implements OnInit {
     });
   }
 
-  loadCustomerType(id: number): void {
-    this.customerService.findCustomerTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
-      const customerNumPrefix = data.codeFrom;
-      this.typeCode = customerNumPrefix;
-      if (customerNumPrefix === '1F') {
-        this.customerForm.patchValue({
-          customerNum: '',
-          postalCode: '-',
-          province: '-',
-          district: '-',
-          subdistrict: '-',
-          site: '',
-          postId: 0
-        });
-      }
-    });
-  }
-
   getCustomerTypeId(code: string): number | undefined {
     const type = this.listOfType.find(t => t.code === code);
     return type ? type.id : undefined;
@@ -424,18 +429,18 @@ export class CustomerAddComponent implements OnInit {
 
     if (this.customerForm.valid) {
       const formValue = this.prepareFormData();
+      const fileToUpload = this.listfile.length !== 0 ? this.listfile[0] : undefined;
 
       if (this.customerId) {
         await this.onUpdate();
       } else {
-        this.customerService.addData(formValue).subscribe({
+        this.customerService.addDataWithFile(formValue, fileToUpload).subscribe({
           next: async (response) => {
             this.customerForm.patchValue({ customerId: response.customer_id });
-            this.customerId = response.customer_id
-            if (this.listfile.length !== 0) {
-              await this.UploadFile();
-            }
+            this.customerId = response.customer_id;
+
             this.insertLog();
+
             Swal.fire({
               icon: 'success',
               title: 'Saved!',

@@ -16,8 +16,18 @@ export class CustomerService {
     return this._http.get(`/Customer/CustomerInfo`);
   }
 
-  addData(customer: any): Observable<any> {
-    return this._http.post(`/Customer/AddCustomer`, customer);
+  addDataWithFile(customer: any, file?: File): Observable<any> {
+    const formData = new FormData();
+
+    Object.keys(customer).forEach(key => {
+      formData.append(key, customer[key]);
+    });
+
+    if (file) {
+      formData.append('file', file);
+    }
+
+    return this._http.post(`/Customer/AddCustomer`, formData);
   }
 
   findCustomerById(id: number): Observable<ICustomer> {
@@ -63,21 +73,6 @@ export class CustomerService {
     return this._http.get(`/User/findApproversByCompany?company=${company}`);
   }
 
-  findDataHistoryByUserId(id?: number, company?: string): Observable<CustomerSupplier> {
-    // ตรวจสอบเงื่อนไขว่าเราจะส่งค่าอะไรบ้าง
-    let params = '';
-
-    if (id) {
-      params += `?userid=${id}`;
-    }
-
-    if (company) {
-      params += params ? `&company=${company}` : `?company=${company}`;
-    }
-
-    return this._http.get<CustomerSupplier>(`/Customer/GetCustomerSupplierHistory${params}`);
-  }
-
   findDataOldCustomer(num?: string, name?: string, site?: string): Observable<DataOld> {
     // สร้าง query string ตามพารามิเตอร์ที่มีค่า
     let params = new HttpParams();
@@ -117,56 +112,24 @@ export class CustomerService {
     return this._http.get(`/TempNumKey/findbyKey/${num}`);
   }
 
-  FindDataHistoryByApprover(id?: number, company?: string, status?: string, ownerType?: string): Observable<CustomerSupplier> {
-    let params = '';
+  getCustomerSupplierHistory(id?: number, company?: string, status?: string, ownerType?: string): Observable<CustomerSupplier> {
+    const params = new HttpParams({
+      fromObject: {
+        userid: id?.toString() || '',
+        company: company || '',
+        status: status || '',
+        ownerType: ownerType || ''
+      }
+    });
 
-    if (id) {
-      params += `?userid=${id}`;
-    }
-
-    if (company) {
-      params += params ? `&company=${company}` : `?company=${company}`;
-    }
-
-    if (status) {
-      params += params ? `&status=${status}` : `?status=${status}`;
-    }
-
-    if (ownerType) {
-      params += params ? `&ownerType=${ownerType}` : `?ownerType=${ownerType}`;
-    }
-
-    return this._http.get<CustomerSupplier>(`/Customer/GetCustomerSupplierHistory${params}`);
-  }
-
-  FindDataHistoryByApproverFN(id?: number, company?: string, status?: string, ownerType?: string): Observable<CustomerSupplier> {
-    // ตรวจสอบเงื่อนไขว่าเราจะส่งค่าอะไรบ้าง
-    let params = '';
-
-    if (id) {
-      params += `?userid=${id}`;
-    }
-
-    if (company) {
-      params += params ? `&company=${company}` : `?company=${company}`;
-    }
-
-    if (status) {
-      params += params ? `&status=${status}` : `?status=${status}`;
-    }
-
-    if (ownerType) {
-      params += params ? `&ownerType=${ownerType}` : `?ownerType=${ownerType}`;
-    }
-
-    return this._http.get<CustomerSupplier>(`/Customer/GetCustomerSupplierHistory${params}`);
+    return this._http.get<CustomerSupplier>('/Customer/GetCustomerSupplierHistory', { params });
   }
 
   uploadFile(file: any): Observable<any> {
     return this._http.post(`/Customer/upload`, file);
   }
 
-  
+
   CheckDuplicateSCustomerByConpanySiteAndName(formData: any): Observable<any> {
     return this._http.post(`/Customer/CheckDuplicateCustomer`, formData, { responseType: 'text' });
   }

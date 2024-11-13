@@ -258,7 +258,7 @@
             [nzValue]="type.inputTaxCode"></nz-option>
         </nz-select>
       </div>
-      <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+      <div  nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Company<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Company ; ท่าน Request ผ่านบ้านอะไร" class="material-symbols-outlined ml-1"
             style="font-size: 18px;">
@@ -617,7 +617,7 @@
         <td>{{ log.username }}</td>
         <td>{{ log.status }}</td>
         <td>{{ log.rejectReason }}</td>
-        <td>{{ log.time | date:'short' }}</td>
+        <td>{{ log.time }}</td>
       </tr>
     </tbody>
   </nz-table>

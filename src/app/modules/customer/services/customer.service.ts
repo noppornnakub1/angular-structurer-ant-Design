@@ -168,6 +168,6 @@ export class CustomerService {
 
   
   CheckDuplicateSCustomerByConpanySiteAndName(formData: any): Observable<any> {
-    return this._http.post(`/Customer/CheckDuplicateCustomer`, formData, { responseType: 'text' });
-  }
+    return this._http.post(`/Customer/CheckDuplicateCustomer`, formData);
+}
 }

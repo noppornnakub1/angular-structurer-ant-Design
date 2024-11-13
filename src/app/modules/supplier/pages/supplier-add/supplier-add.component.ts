@@ -205,7 +205,7 @@ export class SupplierAddComponent {
   fileBankAddApi: boolean = false;
   public isLoadingFromAPI = false;
   submittedFormLottoRisk$ = new BehaviorSubject<boolean>(false);
-  userData:any;
+  userData: any;
   constructor(private _location: Location, private fb: FormBuilder
     , private supplierService: SupplierService,
     private router: Router,
@@ -226,6 +226,19 @@ export class SupplierAddComponent {
     this.loadStaticData();
     this.setupFormListeners();
 
+    this.supplierForm.get('supplierType')!.valueChanges.subscribe(value => {
+      console.log(value);
+      if(!this.suppilerId)
+      if (value === '2F' || value === 'OSEA') {
+        this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
+        this.supplierForm.patchValue({
+          prefix: ''
+        });
+      } else {
+        this.filteredItemsPrefix = this.item_prefix;
+      }
+      this._cdr.detectChanges();
+    });
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
 
     this.checkRole();
@@ -235,8 +248,8 @@ export class SupplierAddComponent {
     this.supplierForm = this.fb.group({
       id: [0], prefix: ['', Validators.required], name: ['', Validators.required],
       tax_Id: ['', Validators.required], addressSup: ['', Validators.required],
-      postalCode: [null, Validators.required], province: [null , Validators.required], district: [null , Validators.required],
-      subdistrict: [null , Validators.required], tel: ['', Validators.required], email: ['', Validators.required],
+      postalCode: [null, Validators.required], province: [null, Validators.required], district: [null, Validators.required],
+      subdistrict: [null, Validators.required], tel: ['', Validators.required], email: ['', Validators.required],
       supplierNum: [{ value: '', disabled: true }], supplierType: ['', Validators.required],
       site: ['00000', Validators.required], vat: [''], status: ['', Validators.required],
       paymentMethod: ['', Validators.required], company: ['', Validators.required],
@@ -751,7 +764,7 @@ export class SupplierAddComponent {
     if (file.fileId) {
       const supbankId = file.supbankId || (isForBank ? this.supplierBankForm.get('supbankId')?.value : this.supplierBankFormAdd.get('supbankId')?.value);
       console.log();
-      
+
       if (isForBank) {
         this.fileIdsToRemoveForBank.push(file.fileId);
       } else {
@@ -762,7 +775,7 @@ export class SupplierAddComponent {
         this.fileIdsToRemoveMapping.push({ SupbankId: supbankId, FileId: file.fileId });
       }
       console.log(this.fileIdsToRemoveMapping);
-      
+
       file.filePath = '';
       file.fileName = '';
 
@@ -915,9 +928,7 @@ export class SupplierAddComponent {
             province: '-',
             district: '-',
             subdistrict: '-',
-            site: '',
             vat: '-',
-            company: '-',
             paymentMethod: '-'
           });
         }
@@ -927,7 +938,6 @@ export class SupplierAddComponent {
             province: '-',
             district: '-',
             subdistrict: '-',
-            site: '',
             vat: '-',
             paymentMethod: '-'
           });
@@ -1029,7 +1039,7 @@ export class SupplierAddComponent {
                 showConfirmButton: false,
                 timer: 1500
               });
-        
+
               this.router.navigate(['/feature/supplier']);
             }
           },
@@ -1838,7 +1848,7 @@ export class SupplierAddComponent {
         }
       );
     }
-    else if ((this.supplierForm.get('status')?.value === 'Approved By ACC' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee' )) && !this.supplierBankForm.valid) {
+    else if ((this.supplierForm.get('status')?.value === 'Approved By ACC' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')) && !this.supplierBankForm.valid) {
       const company = this.supplierForm.get('company')?.value;
       this.supplierService.findApproversFNByCompany(company).subscribe(
         (approvers) => {
@@ -1993,7 +2003,7 @@ export class SupplierAddComponent {
       this.userData = data
       console.log(this.userData);
       console.log(status);
-      console.log(this.userData.firstname,this.userData.email);
+      console.log(this.userData.firstname, this.userData.email);
       if (status === 'Pending Approved By ACC') {
         to = this.userData.email;
         subject = 'OnePortal Notification';
@@ -2018,10 +2028,10 @@ export class SupplierAddComponent {
         <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
       }
       else if (status === 'Approved By ACC') {
-        if(paymentMethod === 'Transfer' || paymentMethod ==='Transfer_Employee'){
-        to = this.userData.email;
-        subject = 'OnePortal Notification';
-        body = `
+        if (paymentMethod === 'Transfer' || paymentMethod === 'Transfer_Employee') {
+          to = this.userData.email;
+          subject = 'OnePortal Notification';
+          body = `
         <p>เรียน คุณ${this.userData.firstname}</p>
         <br>
         <p>เรื่อง : มีการเปลี่ยนแปลงสถานะคำขอเปิด Supplier ของท่าน</p>
@@ -2038,10 +2048,10 @@ export class SupplierAddComponent {
         <p>OnePortal</p>
         <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
         }
-        else{
-        to = this.userData.email;
-        subject = 'OnePortal Notification';
-        body = `
+        else {
+          to = this.userData.email;
+          subject = 'OnePortal Notification';
+          body = `
         <p>เรียน คุณ${this.userData.firstname}</p>
         <br>
         <p>เรื่อง : มีการเปลี่ยนแปลงสถานะคำขอเปิด Supplier ของท่าน</p>
@@ -2123,7 +2133,7 @@ export class SupplierAddComponent {
       }
       this.emailService.sendEmail(to, subject, body).subscribe(
         (response) => {
-          console.log(response); 
+          console.log(response);
         },
         (error) => {
           console.error('Error sending email', error);
@@ -2220,7 +2230,7 @@ export class SupplierAddComponent {
       console.error('Current user is not available in local storage');
       return new FormData();
     }
-    
+
     const formValue = { ...this.supplierForm.value };
     formValue.postalCode = formValue.postalCode.split('-')[0];
     formValue.UserId = currentUser.userId;
@@ -2235,23 +2245,23 @@ export class SupplierAddComponent {
       SupplierFilesMetadata.push({
         supplierGroup: 'SupplierFile',
         fileName: selectedFile.file.name,
-        labelText:selectedFile.labelText
+        labelText: selectedFile.labelText
       });
-      labelTexts.push(selectedFile.labelText);  
+      labelTexts.push(selectedFile.labelText);
     }
 
     const fileIds = (this.fileIdsToRemove || []).map(file => file.FileId).filter(id => id !== undefined);
     const filesToRemoveBank: number[] = this.fileIdsToRemoveBank
     console.log(this.fileIdsToRemoveForBankJson);
     console.log(this.fileIdsToRemoveJson);
-    
-    
+
+
     const supplierBankData = [];
     let mainSupplierId: number | undefined;
     let mainCompany: string | undefined;
     const labelTextsGrouped: { [key: string]: string[] } = {};
     const supplierBankFilesMetadata: { supplierGroup: string, fileName: string, labelText: string }[] = [];
-   
+
 
     if (this.showSupplierBankForm) {
       const bankFormValue = { ...this.supplierBankForm.value };
@@ -2263,11 +2273,11 @@ export class SupplierAddComponent {
 
       this.selectedNewFilesSupplier.forEach(selectedFile => {
         formData.append('SupplierBankFiles', selectedFile.file, selectedFile.file.name);
-  
+
         supplierBankFilesMetadata.push({
           supplierGroup: bankFormValue.supplierGroup,
           fileName: selectedFile.file.name,
-          labelText:selectedFile.labelText
+          labelText: selectedFile.labelText
         });
 
         if (!labelTextsGrouped[bankFormValue.supplierGroup]) {
@@ -2290,7 +2300,7 @@ export class SupplierAddComponent {
         supplierBankFilesMetadata.push({
           supplierGroup: bankFormValueAdd.supplierGroup,
           fileName: selectedFile.file.name,
-          labelText:selectedFile.labelText
+          labelText: selectedFile.labelText
         });
 
         if (!labelTextsGrouped[bankFormValueAdd.supplierGroup]) {
@@ -2339,14 +2349,14 @@ export class SupplierAddComponent {
   onEnterKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       event.preventDefault();
-  
+
       const targetElement = event.target as HTMLElement;
-  
+
       if (targetElement && targetElement.closest) {
         const form = targetElement.closest('form') as HTMLFormElement;
         const inputs = Array.from(form.querySelectorAll('input'));
         const currentIndex = inputs.indexOf(targetElement as HTMLInputElement);
-  
+
         if (currentIndex > -1 && currentIndex < inputs.length - 1) {
           const nextInput = inputs[currentIndex + 1] as HTMLInputElement;
           nextInput.focus();

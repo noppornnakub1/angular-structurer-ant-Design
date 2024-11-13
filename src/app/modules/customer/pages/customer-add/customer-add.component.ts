@@ -833,13 +833,13 @@ export class CustomerAddComponent implements OnInit {
       const customerName = this.customerForm.get('name')?.value;
       const TaxID = this.customerForm.get('taxId')?.value;
       console.log(company);
-      
+
       var name = ''
       this.userService.findUserById(this.idreq).subscribe((data: any) => {
         name = data.firstname
         this.customerService.findApproversByCompany(company).subscribe(
           (approvers) => {
-            console.log('842',name);
+            console.log('842', name);
             approvers.forEach((approver: any) => {
               const to = approver.email;
               const subject = 'OnePortal Notification';
@@ -859,7 +859,7 @@ export class CustomerAddComponent implements OnInit {
               <p>Best Regards</p>
               <p>OnePortal</p>
               <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
-  
+
               this.emailService.sendEmail(to, subject, body).subscribe(
                 (response) => {
                   console.log(response);
@@ -876,7 +876,7 @@ export class CustomerAddComponent implements OnInit {
         );
         this._cdr.markForCheck();
       });
-      
+
     }
   }
 
@@ -1071,7 +1071,7 @@ export class CustomerAddComponent implements OnInit {
       this._cdr.markForCheck();
     });
 
-   
+
   }
 
   async checkApprove(event: Event): Promise<void> {
@@ -1119,20 +1119,40 @@ export class CustomerAddComponent implements OnInit {
       Site: site,
       Name: name
     };
-
     this.customerService.CheckDuplicateSCustomerByConpanySiteAndName(formData).subscribe({
-      next: (response: string) => {
-        if (response.includes('No duplicate Customer found.')) {
+      next: (response) => {
+        if (response) {
+          this.customerForm.patchValue({ name: response.customerName });
+          this.customerForm.patchValue({ taxId: response.taxReference });
+          this.customerForm.patchValue({ addressSup: response.address1 });
+          this.customerForm.patchValue({ addressDetail: response.address2 });
+          this.customerForm.patchValue({
+            postalCode: response.postal + '-' + response.address3
+          });
+          this.customerForm.patchValue({ district: response.addres4 });
+          this.customerForm.patchValue({ subdistrict: response.address3 });
+          this.customerForm.patchValue({ province: response.province });
         }
       },
       error: (err) => {
-        console.error('Error occurred:', err);
+        console.error('Error occurred:', err.message);
         Swal.fire({
           icon: 'warning',
           title: 'ข้อมูลซ้ำ',
-          text: err,
+          text: err.message,
           confirmButtonText: 'ปิด'
         });
+
+        this.customerForm.patchValue({ name: err.customerName });
+        this.customerForm.patchValue({ taxId: err.taxReference });
+        this.customerForm.patchValue({ addressSup: err.address1 });
+        this.customerForm.patchValue({ addressDetail: err.address2 });
+        this.customerForm.patchValue({
+          postalCode: err.postal + '-' + err.address3
+        });
+        this.customerForm.patchValue({ district: err.address4 });
+        this.customerForm.patchValue({ subdistrict: err.address3 });
+        this.customerForm.patchValue({ province: err.province });
         this.customerForm.patchValue({ company: '' });
       }
     });
@@ -1155,14 +1175,14 @@ export class CustomerAddComponent implements OnInit {
   onEnterKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       event.preventDefault();
-  
+
       const targetElement = event.target as HTMLElement;
-  
+
       if (targetElement && targetElement.closest) {
         const form = targetElement.closest('form') as HTMLFormElement;
         const inputs = Array.from(form.querySelectorAll('input'));
         const currentIndex = inputs.indexOf(targetElement as HTMLInputElement);
-  
+
         if (currentIndex > -1 && currentIndex < inputs.length - 1) {
           const nextInput = inputs[currentIndex + 1] as HTMLInputElement;
           nextInput.focus();

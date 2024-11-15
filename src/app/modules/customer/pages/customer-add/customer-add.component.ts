@@ -139,13 +139,15 @@ export class CustomerAddComponent implements OnInit {
       if (customerTypeId) {
         this.loadCustomerType(customerTypeId);
       }
-      if (value === '1F' || value === 'OSEA') {
-        this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
-        this.customerForm.patchValue({
-          prefix: ''
-        });
-      } else {
-        this.filteredItemsPrefix = this.item_prefix;
+      if(this.customerId == 0){
+        if (value === '1F' || value === 'OSEA') {
+          this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
+          this.customerForm.patchValue({
+            prefix: ''
+          });
+        } else {
+          this.filteredItemsPrefix = this.item_prefix;
+        }
       }
 
       this._cdr.detectChanges();
@@ -345,16 +347,18 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.findCustomerTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
       const customerNumPrefix = data.codeFrom;
       this.typeCode = customerNumPrefix;
-      if (customerNumPrefix === '1F') {
-        this.customerForm.patchValue({
-          customerNum: '',
-          postalCode: '-',
-          province: '-',
-          district: '-',
-          subdistrict: '-',
-          site: '',
-          postId: 0
-        });
+      if(this.customerId == 0){
+        if (customerNumPrefix === '1F') {
+          this.customerForm.patchValue({
+            customerNum: '',
+            postalCode: '-',
+            province: '-',
+            district: '-',
+            subdistrict: '-',
+            site: '',
+            postId: 0
+          });
+        }
       }
     });
   }
@@ -431,10 +435,10 @@ export class CustomerAddComponent implements OnInit {
     if (this.isViewMode) {
       this.customerForm.enable();
     }
-
+    console.log(this.customerForm);
+    
     if (this.customerForm.valid) {
       const formValue = this.prepareFormData();
-
       if (this.customerId) {
         await this.onUpdate();
       } else {
@@ -502,6 +506,7 @@ export class CustomerAddComponent implements OnInit {
       console.error('Current user is not available in local storage');
       return;
     }
+
     const formValue = { ...this.customerForm.value };
     const postalCode = formValue.postalCode.split('-')[0];
 
@@ -655,7 +660,6 @@ export class CustomerAddComponent implements OnInit {
       });
       return;
     }
-
     if (!this.isFormValidWithoutCustomerNum()) {
       Swal.fire({
         icon: 'warning',
@@ -795,7 +799,8 @@ export class CustomerAddComponent implements OnInit {
     if (!this.customerId) {
       this.customerForm.patchValue({ customerNum: this.newCusnum });
     }
-
+    console.log("555");
+    
     await this.onSubmit();
   }
 
@@ -839,7 +844,6 @@ export class CustomerAddComponent implements OnInit {
         name = data.firstname
         this.customerService.findApproversByCompany(company).subscribe(
           (approvers) => {
-            console.log('842', name);
             approvers.forEach((approver: any) => {
               const to = approver.email;
               const subject = 'OnePortal Notification';
@@ -850,7 +854,7 @@ export class CustomerAddComponent implements OnInit {
               <br>
               <p>มีคำขอเปิด Customer ใหม่ จาก คุณ ${name} </p>
               <br>
-              <p>เราได้รับคำขอเปิด Supplier: ${customerName} Tax ID:${TaxID} ของคุณแล้ว</p>
+              <p>เราได้รับคำขอเปิด Customer: ${customerName} Tax ID:${TaxID} ของคุณแล้ว</p>
               <br>
               <p>สถานะคำขอของคุณ: ${this.customerForm.get('status')?.value} </p>
               <br>
@@ -1121,39 +1125,40 @@ export class CustomerAddComponent implements OnInit {
     };
     this.customerService.CheckDuplicateSCustomerByConpanySiteAndName(formData).subscribe({
       next: (response) => {
+        console.log(response);
+        
         if (response) {
-          this.customerForm.patchValue({ name: response.customerName });
-          this.customerForm.patchValue({ taxId: response.taxReference });
-          this.customerForm.patchValue({ addressSup: response.address1 });
-          this.customerForm.patchValue({ addressDetail: response.address2 });
-          this.customerForm.patchValue({
-            postalCode: response.postal + '-' + response.address3
-          });
-          this.customerForm.patchValue({ district: response.addres4 });
-          this.customerForm.patchValue({ subdistrict: response.address3 });
-          this.customerForm.patchValue({ province: response.province });
+          this.customerForm.patchValue({ 
+            name: response.customerName || '-', 
+            taxId: response.taxReference || '-', 
+            addressSup: response.address1 || '-', 
+            addressDetail: response.address2 || '-', 
+            postalCode: (response.postal ? response.postal + '-' + (response.address3 || '-') : '-'), 
+            district: response.address4 || '-', 
+            subdistrict: response.address3 || '-', 
+            province: response.province || '-' 
+        });
         }
       },
       error: (err) => {
         console.error('Error occurred:', err.message);
-        Swal.fire({
-          icon: 'warning',
-          title: 'ข้อมูลซ้ำ',
-          text: err.message,
-          confirmButtonText: 'ปิด'
+          Swal.fire({
+            icon: 'warning',
+            title: 'ข้อมูลซ้ำ',
+            text: err.message,
+            confirmButtonText: 'ปิด'
+          });
+          this.customerForm.patchValue({ 
+            name: err.customerName || '-', 
+            taxId: err.taxReference || '-', 
+            addressSup: err.address1 || '-', 
+            addressDetail: err.address2 || '-', 
+            postalCode: (err.postal ? err.postal + '-' + (err.address3 || '-') : '-'), 
+            district: err.address4 || '-', 
+            subdistrict: err.address3 || '-', 
+            province: err.province || '-',
+            company: '' 
         });
-
-        this.customerForm.patchValue({ name: err.customerName });
-        this.customerForm.patchValue({ taxId: err.taxReference });
-        this.customerForm.patchValue({ addressSup: err.address1 });
-        this.customerForm.patchValue({ addressDetail: err.address2 });
-        this.customerForm.patchValue({
-          postalCode: err.postal + '-' + err.address3
-        });
-        this.customerForm.patchValue({ district: err.address4 });
-        this.customerForm.patchValue({ subdistrict: err.address3 });
-        this.customerForm.patchValue({ province: err.province });
-        this.customerForm.patchValue({ company: '' });
       }
     });
   }

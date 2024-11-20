@@ -444,28 +444,28 @@ export class CustomerAddComponent implements OnInit {
       if (this.customerId) {
         await this.onUpdate();
       } else {
-        // this.customerService.addData(formValue).subscribe({
-        //   next: async (response) => {
-        //     this.customerForm.patchValue({ customerId: response.customer_id });
-        //     this.customerId = response.customer_id
-        //     if (this.listfile.length !== 0) {
-        //       await this.UploadFile();
-        //     }
-        //     this.insertLog();
-        //     Swal.fire({
-        //       icon: 'success',
-        //       title: 'Saved!',
-        //       text: 'Your data has been saved.',
-        //       showConfirmButton: false,
-        //       timer: 1500
-        //     }).then(() => {
-        //       this.router.navigate(['/feature/customer']);
-        //     });
-        //   },
-        //   error: (err) => {
-        //     console.error('Error adding data', err);
-        //   }
-        // });
+        this.customerService.addData(formValue).subscribe({
+          next: async (response) => {
+            this.customerForm.patchValue({ customerId: response.customer_id });
+            this.customerId = response.customer_id
+            if (this.listfile.length !== 0) {
+              await this.UploadFile();
+            }
+            this.insertLog();
+            Swal.fire({
+              icon: 'success',
+              title: 'Saved!',
+              text: 'Your data has been saved.',
+              showConfirmButton: false,
+              timer: 1500
+            }).then(() => {
+              this.router.navigate(['/feature/customer']);
+            });
+          },
+          error: (err) => {
+            console.error('Error adding data', err);
+          }
+        });
       }
     } else {
       this.customerForm.markAllAsTouched();

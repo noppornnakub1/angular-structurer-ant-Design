@@ -135,11 +135,11 @@ export class CustomerAddComponent implements OnInit {
 
     this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
       const customerTypeId = this.getCustomerTypeId(value);
-
+      
       if (customerTypeId) {
         this.loadCustomerType(customerTypeId);
       }
-      if(this.customerId == 0){
+      if(this.customerId == null || 0){
         if (value === '1F' || value === 'OSEA') {
           this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
           this.customerForm.patchValue({
@@ -347,7 +347,9 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.findCustomerTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
       const customerNumPrefix = data.codeFrom;
       this.typeCode = customerNumPrefix;
-      if(this.customerId == 0){
+      if(this.customerId == null || 0){
+        console.log("เข้าไหม");
+        
         if (customerNumPrefix === '1F') {
           this.customerForm.patchValue({
             customerNum: '',
@@ -442,28 +444,28 @@ export class CustomerAddComponent implements OnInit {
       if (this.customerId) {
         await this.onUpdate();
       } else {
-        this.customerService.addData(formValue).subscribe({
-          next: async (response) => {
-            this.customerForm.patchValue({ customerId: response.customer_id });
-            this.customerId = response.customer_id
-            if (this.listfile.length !== 0) {
-              await this.UploadFile();
-            }
-            this.insertLog();
-            Swal.fire({
-              icon: 'success',
-              title: 'Saved!',
-              text: 'Your data has been saved.',
-              showConfirmButton: false,
-              timer: 1500
-            }).then(() => {
-              this.router.navigate(['/feature/customer']);
-            });
-          },
-          error: (err) => {
-            console.error('Error adding data', err);
-          }
-        });
+        // this.customerService.addData(formValue).subscribe({
+        //   next: async (response) => {
+        //     this.customerForm.patchValue({ customerId: response.customer_id });
+        //     this.customerId = response.customer_id
+        //     if (this.listfile.length !== 0) {
+        //       await this.UploadFile();
+        //     }
+        //     this.insertLog();
+        //     Swal.fire({
+        //       icon: 'success',
+        //       title: 'Saved!',
+        //       text: 'Your data has been saved.',
+        //       showConfirmButton: false,
+        //       timer: 1500
+        //     }).then(() => {
+        //       this.router.navigate(['/feature/customer']);
+        //     });
+        //   },
+        //   error: (err) => {
+        //     console.error('Error adding data', err);
+        //   }
+        // });
       }
     } else {
       this.customerForm.markAllAsTouched();

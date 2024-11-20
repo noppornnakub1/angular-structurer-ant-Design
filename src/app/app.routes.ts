@@ -40,6 +40,11 @@ export const routes: Routes = [
         loadChildren: () => import('./modules/dashboard/download-from.routes').then(m => m.default),
         canActivate: [AuthGuard]
       },
+      {
+        path: 'export-excel',
+        loadChildren: () => import('./modules/dashboard/export-excel.routes').then(m => m.default),
+        canActivate: [AuthGuard]
+      },
     ]
   }
 ];

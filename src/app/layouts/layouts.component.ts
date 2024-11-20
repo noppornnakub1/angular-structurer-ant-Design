@@ -79,6 +79,9 @@ export class LayoutsComponent {
     {
       title: 'Download Form', icon: 'download', label: 'Download Form', route: '/feature/download-from'
     },
+    {
+      title: 'ExportExcel', icon: 'export_notes', label: 'ExportExcel', route: '/feature/export-excel', roles: ['admin']
+    },
   ];
   // filterMenuItemsByRole(): void {
   //   if (this.currentRole && this.currentRole.action) {

@@ -10,4 +10,5 @@
   username: string;
   password: string;
   company:string;
+  EmpNo:string;
   }

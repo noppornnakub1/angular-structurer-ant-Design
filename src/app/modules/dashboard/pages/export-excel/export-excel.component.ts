@@ -21,7 +21,6 @@ export class ExportExcelComponent {
   ngOnInit(): void {
 
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log(currentUser);
     this.username = currentUser.username
 
   }

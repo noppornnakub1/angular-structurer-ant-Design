@@ -213,7 +213,7 @@
         class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft
       </button>
-      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || ((isAdmin || isApproved) && customerForm.get('status')?.value === 'Pending Approved By ACC'))"
+      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || (isAdmin && customerForm.get('status')?.value === 'Pending Approved By ACC'))"
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit
       </button>

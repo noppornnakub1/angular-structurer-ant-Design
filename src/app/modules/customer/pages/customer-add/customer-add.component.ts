@@ -348,8 +348,6 @@ export class CustomerAddComponent implements OnInit {
       const customerNumPrefix = data.codeFrom;
       this.typeCode = customerNumPrefix;
       if(this.customerId == null || 0){
-        console.log("เข้าไหม");
-        
         if (customerNumPrefix === '1F') {
           this.customerForm.patchValue({
             customerNum: '',
@@ -437,7 +435,6 @@ export class CustomerAddComponent implements OnInit {
     if (this.isViewMode) {
       this.customerForm.enable();
     }
-    console.log(this.customerForm);
     
     if (this.customerForm.valid) {
       const formValue = this.prepareFormData();
@@ -801,7 +798,6 @@ export class CustomerAddComponent implements OnInit {
     if (!this.customerId) {
       this.customerForm.patchValue({ customerNum: this.newCusnum });
     }
-    console.log("555");
     
     await this.onSubmit();
   }
@@ -839,7 +835,6 @@ export class CustomerAddComponent implements OnInit {
       const company = this.customerForm.get('company')?.value;
       const customerName = this.customerForm.get('name')?.value;
       const TaxID = this.customerForm.get('taxId')?.value;
-      console.log(company);
 
       var name = ''
       this.userService.findUserById(this.idreq).subscribe((data: any) => {
@@ -1002,7 +997,6 @@ export class CustomerAddComponent implements OnInit {
       this.userData = data
 
       if (status === 'Pending Approved By ACC') {
-        console.log(this.userData.email);
         to = this.userData.email;
         subject = 'OnePortal Notification';
         body = `
@@ -1127,8 +1121,6 @@ export class CustomerAddComponent implements OnInit {
     };
     this.customerService.CheckDuplicateSCustomerByConpanySiteAndName(formData).subscribe({
       next: (response) => {
-        console.log(response);
-        
         if (response) {
           this.customerForm.patchValue({ 
             name: response.customerName || '-', 

@@ -227,7 +227,6 @@ export class SupplierAddComponent {
     this.setupFormListeners();
 
     this.supplierForm.get('supplierType')!.valueChanges.subscribe(value => {
-      console.log(value);
       if(!this.suppilerId)
       if (value === '2F' || value === 'OSEA') {
         this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
@@ -756,6 +755,9 @@ export class SupplierAddComponent {
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
+        if(this.isApprovedFN && this.isAdmin == false){
+          this.isApproved = false;
+        }
       }
     });
   }
@@ -763,8 +765,6 @@ export class SupplierAddComponent {
   removeFile(file: any, isForBank: boolean = false): void {
     if (file.fileId) {
       const supbankId = file.supbankId || (isForBank ? this.supplierBankForm.get('supbankId')?.value : this.supplierBankFormAdd.get('supbankId')?.value);
-      console.log();
-
       if (isForBank) {
         this.fileIdsToRemoveForBank.push(file.fileId);
       } else {
@@ -774,8 +774,6 @@ export class SupplierAddComponent {
       if (!this.fileIdsToRemoveMapping.find(item => item.FileId === file.fileId && item.SupbankId === supbankId)) {
         this.fileIdsToRemoveMapping.push({ SupbankId: supbankId, FileId: file.fileId });
       }
-      console.log(this.fileIdsToRemoveMapping);
-
       file.filePath = '';
       file.fileName = '';
 
@@ -855,6 +853,7 @@ export class SupplierAddComponent {
         if (bankData.supplierGroup && !this.listOfGroup.some(group => group.group_name === bankData.supplierGroup)) {
           this.listOfGroup.push({ group_name: bankData.supplierGroup });
         }
+
         this.supplierBankForm.patchValue({
           supbankId: bankData.SupbankId,
           supplierId: bankData.SupplierId,
@@ -1018,11 +1017,13 @@ export class SupplierAddComponent {
     this.isSubmitting = true;
 
     if (this.supplierForm.valid) {
+      if(this.supplierBankForm.value.supbankId != 0 || null || undefined){
+        if(this.supplierBankForm.value.accountName == undefined || null){
+          this.supplierBankForm.patchValue({ accountName: this.supplierForm.value.name });
+        }
+      }
+      
       const formData = this.prepareFormAddData();
-      console.log(formData);
-      formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
-      });
 
       if (this.suppilerId) {
         await this.onUpdate(formData);
@@ -1213,10 +1214,7 @@ export class SupplierAddComponent {
   onUpdate(formValue: any): void {
     if (formValue && this.suppilerId) {
       const formData = this.prepareFormAddData();
-      console.log(formData);
-      formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
-      });
+
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
 
@@ -1804,7 +1802,6 @@ export class SupplierAddComponent {
     const supplierNum = this.supplierForm.get('supplierNum')?.value;
     const supplierName = this.supplierForm.get('name')?.value;
     const TaxID = this.supplierForm.get('tax_Id')?.value;
-    console.log(this.supplierForm);
     var name = '';
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
       name = data.firstname
@@ -2001,9 +1998,7 @@ export class SupplierAddComponent {
     var body = ''
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
       this.userData = data
-      console.log(this.userData);
-      console.log(status);
-      console.log(this.userData.firstname, this.userData.email);
+
       if (status === 'Pending Approved By ACC') {
         to = this.userData.email;
         subject = 'OnePortal Notification';
@@ -2252,8 +2247,7 @@ export class SupplierAddComponent {
 
     const fileIds = (this.fileIdsToRemove || []).map(file => file.FileId).filter(id => id !== undefined);
     const filesToRemoveBank: number[] = this.fileIdsToRemoveBank
-    console.log(this.fileIdsToRemoveForBankJson);
-    console.log(this.fileIdsToRemoveJson);
+
 
 
     const supplierBankData = [];
@@ -2264,6 +2258,7 @@ export class SupplierAddComponent {
 
 
     if (this.showSupplierBankForm) {
+
       const bankFormValue = { ...this.supplierBankForm.value };
       bankFormValue.supplierId = bankFormValue.supplierId || 0;
       mainSupplierId = bankFormValue.supplierId;

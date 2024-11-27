@@ -19,6 +19,7 @@ export class SupplierComponent implements OnInit {
   currentUser!: IRole | null;
   isAdmin: boolean = false;
   isApproved: boolean = false;
+  isApprovedFN = false;
   isUser: boolean = false;
   listOfData: ISupplier[] = [];
   filteredData: ISupplier[] = [];
@@ -81,6 +82,10 @@ export class SupplierComponent implements OnInit {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
         this.isUser = user.action.includes('user');
+        this.isApprovedFN = user.action.includes('approvedFN');
+        if(this.isApprovedFN && this.isAdmin == false){
+          this.isApproved = false;
+        }
       }
     });
   }

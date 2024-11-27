@@ -90,6 +90,16 @@ export class AddUserModelComponent implements OnInit {
         this.validateForm.get('company')?.enable();
       }
     }
+
+    this.validateForm.get('role')?.valueChanges.subscribe((roleId) => {
+      if (roleId === 1) { 
+        this.validateForm.get('company')?.setValue(['ALL']); 
+        this.validateForm.get('company')?.disable(); 
+      } else {
+        this.validateForm.get('company')?.reset(); 
+        this.validateForm.get('company')?.enable();
+      }
+    });
     this.getDataRole();
     this.getDataCompany();
   }

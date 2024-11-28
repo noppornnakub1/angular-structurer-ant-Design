@@ -47,8 +47,6 @@ export class LayoutsComponent {
     this.authService.currenttRole.subscribe(user => {
       this.currentRole = user;
       this.filterMenuItemsByRole();
-
-
     });
   }
 

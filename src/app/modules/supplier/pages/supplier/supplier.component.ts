@@ -96,7 +96,7 @@ export class SupplierComponent implements OnInit {
       console.error('Current user is not available in local storage');
       return;
     }
-    if (currentUser.role == 1) {
+    if (currentUser.user.role == 1) {
       this.supplierService.getData().subscribe({
         next: (response: any) => {
           this.listOfData = response;
@@ -108,8 +108,8 @@ export class SupplierComponent implements OnInit {
         }
       });
     }
-    else if (currentUser.role == 3) {
-      this.supplierService.findDataByUserCompanyACC(currentUser.company).subscribe({
+    else if (currentUser.user.role == 3) {
+      this.supplierService.findDataByUserCompanyACC(currentUser.user.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.selectedStatus = 'Pending Approved By ACC'
@@ -121,8 +121,8 @@ export class SupplierComponent implements OnInit {
         }
       });
     }
-    else if (currentUser.role == 4) {
-      this.supplierService.findDataByUserCompanyFN(currentUser.company).subscribe({
+    else if (currentUser.user.role == 4) {
+      this.supplierService.findDataByUserCompanyFN(currentUser.user.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.selectedStatus = 'Pending Approved By FN'
@@ -135,7 +135,7 @@ export class SupplierComponent implements OnInit {
       });
     }
     else {
-      this.supplierService.findDataByUserId(currentUser.userId).subscribe({
+      this.supplierService.findDataByUserId(currentUser.user.userId).subscribe({
         next: (response: any) => {
           this.listOfData = response;
 

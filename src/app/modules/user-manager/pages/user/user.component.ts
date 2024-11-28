@@ -15,6 +15,7 @@ import { IRole } from '../../interface/role.interface';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RoleService } from '../../services/role.service';
 import { ModalDataService } from '../../../../shared/constants/ModalDataService';
+import { IUserManage } from '../../interface/user-manage.interface';
 
 @Component({
   selector: 'app-user',
@@ -39,10 +40,10 @@ export class UserComponent implements OnInit {
   isAdmin: boolean = false;
   isApproved: boolean = false;
   isUser: boolean = false;
-  displayData: IUser[] = [];
+  displayData: IUserManage[] = [];
   listOfDataRole: IRole[] = [];
-  listOfData: IUser[] = [];
-  filteredData: IUser[] = [];
+  listOfData: IUserManage[] = [];
+  filteredData: IUserManage[] = [];
   filters = { name: '', username: '' };
   pageIndex: number = 1;
   pageSize: number = 10;
@@ -82,6 +83,7 @@ export class UserComponent implements OnInit {
       next: (response: any) => {
         this.listOfData = response
         this.filteredData = [...this.listOfData];
+
         this.updateDisplayData();
         this._cdr.markForCheck();
       },

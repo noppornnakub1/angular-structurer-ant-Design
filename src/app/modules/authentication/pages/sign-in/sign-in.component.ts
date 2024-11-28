@@ -45,7 +45,7 @@ export class SignInComponent {
         response => {
           if (response) {
             // เรียก getRole หลังจาก login สำเร็จ
-            this.authService.getRole(response.role).subscribe(
+            this.authService.getRole(response.user.role).subscribe(
               responseRole => {
                 if (responseRole) {
                   // แสดงข้อความสำเร็จ
@@ -55,7 +55,7 @@ export class SignInComponent {
                     showConfirmButton: false,
                     timer: 1500
                   });
-  
+                  
                   // รอนำทางหลังจาก getRole สำเร็จ
                   this.router.navigate(['/feature/dashboard']);
                 }

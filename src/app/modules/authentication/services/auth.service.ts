@@ -37,8 +37,7 @@ export class AuthService {
 
     return this.http.post<IUser>('/Login/signIn', loginRequest).pipe(
       map(response => {
-        
-         if (response && response.status == 1) {
+         if (response && response.user.status === 1 ) {
         this.setUser(response);
         return response;
       }

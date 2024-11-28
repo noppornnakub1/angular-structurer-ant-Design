@@ -100,7 +100,7 @@ export class CustomerComponent implements OnInit {
       console.error('Current user is not available in local storage');
       return;
     }
-    if (currentUser.role == 1) {
+    if (currentUser.user.role == 1) {
       this.customerService.getData().subscribe({
         next: (response: any) => {
           this.listOfData = response.map((item: any) => {
@@ -122,8 +122,8 @@ export class CustomerComponent implements OnInit {
         }
       });
     }
-    else if (currentUser.role == 3) {
-      this.customerService.findDataByUserCompanyACC(currentUser.company).subscribe({
+    else if (currentUser.user.role == 3) {
+      this.customerService.findDataByUserCompanyACC(currentUser.user.company).subscribe({
         next: (response: any) => {
           this.listOfData = response.map((item: any) => {
             let site = item.site;
@@ -145,8 +145,8 @@ export class CustomerComponent implements OnInit {
         }
       });
     }
-    else if (currentUser.role == 4) {
-      this.customerService.findDataByUserCompanyFN(currentUser.company).subscribe({
+    else if (currentUser.user.role == 4) {
+      this.customerService.findDataByUserCompanyFN(currentUser.user.company).subscribe({
         next: (response: any) => {
           this.listOfData = response.map((item: any) => {
             let site = item.site;
@@ -168,7 +168,7 @@ export class CustomerComponent implements OnInit {
       });
     }
     else {
-      this.customerService.findDataByUserId(currentUser.userId).subscribe({
+      this.customerService.findDataByUserId(currentUser.user.userId).subscribe({
         next: (response: any) => {
           this.listOfData = response.map((item: any) => {
             let site = item.site;

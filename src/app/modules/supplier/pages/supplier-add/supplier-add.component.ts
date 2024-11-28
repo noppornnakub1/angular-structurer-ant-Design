@@ -1024,7 +1024,7 @@ export class SupplierAddComponent {
       }
       
       const formData = this.prepareFormAddData();
-
+      
       if (this.suppilerId) {
         await this.onUpdate(formData);
       } else {
@@ -1184,7 +1184,7 @@ export class SupplierAddComponent {
       timer: 1500
     });
     const status = this.supplierForm.value.status;
-    if ((this.isApproved && status === 'Pending Approved By ACC') && currentUser.role == 3) {
+    if ((this.isApproved && status === 'Pending Approved By ACC') && currentUser.user.role == 3) {
       this.router.navigate([`/feature/supplier/view/${this.suppilerId}`]);
     } else {
       this.router.navigate(['/feature/supplier']);
@@ -1241,7 +1241,7 @@ export class SupplierAddComponent {
   prepareFormData(): FormData {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
-    if (!currentUser || !currentUser.userId) {
+    if (!currentUser || !currentUser.user.userId) {
       console.error('Current user is not available in local storage');
       return new FormData();
     }
@@ -1250,7 +1250,7 @@ export class SupplierAddComponent {
     const postalCode = formValue.postalCode.split('-')[0];
     formValue.postalCode = postalCode
 
-    formValue.user_id = currentUser.userId;
+    formValue.user_id = currentUser.user.userId;
 
     const formData = new FormData();
     formData.append('Prefix', formValue.prefix);
@@ -1444,9 +1444,9 @@ export class SupplierAddComponent {
         currentDate.setHours(currentDate.getHours() + 7);
         const log = {
           id: 0,
-          userId: currentUser.userId || 0,
-          username: currentUser.username || 'string',
-          email: currentUser.email || 'string',
+          userId: currentUser.user.userId || 0,
+          username: currentUser.user.username || 'string',
+          email: currentUser.user.email || 'string',
           status: this.supplierForm.get('status')?.value || 'Draft',
           customerId: 0,
           supplierId: this.isIDTemp || 0,
@@ -1470,9 +1470,9 @@ export class SupplierAddComponent {
       if (this.supplierForm.valid && this.supplierBankForm.valid) {
         const log = {
           id: 0,
-          userId: currentUser.userId || 0,
-          username: currentUser.username || 'string',
-          email: currentUser.email || 'string',
+          userId: currentUser.user.userId || 0,
+          username: currentUser.user.username || 'string',
+          email: currentUser.user.email || 'string',
           status: this.supplierForm.get('status')?.value || 'Draft',
           customerId: 0,
           supplierId: this.supplierBankForm.get('supplier_id')?.value || 0,
@@ -1559,7 +1559,7 @@ export class SupplierAddComponent {
 
   getDataCompany(): void {
     const CheckcurrentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const userCompanies = CheckcurrentUser.company ? CheckcurrentUser.company.split(',') : [];
+    const userCompanies = CheckcurrentUser.user.company ? CheckcurrentUser.user.company.split(',') : [];
 
     if (userCompanies.length === 0) {
       console.error('No company information found in local storage');
@@ -1569,7 +1569,7 @@ export class SupplierAddComponent {
     this.supplierService.getDataCompany().subscribe({
       next: (response: any) => {
 
-        if (CheckcurrentUser.company === 'ALL') {
+        if (CheckcurrentUser.user.company === 'ALL') {
           this.listOfCompany = response;
           this.filteredDataompany = response;
         } else {
@@ -2221,14 +2221,14 @@ export class SupplierAddComponent {
   prepareFormAddData(): FormData {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
-    if (!currentUser || !currentUser.userId) {
+    if (!currentUser || !currentUser.user.userId) {
       console.error('Current user is not available in local storage');
       return new FormData();
     }
 
     const formValue = { ...this.supplierForm.value };
     formValue.postalCode = formValue.postalCode.split('-')[0];
-    formValue.UserId = currentUser.userId;
+    formValue.UserId = currentUser.user.userId;
 
     const formData = new FormData();
     formData.append('groupName', 'SupplierFile');

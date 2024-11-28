@@ -517,7 +517,7 @@ export class CustomerAddComponent implements OnInit {
     else if (!this.customerId) {
       delete formValue.id;
     }
-    formValue.userId = currentUser.userId;
+    formValue.userId = currentUser.user.userId;
     return formValue;
   }
 
@@ -544,9 +544,9 @@ export class CustomerAddComponent implements OnInit {
       currentDate.setHours(currentDate.getHours() + 7);
       const log = {
         Id: 0,
-        UserId: currentUser.userId || 0,
-        Username: currentUser.username || 'string',
-        Email: currentUser.email || 'string',
+        UserId: currentUser.user.userId || 0,
+        Username: currentUser.user.username || 'string',
+        Email: currentUser.user.email || 'string',
         Status: this.customerForm.get('status')?.value || 'Draft',
         CustomerId: this.customerId || 0,
         SupplierId: 0,
@@ -1084,7 +1084,7 @@ export class CustomerAddComponent implements OnInit {
 
   getDataCompany(): void {
     const CheckcurrentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const userCompanies = CheckcurrentUser.company ? CheckcurrentUser.company.split(',') : [];
+    const userCompanies = CheckcurrentUser.user.company ? CheckcurrentUser.user.company.split(',') : [];
 
     if (userCompanies.length === 0) {
       console.error('No company information found in local storage');

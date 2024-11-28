@@ -213,7 +213,7 @@ export class DashboardComponent {
       console.error('Current user is not available in local storage');
       return;
     }
-    if (currentUser.role == 1) {
+    if (currentUser.user.role == 1) {
       const userId = undefined;
       const company = undefined;
       this.customerService.findDataHistoryByUserId(userId, company).subscribe({
@@ -226,9 +226,9 @@ export class DashboardComponent {
         }
       });
     }
-    else if (currentUser.role == 3) {
-      const userId = currentUser.userId;
-      const company = currentUser.company;
+    else if (currentUser.user.role == 3) {
+      const userId = currentUser.user.userId;
+      const company = currentUser.user.company;
       this.customerService.FindDataHistoryByApprover(userId, company, 'Pending Approved By ACC', 'ACC').subscribe({
         next: (response: any) => {
           this.listOfData = response;
@@ -239,9 +239,9 @@ export class DashboardComponent {
         }
       });
     }
-    else if (currentUser.role == 4) {
-      const userId = currentUser.userId;
-      const company = currentUser.company;
+    else if (currentUser.user.role == 4) {
+      const userId = currentUser.user.userId;
+      const company = currentUser.user.company;
       this.customerService.FindDataHistoryByApproverFN(userId, company, 'Approved By ACC', 'ACC').subscribe({
         next: (response: any) => {
           this.listOfData = response;
@@ -253,7 +253,7 @@ export class DashboardComponent {
       });
     }
     else {
-      const userId = currentUser.userId;
+      const userId = currentUser.user.userId;
       const company = undefined;
       this.customerService.findDataHistoryByUserId(userId, company).subscribe({
         next: (response: any) => {

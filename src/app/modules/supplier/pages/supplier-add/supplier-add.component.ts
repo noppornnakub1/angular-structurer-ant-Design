@@ -1825,7 +1825,7 @@ export class SupplierAddComponent {
             <br>
             <p>สถานะคำขอของคุณ: ${this.supplierForm.get('status')?.value} </p>
             <br>
-            <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ <a>http://10.10.0.28:8085/</a></p>
+            <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ "+" <a href='http://10.10.0.28:8085/'>ลิงก์นี้</a></p>
             <br>
             <p>Best Regards</p>
             <p>OnePortal</p>
@@ -1859,7 +1859,7 @@ export class SupplierAddComponent {
             <br>
             <p>สถานะคำขอของคุณ: ${this.supplierForm.get('status')?.value}</p>
             <br>
-            <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ <a>http://10.10.0.28:8085/</a></p>
+            <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ "+" <a href='http://10.10.0.28:8085/'>ลิงก์นี้</a></p>
             <br>
             <p>Best Regards</p>
             <p>OnePortal</p>
@@ -2013,7 +2013,7 @@ export class SupplierAddComponent {
         <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
         <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี [เบอร์กลางบัญชี]</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -2037,7 +2037,7 @@ export class SupplierAddComponent {
         <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
         <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>Best Regards</p>
         <p>OnePortal</p>
@@ -2058,7 +2058,7 @@ export class SupplierAddComponent {
         <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
         <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>Best Regards</p>
         <p>OnePortal</p>
@@ -2079,7 +2079,7 @@ export class SupplierAddComponent {
         <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
         <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>Best Regards</p>
         <p>OnePortal</p>
@@ -2099,7 +2099,7 @@ export class SupplierAddComponent {
         <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
         <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>Best Regards</p>
         <p>OnePortal</p>
@@ -2120,7 +2120,7 @@ export class SupplierAddComponent {
         <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
         <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>Best Regards</p>
         <p>OnePortal</p>

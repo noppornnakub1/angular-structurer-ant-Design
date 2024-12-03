@@ -871,7 +871,7 @@ export class CustomerAddComponent implements OnInit {
               <br>
               <p>สถานะคำขอของคุณ: ${this.customerForm.get('status')?.value} </p>
               <br>
-              <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ <a>http://10.10.0.28:8085/</a></p>
+              <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ "+" <a href='http://10.10.0.28:8085/'>ลิงก์นี้</a></p>
               <br>
               <p>Best Regards</p>
               <p>OnePortal</p>
@@ -1026,7 +1026,7 @@ export class CustomerAddComponent implements OnInit {
         <p>Tax ID : ${this.customerForm.get('taxId')?.value} </p>
         <p>Type: ${this.customerForm.get('customerType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/customer/view/${this.customerForm.get('id')?.value}</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a href='http://10.10.0.28:8085//feature/customer/view/${this.customerForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี [เบอร์กลางบัญชี]</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -1049,7 +1049,7 @@ export class CustomerAddComponent implements OnInit {
         <p>Tax ID : ${this.customerForm.get('taxId')?.value} </p>
         <p>Type: ${this.customerForm.get('customerType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/customer/view/${this.customerForm.get('id')?.value}</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a href='http://10.10.0.28:8085//feature/customer/view/${this.customerForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>Best Regards</p>
         <p>OnePortal</p>
@@ -1070,7 +1070,7 @@ export class CustomerAddComponent implements OnInit {
         <p>Tax ID : ${this.customerForm.get('taxId')?.value} </p>
         <p>Type: ${this.customerForm.get('customerType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/customer/view/${this.customerForm.get('id')?.value}</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a href='http://10.10.0.28:8085//feature/customer/view/${this.customerForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>Best Regards</p>
         <p>OnePortal</p>

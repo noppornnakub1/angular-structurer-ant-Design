@@ -135,11 +135,11 @@ export class CustomerAddComponent implements OnInit {
 
     this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
       const customerTypeId = this.getCustomerTypeId(value);
-      
+
       if (customerTypeId) {
         this.loadCustomerType(customerTypeId);
       }
-      if(this.customerId == null || 0){
+      if (this.customerId == null || 0) {
         if (value === '1F' || value === 'OSEA') {
           this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
           this.customerForm.patchValue({
@@ -209,8 +209,14 @@ export class CustomerAddComponent implements OnInit {
     if (!nameValue) {
       return;
     }
-
-    nameValue = nameValue.replace(/^บริษัท /, '')
+    // ถ้า prefix เป็น "อื่นๆ" ข้ามขั้นตอนการ replace และตั้งค่า nameValue เดิม
+    if (this.selectedPrefix === 'อื่นๆ') {
+      nameControl?.setValue(nameValue.trim());
+      this.checkAndCallApi();
+      return;
+    }
+    else{
+      nameValue = nameValue.replace(/^บริษัท /, '')
       .replace(/\s?จำกัด\s?\(มหาชน\)/g, '')
       .replace(/\s?จำกัด/g, '')
       .replace(/^คุณ /, '')
@@ -227,10 +233,12 @@ export class CustomerAddComponent implements OnInit {
       nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue.trim()}`);
     } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
       nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue.trim()}`);
-    } else {
+    }
+    else {
       nameControl?.setValue(nameValue.trim());
     }
     this.checkAndCallApi();
+    }
   }
 
   onSiteBlur(): void {
@@ -261,8 +269,14 @@ export class CustomerAddComponent implements OnInit {
     if (!nameValue) {
       return;
     }
-
-    nameValue = nameValue.replace(/^บริษัท /, '')
+    // ถ้า prefix เป็น "อื่นๆ" ข้ามขั้นตอนการ replace และตั้งค่า nameValue เดิม
+    if (this.selectedPrefix === 'อื่นๆ') {
+      nameControl?.setValue(nameValue.trim());
+      this.checkAndCallApi();
+      return;
+    }
+    else{
+      nameValue = nameValue.replace(/^บริษัท /, '')
       .replace(/ จำกัด \(มหาชน\)$/, '')
       .replace(/ จำกัด$/, '')
       .replace(/^คุณ /, '')
@@ -282,6 +296,8 @@ export class CustomerAddComponent implements OnInit {
     } else {
       nameControl?.setValue(nameValue);
     }
+    }
+    
   }
 
   validateTaxId(event: any): void {
@@ -347,7 +363,7 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.findCustomerTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
       const customerNumPrefix = data.codeFrom;
       this.typeCode = customerNumPrefix;
-      if(this.customerId == null || 0){
+      if (this.customerId == null || 0) {
         if (customerNumPrefix === '1F') {
           this.customerForm.patchValue({
             customerNum: '',
@@ -435,7 +451,7 @@ export class CustomerAddComponent implements OnInit {
     if (this.isViewMode) {
       this.customerForm.enable();
     }
-    
+
     if (this.customerForm.valid) {
       const formValue = this.prepareFormData();
       if (this.customerId) {
@@ -798,7 +814,7 @@ export class CustomerAddComponent implements OnInit {
     if (!this.customerId) {
       this.customerForm.patchValue({ customerNum: this.newCusnum });
     }
-    
+
     await this.onSubmit();
   }
 
@@ -1122,36 +1138,36 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.CheckDuplicateSCustomerByConpanySiteAndName(formData).subscribe({
       next: (response) => {
         if (response) {
-          this.customerForm.patchValue({ 
-            name: response.customerName || '-', 
-            taxId: response.taxReference || '-', 
-            addressSup: response.address1 || '-', 
-            addressDetail: response.address2 || '-', 
-            postalCode: (response.postal ? response.postal + '-' + (response.address3 || '-') : '-'), 
-            district: response.address4 || '-', 
-            subdistrict: response.address3 || '-', 
-            province: response.province || '-' 
-        });
+          this.customerForm.patchValue({
+            name: response.customerName || '-',
+            taxId: response.taxReference || '-',
+            addressSup: response.address1 || '-',
+            addressDetail: response.address2 || '-',
+            postalCode: (response.postal ? response.postal + '-' + (response.address3 || '-') : '-'),
+            district: response.address4 || '-',
+            subdistrict: response.address3 || '-',
+            province: response.province || '-'
+          });
         }
       },
       error: (err) => {
         console.error('Error occurred:', err.message);
-          Swal.fire({
-            icon: 'warning',
-            title: 'ข้อมูลซ้ำ',
-            text: err.message,
-            confirmButtonText: 'ปิด'
-          });
-          this.customerForm.patchValue({ 
-            name: err.customerName || '-', 
-            taxId: err.taxReference || '-', 
-            addressSup: err.address1 || '-', 
-            addressDetail: err.address2 || '-', 
-            postalCode: (err.postal ? err.postal + '-' + (err.address3 || '-') : '-'), 
-            district: err.address4 || '-', 
-            subdistrict: err.address3 || '-', 
-            province: err.province || '-',
-            company: '' 
+        Swal.fire({
+          icon: 'warning',
+          title: 'ข้อมูลซ้ำ',
+          text: err.message,
+          confirmButtonText: 'ปิด'
+        });
+        this.customerForm.patchValue({
+          name: err.customerName || '-',
+          taxId: err.taxReference || '-',
+          addressSup: err.address1 || '-',
+          addressDetail: err.address2 || '-',
+          postalCode: (err.postal ? err.postal + '-' + (err.address3 || '-') : '-'),
+          district: err.address4 || '-',
+          subdistrict: err.address3 || '-',
+          province: err.province || '-',
+          company: ''
         });
       }
     });

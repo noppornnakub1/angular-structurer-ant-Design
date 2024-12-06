@@ -109,7 +109,7 @@ export class SupplierComponent implements OnInit {
       });
     }
     else if (currentUser.user.role == 3) {
-      this.supplierService.findDataByUserCompanyACC(currentUser.user.company).subscribe({
+      this.supplierService.findDataByUserCompanyACC(currentUser.user.company,currentUser.user.userId).subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.selectedStatus = 'Pending Approved By ACC'

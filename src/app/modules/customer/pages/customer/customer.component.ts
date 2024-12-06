@@ -123,7 +123,7 @@ export class CustomerComponent implements OnInit {
       });
     }
     else if (currentUser.user.role == 3) {
-      this.customerService.findDataByUserCompanyACC(currentUser.user.company).subscribe({
+      this.customerService.findDataByUserCompanyACC(currentUser.user.company,currentUser.user.userId).subscribe({
         next: (response: any) => {
           this.listOfData = response.map((item: any) => {
             let site = item.site;
@@ -137,28 +137,6 @@ export class CustomerComponent implements OnInit {
             };
           });
           this.hasCustomerNumber = this.listOfData.some(data => data.customerNum && data.status === 'Success');
-          this.changeStatusIfNeeded();
-          this.applyFilters();
-          this._cdr.markForCheck();
-        },
-        error: () => {
-        }
-      });
-    }
-    else if (currentUser.user.role == 4) {
-      this.customerService.findDataByUserCompanyFN(currentUser.user.company).subscribe({
-        next: (response: any) => {
-          this.listOfData = response.map((item: any) => {
-            let site = item.site;
-            if (item.site === '00000') {
-              // ตรวจสอบเงื่อนไขเพิ่มเติม
-              site = item.customerType === 'OSEA' ? 'Head Office' : 'สำนักงานใหญ่';
-            }
-            return {
-              ...item,
-              site: site
-            };
-          });
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();

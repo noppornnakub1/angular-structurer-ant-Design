@@ -16,6 +16,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RoleService } from '../../services/role.service';
 import { ModalDataService } from '../../../../shared/constants/ModalDataService';
 import { IUserManage } from '../../interface/user-manage.interface';
+import { IUserResponsible } from '../../interface/response-type.interface';
 
 @Component({
   selector: 'app-user',
@@ -44,6 +45,8 @@ export class UserComponent implements OnInit {
   listOfDataRole: IRole[] = [];
   listOfData: IUserManage[] = [];
   filteredData: IUserManage[] = [];
+  listOfDataUserResponsible: IUserResponsible[] = [];
+  filteredDataUserResponsible: IUserResponsible[] = [];
   filters = { name: '', username: '' };
   pageIndex: number = 1;
   pageSize: number = 10;
@@ -65,6 +68,7 @@ export class UserComponent implements OnInit {
     this.loadRoles();
     this.checkRole();
     this.getUser();
+    
   }
 
   checkRole(): void {
@@ -83,8 +87,8 @@ export class UserComponent implements OnInit {
       next: (response: any) => {
         this.listOfData = response
         this.filteredData = [...this.listOfData];
-
-        this.updateDisplayData();
+        this.getAllUserResponsible()
+        // this.updateDisplayData();
         this._cdr.markForCheck();
       },
       error: () => {
@@ -117,6 +121,7 @@ export class UserComponent implements OnInit {
   }
 
   showAddRoleModal(): void {
+    this.modalDataService.clearData();
     const modal: NzModalRef = this.modalService.create({
       nzTitle: 'Add User',
       nzContent: AddUserModelComponent,
@@ -127,6 +132,9 @@ export class UserComponent implements OnInit {
       const instance = modal.getContentComponent();
       instance.modalInstance = modal;
     });
+    modal.afterClose.subscribe(() => {
+      this.getUser();
+    });
   }
 
   editUser(id: number): void {
@@ -135,11 +143,10 @@ export class UserComponent implements OnInit {
       nzTitle: 'Edit User',
       nzContent: AddUserModelComponent,
       nzFooter: null
-    });
+    }); 
     modal.afterOpen.subscribe(() => {
       const instance = modal.getContentComponent();
       instance.modalInstance = modal;
-      instance.ngOnInit();
     });
 
     modal.afterClose.subscribe(() => {
@@ -163,5 +170,36 @@ export class UserComponent implements OnInit {
     const endIndex = startIndex + this.pageSize;
     this.displayData = this.filteredData.slice(startIndex, endIndex);
     this._cdr.markForCheck();
+  }
+
+  getAllUserResponsible(): void {
+    this.userService.GetAllUserResponsible().subscribe({
+      next: (response: any) => {
+        this.listOfDataUserResponsible = response
+        this.filteredDataUserResponsible = [...this.listOfDataUserResponsible];
+        this.updateUserResponseType();
+        this.updateDisplayData();
+        this._cdr.markForCheck();
+      },
+      error: () => {
+      }
+    });
+  }
+  
+  updateUserResponseType(): void {
+    if (this.listOfData && this.listOfDataUserResponsible) {
+      this.listOfData = this.listOfData.map(user => {
+        const matched = this.listOfDataUserResponsible.find(
+          (responsible: any) => Number(responsible.id) === Number(user.responseType)
+        );
+        return {
+          ...user, 
+          responseTypeName: matched ? matched.responseType : 'Unknown'
+        };
+      });
+      this.displayData = [...this.listOfData];
+      this.filteredData = this.displayData
+      this.updateDisplayData();
+    }
   }
 }

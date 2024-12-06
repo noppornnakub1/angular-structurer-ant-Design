@@ -29,6 +29,7 @@
         <th>Name</th>
         <th>Username</th>
         <th>Role</th>
+        <th>ResponsibleType</th>
         <th>Company</th>
         <th>Action</th>
       </tr>
@@ -39,6 +40,7 @@
         <td>{{ data.firstname }}</td>
         <td>{{ data.username }}</td>
         <td>{{ getRoleName(data.role) }}</td>
+        <td>{{ data.responseTypeName }}</td>
         <td>{{ data.company }}</td>
         <td class="text-center">
           <button nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round" (click)="editUser(data.userId)"><span nz-icon nzType="edit" nzTheme="outline"></span>Edit</button>

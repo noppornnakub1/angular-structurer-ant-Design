@@ -1809,7 +1809,7 @@ export class SupplierAddComponent {
     });
     if (this.supplierForm.get('status')?.value === 'Pending Approved By ACC' && this.supplierBankForm.valid == false) {
       const company = this.supplierForm.get('company')?.value;
-      this.supplierService.findApproversByCompany(company).subscribe(
+      this.supplierService.findApproversByCompanySupplier(company).subscribe(
         (approvers) => {
           approvers.forEach((approver: any) => {
             const to = approver.email;

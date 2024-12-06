@@ -11,34 +11,39 @@ import { IUser } from '../interface/user.interface';
 })
 export class UserService {
 
-    constructor(private _http: HttpClient) {}
+  constructor(private _http: HttpClient) { }
 
-    getUser() {
-      return this._http.get(`/User/UserInfo`);
-    }
-
-    addData(user: any): Observable<any> {
-      return this._http.post(`/User/AddUser`, user);
-    }
-
-    findUserById(id: number): Observable<IUser> {
-      return this._http.get<IUser>(`/User/${id}`);
-    }
-
-    updateUser(user_id: number, data: IUser): Observable<any> {
-      return this._http.put(`/User/UpdateUser?user_id=${user_id}`, data);
-    }
-
-    findUserByUsername(username: string): Observable<any> {
-      return this._http.get(`/User/find-user/${username}`);
-    }
-
-    updatePassword(username: string, newPassword: string): Observable<any> {
-      const data = {
-        Username: username,
-        NewPassword: newPassword
-      };
-      return this._http.post(`/User/update-password`, data);
+  getUser() {
+    return this._http.get(`/User/UserInfo`);
   }
-    
+
+  addData(user: any): Observable<any> {
+    return this._http.post(`/User/AddUser`, user);
   }
+
+  findUserById(id: number): Observable<IUser> {
+    return this._http.get<IUser>(`/User/${id}`);
+  }
+
+  updateUser(user_id: number, data: IUser): Observable<any> {
+    return this._http.put(`/User/UpdateUser?user_id=${user_id}`, data);
+  }
+
+  findUserByUsername(username: string): Observable<any> {
+    return this._http.get(`/User/find-user/${username}`);
+  }
+
+  updatePassword(username: string, newPassword: string): Observable<any> {
+    const data = {
+      Username: username,
+      NewPassword: newPassword
+    };
+    return this._http.post(`/User/update-password`, data);
+  }
+
+  GetAllUserResponsible() {
+    return this._http.get(`/User/GetAllUserResponsible`);
+  }
+
+
+}

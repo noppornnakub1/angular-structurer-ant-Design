@@ -11,4 +11,6 @@ export interface IUserManage {
     password: string;
     company: string;
     EmpNo: string;
+    responseType: number;
+    responseTypeName:string;
 }

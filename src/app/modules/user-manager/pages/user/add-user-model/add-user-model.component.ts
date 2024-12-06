@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 import { ModalDataService } from '../../../../../shared/constants/ModalDataService';
 import { RoleService } from '../../../services/role.service';
 import { IRole } from '../../../interface/role.interface';
+import { IUserResponsible } from '../../../interface/response-type.interface';
 
 @Component({
   selector: 'app-add-user-model',
@@ -42,6 +43,8 @@ export class AddUserModelComponent implements OnInit {
   filteredDataompany: DataCompany[] = [];
   listOfRole: IRole[] = [];
   filteredDataRole: IRole[] = [];
+  listOfDataUserResponsible: IUserResponsible[] = [];
+  filteredDataUserResponsible: IUserResponsible[] = [];
   validateForm!: FormGroup;
   listOfActive = [
     {
@@ -68,14 +71,15 @@ export class AddUserModelComponent implements OnInit {
   ngOnInit(): void {
     this.validateForm = this.fb.group({
       username: [{ value: null, disabled: false }, [Validators.required]],
-      password: [{ value: null, disabled: false }, [Validators.required]],
+      password: [{ value: "123", disabled: false }, [Validators.required]],
       firstname: [null, [Validators.required]],
       lastname: [null, [Validators.required]],
       email: [null, [Validators.required, Validators.email]],
       role: [null, [Validators.required]],
+      ResponseType: [null, [Validators.required]],
       status: [1],
       CreateDate: [this.getCurrentDate(), [Validators.required]],
-      UpdateDate: [this.getCurrentDate(), [Validators.required]],
+      UpdateDate: [this.getCurrentDate()],
       company: [null, [Validators.required]],
     });
     this.userId = this.modalDataService.getUserId();
@@ -86,15 +90,17 @@ export class AddUserModelComponent implements OnInit {
       this.validateForm.get('password')?.disable();
       if (this.CheckRole == 1) {
         this.validateForm.get('company')?.disable();
+        this.validateForm.get('responseType')?.disable();
       } else {
         this.validateForm.get('company')?.enable();
+        this.validateForm.get('responseType')?.enable();
       }
     }
 
     this.validateForm.get('role')?.valueChanges.subscribe((roleId) => {
       if (roleId === 1) { 
         this.validateForm.get('company')?.setValue(['ALL']); 
-        this.validateForm.get('company')?.disable(); 
+        this.validateForm.get('company')?.disable();
       } else {
         this.validateForm.get('company')?.reset(); 
         this.validateForm.get('company')?.enable();
@@ -102,6 +108,7 @@ export class AddUserModelComponent implements OnInit {
     });
     this.getDataRole();
     this.getDataCompany();
+    this.getAllUserResponsible();
   }
 
   getCurrentDate(): string {
@@ -127,6 +134,8 @@ export class AddUserModelComponent implements OnInit {
 
   submitForm(): void {
     if (this.validateForm.valid) {
+      console.log(this.validateForm.value);
+      
       const formData = this.validateForm.getRawValue();
       const selectedCompanies = formData.company;
 
@@ -139,7 +148,6 @@ export class AddUserModelComponent implements OnInit {
           next: (response) => {
             Swal.fire('Saved!', 'Your data has been saved.', 'success');
             this.handleCancelClick();
-            location.reload();
           },
           error: (error) => {
             console.error('Error saving data', error);
@@ -208,6 +216,7 @@ export class AddUserModelComponent implements OnInit {
 
   loadUserData(id: number): void {
     this.userService.findUserById(id).subscribe((data: any) => {
+      console.log(data);
       const companyArray = data.company.split(',');
       this.validateForm.patchValue({
         UserId: data.UserId,
@@ -215,6 +224,7 @@ export class AddUserModelComponent implements OnInit {
         lastname: data.lastname,
         email: data.email,
         role: data.role,
+        ResponseType: data.responseType,
         status: data.status,
         CreateDate: data.createDate,
         UpdateDate: data.updateDate,
@@ -225,7 +235,21 @@ export class AddUserModelComponent implements OnInit {
       this.CheckRole = this.validateForm.value.role
       const roleInfo = this.listOfRole.find(role => role.id === this.validateForm.value.role );
       this.validateForm.value.role = roleInfo?.roleName
+      const responseTypeCheck = this.listOfDataUserResponsible.find(res => res.id === this.validateForm.value.responseType );
+      this.validateForm.value.responseType = responseTypeCheck?.responseType
       this._cdr.markForCheck();
+    });
+  }
+
+  getAllUserResponsible(): void {
+    this.userService.GetAllUserResponsible().subscribe({
+      next: (response: any) => {
+        this.listOfDataUserResponsible = response
+        this.filteredDataUserResponsible = [...this.listOfDataUserResponsible];
+        this._cdr.markForCheck();
+      },
+      error: () => {
+      }
     });
   }
 }

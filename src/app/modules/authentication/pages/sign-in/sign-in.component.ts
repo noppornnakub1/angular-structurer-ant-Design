@@ -23,6 +23,7 @@ export class SignInComponent {
   isPasswordVisible = false;
   isForgotPasswordModalVisible = false;
   forgotPasswordUsername = '';
+  isLoading: boolean = false;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -40,13 +41,16 @@ export class SignInComponent {
 
   login(): void {
     if (this.loginForm.valid) {
+      this.isLoading = true; // เริ่มแสดง Spinner
       const { username, password } = this.loginForm.value;
+  
       this.authService.login(username, password).subscribe(
         response => {
           if (response) {
             // เรียก getRole หลังจาก login สำเร็จ
             this.authService.getRole(response.user.role).subscribe(
               responseRole => {
+                this.isLoading = false; // ซ่อน Spinner
                 if (responseRole) {
                   // แสดงข้อความสำเร็จ
                   Swal.fire({
@@ -55,32 +59,32 @@ export class SignInComponent {
                     showConfirmButton: false,
                     timer: 1500
                   });
-                  
+  
                   // รอนำทางหลังจาก getRole สำเร็จ
                   this.router.navigate(['/feature/dashboard']);
                 }
               },
               error => {
+                this.isLoading = false; // ซ่อน Spinner
                 console.error('Fetching role failed', error);
                 this.errorMessage = 'Fetching role failed. Please try again later.';
                 Swal.fire('Error!', 'การดึงข้อมูล role ล้มเหลว', 'error');
               }
             );
           } else {
-            // ถ้า login ไม่สำเร็จ
+            this.isLoading = false; // ซ่อน Spinner
             this.errorMessage = 'Invalid username or password';
             Swal.fire('Error!', 'กรุณาตรวจสอบ Username และ Password ให้ถูกต้อง', 'error');
           }
         },
         error => {
-          // เมื่อ login ล้มเหลว
+          this.isLoading = false; // ซ่อน Spinner
           console.error('Login failed', error);
           this.errorMessage = 'Login failed. Please try again later.';
           Swal.fire('Error!', 'การเข้าสู่ระบบล้มเหลว', 'error');
         }
       );
     } else {
-      // ฟอร์มไม่ถูกต้อง
       this.errorMessage = 'Please fill out the form correctly.';
     }
   }

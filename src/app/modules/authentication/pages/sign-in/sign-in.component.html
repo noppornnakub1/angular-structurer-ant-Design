@@ -4,6 +4,10 @@
   </div>
   <div class="login-content">
     <div class="login-form">
+      <!-- Spinner -->
+      <div *ngIf="isLoading" class="spinner-overlay">
+        <div class="spinner"></div>
+      </div>
       <div class="logo-top-center">
         <img src="assets/images/logo/logo-one-e.png" alt="logo">
       </div>

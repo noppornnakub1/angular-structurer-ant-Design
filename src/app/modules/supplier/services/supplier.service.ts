@@ -116,16 +116,16 @@ export class SupplierService {
     return this._http.get<ISupplier>(`/Supplier/FindDataByUserID?userid=${id}`);
   }
 
-  findDataByUserCompanyACC(company: string): Observable<ISupplier> {
-    return this._http.get<ISupplier>(`/Supplier/GetDataByUserCompanyACC?company=${company}`);
+  findDataByUserCompanyACC(company: string, userid: number): Observable<ISupplier> {
+    return this._http.get<ISupplier>(`/Supplier/GetDataByUserCompanyACC?company=${company}&userId=${userid}`);
   }
 
   findDataByUserCompanyFN(company: string): Observable<ISupplier> {
     return this._http.get<ISupplier>(`/Supplier/GetDataByUserCompanyFN?company=${company}`);
   }
 
-  findApproversByCompany(company: string): Observable<any> {
-    return this._http.get(`/User/findApproversByCompany?company=${company}`);
+  findApproversByCompanySupplier(company: string): Observable<any> {
+    return this._http.get(`/User/findApproversByCompanySupplier?company=${company}`);
   }
   findApproversFNByCompany(company: string): Observable<any> {
     return this._http.get(`/User/findApproversFNByCompany?company=${company}`);

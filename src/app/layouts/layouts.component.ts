@@ -58,9 +58,6 @@ export class LayoutsComponent {
   // ];
 
   menuItems: MenuItem[] = [
-    // {
-    //   title: 'Dashboard', icon: 'dashboard', label: 'Dashboard', route: '/feature/dashboard'
-    // },
     {
       title: 'Master Data', icon: 'home', label: 'Master Data', route: '/feature/dashboard',
       children: [
@@ -78,20 +75,10 @@ export class LayoutsComponent {
       title: 'Download Form', icon: 'download', label: 'Download Form', route: '/feature/download-from'
     },
     {
-      title: 'ExportExcel', icon: 'export_notes', label: 'ExportExcel', route: '/feature/export-excel', roles: ['admin']
+      title: 'ExportExcel', icon: 'export_notes', label: 'ExportExcel', route: '/feature/export-excel', roles: ['admin', 'approvedFN']
     },
   ];
-  // filterMenuItemsByRole(): void {
-  //   if (this.currentRole && this.currentRole.action) {
-  //     this.filteredMenuItems = this.menuItems.filter(item => {
-  //       if (item.roles) {
-  //         return item.roles.some(role => this.hasRole(this.currentRole!.action, role));
-  //       }
-  //       return true;
-  //     });
-  //   }
-  // }
-  // Function to filter menu items by role
+ 
 filterMenuItemsByRole(): void {
   if (this.currentRole && this.currentRole.action) {
       this.filteredMenuItems = this.menuItems.filter(item => {

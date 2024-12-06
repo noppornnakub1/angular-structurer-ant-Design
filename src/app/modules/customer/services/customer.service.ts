@@ -51,8 +51,8 @@ export class CustomerService {
   findDataByUserId(id: number): Observable<ICustomer> {
     return this._http.get<ICustomer>(`/Customer/FindDataByUserID?userid=${id}`);
   }
-  findDataByUserCompanyACC(company: string): Observable<ICustomer> {
-    return this._http.get<ICustomer>(`/Customer/GetDataByUserCompanyACC?company=${company}`);
+  findDataByUserCompanyACC(company: string, userid: number): Observable<ICustomer> {
+    return this._http.get<ICustomer>(`/Customer/GetDataByUserCompanyACC?company=${company}&userId=${userid}`);
   }
 
   findDataByUserCompanyFN(company: string): Observable<ICustomer> {

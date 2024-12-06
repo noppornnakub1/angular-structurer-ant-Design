@@ -14,7 +14,7 @@
                     </div>
                 </div>
             </div>
-            <div nz-form-item nz-row class="mt-2">
+            <!-- <div nz-form-item nz-row class="mt-2">
                 <div nz-col nzSpan="8" nz-form-label>
                     <label for="password">Password:</label>
                 </div>
@@ -26,7 +26,7 @@
                         Password is required
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div nz-form-item nz-row class="mt-2">
                 <div nz-col nzSpan="8" nz-form-label>
                     <label for="firstname">FirstName:</label>
@@ -79,6 +79,22 @@
                     </nz-select>
                     <div nz-form-explain *ngIf="validateForm.get('role')?.invalid && validateForm.get('role')?.touched">
                         Role is required
+                    </div>
+                </div>
+            </div>
+            <div nz-form-item nz-row class="mt-2">
+                <div nz-col nzSpan="8" nz-form-label>
+                    <label for="role">ResponseType:</label>
+                </div>
+                <div nz-col nzSpan="16" nz-form-control
+                    [ngClass]="{'has-error': validateForm.get('ResponseType')?.invalid && validateForm.get('ResponseType')?.touched}">
+                    <nz-select formControlName="ResponseType" nzPlaceHolder="Select ResponseType" class="custom-select" >
+                        <nz-option *ngFor="let type of listOfDataUserResponsible"
+                            [nzLabel]="type.responseType"
+                            [nzValue]="type.id"></nz-option>
+                    </nz-select>
+                    <div nz-form-explain *ngIf="validateForm.get('ResponseType')?.invalid && validateForm.get('ResponseType')?.touched">
+                        ResponseType is required
                     </div>
                 </div>
             </div>

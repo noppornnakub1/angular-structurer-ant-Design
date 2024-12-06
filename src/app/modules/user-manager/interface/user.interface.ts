@@ -12,6 +12,7 @@
         password: string;
         company:string;
         EmpNo:string;
+        ResponseType:number;
     },
     jwtToken: string;
   }

@@ -227,15 +227,15 @@ export class SupplierAddComponent {
     this.setupFormListeners();
 
     this.supplierForm.get('supplierType')!.valueChanges.subscribe(value => {
-      if(!this.suppilerId)
-      if (value === '2F' || value === 'OSEA') {
-        this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
-        this.supplierForm.patchValue({
-          prefix: ''
-        });
-      } else {
-        this.filteredItemsPrefix = this.item_prefix;
-      }
+      if (!this.suppilerId)
+        if (value === '2F' || value === 'OSEA') {
+          this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
+          this.supplierForm.patchValue({
+            prefix: ''
+          });
+        } else {
+          this.filteredItemsPrefix = this.item_prefix;
+        }
       this._cdr.detectChanges();
     });
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
@@ -529,25 +529,36 @@ export class SupplierAddComponent {
       return;
     }
 
-    nameValue = nameValue.replace(/^บริษัท /, '')
-      .replace(/\s?จำกัด\s?\(มหาชน\)/g, '')
-      .replace(/\s?จำกัด/g, '')
-      .replace(/^คุณ /, '')
-      .replace(/^ห้างหุ้นส่วนสามัญ/, '')
-      .replace(/^ห้างหุ้นส่วนจำกัด/, '');
-
-    if (this.selectedPrefix === 'บริษัทจำกัด') {
-      nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด`);
-    } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
-      nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด (มหาชน)`);
-    } else if (this.selectedPrefix === 'คุณ') {
-      nameControl?.setValue(`คุณ ${nameValue.trim()}`);
-    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
-      nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue.trim()}`);
-    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
-      nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue.trim()}`);
-    } else {
+    if (this.selectedPrefix === 'อื่นๆ') {
       nameControl?.setValue(nameValue.trim());
+      this.checkAndCallApi();
+      return;
+    }
+    else {
+      nameValue = nameValue.replace(/^บริษัท /, '')
+        .replace(/\s?จำกัด\s?\(มหาชน\)/g, '')
+        .replace(/\s?จำกัด/g, '')
+        .replace(/^คุณ /, '')
+        .replace(/^ห้างหุ้นส่วนสามัญ/, '')
+        .replace(/^ห้างหุ้นส่วนจำกัด/, '');
+
+      if (this.selectedPrefix === 'บริษัทจำกัด') {
+        nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด`);
+      } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
+        nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด (มหาชน)`);
+      } else if (this.selectedPrefix === 'คุณ') {
+        nameControl?.setValue(`คุณ ${nameValue.trim()}`);
+      } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
+        nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue.trim()}`);
+      } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
+        nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue.trim()}`);
+      } else {
+        nameControl?.setValue(nameValue.trim());
+      }
+    }
+
+    if (this.supplierForm.value.supplierType === 'OSEA') {
+      this.checkAndCallApi();
     }
   }
 
@@ -579,7 +590,13 @@ export class SupplierAddComponent {
       return;
     }
 
-    nameValue = nameValue.replace(/^บริษัท /, '')
+    if (this.selectedPrefix === 'อื่นๆ') {
+      nameControl?.setValue(nameValue.trim());
+      this.checkAndCallApi();
+      return;
+    }
+    else{
+      nameValue = nameValue.replace(/^บริษัท /, '')
       .replace(/ จำกัด \(มหาชน\)$/, '')
       .replace(/ จำกัด$/, '')
       .replace(/^คุณ /, '')
@@ -599,6 +616,8 @@ export class SupplierAddComponent {
     } else {
       nameControl?.setValue(nameValue);
     }
+    }
+    
   }
 
   validateTaxId(event: any): void {
@@ -755,7 +774,7 @@ export class SupplierAddComponent {
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
-        if(this.isApprovedFN && this.isAdmin == false){
+        if (this.isApprovedFN && this.isAdmin == false) {
           this.isApproved = false;
         }
       }
@@ -1017,14 +1036,14 @@ export class SupplierAddComponent {
     this.isSubmitting = true;
 
     if (this.supplierForm.valid) {
-      if(this.supplierBankForm.value.supbankId != 0 || null || undefined){
-        if(this.supplierBankForm.value.accountName == undefined || null){
+      if (this.supplierBankForm.value.supbankId != 0 || null || undefined) {
+        if (this.supplierBankForm.value.accountName == undefined || null) {
           this.supplierBankForm.patchValue({ accountName: this.supplierForm.value.name });
         }
       }
-      
+
       const formData = this.prepareFormAddData();
-      
+
       if (this.suppilerId) {
         await this.onUpdate(formData);
       } else {
@@ -2142,10 +2161,14 @@ export class SupplierAddComponent {
     const supplierType = this.supplierForm.get('supplierType')?.value;
     const taxId = this.supplierForm.get('tax_Id')?.value;
     const userId = this.supplierForm.get('id')?.value;
+    const name = this.supplierForm.get('name')?.value;
+    console.log(supplierType);
+
     if ((supplierType && taxId) && userId == 0) {
       const formData = {
         taxId: taxId,
-        supplierType: supplierType
+        supplierType: supplierType,
+        name: name
       };
       this.supplierService.CheckDuplicateSupplierByTaxIdAndType(formData).subscribe({
         next: (response: string) => {

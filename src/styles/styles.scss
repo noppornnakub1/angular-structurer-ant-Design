@@ -58,7 +58,7 @@
 
 .ant-select-disabled.ant-select:not(.ant-select-customize-input)
   .ant-select-selector {
-  color: rgba(0, 0, 0, 0.25);
+  color: black;
   background: #eaeaea;
   cursor: not-allowed;
   border-radius: 7px;
@@ -305,4 +305,8 @@ pre span {
 
 .ant-tabs-nav-operations{
   display: none !important;
+}
+
+.nz-select.ant-select-disabled .ant-select-item {
+  color: black !important;
 }

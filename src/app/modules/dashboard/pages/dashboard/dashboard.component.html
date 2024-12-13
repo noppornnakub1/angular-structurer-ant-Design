@@ -78,7 +78,7 @@
         (nzPageSizeChange)="onPageSizeChange($event)">
         <thead>
           <tr>
-            <th *ngFor="let column of listOfColumnCustomer" [nzSortFn]="column.compare"
+            <th *ngFor="let column of getVisibleColumns()" [nzSortFn]="column.compare"
               [nzSortPriority]="column.priority">
               {{ column.title }}
             </th>
@@ -93,9 +93,10 @@
             <td>{{ data.paymentMethod }}</td>
             <td class="text-center">{{ data.site }}</td>
             <td class="text-center">{{ data.company }}</td>
+            <td class="text-center" *ngIf="this.isApprovedFN || this.isAdmin">{{ data.supplierGroup }}</td>
             <td class="text-center">{{ data.source }}</td>
             <td class="text-center">
-              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
+              <button *ngIf="isApproved || isAdmin || isApprovedFN" nz-button nzType="primary" class="mr-1" nzShape="round"
                 (click)="openModal(data)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
             </td>
           </tr>
@@ -129,7 +130,7 @@
             <td class="text-center" *ngIf="data.OU_SHORT_NAME">{{ data.OU_SHORT_NAME }}</td>
             <td *ngIf="!data.OU_SHORT_NAME"></td>
             <td class="text-center">
-              <button *ngIf="isApproved || isAdmin" nz-button nzType="primary" class="mr-1" nzShape="round"
+              <button *ngIf="isApproved || isAdmin || isApprovedFN" nz-button nzType="primary" class="mr-1" nzShape="round"
                 (click)="openModalold(data)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
             </td>
           </tr>

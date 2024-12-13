@@ -39,7 +39,7 @@
     (nzPageSizeChange)="onPageSizeChange($event)">
     <thead>
       <tr>
-        <th *ngFor="let column of listOfColumn" [nzSortFn]="column.compare" [nzSortPriority]="column.priority">
+        <th *ngFor="let column of getVisibleColumns()" [nzSortFn]="column.compare" [nzSortPriority]="column.priority">
           {{ column.title }}
         </th>
       </tr>
@@ -50,6 +50,7 @@
         <td>{{ data.name }}</td>
         <td>{{ data.supplierNum }}</td>
         <td>{{ data.tax_Id }}</td>
+        <td  *ngIf="this.isApprovedFN || this.isAdmin">{{ data.supplierGroup }}</td>
         <td>{{ data.status }}</td>
         <td class="text-center">
           <button nz-button nzType="primary" class="mr-1" nzShape="round"

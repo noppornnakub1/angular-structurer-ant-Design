@@ -52,6 +52,12 @@ export class SupplierComponent implements OnInit {
       priority: 2
     },
     {
+      title: 'Group',
+      compare: (a: ISupplier, b: ISupplier) => (a.supplierGroup || '').localeCompare(b.supplierGroup || ''),
+      priority: 3,
+      role: ['isApprovedFN', 'isAdmin']
+    },
+    {
       title: 'Status',
       compare: (a: ISupplier, b: ISupplier) => a.status.localeCompare(b.status),
       priority: 1
@@ -125,6 +131,8 @@ export class SupplierComponent implements OnInit {
       this.supplierService.findDataByUserCompanyFN(currentUser.user.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
+          console.log(this.listOfData);
+          
           this.selectedStatus = 'Pending Approved By FN'
           this.changeStatusIfNeeded();
           this.applyFilters();
@@ -239,5 +247,14 @@ export class SupplierComponent implements OnInit {
       this.displayData = [...this.filteredData];
     }
     this.cdr.detectChanges();
+  }
+
+  getVisibleColumns(): any[] {
+    return this.listOfColumn.filter(column => {
+      if (!column.role) {
+        return true; 
+      }
+      return column.role.some(role => (this as any)[role]); 
+    });
   }
 }

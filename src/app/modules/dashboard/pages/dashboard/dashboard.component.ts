@@ -100,6 +100,13 @@ export class DashboardComponent {
       priority: 2
     },
     {
+      title: 'Group',
+      compare: (a: CustomerSupplier, b: CustomerSupplier) =>
+        (a.supplierGroup ?? '').localeCompare(b.supplierGroup ?? ''),
+      priority: 2,
+      role: ['isApprovedFN', 'isAdmin']
+    },
+    {
       title: 'Type',
       compare: (a: CustomerSupplier, b: CustomerSupplier) => a.source.localeCompare(b.source),
       priority: 2
@@ -242,7 +249,7 @@ export class DashboardComponent {
     else if (currentUser.user.role == 4) {
       const userId = currentUser.user.userId;
       const company = currentUser.user.company;
-      this.customerService.FindDataHistoryByApproverFN(userId, company, 'Approved By ACC', 'ACC').subscribe({
+      this.customerService.FindDataHistoryByApproverFN(userId, company, 'Approved By ACC', 'FN').subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.applyFilters();
@@ -421,6 +428,15 @@ export class DashboardComponent {
       nzTitle: 'Customer/Supplier Details',
       nzContent: ViewDetailOldComponent,
       nzFooter: null,
+    });
+  }
+
+  getVisibleColumns(): any[] {
+    return this.listOfColumnCustomer.filter(column => {
+      if (!column.role) {
+        return true; 
+      }
+      return column.role.some(role => (this as any)[role]); 
     });
   }
 }

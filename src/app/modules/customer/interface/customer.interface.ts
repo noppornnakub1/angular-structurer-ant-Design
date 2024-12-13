@@ -40,6 +40,7 @@ export interface ICustomer {
     paymentMethod?: string; // อาจเป็น null หรือไม่มีสำหรับ customer
     source: string; // 'Customer' หรือ 'Supplier'
     user_id: number;
+    supplierGroup?: string;
   }
 
   export interface DataOld {

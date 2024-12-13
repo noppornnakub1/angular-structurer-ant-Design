@@ -200,7 +200,7 @@
         </div>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
-        <nz-form-label nzNoColon>Mobilephone<span style="color: red;">*</span>
+        <nz-form-label nzNoColon>Mobile Phone<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="mobile : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
           เช่น 063-259-1642 กรุณากรอก 0692591642
           หาก ไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -390,17 +390,6 @@
         </div>
         <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
           <nz-form-item>
-            <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch<span
-                style="color: red;">*</span></nz-form-label>
-            <nz-form-control [nzSpan]="24"
-              [ngStyle]="isFieldValidSupplierBank('branch') ? {border: '1px solid red', borderRadius: '7px'} : null">
-              <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input"
-                (input)="validateBranch($event)" />
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-        <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-          <nz-form-item>
             <nz-form-label [nzSpan]="24" nzFor="accountNumber" nzNoColon style="padding: 0px;">Account
               Number<span style="color: red;">*</span></nz-form-label>
             <nz-form-control [nzSpan]="24"
@@ -482,17 +471,6 @@
                   <nz-option *ngFor="let type of listOfBank" [nzLabel]="type.shortBankName+' : '+type.alternateBankName"
                     [nzValue]="type.shortBankName"></nz-option>
                 </nz-select>
-              </nz-form-item>
-            </div>
-            <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24" nzFor="branch" nzNoColon style="padding: 0px;">Branch<span
-                    style="color: red;">*</span></nz-form-label>
-                <nz-form-control [nzSpan]="24"
-                  [ngStyle]="isFieldValidSupplierBankAdd('branch') ? {border: '1px solid red', borderRadius: '7px'} : null">
-                  <input nz-input id="branch" placeholder="Branch" formControlName="branch" class="form-input"
-                    (input)="validateBranchAdd($event)" />
-                </nz-form-control>
               </nz-form-item>
             </div>
             <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">

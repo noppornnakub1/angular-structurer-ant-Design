@@ -17,6 +17,7 @@ export interface ISupplier {
     site: string,
     tax:string,
     paymentMethod:string,
-    company:string
+    company:string,
+    supplierGroup:string
   }
   

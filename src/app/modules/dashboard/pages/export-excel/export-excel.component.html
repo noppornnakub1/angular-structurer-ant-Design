@@ -1,12 +1,31 @@
 <div class="content-card-search">
-    <h2>Export Excel</h2>
-    <div class="form-list">
-      <div class="form-row">
-        <label for="exportDate">Select Date</label>
-        <input type="date" [(ngModel)]="exportDate" id="exportDate" />
-      </div>
-      <div class="form-row">
-        <button (click)="exportExcel()">Export</button>
+  <h2>Export Excel</h2>
+  <div class="form-list">
+    <div class="form-row">
+      <label for="exportDate">Select Date</label>
+      <div class="date-picker-wrapper">
+        <!-- Input แสดงวันที่ -->
+        <input
+          type="text"
+          id="exportDate"
+          [value]="formattedDate"
+          readonly
+        />
+        <!-- Icon Calendar -->
+        <span class="icon-inside-input material-symbols-outlined" (click)="focusDatePicker()">
+          calendar_month
+        </span>
+        <!-- Input Date Picker -->
+        <input
+          type="date"
+          id="nativeDatePicker"
+          [value]="exportDate"
+          (change)="onDateChange($event)"
+        />
       </div>
     </div>
+    <div class="form-row">
+      <button (click)="exportExcel()">Export</button>
+    </div>
   </div>
+</div>

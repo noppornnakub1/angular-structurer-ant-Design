@@ -15,13 +15,16 @@ import Swal from 'sweetalert2';
 export class ExportExcelComponent {
   username: string = '';
   exportDate: string = '';
+  formattedDate: string = ''; 
 
   constructor(private supplierService: SupplierService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-
+    const today = new Date();
+    this.exportDate = today.toISOString().split('T')[0]; 
+    this.formattedDate = this.formatDate(today); 
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    this.username = currentUser.user.username;
+    this.username = currentUser.user.username
 
   }
 
@@ -32,8 +35,8 @@ export class ExportExcelComponent {
     }
 
     const payload = {
-      Username: this.username, 
-      Date: this.exportDate 
+      Username: this.username,
+      Date: this.exportDate
     };
 
     this.supplierService.exportExcel(payload).subscribe({
@@ -53,7 +56,32 @@ export class ExportExcelComponent {
       },
     });
   }
+  formatDate(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
 
+  // ฟังก์ชันเมื่อมีการเลือกวันที่
+  onDateChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.value) {
+      this.exportDate = input.value; 
+      const [year, month, day] = input.value.split('-');
+      this.formattedDate = `${day}/${month}/${year}`; 
+      console.log('Updated Date:', this.exportDate, this.formattedDate);
+    }
+  }
 
+  focusDatePicker(): void {
+    const dateInput = document.getElementById('nativeDatePicker') as HTMLInputElement;
+    if (dateInput) {
+      dateInput.click(); 
+    }
+  }
 
 }
+
+
+

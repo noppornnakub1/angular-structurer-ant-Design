@@ -197,6 +197,9 @@ export class DashboardComponent {
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
+        if(this.isApprovedFN && this.isAdmin == false){
+          this.isApproved = false;
+        }
       } else {
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
         this.authService.getRole(currentUser.role)
@@ -207,6 +210,9 @@ export class DashboardComponent {
             this.isApproved = user.action.includes('approved');
             this.isApprovedFN = user.action.includes('approvedFN');
             this.isUser = user.action.includes('user');
+            if(this.isApprovedFN && this.isAdmin == false){
+              this.isApproved = false;
+            }
           }
         });
       }

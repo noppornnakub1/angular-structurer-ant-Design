@@ -59,6 +59,7 @@ export class CustomerAddComponent implements OnInit {
   item_prefix: prefix[] = [];
   filteredItemsPrefix: prefix[] = [];
   selectedPrefix: string = '';
+  tel: number | null = null;
   files = [
     { fileName: 'ใบขอเปิด Customer', fileType: 'fileReq', filePath: '' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: '' },
@@ -111,7 +112,7 @@ export class CustomerAddComponent implements OnInit {
       path: [''],
       prefix: [''],
       postId: [0],
-      addressDetail: ['']
+      addressDetail: [''],
     });
 
     await this.handleRouteParams();
@@ -354,7 +355,7 @@ export class CustomerAddComponent implements OnInit {
         { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.customerForm.value.fileCertificate || '' }
       ];
       this.displayFiles = this.filess
-
+      this.getTelACC();
       this.getEventLogs(id)
     });
   }
@@ -871,7 +872,7 @@ export class CustomerAddComponent implements OnInit {
               <br>
               <p>สถานะคำขอของคุณ: ${this.customerForm.get('status')?.value} </p>
               <br>
-              <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ "+" <a href='http://10.10.0.28:8085/'>ลิงก์นี้</a></p>
+              <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ <a href='http://10.10.0.28:8085/'>ลิงก์นี้</a></p>
               <br>
               <p>Best Regards</p>
               <p>OnePortal</p>
@@ -1005,6 +1006,7 @@ export class CustomerAddComponent implements OnInit {
   }
 
   sendEmailNotificationRequester(): void {
+    this.getTelACC();
     const status = this.customerForm.get('status')?.value;
     var to = ''
     var subject = ''
@@ -1026,10 +1028,9 @@ export class CustomerAddComponent implements OnInit {
         <p>Tax ID : ${this.customerForm.get('taxId')?.value} </p>
         <p>Type: ${this.customerForm.get('customerType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a href='http://10.10.0.28:8085//feature/customer/view/${this.customerForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085//feature/customer/view/${this.customerForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
-        <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี [เบอร์กลางบัญชี]</p>
-        <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
+        <p>หากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
         <br>
         <p>Best Regards</p>
         <p>OnePortal</p>
@@ -1049,7 +1050,10 @@ export class CustomerAddComponent implements OnInit {
         <p>Tax ID : ${this.customerForm.get('taxId')?.value} </p>
         <p>Type: ${this.customerForm.get('customerType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a href='http://10.10.0.28:8085//feature/customer/view/${this.customerForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085//feature/customer/view/${this.customerForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <br>
+        <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.tel}</p>
+        <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
         <br>
         <p>Best Regards</p>
         <p>OnePortal</p>
@@ -1070,7 +1074,10 @@ export class CustomerAddComponent implements OnInit {
         <p>Tax ID : ${this.customerForm.get('taxId')?.value} </p>
         <p>Type: ${this.customerForm.get('customerType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ "+" <a href='http://10.10.0.28:8085//feature/customer/view/${this.customerForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085//feature/customer/view/${this.customerForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <br>
+        <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.tel}</p>
+        <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
         <br>
         <p>Best Regards</p>
         <p>OnePortal</p>
@@ -1202,6 +1209,23 @@ export class CustomerAddComponent implements OnInit {
           const nextInput = inputs[currentIndex + 1] as HTMLInputElement;
           nextInput.focus();
         }
+      }
+    }
+  }
+
+  getTelACC(){
+    const idOnwer = this.originalData.ownerAcc;
+    if(idOnwer){
+      this.userService.findUserById(idOnwer).subscribe((data: any) => {
+        this.tel = data.tel;
+      });
+    }
+    else {
+      if (this.isApproved) {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        this.userService.findUserById(currentUser.user.userId).subscribe((data: any) => {
+          this.tel = data.tel
+        });
       }
     }
   }

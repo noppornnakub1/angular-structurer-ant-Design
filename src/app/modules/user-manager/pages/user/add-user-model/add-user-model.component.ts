@@ -81,6 +81,7 @@ export class AddUserModelComponent implements OnInit {
       CreateDate: [this.getCurrentDate(), [Validators.required]],
       UpdateDate: [this.getCurrentDate()],
       company: [null, [Validators.required]],
+      tel: [null, [Validators.required]],
     });
     this.userId = this.modalDataService.getUserId();
 
@@ -230,7 +231,8 @@ export class AddUserModelComponent implements OnInit {
         UpdateDate: data.updateDate,
         username: data.username,
         password: data.password,
-        company: companyArray
+        company: companyArray,
+        tel: data.tel
       });
       this.CheckRole = this.validateForm.value.role
       const roleInfo = this.listOfRole.find(role => role.id === this.validateForm.value.role );

@@ -68,6 +68,19 @@
             </div>
             <div nz-form-item nz-row class="mt-2">
                 <div nz-col nzSpan="8" nz-form-label>
+                    <label for="tel">tel:</label>
+                </div>
+                <div nz-col nzSpan="16" nz-form-control
+                    [ngClass]="{'has-error': validateForm.get('tel')?.invalid && validateForm.get('tel')?.touched}">
+                    <input nz-input id="tel" formControlName="tel" />
+                    <div nz-form-explain
+                        *ngIf="validateForm.get('tel')?.invalid && validateForm.get('tel')?.touched">
+                        tel is required
+                    </div>
+                </div>
+            </div>
+            <div nz-form-item nz-row class="mt-2">
+                <div nz-col nzSpan="8" nz-form-label>
                     <label for="role">Role:</label>
                 </div>
                 <div nz-col nzSpan="16" nz-form-control

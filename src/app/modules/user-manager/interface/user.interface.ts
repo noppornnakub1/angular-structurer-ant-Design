@@ -13,6 +13,7 @@
         company:string;
         EmpNo:string;
         ResponseType:number;
+        tel:string;
     },
     jwtToken: string;
   }

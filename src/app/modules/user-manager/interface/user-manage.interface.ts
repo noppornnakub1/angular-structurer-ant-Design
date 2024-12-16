@@ -13,4 +13,5 @@ export interface IUserManage {
     EmpNo: string;
     responseType: number;
     responseTypeName:string;
+    tel:string;
 }

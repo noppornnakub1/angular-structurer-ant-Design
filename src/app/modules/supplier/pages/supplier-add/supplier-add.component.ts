@@ -1214,25 +1214,6 @@ export class SupplierAddComponent {
     }
   }
 
-  private handleUpdateResponse(): void {
-    if (!this.showSupplierBankForm) {
-      this.insertLog();
-      this.sendEmailNotification();
-      this.sendEmailNotificationRequester();
-    } else {
-      this.onUpdateSupplierBank();
-      this.insertLog();
-      this.sendEmailNotification();
-      this.sendEmailNotificationRequester();
-    }
-
-    const status = this.supplierForm.value.status;
-    if (this.isApproved && status === 'Pending Approved By ACC') {
-      this.router.navigate([`/feature/supplier/view/${this.suppilerId}`]);
-    } else {
-      this.router.navigate(['/feature/supplier']);
-    }
-  }
 
   onUpdate(formValue: any): void {
     if (formValue && this.suppilerId) {
@@ -1243,8 +1224,6 @@ export class SupplierAddComponent {
 
       this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
         next: (response) => {
-          // this.handleUpdateResponse();
-          // this.insertLog();
           this.showSuccessNotification();
           this.sendEmailNotification();
           this.sendEmailNotificationRequester();
@@ -1819,10 +1798,10 @@ export class SupplierAddComponent {
       this.supplierForm.patchValue({ userId: this.currentUser?.id });
     }
     await this.onSubmit();
+
   }
 
   sendEmailNotification(): void {
-    const supplierNum = this.supplierForm.get('supplierNum')?.value;
     const supplierName = this.supplierForm.get('name')?.value;
     const TaxID = this.supplierForm.get('tax_Id')?.value;
     var name = '';

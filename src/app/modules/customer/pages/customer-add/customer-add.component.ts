@@ -1145,16 +1145,17 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.CheckDuplicateSCustomerByConpanySiteAndName(formData).subscribe({
       next: (response) => {
         if (response) {
-          this.customerForm.patchValue({
-            name: response.customerName || '-',
-            taxId: response.taxReference || '-',
-            addressSup: response.address1 || '-',
-            addressDetail: response.address2 || '-',
-            postalCode: (response.postal ? response.postal + '-' + (response.address3 || '-') : '-'),
-            district: response.address4 || '-',
-            subdistrict: response.address3 || '-',
-            province: response.province || '-'
-          });
+          // พี่หนึ่งห้ามลบ 16/12/67 พี่แป๊บให้ Comment ให้ user ลองใช้ก่อนเราอำนวยให้แต่เขาไม่ชอบ
+          // this.customerForm.patchValue({
+          //   name: response.customerName || '-',
+          //   taxId: response.taxReference || '-',
+          //   addressSup: response.address1 || '-',
+          //   addressDetail: response.address2 || '-',
+          //   postalCode: (response.postal ? response.postal + '-' + (response.address3 || '-') : '-'),
+          //   district: response.address4 || '-',
+          //   subdistrict: response.address3 || '-',
+          //   province: response.province || '-'
+          // });
         }
       },
       error: (err) => {
@@ -1166,14 +1167,15 @@ export class CustomerAddComponent implements OnInit {
           confirmButtonText: 'ปิด'
         });
         this.customerForm.patchValue({
-          name: err.customerName || '-',
-          taxId: err.taxReference || '-',
-          addressSup: err.address1 || '-',
-          addressDetail: err.address2 || '-',
-          postalCode: (err.postal ? err.postal + '-' + (err.address3 || '-') : '-'),
-          district: err.address4 || '-',
-          subdistrict: err.address3 || '-',
-          province: err.province || '-',
+          // พี่หนึ่งห้ามลบ 16/12/67 พี่แป๊บให้ Comment ให้ user ลองใช้ก่อนเราอำนวยให้แต่เขาไม่ชอบ
+          // name: err.customerName || '-',
+          // taxId: err.taxReference || '-',
+          // addressSup: err.address1 || '-',
+          // addressDetail: err.address2 || '-',
+          // postalCode: (err.postal ? err.postal + '-' + (err.address3 || '-') : '-'),
+          // district: err.address4 || '-',
+          // subdistrict: err.address3 || '-',
+          // province: err.province || '-',
           company: ''
         });
       }

@@ -172,9 +172,9 @@ export class SupplierAddComponent {
     {
       title: 'Supplier',
     },
-    {
-      title: 'One Time',
-    },
+    // {
+    //   title: 'One Time',
+    // },
   ];
   files: any[] = [];
   listSupplierBankFileTemplates: any[] = [];
@@ -210,6 +210,7 @@ export class SupplierAddComponent {
   FNId: any;
   telAcc: any;
   telFN: any;
+  isPrefixIsYou = false;
   constructor(private _location: Location, private fb: FormBuilder
     , private supplierService: SupplierService,
     private router: Router,
@@ -353,6 +354,12 @@ export class SupplierAddComponent {
     });
     this.supplierForm.get('prefix')?.valueChanges.subscribe(prefix => {
       this.selectedPrefix = prefix;
+      if(this.selectedPrefix === 'คุณ'){
+        this.isPrefixIsYou = true;
+      }
+      else{
+        this.isPrefixIsYou = false;
+      }
       this.updateNameWithPrefixChange();
       this._cdr.detectChanges();
     });
@@ -951,7 +958,8 @@ export class SupplierAddComponent {
             district: '-',
             subdistrict: '-',
             vat: '-',
-            paymentMethod: '-'
+            paymentMethod: '-',
+            tax_Id: '-'
           });
         }
         else {
@@ -961,7 +969,8 @@ export class SupplierAddComponent {
             district: '-',
             subdistrict: '-',
             vat: '-',
-            paymentMethod: '-'
+            paymentMethod: '-',
+            tax_Id: ''
           });
         }
       }

@@ -134,20 +134,20 @@
           <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
-        <nz-form-label nzNoColon>Mobilephone<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="Mobilephone : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
+        <nz-form-label nzNoColon>Mobile Phone<span style="color: red;">*</span>
+          <span nz-tooltip nzTooltipTitle="Mobile Phone : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
           เช่น 063-259-1642 กรุณากรอก 0692591642
           หาก ไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="phone" class="form-input">
-          <input nz-input type="text" placeholder="Mobilephone" maxlength="10" (input)="validateTel($event)"
+          <input nz-input type="text" placeholder="Mobile Phone" maxlength="10" (input)="validateTel($event)"
             formControlName="tel" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
         <nz-form-label nzNoColon>Email<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Email : ของ Customer ถ้าไม่มีให้ระบุเป็น “-”"
             class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -158,7 +158,7 @@
           <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
         <nz-form-label nzNoColon>Company<span style="color: red;">*</span>
         </nz-form-label>
         <nz-select formControlName="company" nzPlaceHolder="Select Company" class="custom-select">

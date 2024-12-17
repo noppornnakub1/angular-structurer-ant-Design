@@ -61,7 +61,7 @@
       </div>
       <div *ngIf="isOneTime" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3"></div>
       <div *ngIf="isOneTime" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3"></div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+      <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Tax ID<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="TAX ID : กรุณากรอกตัวเลข 13 หลัก ติดกัน โดยไม่ต้องมี -
           หากเป็นลูกค้าที่ไม่มี TAX ID ให้กรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -181,7 +181,7 @@
           Required
         </div>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
+      <div *ngIf="!isPrefixIsYou" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" [ngClass]="{'pr-3': true, 'mt-3': isOverseaSupplier()}">
         <nz-form-label nzNoColon>Telephone<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Tel : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
           เช่น 063-259-1642 กรุณากรอก 0692591642
@@ -199,9 +199,9 @@
           Telephone is Required
         </div>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" [ngClass]="{'pr-3': true, 'mt-3': isOverseaSupplier()}">
         <nz-form-label nzNoColon>Mobile Phone<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="mobile : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
+          <span nz-tooltip nzTooltipTitle="Mobile Phone : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
           เช่น 063-259-1642 กรุณากรอก 0692591642
           หาก ไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
@@ -209,15 +209,15 @@
         </nz-form-label>
         <nz-input-group nzPrefixIcon="phone" class="form-input"
           [ngStyle]="isFieldValidSupplier('mobile') ? {border: '1px solid red', borderRadius: '7px'} : null">
-          <input nz-input type="text" placeholder="Telephone" maxlength="10" (input)="validateMobile($event)"
+          <input nz-input type="text" placeholder="Mobile Phone" maxlength="10" (input)="validateMobile($event)"
             formControlName="mobile" />
         </nz-input-group>
         <div nz-form-explain *ngIf="supplierForm.get('mobile')?.invalid && supplierForm.get('mobile')?.touched"
           style="color: red;">
-          Mobilephone is Required
+          Mobile Phone is Required
         </div>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="12" class="pr-3">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="12" [ngClass]="{'pr-3': true, 'mt-3': isOverseaSupplier()}">
         <nz-form-label nzNoColon>Email<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Email : ของ Supplier ถ้าไม่มีให้ระบุเป็น “-”"
             class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -233,6 +233,7 @@
           Email is Required
         </div>
       </div>
+      <div *ngIf="isPrefixIsYou" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3"></div>
       <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Payment Method<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Payment Method : ช่องทางในการรับเงินของ Supplier 

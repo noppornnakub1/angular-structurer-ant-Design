@@ -216,29 +216,29 @@ export class CustomerAddComponent implements OnInit {
       this.checkAndCallApi();
       return;
     }
-    else{
-      nameValue = nameValue.replace(/^บริษัท /, '')
-      .replace(/\s?จำกัด\s?\(มหาชน\)/g, '')
-      .replace(/\s?จำกัด/g, '')
-      .replace(/^คุณ /, '')
-      .replace(/^ห้างหุ้นส่วนสามัญ/, '')
-      .replace(/^ห้างหุ้นส่วนจำกัด/, '');
-
-    if (this.selectedPrefix === 'บริษัทจำกัด') {
-      nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด`);
-    } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
-      nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด (มหาชน)`);
-    } else if (this.selectedPrefix === 'คุณ') {
-      nameControl?.setValue(`คุณ ${nameValue.trim()}`);
-    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
-      nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue.trim()}`);
-    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
-      nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue.trim()}`);
-    }
     else {
-      nameControl?.setValue(nameValue.trim());
-    }
-    this.checkAndCallApi();
+      nameValue = nameValue.replace(/^บริษัท /, '')
+        .replace(/\s?จำกัด\s?\(มหาชน\)/g, '')
+        .replace(/\s?จำกัด/g, '')
+        .replace(/^คุณ /, '')
+        .replace(/^ห้างหุ้นส่วนสามัญ/, '')
+        .replace(/^ห้างหุ้นส่วนจำกัด/, '');
+
+      if (this.selectedPrefix === 'บริษัทจำกัด') {
+        nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด`);
+      } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
+        nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด (มหาชน)`);
+      } else if (this.selectedPrefix === 'คุณ') {
+        nameControl?.setValue(`คุณ ${nameValue.trim()}`);
+      } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
+        nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue.trim()}`);
+      } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
+        nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue.trim()}`);
+      }
+      else {
+        nameControl?.setValue(nameValue.trim());
+      }
+      this.checkAndCallApi();
     }
   }
 
@@ -276,29 +276,29 @@ export class CustomerAddComponent implements OnInit {
       this.checkAndCallApi();
       return;
     }
-    else{
+    else {
       nameValue = nameValue.replace(/^บริษัท /, '')
-      .replace(/ จำกัด \(มหาชน\)$/, '')
-      .replace(/ จำกัด$/, '')
-      .replace(/^คุณ /, '')
-      .replace(/^ห้างหุ้นส่วนสามัญ/, '')
-      .replace(/^ห้างหุ้นส่วนจำกัด/, '');
+        .replace(/ จำกัด \(มหาชน\)$/, '')
+        .replace(/ จำกัด$/, '')
+        .replace(/^คุณ /, '')
+        .replace(/^ห้างหุ้นส่วนสามัญ/, '')
+        .replace(/^ห้างหุ้นส่วนจำกัด/, '');
 
-    if (this.selectedPrefix === 'บริษัทจำกัด') {
-      nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
-    } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
-      nameControl?.setValue(`บริษัท ${nameValue} จำกัด (มหาชน)`);
-    } else if (this.selectedPrefix === 'คุณ') {
-      nameControl?.setValue(`คุณ ${nameValue}`);
-    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
-      nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue}`);
-    } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
-      nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue}`);
-    } else {
-      nameControl?.setValue(nameValue);
+      if (this.selectedPrefix === 'บริษัทจำกัด') {
+        nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
+      } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
+        nameControl?.setValue(`บริษัท ${nameValue} จำกัด (มหาชน)`);
+      } else if (this.selectedPrefix === 'คุณ') {
+        nameControl?.setValue(`คุณ ${nameValue}`);
+      } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
+        nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue}`);
+      } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
+        nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue}`);
+      } else {
+        nameControl?.setValue(nameValue);
+      }
     }
-    }
-    
+
   }
 
   validateTaxId(event: any): void {
@@ -1145,38 +1145,110 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.CheckDuplicateSCustomerByConpanySiteAndName(formData).subscribe({
       next: (response) => {
         if (response) {
-          // พี่หนึ่งห้ามลบ 16/12/67 พี่แป๊บให้ Comment ให้ user ลองใช้ก่อนเราอำนวยให้แต่เขาไม่ชอบ
-          // this.customerForm.patchValue({
-          //   name: response.customerName || '-',
-          //   taxId: response.taxReference || '-',
-          //   addressSup: response.address1 || '-',
-          //   addressDetail: response.address2 || '-',
-          //   postalCode: (response.postal ? response.postal + '-' + (response.address3 || '-') : '-'),
-          //   district: response.address4 || '-',
-          //   subdistrict: response.address3 || '-',
-          //   province: response.province || '-'
-          // });
+          Swal.fire({
+            icon: 'question',
+            title: 'พบข้อมูล Customer นี้ต้องการใช้ที่อยู่เดิมหรือไม่?',
+            html: `
+                  <div style="text-align: left;">
+                    <p><strong>Name:</strong> ${response.customerName || '-'}</p>
+                    <p><strong>Tax ID:</strong> ${response.taxReference || '-'}</p>
+                    <p><strong>No.:</strong> ${response.address1 || '-'}</p>
+                    <p><strong>Address:</strong> ${response.address2 || '-'}</p>
+                    <p><strong>Postal Code:</strong> ${response.postal || '-'}</p>
+                    <p><strong>Subdistrict:</strong> ${response.address3 || '-'}</p>
+                    <p><strong>District:</strong> ${response.address4 || '-'}</p>
+                    <p><strong>Province:</strong> ${response.province || '-'}</p>
+                  </div>
+                `,
+            showCancelButton: true,
+            confirmButtonText: 'ตกลง',
+            cancelButtonText: 'ไม่ใช่'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // กด OK (ตกลง) -> Map ข้อมูลเดิมให้
+              this.customerForm.patchValue({
+                name: response.customerName || '-',
+                taxId: response.taxReference || '-',
+                addressSup: response.address1 || '-',
+                addressDetail: response.address2 || '-',
+                postalCode: (response.postal ? response.postal + '-' + (response.address3 || '-') : '-'),
+                district: response.address4 || '-',
+                subdistrict: response.address3 || '-',
+                province: response.province || '-',
+                company: response.company || ''
+              });
+              Swal.fire({
+                icon: 'success',
+                title: 'ใช้ที่อยู่เดิมเรียบร้อย',
+                confirmButtonText: 'ตกลง'
+              });
+            } else {
+              Swal.fire({
+                icon: 'info',
+                title: 'ไม่ใช้ที่อยู่เดิม',
+                text: 'กรุณากรอกข้อมูลใหม่',
+                confirmButtonText: 'ตกลง'
+              });
+            }
+          });
         }
       },
       error: (err) => {
         console.error('Error occurred:', err.message);
+        // แสดง Popup แรกแจ้งเตือนข้อมูลซ้ำ
         Swal.fire({
           icon: 'warning',
           title: 'ข้อมูลซ้ำ',
           text: err.message,
           confirmButtonText: 'ปิด'
-        });
-        this.customerForm.patchValue({
-          // พี่หนึ่งห้ามลบ 16/12/67 พี่แป๊บให้ Comment ให้ user ลองใช้ก่อนเราอำนวยให้แต่เขาไม่ชอบ
-          // name: err.customerName || '-',
-          // taxId: err.taxReference || '-',
-          // addressSup: err.address1 || '-',
-          // addressDetail: err.address2 || '-',
-          // postalCode: (err.postal ? err.postal + '-' + (err.address3 || '-') : '-'),
-          // district: err.address4 || '-',
-          // subdistrict: err.address3 || '-',
-          // province: err.province || '-',
-          company: ''
+        }).then(() => {
+          // เมื่อ Popup แรกถูกปิดแล้ว แสดง Popup ถัดไปให้เลือกว่าจะใช้ที่อยู่เดิมหรือไม่
+          Swal.fire({
+            icon: 'question',
+            title: 'ต้องการใช้ที่อยู่เดิมหรือไม่?',
+            html: `
+                  <div style="text-align: left;">
+                    <p><strong>Name:</strong> ${err.customerName || '-'}</p>
+                    <p><strong>Tax ID:</strong> ${err.taxReference || '-'}</p>
+                    <p><strong>No.:</strong> ${err.address1 || '-'}</p>
+                    <p><strong>Address:</strong> ${err.address2 || '-'}</p>
+                    <p><strong>Postal Code:</strong> ${err.postal || '-'}</p>
+                    <p><strong>Subdistrict:</strong> ${err.address3 || '-'}</p>
+                    <p><strong>District:</strong> ${err.address4 || '-'}</p>
+                    <p><strong>Province:</strong> ${err.province || '-'}</p>
+                  </div>
+                `,
+            showCancelButton: true,
+            confirmButtonText: 'ตกลง',
+            cancelButtonText: 'ไม่ใช่'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // กด OK (ตกลง) -> Map ข้อมูลเดิมให้
+              this.customerForm.patchValue({
+                name: err.customerName || '-',
+                taxId: err.taxReference || '-',
+                addressSup: err.address1 || '-',
+                addressDetail: err.address2 || '-',
+                postalCode: (err.postal ? err.postal + '-' + (err.address3 || '-') : '-'),
+                district: err.address4 || '-',
+                subdistrict: err.address3 || '-',
+                province: err.province || '-',
+                company: err.company || ''
+              });
+              Swal.fire({
+                icon: 'success',
+                title: 'ใช้ที่อยู่เดิมเรียบร้อย',
+                confirmButtonText: 'ตกลง'
+              });
+            } else {
+              Swal.fire({
+                icon: 'info',
+                title: 'ไม่ใช้ที่อยู่เดิม',
+                text: 'กรุณากรอกข้อมูลใหม่',
+                confirmButtonText: 'ตกลง'
+              });
+            }
+          });
         });
       }
     });
@@ -1215,9 +1287,9 @@ export class CustomerAddComponent implements OnInit {
     }
   }
 
-  getTelACC(){
+  getTelACC() {
     const idOnwer = this.originalData.ownerAcc;
-    if(idOnwer){
+    if (idOnwer) {
       this.userService.findUserById(idOnwer).subscribe((data: any) => {
         this.tel = data.tel;
       });

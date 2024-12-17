@@ -84,5 +84,6 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('currentRole');
+    sessionStorage.removeItem('pdpaAccepted');
   }
 }

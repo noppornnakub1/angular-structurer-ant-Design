@@ -45,6 +45,7 @@ export class DashboardComponent {
   selectedType: string = 'All';
   selectedTypeOld: string = '';
   isVisible = true;
+  isLoading: boolean = false;
   selectedData: any = {
     id: null,
     name: '',
@@ -137,7 +138,8 @@ export class DashboardComponent {
     {
       title: 'Tax',
       compare: (a: DataOld, b: DataOld) => a.TAX ?? ''.localeCompare(b.TAX ?? ''),
-      priority: 2
+      priority: 2,
+      role: ['isApprovedFN', 'isAdmin', 'isApproved']
     },
     {
       title: 'Payment Method',
@@ -152,6 +154,11 @@ export class DashboardComponent {
     {
       title: 'Company',
       compare: (a: DataOld, b: DataOld) => a.OU_SHORT_NAME ?? ''.localeCompare(b.OU_SHORT_NAME ?? ''),
+      priority: 2
+    },
+    {
+      title: 'Group',
+      compare: (a: DataOld, b: DataOld) => a.COMPANY_GROUP ?? ''.localeCompare(b.COMPANY_GROUP ?? ''),
       priority: 2
     },
     {
@@ -282,8 +289,10 @@ export class DashboardComponent {
 
   searchDataOld(): void {
     if (this.selectedTypeOld === 'Customer') {
+      this.isLoading = true; 
       this.customerService.findDataOldCustomer(this.filtersOld.num, this.filtersOld.name, this.filtersOld.site).subscribe({
         next: (response: any) => {
+          this.isLoading = false; 
           this.listOfDataOld = response
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
@@ -296,8 +305,10 @@ export class DashboardComponent {
       });
     }
     else if (this.selectedTypeOld === 'Supplier') {
+      this.isLoading = true; 
       this.customerService.findDataOldSupplier(this.filtersOld.num, this.filtersOld.name, this.filtersOld.tax_Id).subscribe({
         next: (response: any) => {
+          this.isLoading = false; 
           this.listOfDataOld = response
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
@@ -439,6 +450,15 @@ export class DashboardComponent {
 
   getVisibleColumns(): any[] {
     return this.listOfColumnCustomer.filter(column => {
+      if (!column.role) {
+        return true; 
+      }
+      return column.role.some(role => (this as any)[role]); 
+    });
+  }
+
+  getVisibleColumnsOld(): any[] {
+    return this.listOfColumnOld.filter(column => {
       if (!column.role) {
         return true; 
       }

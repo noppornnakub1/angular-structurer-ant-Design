@@ -24,6 +24,7 @@ export class SignInComponent {
   isForgotPasswordModalVisible = false;
   forgotPasswordUsername = '';
   isLoading: boolean = false;
+  showPDPA: boolean = false; 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -37,35 +38,36 @@ export class SignInComponent {
     });
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { 
+    if (!sessionStorage.getItem('pdpaAccepted')) {
+      this.showPDPA = true;
+    }
+  }
 
   login(): void {
     if (this.loginForm.valid) {
-      this.isLoading = true; // เริ่มแสดง Spinner
+      this.isLoading = true; 
       const { username, password } = this.loginForm.value;
   
       this.authService.login(username, password).subscribe(
         response => {
           if (response) {
-            // เรียก getRole หลังจาก login สำเร็จ
             this.authService.getRole(response.user.role).subscribe(
               responseRole => {
-                this.isLoading = false; // ซ่อน Spinner
+                this.isLoading = false; 
                 if (responseRole) {
-                  // แสดงข้อความสำเร็จ
                   Swal.fire({
                     icon: 'success',
                     title: 'เข้าสู่ระบบสำเร็จ',
                     showConfirmButton: false,
-                    timer: 1500
+                    timer: 5000
                   });
   
-                  // รอนำทางหลังจาก getRole สำเร็จ
                   this.router.navigate(['/feature/dashboard']);
                 }
               },
               error => {
-                this.isLoading = false; // ซ่อน Spinner
+                this.isLoading = false; 
                 console.error('Fetching role failed', error);
                 this.errorMessage = 'Fetching role failed. Please try again later.';
                 Swal.fire('Error!', 'การดึงข้อมูล role ล้มเหลว', 'error');
@@ -139,6 +141,11 @@ export class SignInComponent {
 
   generateRandomPassword(): string {
     return Math.random().toString(36).slice(-8); // รหัสผ่านแบบสุ่ม 8 ตัวอักษร
+  }
+
+  acceptPDPA() {
+    sessionStorage.setItem('pdpaAccepted', 'true');
+    this.showPDPA = false; 
   }
 
 }

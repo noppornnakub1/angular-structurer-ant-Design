@@ -54,6 +54,7 @@ export interface ICustomer {
     KEY_CUSTOMER?: string;
     PAYMENT_MEDTHOD?: string;
     OU_SHORT_NAME?:string;
+    
 
   }
   

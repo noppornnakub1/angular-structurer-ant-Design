@@ -1,4 +1,7 @@
 <div class="content-card-search">
+  <div *ngIf="isLoading" class="spinner-overlay">
+    <div class="spinner"></div>
+  </div>
   <h2>Master Data</h2>
   <div nz-row *ngIf="selectedTabIndex === 0">
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
@@ -37,19 +40,19 @@
       <nz-form-label nzNoColon>Customer & Supplier / Number</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
         <input nz-input placeholder="Customer & Supplier / Number" [(ngModel)]="filtersOld.num"
-          (input)="applyFilters()" />
+           (keydown.enter)="searchDataOld()"/>
       </nz-input-group>
     </div>
     <div *ngIf="selectedTypeOld !== 'Customer'" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>TaxID</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="Tax" [(ngModel)]="filtersOld.tax_Id" (input)="applyFilters()" />
+        <input nz-input placeholder="Tax" [(ngModel)]="filtersOld.tax_Id" (keydown.enter)="searchDataOld()"/>
       </nz-input-group>
     </div>
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
       <nz-form-label nzNoColon>Name</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="ชื่อ" [(ngModel)]="filtersOld.name" (input)="applyFilters()" />
+        <input nz-input placeholder="ชื่อ" [(ngModel)]="filtersOld.name" (keydown.enter)="searchDataOld()"/>
       </nz-input-group>
     </div>
     <div *ngIf="selectedTypeOld === 'Customer'" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
@@ -111,7 +114,7 @@
         (nzPageIndexChange)="onPageIndexChangeOld($event)" (nzPageSizeChange)="onPageSizeChangeOld($event)">
         <thead>
           <tr>
-            <th *ngFor="let column of listOfColumnOld">
+            <th *ngFor="let column of getVisibleColumnsOld()" >
               {{ column.title }}
             </th>
           </tr>
@@ -121,14 +124,16 @@
             <td style="text-align: right;">{{ (pageIndexOld - 1) * pageSizeOld + i + 1 }}</td>
             <td>{{ data.NAME }}</td>
             <td>{{ data.NUM }}</td>
-            <td class="text-center" *ngIf="data.TAX">{{ data.TAX }}</td>
-            <td class="text-center" *ngIf="!data.TAX"></td>
+            <td class="text-center" *ngIf="data.TAX &&(this.isApprovedFN || this.isAdmin || this.isApproved)">{{ data.TAX }}</td>
+            <td class="text-center" *ngIf="!data.TAX && (this.isApprovedFN || this.isAdmin || this.isApproved)"></td>
             <td *ngIf="data.PAYMENT_MEDTHOD">{{ data.PAYMENT_MEDTHOD }}</td>
             <td *ngIf="!data.PAYMENT_MEDTHOD"></td>
             <td class="text-center" *ngIf="data.SITE">{{ data.SITE }}</td>
             <td *ngIf="!data.SITE"></td>
             <td class="text-center" *ngIf="data.OU_SHORT_NAME">{{ data.OU_SHORT_NAME }}</td>
             <td *ngIf="!data.OU_SHORT_NAME"></td>
+            <td class="text-center" *ngIf="data.COMPANY_GROUP">{{ data.COMPANY_GROUP }}</td>
+            <td *ngIf="!data.COMPANY_GROUP"></td>
             <td class="text-center">
               <button *ngIf="isApproved || isAdmin || isApprovedFN" nz-button nzType="primary" class="mr-1" nzShape="round"
                 (click)="openModalold(data)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>

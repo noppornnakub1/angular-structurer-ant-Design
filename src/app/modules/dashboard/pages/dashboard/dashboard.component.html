@@ -1,3 +1,20 @@
+<div *ngIf="showPDPA" class="pdpa-popup-overlay">
+  <div class="pdpa-popup">
+    <h3>นโยบายการคุ้มครองข้อมูลส่วนบุคคล (PDPA)</h3>
+    <p>เว็บไซต์นี้ใช้ข้อมูลส่วนบุคคลเพื่อให้บริการและวัตถุประสงค์อื่น รอพี่อาร์ต เอาของจริงมาให้
+      เว็บไซต์นี้ใช้ข้อมูลส่วนบุคคลเพื่อให้บริการและวัตถุประสงค์อื่น รอพี่อาร์ต เอาของจริงมาให้
+      เว็บไซต์นี้ใช้ข้อมูลส่วนบุคคลเพื่อให้บริการและวัตถุประสงค์อื่น รอพี่อาร์ต เอาของจริงมาให้
+      เว็บไซต์นี้ใช้ข้อมูลส่วนบุคคลเพื่อให้บริการและวัตถุประสงค์อื่น รอพี่อาร์ต เอาของจริงมาให้
+    </p>
+    <div class="pdpa-actions mb-3">
+      <button nz-button nzType="primary" (click)="acceptPDPA()">ยอมรับ</button>
+    </div>
+    <label>
+      <input type="checkbox" [(ngModel)]="doNotShowAgain" />
+      ไม่ต้องแสดงอีก
+    </label>
+  </div>
+</div>
 <div class="content-card-search">
   <div *ngIf="isLoading" class="spinner-overlay">
     <div class="spinner"></div>

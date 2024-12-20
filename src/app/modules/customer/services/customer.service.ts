@@ -4,6 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, Observable, of } from 'rxjs';
 import { CustomerSupplier, DataOld, ICustomer } from '../interface/customer.interface';
 import { ICustomerType } from '../interface/customerType.interface';
+import { PDPAConsent } from '../../dashboard/services/PDPAConsent.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -166,8 +167,18 @@ export class CustomerService {
     return this._http.post(`/Customer/upload`, file);
   }
 
-  
+
   CheckDuplicateSCustomerByConpanySiteAndName(formData: any): Observable<any> {
     return this._http.post(`/Customer/CheckDuplicateCustomer`, formData);
-}
+  }
+
+  findPDPAById(username: string): Observable<PDPAConsent> {
+    return this._http.get<PDPAConsent>(`/PDPAConsent/GetPDPAByUsername?username=${username}`);
+  }
+
+  addPDPAData(username: string): Observable<any> {
+    const url = `/PDPAConsent/InsertPDPA`; 
+    const params = new HttpParams().set('username', username); 
+    return this._http.post(url, null, { params });
+  }
 }

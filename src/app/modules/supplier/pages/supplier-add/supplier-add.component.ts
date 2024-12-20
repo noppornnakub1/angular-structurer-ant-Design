@@ -211,6 +211,7 @@ export class SupplierAddComponent {
   telAcc: any;
   telFN: any;
   isPrefixIsYou = false;
+  isLoading: boolean = false;
   constructor(private _location: Location, private fb: FormBuilder
     , private supplierService: SupplierService,
     private router: Router,
@@ -225,6 +226,7 @@ export class SupplierAddComponent {
   ) { }
 
   async ngOnInit(): Promise<void> {
+    this.isLoading = false;
     this.initializeForms();
     await this.handleRouteParams();
     this.initializeViewMode();
@@ -297,7 +299,6 @@ export class SupplierAddComponent {
             }
             resolve();
           });
-
           this.loadSupplierData(this.suppilerId);
           this.isIDTemp = this.suppilerId;
         } else {
@@ -356,6 +357,9 @@ export class SupplierAddComponent {
       this.selectedPrefix = prefix;
       if(this.selectedPrefix === 'คุณ'){
         this.isPrefixIsYou = true;
+        this.supplierForm.patchValue({
+          tel: '-',
+        });
       }
       else{
         this.isPrefixIsYou = false;
@@ -1230,9 +1234,10 @@ export class SupplierAddComponent {
 
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
-
+      this.isLoading = true; 
       this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
         next: (response) => {
+          this.isLoading = false; 
           this.showSuccessNotification();
           this.sendEmailNotification();
           this.sendEmailNotificationRequester();
@@ -1806,6 +1811,7 @@ export class SupplierAddComponent {
       this.supplierForm.patchValue({ supplierNum: this.newSupnum });
       this.supplierForm.patchValue({ userId: this.currentUser?.id });
     }
+    
     await this.onSubmit();
 
   }
@@ -2251,8 +2257,6 @@ export class SupplierAddComponent {
     const taxId = this.supplierForm.get('tax_Id')?.value;
     const userId = this.supplierForm.get('id')?.value;
     const name = this.supplierForm.get('name')?.value;
-    console.log(supplierType);
-
     if ((supplierType && taxId) && userId == 0) {
       const formData = {
         taxId: taxId,
@@ -2476,7 +2480,6 @@ export class SupplierAddComponent {
     if (value) {
       this.userService.findUserById(value).subscribe((data: any) => {
         this.telAcc = data.tel
-        console.log(this.telAcc);
       });
     }
     else {
@@ -2484,7 +2487,6 @@ export class SupplierAddComponent {
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
         this.userService.findUserById(currentUser.user.userId).subscribe((data: any) => {
           this.telAcc = data.tel
-          console.log(this.telAcc);
         });
       }
     }

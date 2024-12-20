@@ -1152,12 +1152,11 @@ export class CustomerAddComponent implements OnInit {
                   <div style="text-align: left;">
                     <p><strong>Name:</strong> ${response.customerName || '-'}</p>
                     <p><strong>Tax ID:</strong> ${response.taxReference || '-'}</p>
-                    <p><strong>No.:</strong> ${response.address1 || '-'}</p>
-                    <p><strong>Address:</strong> ${response.address2 || '-'}</p>
-                    <p><strong>Postal Code:</strong> ${response.postal || '-'}</p>
+                    <p><strong>Address:</strong> ${response.address1 || '-'} ${response.address2 || '-'}</p>
                     <p><strong>Subdistrict:</strong> ${response.address3 || '-'}</p>
                     <p><strong>District:</strong> ${response.address4 || '-'}</p>
                     <p><strong>Province:</strong> ${response.province || '-'}</p>
+                    <p><strong>Postal Code:</strong> ${response.postal || '-'}</p>
                   </div>
                 `,
             showCancelButton: true,
@@ -1174,8 +1173,7 @@ export class CustomerAddComponent implements OnInit {
                 postalCode: (response.postal ? response.postal + '-' + (response.address3 || '-') : '-'),
                 district: response.address4 || '-',
                 subdistrict: response.address3 || '-',
-                province: response.province || '-',
-                company: response.company || ''
+                province: response.province || '-'
               });
               Swal.fire({
                 icon: 'success',
@@ -1199,55 +1197,22 @@ export class CustomerAddComponent implements OnInit {
         Swal.fire({
           icon: 'warning',
           title: 'ข้อมูลซ้ำ',
-          text: err.message,
-          confirmButtonText: 'ปิด'
-        }).then(() => {
-          // เมื่อ Popup แรกถูกปิดแล้ว แสดง Popup ถัดไปให้เลือกว่าจะใช้ที่อยู่เดิมหรือไม่
-          Swal.fire({
-            icon: 'question',
-            title: 'ต้องการใช้ที่อยู่เดิมหรือไม่?',
-            html: `
+          html: `
                   <div style="text-align: left;">
                     <p><strong>Name:</strong> ${err.customerName || '-'}</p>
+                    <p><strong>CustomerNumber:</strong> <u>${err.customerNumber || '-'}</u></p>
                     <p><strong>Tax ID:</strong> ${err.taxReference || '-'}</p>
-                    <p><strong>No.:</strong> ${err.address1 || '-'}</p>
-                    <p><strong>Address:</strong> ${err.address2 || '-'}</p>
-                    <p><strong>Postal Code:</strong> ${err.postal || '-'}</p>
+                    <p><strong>Address:</strong> ${err.address1 || '-'} ${err.address2 || '-'}</p>
                     <p><strong>Subdistrict:</strong> ${err.address3 || '-'}</p>
                     <p><strong>District:</strong> ${err.address4 || '-'}</p>
                     <p><strong>Province:</strong> ${err.province || '-'}</p>
+                    <p><strong>Postal Code:</strong> ${err.postal || '-'}</p>
                   </div>
                 `,
-            showCancelButton: true,
-            confirmButtonText: 'ตกลง',
-            cancelButtonText: 'ไม่ใช่'
-          }).then((result) => {
-            if (result.isConfirmed) {
-              // กด OK (ตกลง) -> Map ข้อมูลเดิมให้
-              this.customerForm.patchValue({
-                name: err.customerName || '-',
-                taxId: err.taxReference || '-',
-                addressSup: err.address1 || '-',
-                addressDetail: err.address2 || '-',
-                postalCode: (err.postal ? err.postal + '-' + (err.address3 || '-') : '-'),
-                district: err.address4 || '-',
-                subdistrict: err.address3 || '-',
-                province: err.province || '-',
-                company: err.company || ''
-              });
-              Swal.fire({
-                icon: 'success',
-                title: 'ใช้ที่อยู่เดิมเรียบร้อย',
-                confirmButtonText: 'ตกลง'
-              });
-            } else {
-              Swal.fire({
-                icon: 'info',
-                title: 'ไม่ใช้ที่อยู่เดิม',
-                text: 'กรุณากรอกข้อมูลใหม่',
-                confirmButtonText: 'ตกลง'
-              });
-            }
+          confirmButtonText: 'ปิด'
+        }).then(() => {
+          this.customerForm.patchValue({
+            company: err.company || ''
           });
         });
       }

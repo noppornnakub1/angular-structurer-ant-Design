@@ -59,7 +59,7 @@
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="4" class="pr-3 mt-3">
         <nz-form-label nzNoColon>
           Name<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="Name : ชื่อ Supplier กรุณา กรอกข้อมูลตาม Format"
+          <span nz-tooltip nzTooltipTitle="Name : ชื่อ Customer กรุณา กรอกข้อมูลตาม Format"
             class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
@@ -99,7 +99,7 @@
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Postal Code<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="Portal Code : เสริช รหัสไปรษณีย์ ระบบจะขึ้น Dropdown 
+          <span nz-tooltip nzTooltipTitle="Portal Code : Search รหัสไปรษณีย์ ระบบจะขึ้น Dropdown 
           มาให้เลือก ตำบล,อำเภอ,จังหวัด" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
@@ -136,9 +136,7 @@
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
         <nz-form-label nzNoColon>Mobile Phone<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="Mobile Phone : กรอกข้อมูลเบอร์โทรศัพท์ โดยพิมตัวเลขติดกัน 
-          เช่น 063-259-1642 กรุณากรอก 0692591642
-          หาก ไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
+          <span nz-tooltip nzTooltipTitle="Mobile Phone ของ Customer : กรอกข้อมูลเบอร์มือถือ โดยพิมตัวเลขติดกัน เช่น 063-259-1772 กรุณากรอก 0632591772 หากไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>

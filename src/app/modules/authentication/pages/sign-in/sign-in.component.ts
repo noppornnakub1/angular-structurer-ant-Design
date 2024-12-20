@@ -39,9 +39,7 @@ export class SignInComponent {
   }
 
   ngOnInit(): void { 
-    if (!sessionStorage.getItem('pdpaAccepted')) {
-      this.showPDPA = true;
-    }
+   
   }
 
   login(): void {
@@ -143,9 +141,6 @@ export class SignInComponent {
     return Math.random().toString(36).slice(-8); // รหัสผ่านแบบสุ่ม 8 ตัวอักษร
   }
 
-  acceptPDPA() {
-    sessionStorage.setItem('pdpaAccepted', 'true');
-    this.showPDPA = false; 
-  }
+  
 
 }

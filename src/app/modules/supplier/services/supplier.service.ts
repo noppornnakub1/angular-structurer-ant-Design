@@ -155,7 +155,7 @@ export class SupplierService {
     return this._http.get(`/SupplierBank/GetSupplierBankFileTemplates`);
   }
 
-  exportExcel(data: { Username: string; Date: string }): Observable<Blob> {
+  exportExcel(data: { Username: string; StartDate: string; EndDate: string; }): Observable<Blob> {
     return this._http.post('/Supplier/ExportApprovedSuppliersToExcelDynamic', data, {
         responseType: 'blob', 
     });

@@ -6,7 +6,7 @@
   width: 350px;
   margin: auto;
   margin-top: 50px;
-  height: 250px;
+  height: 310px;
 }
 
 .content-card-search h2 {
@@ -82,4 +82,23 @@
   height: 100%;
   opacity: 0;
   cursor: pointer;
+}
+
+#nativeDatePickerEnd {
+  position: absolute;
+  top: 0;
+  left: 2;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+#exportDateEnd {
+  padding-right: 40px;
+  /* เพิ่มระยะห่างด้านขวา */
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-size: 14px;
+  width: 100%;
 }

@@ -13,6 +13,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { ViewDetailsComponent } from './view-details/view-details.component';
 import { ModalDataService } from '../../services/modal-data.service';
 import { ViewDetailOldComponent } from './view-detail-old/view-detail-old.component';
+import { PDPAConsent } from '../../services/PDPAConsent.interface';
 
 @Component({
   selector: 'app-dashboard',
@@ -46,6 +47,9 @@ export class DashboardComponent {
   selectedTypeOld: string = '';
   isVisible = true;
   isLoading: boolean = false;
+  showPDPA: boolean = false; 
+  doNotShowAgain: boolean = false;
+  listOfDataPDPA: PDPAConsent[] = [];
   selectedData: any = {
     id: null,
     name: '',
@@ -176,6 +180,7 @@ export class DashboardComponent {
     private cdr: ChangeDetectorRef,
     private modal: NzModalService,
     private modalDataService: ModalDataService,
+    
   ) { }
 
   ngOnInit(): void {
@@ -188,6 +193,7 @@ export class DashboardComponent {
         localStorage.removeItem('checkLogin');
       }
     }
+    this.checkPDPA(currentUser.user.username);
     this.checkRole();
     this.getData();
   }
@@ -463,6 +469,42 @@ export class DashboardComponent {
         return true; 
       }
       return column.role.some(role => (this as any)[role]); 
+    });
+  }
+
+  acceptPDPA() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if(this.doNotShowAgain){
+      const username = currentUser.user.username;
+      this.customerService.addPDPAData(username).subscribe({
+        next: (response: any) => {
+        },
+        error: () => {
+        }
+      });
+    }
+    else{
+      sessionStorage.setItem('pdpaAccepted', 'true');
+    }
+    this.showPDPA = false; 
+  }
+
+  checkPDPA(username: string): void {
+    this.customerService.findPDPAById(username).subscribe({
+      next: (data) => {
+        console.log(data);
+        
+        if(data && Object.keys(data).length > 0){
+          this.showPDPA = false;
+        }
+        else{
+          this.showPDPA = true;
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching PDPA:', err);      
+        this.showPDPA = true;
+      }
     });
   }
 }

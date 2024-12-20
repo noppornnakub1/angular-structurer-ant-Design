@@ -15,28 +15,35 @@ import Swal from 'sweetalert2';
 export class ExportExcelComponent {
   username: string = '';
   exportDate: string = '';
-  formattedDate: string = ''; 
+  formattedDate: string = '';
+  exportDateEnd: string = '';
+  formattedDateEnd: string = '';
 
-  constructor(private supplierService: SupplierService, private cdr: ChangeDetectorRef) { }
+  constructor(
+    private supplierService: SupplierService, 
+    private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     const today = new Date();
-    this.exportDate = today.toISOString().split('T')[0]; 
-    this.formattedDate = this.formatDate(today); 
+    this.exportDate = today.toISOString().split('T')[0];
+    this.formattedDate = this.formatDate(today);
+    this.exportDateEnd = today.toISOString().split('T')[0];
+    this.formattedDateEnd = this.formatDate(today);
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     this.username = currentUser.user.username
 
   }
 
   exportExcel() {
-    if (!this.exportDate) {
+    if (!this.exportDate || !this.exportDateEnd) {
       Swal.fire('Warning!', 'กรุณาเลือก Date ก่อน', 'warning');
       return;
     }
 
     const payload = {
       Username: this.username,
-      Date: this.exportDate
+      StartDate: this.exportDate,
+      EndDate: this.exportDateEnd
     };
 
     this.supplierService.exportExcel(payload).subscribe({
@@ -45,7 +52,7 @@ export class ExportExcelComponent {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `ApprovedSuppliers_${payload.Username}_${payload.Date}.xlsx`;
+        a.download = `ApprovedSuppliers_${payload.Username}_${payload.StartDate}_${payload.EndDate}.xlsx`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -53,13 +60,24 @@ export class ExportExcelComponent {
       },
       error: (err) => {
         console.error('Error downloading file:', err);
+        if(this.exportDate > this.exportDateEnd){
+          let errorMessage = 'Start Date ไม่สามารถมากกว่า End Date ได้';
+          Swal.fire('warning!', errorMessage, 'warning');
+        }
+        else{
+          let errorMessage = 'Error downloading file.';
+          Swal.fire('Error!', errorMessage, 'error');
+        }
+       
       },
     });
   }
   formatDate(date: Date): string {
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    const month = monthNames[date.getMonth()];
     const year = date.getFullYear();
+  
     return `${day}/${month}/${year}`;
   }
 
@@ -67,17 +85,36 @@ export class ExportExcelComponent {
   onDateChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.value) {
-      this.exportDate = input.value; 
+      this.exportDate = input.value; // วันที่รูปแบบ YYYY-MM-DD
       const [year, month, day] = input.value.split('-');
-      this.formattedDate = `${day}/${month}/${year}`; 
-      console.log('Updated Date:', this.exportDate, this.formattedDate);
+      const selectedDate = new Date(Number(year), Number(month) - 1, Number(day)); // สร้าง Date Object
+      this.formattedDate = this.formatDate(selectedDate); 
+      console.log('Updated Start Date:', this.exportDate, this.formattedDate);
     }
   }
 
   focusDatePicker(): void {
     const dateInput = document.getElementById('nativeDatePicker') as HTMLInputElement;
     if (dateInput) {
-      dateInput.click(); 
+      dateInput.click();
+    }
+  }
+
+  onDateChangeEnd(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.value) {
+      this.exportDate = input.value; // วันที่รูปแบบ YYYY-MM-DD
+      const [year, month, day] = input.value.split('-');
+      const selectedDate = new Date(Number(year), Number(month) - 1, Number(day)); // สร้าง Date Object
+      this.formattedDate = this.formatDate(selectedDate); 
+      console.log('Updated Start Date:', this.exportDate, this.formattedDate);
+    }
+  }
+
+  focusDatePickerEnd(): void {
+    const dateInput = document.getElementById('nativeDatePickerEnd') as HTMLInputElement;
+    if (dateInput) {
+      dateInput.click();
     }
   }
 

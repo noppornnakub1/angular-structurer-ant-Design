@@ -72,15 +72,15 @@ export class ExportExcelComponent {
       },
     });
   }
+  
   formatDate(date: Date): string {
     const day = String(date.getDate()).padStart(2, '0');
     const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
     const month = monthNames[date.getMonth()];
     const year = date.getFullYear();
   
-    return `${day}/${month}/${year}`;
-  }
-
+    return `${day}-${month}-${year}`; // เปลี่ยนจาก `/` เป็น `-`
+}
   // ฟังก์ชันเมื่อมีการเลือกวันที่
   onDateChange(event: Event): void {
     const input = event.target as HTMLInputElement;

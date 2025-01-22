@@ -120,13 +120,14 @@
       เบอร์โทรศัพท์ 02 - 669 - 9000 ต่อ 8308<br>
       อีเมล dpo&#64;onee.one</p>
 
-    <div class="pdpa-actions mb-3" style="align-items: flex-end;">
+    <div class="pdpa-actions mb-3" style=" justify-self: end;">
+      <label class="ml-2">
+        <input type="checkbox" [(ngModel)]="doNotShowAgain" />
+        ไม่ต้องแสดงอีก
+      </label>
       <button nz-button nzType="primary" (click)="acceptPDPA()">ยอมรับ</button>
     </div>
-    <label>
-      <input type="checkbox" [(ngModel)]="doNotShowAgain" />
-      ไม่ต้องแสดงอีก
-    </label>
+    
   </div>
 </div>
 <div class="content-card-search">

@@ -10,7 +10,7 @@
     <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="5" class="pr-3">
       <nz-form-label nzNoColon>username</nz-form-label>
       <nz-input-group nzPrefixIcon="search" class="form-input">
-        <input nz-input placeholder="username" formControlName="username" [(ngModel)]="filters.username "/>
+        <input nz-input placeholder="username" formControlName="username" [(ngModel)]="filters.username " (input)="applyFilters()"/>
       </nz-input-group>
     </div>
   </div>

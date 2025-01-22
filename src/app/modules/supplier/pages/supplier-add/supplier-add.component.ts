@@ -234,6 +234,9 @@ export class SupplierAddComponent {
     this.setupFormListeners();
 
     this.supplierForm.get('supplierType')!.valueChanges.subscribe(value => {
+      if(value && this.supplierForm.value.tax_Id){
+        this.checkAndCallApi()
+      }
       if (!this.suppilerId)
         if (value === '2F' || value === 'OSEA') {
           this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');

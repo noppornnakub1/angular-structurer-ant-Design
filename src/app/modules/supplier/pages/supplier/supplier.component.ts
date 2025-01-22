@@ -68,7 +68,7 @@ export class SupplierComponent implements OnInit {
       priority: 1
     }
   ];
-
+  responseType: number = 0;
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
@@ -98,6 +98,7 @@ export class SupplierComponent implements OnInit {
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    this.responseType = currentUser.user.responseType
     if (!currentUser) {
       console.error('Current user is not available in local storage');
       return;

@@ -50,13 +50,6 @@ export class LayoutsComponent {
     });
   }
 
-  // menuItems: MenuItem[] = [
-  //   { title: 'Customer', icon: 'user', label: 'Customer', route: '/feature/customer' },
-  //   { title: 'Supplier', icon: 'shop', label: 'Supplier', route: '/feature/supplier' },
-  //   { title: 'User', icon: 'team', label: 'User', route: '/feature/user-manager/user', roles: ['admin']},
-  //   { title: 'Role', icon: 'solution', label: 'Role', route: '/feature/user-manager/role',roles: ['admin'] }
-  // ];
-
   menuItems: MenuItem[] = [
     {
       title: 'Master Data', icon: 'home', label: 'Master Data', route: '/feature/dashboard',
@@ -78,35 +71,33 @@ export class LayoutsComponent {
       title: 'ExportExcel', icon: 'export_notes', label: 'ExportExcel', route: '/feature/export-excel', roles: ['admin', 'approvedFN']
     },
   ];
- 
-filterMenuItemsByRole(): void {
-  if (this.currentRole && this.currentRole.action) {
-      this.filteredMenuItems = this.menuItems.filter(item => {
-          // If item has children, filter its children based on roles
-          if (item.children) {
-              item.children = item.children.filter(child => {
-                  if (child.roles) {
-                      return child.roles.some(role => this.hasRole(this.currentRole!.action, role));
-                  }
-                  return true;
-              });
-              // Return item if it has visible children
-              return item.children.length > 0;
-          }
-          // If item does not have children, filter based on roles
-          if (item.roles) {
-              return item.roles.some(role => this.hasRole(this.currentRole!.action, role));
-          }
-          return true;
-      });
-  }
-}
 
-// Function to check if user has a specific role
-hasRole(roleString: string, roleToCheck: string): boolean {
-  const roleArray = roleString.split(',');
-  return roleArray.includes(roleToCheck);
-}
+  filterMenuItemsByRole(): void {
+    const responseType = this.currentUser?.user.ResponseType 
+    console.log(responseType);
+    if (this.currentRole && this.currentRole.action) {
+      this.filteredMenuItems = this.menuItems.filter(item => {
+        if (item.children) {
+          item.children = item.children.filter(child => {
+            if (child.roles) {
+              return child.roles.some(role => this.hasRole(this.currentRole!.action, role));
+            }
+            return true;
+          });
+          return item.children.length > 0;
+        }
+        if (item.roles) {
+          return item.roles.some(role => this.hasRole(this.currentRole!.action, role));
+        }
+        return true;
+      });
+    }
+  }
+
+  hasRole(roleString: string, roleToCheck: string): boolean {
+    const roleArray = roleString.split(',');
+    return roleArray.includes(roleToCheck);
+  }
 
 
 
@@ -124,13 +115,11 @@ hasRole(roleString: string, roleToCheck: string): boolean {
     this.authService.logout();
     this.router.navigateByUrl('/authentication').then(() => {
       window.location.reload();
-  });
+    });
   }
 
   goToDashboard(): void {
     this.router.navigate(['/feature/dashboard']);
   }
-  
-
 
 }

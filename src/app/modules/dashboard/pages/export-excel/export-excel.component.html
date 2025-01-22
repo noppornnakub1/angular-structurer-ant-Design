@@ -17,6 +17,7 @@
           type="date"
           id="nativeDatePicker"
           [value]="exportDate"
+          [max]="maxDate"
           (change)="onDateChange($event)"
         />
       </div>
@@ -37,6 +38,7 @@
           type="date"
           id="nativeDatePickerEnd"
           [value]="exportDateEnd"
+          [max]="maxDate"
           (change)="onDateChangeEnd($event)"
         />
       </div>

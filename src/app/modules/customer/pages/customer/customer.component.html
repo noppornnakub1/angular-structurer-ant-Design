@@ -29,7 +29,7 @@
   <div class="mt-5 display-flex justify-center">
     <button nz-button nzType="primary" class="mr-2" (click)="applyFilters()"><span nz-icon nzType="search"
         nzTheme="outline"></span>ค้นหา</button>
-    <button *ngIf="isUser || isAdmin" nz-button class="add-user-button" nzType="default" (click)="addData()"><span
+    <button *ngIf="(isUser || isAdmin)&&(responseType == 3 || responseType == 1)" nz-button class="add-user-button" nzType="default" (click)="addData()"><span
         nz-icon nzType="user-add" nzTheme="outline"></span>เพิ่มข้อมูล</button>
   </div>
 </div>

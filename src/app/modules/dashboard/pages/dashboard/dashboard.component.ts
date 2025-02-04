@@ -50,6 +50,8 @@ export class DashboardComponent {
   showPDPA: boolean = false; 
   doNotShowAgain: boolean = false;
   listOfDataPDPA: PDPAConsent[] = [];
+  isScrolledToBottom = false;
+  pdpaContent: string[] = [];
   selectedData: any = {
     id: null,
     name: '',
@@ -196,6 +198,7 @@ export class DashboardComponent {
     this.checkPDPA(currentUser.user.username);
     this.checkRole();
     this.getData();
+    this.loadPDPAContent();
   }
 
   ngAfterViewInit(): void {
@@ -506,5 +509,22 @@ export class DashboardComponent {
         this.showPDPA = true;
       }
     });
+  }
+   onScroll(event: Event): void {
+    const element = event.target as HTMLElement;
+    this.isScrolledToBottom = 
+      element.scrollHeight - element.scrollTop <= element.clientHeight + 1; // อนุญาตคลาดเคลื่อนเล็กน้อย
+  }
+
+  loadPDPAContent(): void {
+    // นำข้อมูลจากไฟล์ใส่ในตัวแปรนี้
+    const rawContent = `
+      กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน) ประกอบด้วยบริษัทในเครือและผู้ถือหุ้นรายใหญ่ เพื่อคุ้มครองข้อมูลส่วนบุคคลตามพระราชบัญญัติปี 2562
+      กลุ่มบริษัทเก็บรวบรวมข้อมูลส่วนบุคคล เช่น ชื่อ ที่อยู่ อีเมล เบอร์โทรศัพท์ เพื่อวัตถุประสงค์ เช่น การให้บริการ การพัฒนาสินค้า และการส่งเสริมการขาย
+      ผู้ใช้บริการมีสิทธิควบคุมข้อมูลส่วนบุคคลของตน เช่น การขอเข้าถึงข้อมูล การแก้ไข และการลบข้อมูล
+      กลุ่มบริษัทใช้มาตรการความปลอดภัยสูงสุดเพื่อคุ้มครองข้อมูลจากการเข้าถึงโดยไม่ได้รับอนุญาต
+      หากคุณมีคำถามเกี่ยวกับนโยบายนี้ สามารถติดต่อเจ้าหน้าที่ DPO ได้ที่เบอร์โทร 02-669-9000 ต่อ 8308 หรืออีเมล dpo@onee.one
+    `;
+    this.pdpaContent = rawContent.trim().split('\n').map(p => p.trim());
   }
 }

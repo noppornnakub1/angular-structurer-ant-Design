@@ -11,7 +11,7 @@
         </nz-form-label>
         <nz-select formControlName="customerType" nzPlaceHolder="Select customer_type" class="custom-select"
           (ngModelChange)="onCustomerTypeChange($event)">
-          <nz-option *ngFor="let type of listOfType" [nzLabel]="'('+type.codeFrom+')'+' '+' '+type.meaning"
+          <nz-option *ngFor="let type of filteredDataType" [nzLabel]="'('+type.codeFrom+')'+' '+' '+type.meaning"
             [nzValue]="type.code"></nz-option>
         </nz-select>
       </div>
@@ -157,6 +157,17 @@
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
+        <nz-form-label nzNoColon>LineId<span style="color: red;">*</span>
+          <span nz-tooltip nzTooltipTitle="Line Id : ของ Customer ถ้าไม่มีให้ระบุเป็น “-”"
+            class="material-symbols-outlined ml-1" style="font-size: 18px;">
+            info
+          </span>
+        </nz-form-label>
+        <nz-input-group nzPrefixIcon="whats-app" class="form-input">
+          <input nz-input placeholder="lineId" formControlName="lineId" />
+        </nz-input-group>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
         <nz-form-label nzNoColon>Company<span style="color: red;">*</span>
         </nz-form-label>
         <nz-select formControlName="company" nzPlaceHolder="Select Company" class="custom-select">
@@ -249,7 +260,7 @@
       <tr *ngFor="let log of logs">
         <td>{{ log.username }}</td>
         <td>{{ log.status }}</td>
-        <td>{{ log.reject_reason }}</td>
+        <td>{{ log.rejectReason }}</td>
         <td>{{ log.time}}</td>
       </tr>
     </tbody>

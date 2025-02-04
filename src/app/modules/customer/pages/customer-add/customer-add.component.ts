@@ -113,6 +113,7 @@ export class CustomerAddComponent implements OnInit {
       prefix: [''],
       postId: [0],
       addressDetail: [''],
+      lineId: ['-' ],
     });
 
     await this.handleRouteParams();
@@ -355,6 +356,8 @@ export class CustomerAddComponent implements OnInit {
         { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.customerForm.value.fileCertificate || '' }
       ];
       this.displayFiles = this.filess
+      console.log("this.customerForm : ",this.customerForm.value);
+      
       this.getTelACC();
       this.getEventLogs(id)
     });
@@ -542,7 +545,11 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.getCustomerType().subscribe({
       next: (response: any) => {
         this.listOfType = response;
-        this.filteredDataType = response;
+        if (this.isAdmin || this.isApproved) {
+          this.filteredDataType = this.listOfType;
+        } else {
+          this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));
+        }
         this._cdr.markForCheck();
       },
       error: () => {

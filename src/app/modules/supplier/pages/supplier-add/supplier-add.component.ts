@@ -1246,6 +1246,7 @@ export class SupplierAddComponent {
           this.sendEmailNotificationRequester();
         },
         error: (err) => {
+          this.isLoading = false;
           Swal.fire('Error!', 'There was an error Update your data.', 'error');
           console.error('Error updating data with files:', err);
         }

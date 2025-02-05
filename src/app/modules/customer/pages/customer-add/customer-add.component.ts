@@ -973,6 +973,8 @@ export class CustomerAddComponent implements OnInit {
       }
 
       file.filePath = selectedFile.name;
+
+      this.listfile.push(selectedFile);
     }
   }
 
@@ -983,6 +985,8 @@ export class CustomerAddComponent implements OnInit {
         formData.append('file', file, file.name);
         this.customerService.uploadFile(formData).subscribe({
           next: (response: any) => {
+            console.log("response : ", response);
+            
             this.uploadedFiles.push(response);
             this.customerForm.patchValue({ path: response.filePath });
             resolve();

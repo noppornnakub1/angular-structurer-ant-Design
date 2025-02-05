@@ -234,7 +234,7 @@ export class SupplierAddComponent {
     this.setupFormListeners();
 
     this.supplierForm.get('supplierType')!.valueChanges.subscribe(value => {
-      if(value && this.supplierForm.value.tax_Id){
+      if (value && this.supplierForm.value.tax_Id) {
         this.checkAndCallApi()
       }
       if (!this.suppilerId)
@@ -358,13 +358,13 @@ export class SupplierAddComponent {
     });
     this.supplierForm.get('prefix')?.valueChanges.subscribe(prefix => {
       this.selectedPrefix = prefix;
-      if(this.selectedPrefix === 'คุณ'){
+      if (this.selectedPrefix === 'คุณ') {
         this.isPrefixIsYou = true;
         this.supplierForm.patchValue({
           tel: '-',
         });
       }
-      else{
+      else {
         this.isPrefixIsYou = false;
       }
       this.updateNameWithPrefixChange();
@@ -1237,13 +1237,14 @@ export class SupplierAddComponent {
 
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
-      this.isLoading = true; 
+      this.isLoading = true;
       this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
-        next: (response) => {
-          this.isLoading = false; 
-          this.showSuccessNotification();
+        next: (response) => {  
+          this.isLoading = false;
           this.sendEmailNotification();
           this.sendEmailNotificationRequester();
+          this.showSuccessNotification();
+          
         },
         error: (err) => {
           this.isLoading = false;
@@ -1815,7 +1816,7 @@ export class SupplierAddComponent {
       this.supplierForm.patchValue({ supplierNum: this.newSupnum });
       this.supplierForm.patchValue({ userId: this.currentUser?.id });
     }
-    
+
     await this.onSubmit();
 
   }
@@ -1828,7 +1829,7 @@ export class SupplierAddComponent {
       name = data.firstname
       this._cdr.markForCheck();
     });
-    if (this.supplierForm.get('status')?.value === 'Pending Approved By ACC' && this.supplierBankForm.valid == false) {
+    if (this.supplierForm.get('status')?.value === 'Pending Approved By ACC') {
       const company = this.supplierForm.get('company')?.value;
       this.supplierService.findApproversByCompanySupplier(company).subscribe(
         (approvers) => {
@@ -2246,7 +2247,6 @@ export class SupplierAddComponent {
       }
       this.emailService.sendEmail(to, subject, body).subscribe(
         (response) => {
-          console.log(response);
         },
         (error) => {
           console.error('Error sending email', error);

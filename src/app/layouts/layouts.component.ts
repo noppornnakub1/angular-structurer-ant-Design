@@ -74,7 +74,6 @@ export class LayoutsComponent {
 
   filterMenuItemsByRole(): void {
     const responseType = this.currentUser?.user.ResponseType 
-    console.log(responseType);
     if (this.currentRole && this.currentRole.action) {
       this.filteredMenuItems = this.menuItems.filter(item => {
         if (item.children) {

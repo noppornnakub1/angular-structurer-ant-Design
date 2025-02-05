@@ -356,8 +356,7 @@ export class CustomerAddComponent implements OnInit {
         { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.customerForm.value.fileCertificate || '' }
       ];
       this.displayFiles = this.filess
-      console.log("this.customerForm : ",this.customerForm.value);
-      
+
       this.getTelACC();
       this.getEventLogs(id)
     });
@@ -887,7 +886,6 @@ export class CustomerAddComponent implements OnInit {
 
               this.emailService.sendEmail(to, subject, body).subscribe(
                 (response) => {
-                  console.log(response);
                 },
                 (error) => {
                   console.error('Error sending email', error);
@@ -1092,7 +1090,6 @@ export class CustomerAddComponent implements OnInit {
       }
       this.emailService.sendEmail(to, subject, body).subscribe(
         (response) => {
-          console.log(response);
         },
         (error) => {
           console.error('Error sending email', error);

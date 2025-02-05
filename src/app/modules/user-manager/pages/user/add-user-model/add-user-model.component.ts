@@ -135,8 +135,6 @@ export class AddUserModelComponent implements OnInit {
 
   submitForm(): void {
     if (this.validateForm.valid) {
-      console.log(this.validateForm.value);
-      
       const formData = this.validateForm.getRawValue();
       const selectedCompanies = formData.company;
 
@@ -217,7 +215,6 @@ export class AddUserModelComponent implements OnInit {
 
   loadUserData(id: number): void {
     this.userService.findUserById(id).subscribe((data: any) => {
-      console.log(data);
       const companyArray = data.company.split(',');
       this.validateForm.patchValue({
         UserId: data.UserId,

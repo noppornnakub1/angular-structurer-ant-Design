@@ -61,8 +61,6 @@ export class ExportExcelComponent {
       },
       error: (err) => {
         console.error('Error downloading file:', err);
-        console.log(this.exportDate, ">", this.exportDateEnd);
-        
         if (this.exportDate > this.exportDateEnd) {
           let errorMessage = 'Start Date ไม่สามารถมากกว่า End Date ได้';
           Swal.fire('warning!', errorMessage, 'warning');
@@ -93,7 +91,6 @@ export class ExportExcelComponent {
       const [year, month, day] = input.value.split('-');
       const selectedDate = new Date(Number(year), Number(month) - 1, Number(day)); // สร้าง Date Object
       this.formattedDate = this.formatDate(selectedDate);
-      console.log('Updated Start Date:', this.exportDate, this.formattedDate);
     }
   }
 
@@ -107,13 +104,11 @@ export class ExportExcelComponent {
   onDateChangeEnd(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.value) {
-      this.exportDateEnd = input.value; // วันที่รูปแบบ YYYY-MM-DD
-      console.log(this.exportDateEnd);
+      this.exportDateEnd = input.value;
       
       const [year, month, day] = input.value.split('-');
-      const selectedDate = new Date(Number(year), Number(month) - 1, Number(day)); // สร้าง Date Object
+      const selectedDate = new Date(Number(year), Number(month) - 1, Number(day)); 
       this.formattedDateEnd = this.formatDate(selectedDate);
-      console.log('Updated Start Date:', this.exportDateEnd, this.formattedDateEnd);
     }
   }
 

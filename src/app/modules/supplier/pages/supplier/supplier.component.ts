@@ -132,8 +132,6 @@ export class SupplierComponent implements OnInit {
       this.supplierService.findDataByUserCompanyFN(currentUser.user.company).subscribe({
         next: (response: any) => {
           this.listOfData = response;
-          console.log(this.listOfData);
-          
           this.selectedStatus = 'Pending Approved By FN'
           this.changeStatusIfNeeded();
           this.applyFilters();

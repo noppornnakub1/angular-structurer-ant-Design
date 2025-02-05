@@ -96,7 +96,6 @@ export class CustomerComponent implements OnInit {
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log(currentUser.user.responseType);
     this.responseType = currentUser.user.responseType
     if (!currentUser) {
       console.error('Current user is not available in local storage');

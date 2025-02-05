@@ -495,8 +495,6 @@ export class DashboardComponent {
   checkPDPA(username: string): void {
     this.customerService.findPDPAById(username).subscribe({
       next: (data) => {
-        console.log(data);
-        
         if(data && Object.keys(data).length > 0){
           this.showPDPA = false;
         }

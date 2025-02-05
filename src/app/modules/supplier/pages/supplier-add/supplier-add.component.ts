@@ -1867,7 +1867,7 @@ export class SupplierAddComponent {
         }
       );
     }
-    else if ((this.supplierForm.get('status')?.value === 'Approved By ACC' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')) && !this.supplierBankForm.valid) {
+    else if ((this.supplierForm.get('status')?.value === 'Approved By ACC' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee'))) {
       const company = this.supplierForm.get('company')?.value;
       this.supplierService.findApproversFNByCompany(company).subscribe(
         (approvers) => {
@@ -1905,7 +1905,7 @@ export class SupplierAddComponent {
         }
       );
     }
-    else if ((this.supplierForm.get('status')?.value === 'Approved By FN' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')) && !this.supplierBankForm.valid) {
+    else if ((this.supplierForm.get('status')?.value === 'Approved By FN' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee'))) {
       const company = this.supplierForm.get('company')?.value;
       this.supplierService.findApproversByCompanySupplier(company).subscribe(
         (approvers) => {
@@ -1944,7 +1944,7 @@ export class SupplierAddComponent {
         }
       );
     }
-    else if ((this.supplierForm.get('status')?.value === 'Reject By FN' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee')) && !this.supplierBankForm.valid) {
+    else if ((this.supplierForm.get('status')?.value === 'Reject By FN' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee'))) {
       const company = this.supplierForm.get('company')?.value;
       this.supplierService.findApproversByCompanySupplier(company).subscribe(
         (approvers) => {

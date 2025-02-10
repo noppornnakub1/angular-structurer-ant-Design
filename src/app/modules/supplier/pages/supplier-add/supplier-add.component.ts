@@ -24,7 +24,8 @@ import { prefixService } from '../../../../shared/constants/prefix.service';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { ValidationService } from '../../../../shared/constants/ValidationService';
 import { UserService } from '../../../user-manager/services/user.service';
-
+import { degrees, PDFDocument, rgb } from 'pdf-lib';
+import { LogDownloadSerive } from '../../../../shared/constants/logDownload.service';
 export interface DataLocation {
   postId: number,
   province: string;
@@ -222,7 +223,8 @@ export class SupplierAddComponent {
     private emailService: EmailService,
     private prefixService: prefixService,
     private validationService: ValidationService,
-    private userService: UserService
+    private userService: UserService,
+    private logDownLoad: LogDownloadSerive
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -1239,12 +1241,12 @@ export class SupplierAddComponent {
       formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
       this.isLoading = true;
       this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
-        next: (response) => {  
+        next: (response) => {
           this.isLoading = false;
           this.sendEmailNotification();
           this.sendEmailNotificationRequester();
           this.showSuccessNotification();
-          
+
         },
         error: (err) => {
           this.isLoading = false;
@@ -2495,6 +2497,82 @@ export class SupplierAddComponent {
       }
     }
   }
+
+  private isProcessing = false;
+
+  async addWatermarkToPDF(pdfPath: string, watermarkText: string): Promise<string | null> {
+    if (this.isProcessing) return null;
+
+    this.isProcessing = true;
+    try {
+      const response = await fetch(pdfPath);
+      if (!response.ok) {
+        throw new Error(`Failed to load PDF: ${response.statusText}`);
+      }
+
+      const pdfBytes = await response.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(pdfBytes);
+      const pages = pdfDoc.getPages();
+
+      for (const page of pages) {
+        const { width, height } = page.getSize();
+        page.drawText(watermarkText, {
+          x: width / 2 - 100,
+          y: height / 2,
+          size: 40,
+          color: rgb(1, 0, 0),
+          opacity: 0.3,
+          rotate: degrees(45),
+        });
+      }
+
+      const watermarkedPdfBytes = await pdfDoc.save();
+      const blob = new Blob([watermarkedPdfBytes], { type: 'application/pdf' });
+      return URL.createObjectURL(blob);
+    } catch (error) {
+      console.error('Error processing PDF:', error);
+      return null;
+    } finally {
+      this.isProcessing = false;
+    }
+  }
+
+  async openPDFWithWatermark(filePath: string) {
+    const pdfUrl = this.getAdjustedFilePath(filePath);
+    console.log('Loading PDF from:', pdfUrl);
   
+    const watermarkedPdfUrl = await this.addWatermarkToPDF(pdfUrl, 'CONFIDENTIAL');
+  
+    if (watermarkedPdfUrl) {
+      const newTab = window.open(watermarkedPdfUrl, '_blank');
+  
+      if (newTab) {
+        // ✅ ตรวจจับเมื่อผู้ใช้สลับออกจากแท็บ
+        const detectDownload = () => {
+          if (document.hidden) {
+            this.logDownloadActivity(filePath);
+            document.removeEventListener('visibilitychange', detectDownload);
+          }
+        };
+  
+        document.addEventListener('visibilitychange', detectDownload);
+      }
+    } else {
+      alert('Error loading PDF. Please try again.');
+    }
+  }
+
+  logDownloadActivity(filePath: string) {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const username = currentUser.username || 'Unknown User';
+
+    this.logDownLoad.logDownload(currentUser.user.username,
+      filePath,).subscribe((data: any) => {
+        console.log("เชดดดดดดดดดดดดดด สำเร็จ");
+
+      });
+  }
+
+
 }
 

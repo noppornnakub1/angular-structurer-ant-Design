@@ -1292,78 +1292,78 @@ export class CustomerAddComponent implements OnInit {
     }
   }
 
-  private isProcessing = false;
+  // private isProcessing = false;
 
-  async addWatermarkToPDF(pdfPath: string, watermarkText: string): Promise<string | null> {
-    if (this.isProcessing) return null;
+  // async addWatermarkToPDF(pdfPath: string, watermarkText: string): Promise<string | null> {
+  //   if (this.isProcessing) return null;
 
-    this.isProcessing = true;
-    try {
-      const response = await fetch(pdfPath);
-      if (!response.ok) {
-        throw new Error(`Failed to load PDF: ${response.statusText}`);
-      }
+  //   this.isProcessing = true;
+  //   try {
+  //     const response = await fetch(pdfPath);
+  //     if (!response.ok) {
+  //       throw new Error(`Failed to load PDF: ${response.statusText}`);
+  //     }
 
-      const pdfBytes = await response.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(pdfBytes);
-      const pages = pdfDoc.getPages();
+  //     const pdfBytes = await response.arrayBuffer();
+  //     const pdfDoc = await PDFDocument.load(pdfBytes);
+  //     const pages = pdfDoc.getPages();
 
-      for (const page of pages) {
-        const { width, height } = page.getSize();
-        page.drawText(watermarkText, {
-          x: width / 2 - 100,
-          y: height / 2,
-          size: 40,
-          color: rgb(1, 0, 0),
-          opacity: 0.3,
-          rotate: degrees(45),
-        });
-      }
+  //     for (const page of pages) {
+  //       const { width, height } = page.getSize();
+  //       page.drawText(watermarkText, {
+  //         x: width / 2 - 100,
+  //         y: height / 2,
+  //         size: 40,
+  //         color: rgb(1, 0, 0),
+  //         opacity: 0.3,
+  //         rotate: degrees(45),
+  //       });
+  //     }
 
-      const watermarkedPdfBytes = await pdfDoc.save();
-      const blob = new Blob([watermarkedPdfBytes], { type: 'application/pdf' });
-      return URL.createObjectURL(blob);
-    } catch (error) {
-      console.error('Error processing PDF:', error);
-      return null;
-    } finally {
-      this.isProcessing = false;
-    }
-  }
+  //     const watermarkedPdfBytes = await pdfDoc.save();
+  //     const blob = new Blob([watermarkedPdfBytes], { type: 'application/pdf' });
+  //     return URL.createObjectURL(blob);
+  //   } catch (error) {
+  //     console.error('Error processing PDF:', error);
+  //     return null;
+  //   } finally {
+  //     this.isProcessing = false;
+  //   }
+  // }
 
-  async openPDFWithWatermark(filePath: string) {
-    const pdfUrl = this.getDownloadUrl(filePath);
-    console.log('Loading PDF from:', pdfUrl);
+  // async openPDFWithWatermark(filePath: string) {
+  //   const pdfUrl = this.getDownloadUrl(filePath);
+  //   console.log('Loading PDF from:', pdfUrl);
 
-    const watermarkedPdfUrl = await this.addWatermarkToPDF(pdfUrl, 'CONFIDENTIAL');
+  //   const watermarkedPdfUrl = await this.addWatermarkToPDF(pdfUrl, 'CONFIDENTIAL');
 
-    if (watermarkedPdfUrl) {
-      const newTab = window.open(watermarkedPdfUrl, '_blank');
+  //   if (watermarkedPdfUrl) {
+  //     const newTab = window.open(watermarkedPdfUrl, '_blank');
 
-      if (newTab) {
-        // ✅ ตรวจจับเมื่อผู้ใช้สลับออกจากแท็บ
-        const detectDownload = () => {
-          if (document.hidden) {
-            this.logDownloadActivity(filePath);
-            document.removeEventListener('visibilitychange', detectDownload);
-          }
-        };
+  //     if (newTab) {
+  //       // ✅ ตรวจจับเมื่อผู้ใช้สลับออกจากแท็บ
+  //       const detectDownload = () => {
+  //         if (document.hidden) {
+  //           this.logDownloadActivity(filePath);
+  //           document.removeEventListener('visibilitychange', detectDownload);
+  //         }
+  //       };
 
-        document.addEventListener('visibilitychange', detectDownload);
-      }
-    } else {
-      alert('Error loading PDF. Please try again.');
-    }
-  }
+  //       document.addEventListener('visibilitychange', detectDownload);
+  //     }
+  //   } else {
+  //     alert('Error loading PDF. Please try again.');
+  //   }
+  // }
 
-  logDownloadActivity(filePath: string) {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const username = currentUser.username || 'Unknown User';
+  // logDownloadActivity(filePath: string) {
+  //   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  //   const username = currentUser.username || 'Unknown User';
 
-    this.logDownLoad.logDownload(currentUser.user.username,
-      filePath,).subscribe((data: any) => {
-        console.log("เชดดดดดดดดดดดดดด สำเร็จ");
+  //   this.logDownLoad.logDownload(currentUser.user.username,
+  //     filePath,).subscribe((data: any) => {
+  //       console.log("เชดดดดดดดดดดดดดด สำเร็จ");
 
-      });
-  }
+  //     });
+  // }
 }

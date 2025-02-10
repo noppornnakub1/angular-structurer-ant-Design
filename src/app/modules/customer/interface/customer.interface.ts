@@ -41,6 +41,8 @@ export interface ICustomer {
     source: string; // 'Customer' หรือ 'Supplier'
     user_id: number;
     supplierGroup?: string;
+    OwnerAccName?: string;
+    OwnerFnName?: string;
   }
 
   export interface DataOld {

@@ -2495,5 +2495,6 @@ export class SupplierAddComponent {
       }
     }
   }
+  
 }
 

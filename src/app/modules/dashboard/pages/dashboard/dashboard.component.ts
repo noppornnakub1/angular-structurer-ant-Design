@@ -47,7 +47,7 @@ export class DashboardComponent {
   selectedTypeOld: string = '';
   isVisible = true;
   isLoading: boolean = false;
-  showPDPA: boolean = false; 
+  showPDPA: boolean = false;
   doNotShowAgain: boolean = false;
   listOfDataPDPA: PDPAConsent[] = [];
   isScrolledToBottom = false;
@@ -182,11 +182,13 @@ export class DashboardComponent {
     private cdr: ChangeDetectorRef,
     private modal: NzModalService,
     private modalDataService: ModalDataService,
-    
+
   ) { }
 
   ngOnInit(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+
     if (currentUser) {
       if (!localStorage.getItem('checkLogin')) {
         localStorage.setItem('checkLogin', '1');
@@ -195,6 +197,7 @@ export class DashboardComponent {
         localStorage.removeItem('checkLogin');
       }
     }
+
     this.checkPDPA(currentUser.user.username);
     this.checkRole();
     this.getData();
@@ -213,7 +216,7 @@ export class DashboardComponent {
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
-        if(this.isApprovedFN && this.isAdmin == false){
+        if (this.isApprovedFN && this.isAdmin == false) {
           this.isApproved = false;
         }
       } else {
@@ -226,7 +229,7 @@ export class DashboardComponent {
             this.isApproved = user.action.includes('approved');
             this.isApprovedFN = user.action.includes('approvedFN');
             this.isUser = user.action.includes('user');
-            if(this.isApprovedFN && this.isAdmin == false){
+            if (this.isApprovedFN && this.isAdmin == false) {
               this.isApproved = false;
             }
           }
@@ -298,10 +301,10 @@ export class DashboardComponent {
 
   searchDataOld(): void {
     if (this.selectedTypeOld === 'Customer') {
-      this.isLoading = true; 
+      this.isLoading = true;
       this.customerService.findDataOldCustomer(this.filtersOld.num, this.filtersOld.name, this.filtersOld.site).subscribe({
         next: (response: any) => {
-          this.isLoading = false; 
+          this.isLoading = false;
           this.listOfDataOld = response
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
@@ -314,10 +317,10 @@ export class DashboardComponent {
       });
     }
     else if (this.selectedTypeOld === 'Supplier') {
-      this.isLoading = true; 
+      this.isLoading = true;
       this.customerService.findDataOldSupplier(this.filtersOld.num, this.filtersOld.name, this.filtersOld.tax_Id).subscribe({
         next: (response: any) => {
-          this.isLoading = false; 
+          this.isLoading = false;
           this.listOfDataOld = response
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
@@ -460,24 +463,24 @@ export class DashboardComponent {
   getVisibleColumns(): any[] {
     return this.listOfColumnCustomer.filter(column => {
       if (!column.role) {
-        return true; 
+        return true;
       }
-      return column.role.some(role => (this as any)[role]); 
+      return column.role.some(role => (this as any)[role]);
     });
   }
 
   getVisibleColumnsOld(): any[] {
     return this.listOfColumnOld.filter(column => {
       if (!column.role) {
-        return true; 
+        return true;
       }
-      return column.role.some(role => (this as any)[role]); 
+      return column.role.some(role => (this as any)[role]);
     });
   }
 
   acceptPDPA() {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    if(this.doNotShowAgain){
+    if (this.doNotShowAgain) {
       const username = currentUser.user.username;
       this.customerService.addPDPAData(username).subscribe({
         next: (response: any) => {
@@ -486,31 +489,37 @@ export class DashboardComponent {
         }
       });
     }
-    else{
+    else {
       sessionStorage.setItem('pdpaAccepted', 'true');
     }
-    this.showPDPA = false; 
+    this.showPDPA = false;
   }
 
   checkPDPA(username: string): void {
+    const pdpaAccepted = sessionStorage.getItem('pdpaAccepted');
+
+    if (pdpaAccepted) {
+      this.showPDPA = false; 
+      return;
+    }
     this.customerService.findPDPAById(username).subscribe({
       next: (data) => {
-        if(data && Object.keys(data).length > 0){
+        if (data && Object.keys(data).length > 0) {
           this.showPDPA = false;
         }
-        else{
+        else {
           this.showPDPA = true;
         }
       },
       error: (err) => {
-        console.error('Error fetching PDPA:', err);      
+        console.error('Error fetching PDPA:', err);
         this.showPDPA = true;
       }
     });
   }
-   onScroll(event: Event): void {
+  onScroll(event: Event): void {
     const element = event.target as HTMLElement;
-    this.isScrolledToBottom = 
+    this.isScrolledToBottom =
       element.scrollHeight - element.scrollTop <= element.clientHeight + 1; // อนุญาตคลาดเคลื่อนเล็กน้อย
   }
 

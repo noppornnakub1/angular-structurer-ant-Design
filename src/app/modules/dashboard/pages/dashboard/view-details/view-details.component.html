@@ -35,4 +35,12 @@
         <p class="details-label">Phone:</p>
         <p class="details-value">{{ data?.mobile }}</p>
     </div>
+    <div class="details-row">
+        <p class="details-label">ACC Approved:</p>
+        <p class="details-value">{{ data?.ownerAccName }}</p>
+    </div>
+    <div class="details-row" *ngIf="data?.paymentMethod === 'Transfer'">
+        <p class="details-label">FN Approved:</p>
+        <p class="details-value">{{ data?.ownerFnName }}</p>
+    </div>
 </div>

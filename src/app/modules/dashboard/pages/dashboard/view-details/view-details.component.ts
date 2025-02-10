@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { ModalDataService } from '../../../services/modal-data.service';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-view-details',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './view-details.component.html',
   styleUrl: './view-details.component.scss'
 })
@@ -14,5 +15,7 @@ export class ViewDetailsComponent {
 
   constructor(private modalDataService: ModalDataService) {
     this.data = this.modalDataService.getData();
+    console.log("this.data : ",this.data);
+    
   }
 }

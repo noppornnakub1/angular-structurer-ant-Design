@@ -251,7 +251,7 @@
           Payment Method is Required
         </div>
       </div>
-      <div *ngIf="!isOverseaSupplier()  && !isUser" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+      <div *ngIf="!isOverseaSupplier()  && (!isUser || isAdmin)" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Vat</nz-form-label>
         <nz-select formControlName="vat" nzPlaceHolder="Select Vat" class="custom-select">
           <nz-option *ngFor="let type of listOfVat" [nzLabel]="type.inputTaxCode"
@@ -585,6 +585,8 @@
     <thead>
       <tr>
         <th>Approve By</th>
+        <th>Approve Name</th>
+        <th>Phone</th>
         <th>Status</th>
         <th>Reject_Reason</th>
         <th>Time</th>
@@ -593,6 +595,8 @@
     <tbody>
       <tr *ngFor="let log of logs">
         <td>{{ log.username }}</td>
+        <td>{{ log.fullName }}</td>
+        <td>{{ log.tel }}</td>
         <td>{{ log.status }}</td>
         <td>{{ log.rejectReason }}</td>
         <td>{{ log.time }}</td>

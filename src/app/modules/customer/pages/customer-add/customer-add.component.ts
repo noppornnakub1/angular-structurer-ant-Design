@@ -969,8 +969,8 @@ export class CustomerAddComponent implements OnInit {
   
       const fileExtension = selectedFile.name.split('.').pop();
       const fileNameWithoutExt = selectedFile.name.replace(`.${fileExtension}`, '');
-  
-      const uniqueFileName = `${fileNameWithoutExt}_${crypto.randomUUID()}.${fileExtension}`;
+      const randomId = this.generateUUID()
+      const uniqueFileName = `watermarked_${fileNameWithoutExt}_${randomId}.${fileExtension}`;
   
       if (file.fileName === 'ใบขอเปิด Customer') {
         this.customerForm.patchValue({ fileReq: uniqueFileName });
@@ -1290,6 +1290,12 @@ export class CustomerAddComponent implements OnInit {
         });
       }
     }
+  }
+
+  generateUUID() {
+    const array = new Uint8Array(16);
+    window.crypto.getRandomValues(array);
+    return [...array].map(b => b.toString(16).padStart(2, "0")).join("");
   }
 
   // private isProcessing = false;

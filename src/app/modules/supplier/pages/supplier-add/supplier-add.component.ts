@@ -2498,80 +2498,37 @@ export class SupplierAddComponent {
     }
   }
 
-  // private isProcessing = false;
 
-  // async addWatermarkToPDF(pdfPath: string, watermarkText: string): Promise<string | null> {
-  //   if (this.isProcessing) return null;
 
-  //   this.isProcessing = true;
-  //   try {
-  //     const response = await fetch(pdfPath);
-  //     if (!response.ok) {
-  //       throw new Error(`Failed to load PDF: ${response.statusText}`);
-  //     }
+  async openPDFWithWatermark(filePath: string) {
+    const pdfUrl = this.getAdjustedFilePath(filePath);
+    console.log('Loading PDF from:', pdfUrl);
 
-  //     const pdfBytes = await response.arrayBuffer();
-  //     const pdfDoc = await PDFDocument.load(pdfBytes);
-  //     const pages = pdfDoc.getPages();
+    const newTab = window.open(pdfUrl, '_blank');
 
-  //     for (const page of pages) {
-  //       const { width, height } = page.getSize();
-  //       page.drawText(watermarkText, {
-  //         x: width / 2 - 100,
-  //         y: height / 2,
-  //         size: 40,
-  //         color: rgb(1, 0, 0),
-  //         opacity: 0.3,
-  //         rotate: degrees(45),
-  //       });
-  //     }
+    if (newTab) {
+      // ✅ ตรวจจับเมื่อผู้ใช้สลับออกจากแท็บ
+      const detectDownload = () => {
+        if (document.hidden) {
+          this.logDownloadActivity(filePath);
+          document.removeEventListener('visibilitychange', detectDownload);
+        }
+      };
 
-  //     const watermarkedPdfBytes = await pdfDoc.save();
-  //     const blob = new Blob([watermarkedPdfBytes], { type: 'application/pdf' });
-  //      return pdfPath;
-  //   } catch (error) {
-  //     console.error('Error processing PDF:', error);
-  //     return null;
-  //   } finally {
-  //     this.isProcessing = false;
-  //   }
-  // }
+      document.addEventListener('visibilitychange', detectDownload);
+    }
 
-  // async openPDFWithWatermark(filePath: string) {
-  //   const pdfUrl = this.getAdjustedFilePath(filePath);
-  //   console.log('Loading PDF from:', pdfUrl);
-  
-  //   const watermarkedPdfUrl = await this.addWatermarkToPDF(pdfUrl, 'CONFIDENTIAL');
-  
-  //   if (watermarkedPdfUrl) {
-  //     const newTab = window.open(watermarkedPdfUrl, '_blank');
-  
-  //     if (newTab) {
-  //       // ✅ ตรวจจับเมื่อผู้ใช้สลับออกจากแท็บ
-  //       const detectDownload = () => {
-  //         if (document.hidden) {
-  //           this.logDownloadActivity(filePath);
-  //           document.removeEventListener('visibilitychange', detectDownload);
-  //         }
-  //       };
-  
-  //       document.addEventListener('visibilitychange', detectDownload);
-  //     }
-  //   } else {
-  //     alert('Error loading PDF. Please try again.');
-  //   }
-  // }
+  }
 
-  // logDownloadActivity(filePath: string) {
-  //   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-  //   const username = currentUser.username || 'Unknown User';
+  logDownloadActivity(filePath: string) {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
-  //   this.logDownLoad.logDownload(currentUser.user.username,
-  //     filePath,).subscribe((data: any) => {
-  //       console.log("เชดดดดดดดดดดดดดด สำเร็จ");
+    this.logDownLoad.logDownload(currentUser.user.username,
+      filePath,).subscribe((data: any) => {
+        console.log("เชดดดดดดดดดดดดดด สำเร็จ");
 
-  //     });
-  // }
+      });
+  }
 
 
 }

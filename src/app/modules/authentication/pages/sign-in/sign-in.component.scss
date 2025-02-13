@@ -75,6 +75,17 @@
   .logo-top-center img {
     width: 100px; /* ปรับขนาดโลโก้ */
   }
+
+  .logo-top-center-desktop {
+    display: flex;
+    justify-content: center; 
+    margin-top: 0px;
+    margin-bottom: 10px; 
+  }
+  
+  .logo-top-center-desktop img {
+    width: 100px; /* ปรับขนาดโลโก้ */
+  }
   
   .login-image {
     flex: 1;
@@ -167,6 +178,10 @@ p {
     display: flex;
   }
 
+  .logo-top-center-desktop {
+    display: none;
+  }
+
   .login-form {
     padding: 30px;
   }
@@ -211,6 +226,10 @@ p {
 
   .logo-top-center {
     display: none;
+  }
+
+  .logo-top-center-desktop {
+    display: flex;
   }
 }
 

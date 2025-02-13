@@ -1020,11 +1020,11 @@ export class CustomerAddComponent implements OnInit {
 
     const isLocalhost = window.location.hostname.includes('localhost');
 
-    const baseURL = 'http://10.10.0.28:8088';
+    const baseURL = 'http://10.10.0.28:8088/uploads';
 
     if (isLocalhost) {
       if (!filePath.includes('localhost')) {
-        adjustedFilePath = `https://localhost:7126/${filePath}`;
+        adjustedFilePath = `https://localhost:7126/uploads/${filePath}`;
       } else {
         adjustedFilePath = filePath.replace('localhost:2222', 'localhost:7126');
       }

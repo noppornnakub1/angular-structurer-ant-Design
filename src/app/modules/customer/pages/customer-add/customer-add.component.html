@@ -203,7 +203,7 @@
             </div>
           </td>
           <td *ngIf="this.customerId != null" class="text-center">
-            <a *ngIf="file.filePath && file.filePath !== ''" [href]="getDownloadUrl(file.filePath)" target="_blank">
+            <a *ngIf="file.filePath && file.filePath.endsWith('.pdf')" href="#" (click)="$event.preventDefault(); openModalold(file.filePath)">
               <span class="material-symbols-outlined">description</span>
             </a>
             <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>

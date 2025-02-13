@@ -26,6 +26,9 @@ import { ValidationService } from '../../../../shared/constants/ValidationServic
 import { UserService } from '../../../user-manager/services/user.service';
 import { degrees, PDFDocument, rgb } from 'pdf-lib';
 import { LogDownloadSerive } from '../../../../shared/constants/logDownload.service';
+import { ModalDataService } from '../../../dashboard/services/modal-data.service';
+import { PdfViewerComponent } from '../../../dashboard/pages/pdf-viewer/pdf-viewer.component';
+import { NzModalService } from 'ng-zorro-antd/modal';
 export interface DataLocation {
   postId: number,
   province: string;
@@ -224,7 +227,8 @@ export class SupplierAddComponent {
     private prefixService: prefixService,
     private validationService: ValidationService,
     private userService: UserService,
-    private logDownLoad: LogDownloadSerive
+    private modalDataService: ModalDataService,
+    private modal: NzModalService,
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -2499,35 +2503,17 @@ export class SupplierAddComponent {
   }
 
 
-
-  async openPDFWithWatermark(filePath: string) {
+  openModalold(filePath: string): void {
     const pdfUrl = this.getAdjustedFilePath(filePath);
-    console.log('Loading PDF from:', pdfUrl);
-
-    const newTab = window.open(pdfUrl, '_blank');
-
-    if (newTab) {
-      // ✅ ตรวจจับเมื่อผู้ใช้สลับออกจากแท็บ
-      const detectDownload = () => {
-        if (document.hidden) {
-          this.logDownloadActivity(filePath);
-          document.removeEventListener('visibilitychange', detectDownload);
-        }
-      };
-
-      document.addEventListener('visibilitychange', detectDownload);
-    }
-
-  }
-
-  logDownloadActivity(filePath: string) {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-
-    this.logDownLoad.logDownload(currentUser.user.username,
-      filePath,).subscribe((data: any) => {
-        console.log("เชดดดดดดดดดดดดดด สำเร็จ");
-
-      });
+    this.modalDataService.setData(pdfUrl);
+    this.modal.create({
+      nzTitle: 'PDF Viewer',
+      nzContent: PdfViewerComponent,
+      nzFooter: null,
+      nzWidth: '55vw',
+      nzStyle: { top: '10px' },
+      nzClassName: 'scroll'
+    });
   }
 
 

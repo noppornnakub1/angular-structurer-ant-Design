@@ -1,0 +1,11 @@
+<div class="header">
+    <button nz-button nzType="primary" class="mr-2" (click)="logDownloadActivity()"><span nz-icon nzType="download"
+            nzTheme="outline"></span>Download</button>
+</div>
+<div class="content">
+    <div class="pdf-container">
+        <pdf-viewer [src]="pdfSrc" [show-all]="true" [render-text]="true" [show-borders]="false"
+        style="width: 100%; height: 90vh;"></pdf-viewer>
+    </div>
+    
+</div>

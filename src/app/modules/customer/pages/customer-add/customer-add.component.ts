@@ -23,6 +23,9 @@ import { Observable, forkJoin } from 'rxjs';
 import { ICustomer } from '../../interface/customer.interface';
 import { LogDownloadSerive } from '../../../../shared/constants/logDownload.service';
 import { degrees, PDFDocument, rgb } from 'pdf-lib';
+import { ModalDataService } from '../../../dashboard/services/modal-data.service';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { PdfViewerComponent } from '../../../dashboard/pages/pdf-viewer/pdf-viewer.component';
 @Component({
   selector: 'app-customer-add',
   standalone: true,
@@ -87,7 +90,8 @@ export class CustomerAddComponent implements OnInit {
     private validationService: ValidationService,
     private userService: UserService,
     private supplierService: SupplierService,
-    private logDownLoad: LogDownloadSerive
+    private modalDataService: ModalDataService,
+    private modal: NzModalService,
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -966,27 +970,27 @@ export class CustomerAddComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
-  
+
       const fileExtension = selectedFile.name.split('.').pop();
       const fileNameWithoutExt = selectedFile.name.replace(`.${fileExtension}`, '');
       const randomId = this.generateUUID()
       const uniqueFileName = `watermarked_${fileNameWithoutExt}_${randomId}.${fileExtension}`;
-  
+
       if (file.fileName === 'ใบขอเปิด Customer') {
         this.customerForm.patchValue({ fileReq: uniqueFileName });
       } else if (file.fileName === 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน') {
         this.customerForm.patchValue({ fileCertificate: uniqueFileName });
       }
-  
+
       file.filePath = uniqueFileName;
-  
+
       const renamedFile = new File([selectedFile], uniqueFileName, { type: selectedFile.type });
       this.listfile.push(renamedFile);
-  
-      console.log('Uploaded File:', uniqueFileName); 
+
+      console.log('Uploaded File:', uniqueFileName);
     }
   }
-  
+
 
   UploadFile(): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -1011,8 +1015,24 @@ export class CustomerAddComponent implements OnInit {
     });
   }
 
-  getDownloadUrl(fileName: string): string {
-    return `${environment.uploads_url}/${fileName}`;
+  getAdjustedFilePath(filePath: string): string {
+    let adjustedFilePath = filePath;
+
+    const isLocalhost = window.location.hostname.includes('localhost');
+
+    const baseURL = 'http://10.10.0.28:8088';
+
+    if (isLocalhost) {
+      if (!filePath.includes('localhost')) {
+        adjustedFilePath = `https://localhost:7126/${filePath}`;
+      } else {
+        adjustedFilePath = filePath.replace('localhost:2222', 'localhost:7126');
+      }
+    } else {
+      adjustedFilePath = `${baseURL}/${filePath}`;
+    }
+
+    return adjustedFilePath;
   }
 
 
@@ -1298,78 +1318,16 @@ export class CustomerAddComponent implements OnInit {
     return [...array].map(b => b.toString(16).padStart(2, "0")).join("");
   }
 
-  // private isProcessing = false;
-
-  // async addWatermarkToPDF(pdfPath: string, watermarkText: string): Promise<string | null> {
-  //   if (this.isProcessing) return null;
-
-  //   this.isProcessing = true;
-  //   try {
-  //     const response = await fetch(pdfPath);
-  //     if (!response.ok) {
-  //       throw new Error(`Failed to load PDF: ${response.statusText}`);
-  //     }
-
-  //     const pdfBytes = await response.arrayBuffer();
-  //     const pdfDoc = await PDFDocument.load(pdfBytes);
-  //     const pages = pdfDoc.getPages();
-
-  //     for (const page of pages) {
-  //       const { width, height } = page.getSize();
-  //       page.drawText(watermarkText, {
-  //         x: width / 2 - 100,
-  //         y: height / 2,
-  //         size: 40,
-  //         color: rgb(1, 0, 0),
-  //         opacity: 0.3,
-  //         rotate: degrees(45),
-  //       });
-  //     }
-
-  //     const watermarkedPdfBytes = await pdfDoc.save();
-  //     const blob = new Blob([watermarkedPdfBytes], { type: 'application/pdf' });
-  //     return URL.createObjectURL(blob);
-  //   } catch (error) {
-  //     console.error('Error processing PDF:', error);
-  //     return null;
-  //   } finally {
-  //     this.isProcessing = false;
-  //   }
-  // }
-
-  // async openPDFWithWatermark(filePath: string) {
-  //   const pdfUrl = this.getDownloadUrl(filePath);
-  //   console.log('Loading PDF from:', pdfUrl);
-
-  //   const watermarkedPdfUrl = await this.addWatermarkToPDF(pdfUrl, 'CONFIDENTIAL');
-
-  //   if (watermarkedPdfUrl) {
-  //     const newTab = window.open(watermarkedPdfUrl, '_blank');
-
-  //     if (newTab) {
-  //       // ✅ ตรวจจับเมื่อผู้ใช้สลับออกจากแท็บ
-  //       const detectDownload = () => {
-  //         if (document.hidden) {
-  //           this.logDownloadActivity(filePath);
-  //           document.removeEventListener('visibilitychange', detectDownload);
-  //         }
-  //       };
-
-  //       document.addEventListener('visibilitychange', detectDownload);
-  //     }
-  //   } else {
-  //     alert('Error loading PDF. Please try again.');
-  //   }
-  // }
-
-  // logDownloadActivity(filePath: string) {
-  //   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-  //   const username = currentUser.username || 'Unknown User';
-
-  //   this.logDownLoad.logDownload(currentUser.user.username,
-  //     filePath,).subscribe((data: any) => {
-  //       console.log("เชดดดดดดดดดดดดดด สำเร็จ");
-
-  //     });
-  // }
+  openModalold(filePath: string): void {
+    const pdfUrl = this.getAdjustedFilePath(filePath);
+    this.modalDataService.setData(pdfUrl);
+    this.modal.create({
+      nzTitle: 'PDF Viewer',
+      nzContent: PdfViewerComponent,
+      nzFooter: null,
+      nzWidth: '55vw',
+      nzStyle: { top: '10px' },
+      nzClassName: 'scroll'
+    });
+  }
 }

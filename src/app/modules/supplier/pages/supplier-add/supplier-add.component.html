@@ -303,7 +303,7 @@
             </div>
           </td>
           <td class="text-center">
-            <a *ngIf="file.filePath && file.filePath.endsWith('.pdf')" target="_blank" (click)="$event.preventDefault(); openPDFWithWatermark(file.filePath)">
+            <a *ngIf="file.filePath && file.filePath.endsWith('.pdf')" target="_blank" (click)="$event.preventDefault(); openModalold(file.filePath)">
               <span class="material-symbols-outlined">description</span>
             </a>
             <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
@@ -438,7 +438,7 @@
             </div>
           </td>
           <td class="text-center">
-            <a *ngIf="file.filePath && file.filePath.endsWith('.pdf')" href="#" (click)="$event.preventDefault(); openPDFWithWatermark(file.filePath)">
+            <a *ngIf="file.filePath && file.filePath.endsWith('.pdf')" href="#" (click)="$event.preventDefault(); openModalold(file.filePath)">
               <span class="material-symbols-outlined">description</span>
             </a>
             <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
@@ -524,7 +524,7 @@
             </div>
           </td>
           <td class="text-center">
-            <a *ngIf="file.filePath && file.filePath.endsWith('.pdf')" href="#" (click)="$event.preventDefault(); openPDFWithWatermark(file.filePath)">
+            <a *ngIf="file.filePath && file.filePath.endsWith('.pdf')" href="#" (click)="$event.preventDefault(); openModalold(file.filePath)">
               <span class="material-symbols-outlined">description</span>
             </a>
             <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>

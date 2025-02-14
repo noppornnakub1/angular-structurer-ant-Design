@@ -72,7 +72,7 @@
                 </div>
                 <div nz-col nzSpan="16" nz-form-control
                     [ngClass]="{'has-error': validateForm.get('tel')?.invalid && validateForm.get('tel')?.touched}">
-                    <input nz-input id="tel" formControlName="tel" />
+                    <input nz-input id="tel" formControlName="tel" type="text" (keypress)="onlyNumbers($event)" (paste)="preventPaste($event)"/>
                     <div nz-form-explain
                         *ngIf="validateForm.get('tel')?.invalid && validateForm.get('tel')?.touched">
                         tel is required

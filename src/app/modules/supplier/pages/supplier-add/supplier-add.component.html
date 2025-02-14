@@ -582,7 +582,6 @@
     <thead>
       <tr>
         <th>Approve By</th>
-        <th>Approve Name</th>
         <th>Phone</th>
         <th>Status</th>
         <th>Reject_Reason</th>
@@ -591,7 +590,6 @@
     </thead>
     <tbody>
       <tr *ngFor="let log of logs">
-        <td>{{ log.username }}</td>
         <td>{{ log.fullName }}</td>
         <td>{{ log.tel }}</td>
         <td>{{ log.status }}</td>

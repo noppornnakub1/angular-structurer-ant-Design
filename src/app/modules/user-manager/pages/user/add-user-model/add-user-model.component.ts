@@ -81,7 +81,7 @@ export class AddUserModelComponent implements OnInit {
       CreateDate: [this.getCurrentDate(), [Validators.required]],
       UpdateDate: [this.getCurrentDate()],
       company: [null, [Validators.required]],
-      tel: [null, [Validators.required]],
+      tel: [null, [Validators.required, Validators.pattern('^[0-9]*$')]],
     });
     this.userId = this.modalDataService.getUserId();
 
@@ -250,5 +250,21 @@ export class AddUserModelComponent implements OnInit {
       error: () => {
       }
     });
+  }
+
+  onlyNumbers(event: KeyboardEvent): boolean {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+
+  preventPaste(event: ClipboardEvent): void {
+    const clipboardData = event.clipboardData?.getData('text') || '';
+    if (!/^\d+$/.test(clipboardData)) {
+      event.preventDefault();
+    }
   }
 }

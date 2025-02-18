@@ -67,6 +67,8 @@ export class CustomerAddComponent implements OnInit {
   files = [
     { fileName: 'ใบขอเปิด Customer', fileType: 'fileReq', filePath: '' },
     { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: '' },
+    { fileName: 'ภพ.20', fileType: 'FileCertificateATR', filePath: '' },
+    { fileName: 'อื่น ๆ', fileType: 'FileOrther', filePath: '' },
   ];
   file: any;
   filess: Array<{ fileName: string; fileType: string; filePath: string }> = [];
@@ -104,8 +106,8 @@ export class CustomerAddComponent implements OnInit {
       subdistrict: ['', Validators.required],
       province: ['', Validators.required],
       postalCode: ['', Validators.required],
-      tel: ['-', Validators.required],
-      email: ['-', Validators.required],
+      tel: ['', Validators.required],
+      email: ['', Validators.required],
       customerId: ['0', Validators.required],
       customerNum: [''],
       customerType: ['', Validators.required],
@@ -119,7 +121,9 @@ export class CustomerAddComponent implements OnInit {
       prefix: [''],
       postId: [0],
       addressDetail: [''],
-      lineId: ['-'],
+      lineId: [''],
+      fileCertificateATR: [''],
+      fileOrther: [''],
     });
 
     await this.handleRouteParams();
@@ -359,7 +363,9 @@ export class CustomerAddComponent implements OnInit {
       this.idreq = data.userId
       this.filess = [
         { fileName: 'ใบขอเปิด Customer', fileType: 'fileReq', filePath: this.customerForm.value.fileReq || '' },
-        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.customerForm.value.fileCertificate || '' }
+        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'fileCertificate', filePath: this.customerForm.value.fileCertificate || '' },
+        { fileName: 'ภพ.20', fileType: 'FileCertificateATR', filePath: this.customerForm.value.fileCertificateATR || '' },
+        { fileName: 'อื่น ๆ', fileType: 'FileOrther', filePath: this.customerForm.value.fileOrther || '' }
       ];
       this.displayFiles = this.filess
 
@@ -980,6 +986,11 @@ export class CustomerAddComponent implements OnInit {
         this.customerForm.patchValue({ fileReq: uniqueFileName });
       } else if (file.fileName === 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน') {
         this.customerForm.patchValue({ fileCertificate: uniqueFileName });
+      } else if (file.fileName === 'ภพ.20') {
+        this.customerForm.patchValue({ FileCertificateATR: uniqueFileName });
+      }
+      else if (file.fileName === 'อื่น ๆ') {
+        this.customerForm.patchValue({ FileOrther: uniqueFileName });
       }
 
       file.filePath = uniqueFileName;
@@ -1046,6 +1057,12 @@ export class CustomerAddComponent implements OnInit {
       this.customerForm.patchValue({ fileReq: '' });
     } else if (file.fileName === 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน') {
       this.customerForm.patchValue({ fileCertificate: '' });
+    }
+    else if (file.fileName === 'ภพ.20') {
+      this.customerForm.patchValue({ fileCertificateATR: '' });
+    }
+    else if (file.fileName === 'อื่น ๆ') {
+      this.customerForm.patchValue({ fileOther: '' });
     }
   }
 

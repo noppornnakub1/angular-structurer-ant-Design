@@ -286,7 +286,7 @@ export class DashboardComponent {
     }
     else {
       const userId = currentUser.user.userId;
-      const company = undefined;
+      const company = currentUser.user.company;
       this.customerService.findDataHistoryByUserId(userId, company).subscribe({
         next: (response: any) => {
           this.listOfData = response;

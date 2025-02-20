@@ -52,16 +52,18 @@ export class SignInComponent {
           if (response) {
             this.authService.getRole(response.user.role).subscribe(
               responseRole => {
-                this.isLoading = false; 
+                
                 if (responseRole) {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'เข้าสู่ระบบสำเร็จ',
-                    showConfirmButton: false,
-                    timer: 5000
-                  });
-  
-                  this.router.navigate(['/feature/dashboard']);
+                  // Swal.fire({
+                  //   icon: 'success',
+                  //   title: 'เข้าสู่ระบบสำเร็จ',
+                  //   showConfirmButton: false,
+                  //   timer: 5000
+                  // });
+                  setTimeout(() => {
+                    this.isLoading = false; 
+                    this.router.navigate(['/feature/dashboard']);
+                  }, 2000);
                 }
               },
               error => {

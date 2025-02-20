@@ -425,7 +425,12 @@ export class SupplierAddComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
+      const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
 
+      if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
+        Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+        return;
+      }
       const fileToUpdate = this.displayFiles.find(file => file.fileType === fileType && file.labelText === labelText);
 
       if (fileToUpdate) {
@@ -453,6 +458,12 @@ export class SupplierAddComponent {
 
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
+      const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
+
+      if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
+        Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+        return;
+      }
       let fileToUpdate;
       if (isFromFilesBankAdd) {
         fileToUpdate = this.filesBankAdd.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
@@ -863,7 +874,7 @@ export class SupplierAddComponent {
         postalCode: postalCodeCombination
       });
       console.log("data : ", data);
-      
+
       this.idreq = data.userId
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({

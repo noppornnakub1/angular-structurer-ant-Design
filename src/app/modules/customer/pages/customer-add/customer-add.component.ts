@@ -977,7 +977,12 @@ export class CustomerAddComponent implements OnInit {
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
 
-      const fileExtension = selectedFile.name.split('.').pop();
+      const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
+
+      if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
+          Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+          return;
+      }
       const fileNameWithoutExt = selectedFile.name.replace(`.${fileExtension}`, '');
       const randomId = this.generateUUID()
       const uniqueFileName = `watermarked_${fileNameWithoutExt}_${randomId}.${fileExtension}`;
@@ -987,10 +992,10 @@ export class CustomerAddComponent implements OnInit {
       } else if (file.fileName === 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน') {
         this.customerForm.patchValue({ fileCertificate: uniqueFileName });
       } else if (file.fileName === 'ภพ.20') {
-        this.customerForm.patchValue({ FileCertificateATR: uniqueFileName });
+        this.customerForm.patchValue({ fileCertificateATR: uniqueFileName });
       }
       else if (file.fileName === 'อื่น ๆ') {
-        this.customerForm.patchValue({ FileOrther: uniqueFileName });
+        this.customerForm.patchValue({ fileOrther: uniqueFileName });
       }
 
       file.filePath = uniqueFileName;

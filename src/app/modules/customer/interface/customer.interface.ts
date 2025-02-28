@@ -43,6 +43,7 @@ export interface ICustomer {
     supplierGroup?: string;
     OwnerAccName?: string;
     OwnerFnName?: string;
+    RejectReason?: string;
   }
 
   export interface DataOld {

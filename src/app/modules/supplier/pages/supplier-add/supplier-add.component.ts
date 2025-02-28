@@ -873,8 +873,6 @@ export class SupplierAddComponent {
         ...data,
         postalCode: postalCodeCombination
       });
-      console.log("data : ", data);
-
       this.idreq = data.userId
       if (data.supplierFiles && data.supplierFiles.length > 0) {
         this.filess = data.supplierFiles.map((file: any) => ({

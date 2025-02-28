@@ -18,14 +18,12 @@ export class PdfViewerComponent {
     private logDownLoad: LogDownloadSerive,
   ) {
     this.pdfSrc = this.modalDataService.getData();
-    console.log("this.data : ", this.pdfSrc);
   }
 
   logDownloadActivity() {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     this.logDownLoad.logDownload(currentUser.user.username, this.pdfSrc)
       .subscribe((data: any) => {
-        console.log("✅ บันทึก Log สำเร็จ!");
         this.downloadPdf();
       });
   }

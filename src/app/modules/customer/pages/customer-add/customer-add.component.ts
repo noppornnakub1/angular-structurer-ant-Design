@@ -1002,8 +1002,6 @@ export class CustomerAddComponent implements OnInit {
 
       const renamedFile = new File([selectedFile], uniqueFileName, { type: selectedFile.type });
       this.listfile.push(renamedFile);
-
-      console.log('Uploaded File:', uniqueFileName);
     }
   }
 
@@ -1015,8 +1013,6 @@ export class CustomerAddComponent implements OnInit {
         formData.append('file', file, file.name);
         this.customerService.uploadFile(formData).subscribe({
           next: (response: any) => {
-            console.log("response : ", response);
-
             this.uploadedFiles.push(response);
             this.customerForm.patchValue({ path: response.filePath });
             resolve();
@@ -1208,7 +1204,7 @@ export class CustomerAddComponent implements OnInit {
       Name: name
     };
     this.customerService.CheckDuplicateSCustomerByConpanySiteAndName(formData).subscribe({
-      next: (response) => {
+      next: (response) => {    
         if (response) {
           Swal.fire({
             icon: 'question',

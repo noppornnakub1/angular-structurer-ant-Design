@@ -124,6 +124,7 @@ export class CustomerAddComponent implements OnInit {
       lineId: [''],
       fileCertificateATR: [''],
       fileOrther: [''],
+      isAddressOld: ['New']
     });
 
     await this.handleRouteParams();
@@ -1234,7 +1235,8 @@ export class CustomerAddComponent implements OnInit {
                 postalCode: (response.postal ? response.postal + '-' + (response.address3 || '-') : '-'),
                 district: response.address4 || '-',
                 subdistrict: response.address3 || '-',
-                province: response.province || '-'
+                province: response.province || '-',
+                isAddressOld: 'Yes'
               });
               Swal.fire({
                 icon: 'success',
@@ -1242,6 +1244,9 @@ export class CustomerAddComponent implements OnInit {
                 confirmButtonText: 'ตกลง'
               });
             } else {
+              this.customerForm.patchValue({
+                isAddressOld:  'No'
+              });
               Swal.fire({
                 icon: 'info',
                 title: 'ไม่ใช้ที่อยู่เดิม',

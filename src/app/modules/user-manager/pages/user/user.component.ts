@@ -50,6 +50,7 @@ export class UserComponent implements OnInit {
   filters = { name: '', username: '' };
   pageIndex: number = 1;
   pageSize: number = 10;
+  isLoading: boolean = false;
   private readonly _router = inject(Router);
   private readonly authService = inject(AuthService);
   private _cdr = inject(ChangeDetectorRef);
@@ -83,6 +84,7 @@ export class UserComponent implements OnInit {
   }
 
   getUser(): void {
+    this.isLoading = true;
     this.userService.getUser().subscribe({
       next: (response: any) => {
         this.listOfData = response
@@ -90,10 +92,13 @@ export class UserComponent implements OnInit {
         this.getAllUserResponsible()
         // this.updateDisplayData();
         this._cdr.markForCheck();
+        this.isLoading = false;
       },
       error: () => {
+        this.isLoading = false;
       }
     });
+    this.isLoading = false;
   }
 
   loadRoles() {
@@ -133,6 +138,7 @@ export class UserComponent implements OnInit {
       instance.modalInstance = modal;
     });
     modal.afterClose.subscribe(() => {
+      window.location.reload();
       this.getUser();
     });
   }
@@ -150,6 +156,7 @@ export class UserComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(() => {
+      window.location.reload();
       this.getUser();
     });
   }

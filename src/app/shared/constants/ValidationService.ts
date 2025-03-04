@@ -8,30 +8,32 @@ export class ValidationService {
   constructor() { }
 
   validateTaxId(input: string): string {
-    let numericValue = input.replace(/[^0-9-]/g, '');
-    const hyphenCount = (numericValue.match(/-/g) || []).length;
+    let startsWithHyphen = input.startsWith('-');
 
-    if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
+    let numericValue = input.replace(/[^0-9]/g, '');
+
+    if (startsWithHyphen) {
+      return '-';
     }
-
+    
     return numericValue;
   }
+
 
   validateTel(input: string): string {
-    let numericValue = input.replace(/[^0-9-]/g, '');
-    const hyphenCount = (numericValue.match(/-/g) || []).length;
+    let startsWithHyphen = input.startsWith('-');
 
-    if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
-    }
+    let numericValue = input.replace(/[^0-9]/g, '');
 
-    if (numericValue.replace(/-/g, '').length > 10) {
-      numericValue = numericValue.slice(0, 10) + (hyphenCount ? '-' : '');
+    numericValue = numericValue.slice(0, 10);
+
+    if (startsWithHyphen) {
+        return '-';
     }
 
     return numericValue;
-  }
+}
+
 
   validateSite(input: string): string {
     // ลบตัวอักษรที่ไม่ใช่ตัวเลขออก

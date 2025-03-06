@@ -79,7 +79,7 @@
         </nz-form-label>
         <nz-input-group nzPrefixIcon="idcard" class="form-input"
           [ngStyle]="isFieldValidSupplier('tax_Id') ? {border: '1px solid red', borderRadius: '7px'} : null">
-          <input nz-input type="text" placeholder="Tax ID" formControlName="tax_Id" (input)="validateTaxId($event)"
+          <input nz-input type="text" placeholder="กรอก Tax ID เฉพาะเลข ไม่ต้องใส่ -" formControlName="tax_Id" (input)="validateTaxId($event)"
             (blur)="checkAndCallApi()" />
         </nz-input-group>
         <div nz-form-explain *ngIf="supplierForm.get('tax_Id')?.invalid && supplierForm.get('tax_Id')?.touched"
@@ -198,7 +198,7 @@
         </nz-form-label>
         <nz-input-group nzPrefixIcon="phone" class="form-input"
           [ngStyle]="isFieldValidSupplier('tel') ? {border: '1px solid red', borderRadius: '7px'} : null">
-          <input nz-input type="text" placeholder="Telephone" maxlength="10" (input)="validateTel($event)"
+          <input nz-input type="text" placeholder="กรอกเบอร์สำนักงานเฉพาะเลขไม่ต้องมี - จำนวน 9 หลัก" maxlength="10" (input)="validateTel($event)" (blur)="onblurTel()"
             formControlName="tel" />
         </nz-input-group>
         <div nz-form-explain *ngIf="supplierForm.get('tel')?.invalid && supplierForm.get('tel')?.touched"
@@ -214,7 +214,7 @@
         </nz-form-label>
         <nz-input-group nzPrefixIcon="phone" class="form-input"
           [ngStyle]="isFieldValidSupplier('mobile') ? {border: '1px solid red', borderRadius: '7px'} : null">
-          <input nz-input type="text" placeholder="Mobile Phone" maxlength="10" (input)="validateMobile($event)"
+          <input nz-input type="text" placeholder="กรอกเบอร์โทรศัพท์เฉพาะเลขไม่ต้องมี - จำนวน 10 หลัก" maxlength="10" (input)="validateMobile($event)" (blur)="onblurMobile()"
             formControlName="mobile" />
         </nz-input-group>
         <div nz-form-explain *ngIf="supplierForm.get('mobile')?.invalid && supplierForm.get('mobile')?.touched"
@@ -231,7 +231,7 @@
         </nz-form-label>
         <nz-input-group nzPrefixIcon="mail" class="form-input"
           [ngStyle]="isFieldValidSupplier('email') ? {border: '1px solid red', borderRadius: '7px'} : null">
-          <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" />
+          <input nz-input placeholder="กรอก อีเมลล์ของ Supplier เช่น Suppliernew@gmail.com" formControlName="email" (ngModelChange)="validateEmail()" />
         </nz-input-group>
         <div nz-form-explain *ngIf="supplierForm.get('email')?.invalid && supplierForm.get('email')?.touched"
           style="color: red;">

@@ -667,6 +667,7 @@ export class SupplierAddComponent {
     const numericValue = this.validationService.validateTel(input);
     event.target.value = numericValue;
     this.supplierForm.patchValue({ tel: numericValue });
+
   }
 
   validateMobile(event: any): void {
@@ -674,6 +675,31 @@ export class SupplierAddComponent {
     const numericValue = this.validationService.validateTel(input);
     event.target.value = numericValue;
     this.supplierForm.patchValue({ mobile: numericValue });
+
+  }
+
+  onblurTel() {
+    if (this.supplierForm.value.tel != '-' && this.supplierForm.value.tel.length < 9) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'warning',
+        text: 'หมายเลขโทรศัพท์ต้องมีอย่างน้อย 9 หลัก',
+        confirmButtonText: 'ตกลง'
+      });
+      return;
+    }
+  }
+
+  onblurMobile() {
+    if (this.supplierForm.value.mobile != '-' && this.supplierForm.value.mobile.length < 10) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'warning',
+        text: 'หมายเลขโทรศัพท์มือถือต้องมี 10 หลัก',
+        confirmButtonText: 'ตกลง'
+      });
+      return;
+    }
   }
 
   validateSite(event: any): void {
@@ -1219,12 +1245,12 @@ export class SupplierAddComponent {
   private handleInvalidForm(): void {
     this.supplierForm.markAllAsTouched();
     if (this.emailError !== '') {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Email ไม่ถูกต้อง',
-        text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
-        confirmButtonText: 'ปิด'
-      });
+      // Swal.fire({
+      //   icon: 'warning',
+      //   title: 'Email ไม่ถูกต้อง',
+      //   text: 'โปรดตรวจสอบให้แน่ใจว่า Format Email ของคุณถูกต้อง',
+      //   confirmButtonText: 'ปิด'
+      // });
     } else {
       Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
     }
@@ -1640,15 +1666,26 @@ export class SupplierAddComponent {
 
   async checkSave(event: Event) {
     this.validateEmail()
-    // if (this.emailError != '') {
-    //   Swal.fire({
-    //     icon: 'warning',
-    //     title: 'Email ไม่ถูกต้อง',
-    //     text: 'โปรดตรวจสอบให้แน่ใจว่า Email ของคุณถูกต้อง',
-    //     confirmButtonText: 'ปิด'
-    //   });
-    //   return;
-    // }
+
+    if (this.emailError != '' && !this.isFormValidWithoutSupplierNum()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ข้อมูลไม่ถูกต้อง',
+        text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        confirmButtonText: 'ปิด'
+      });
+      return;
+    }
+    else if (this.emailError != '' && this.isFormValidWithoutSupplierNum()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Email ไม่ถูกต้อง',
+        text: 'โปรดตรวจสอบให้แน่ใจว่า Format Email ของคุณถูกต้อง',
+        confirmButtonText: 'ปิด'
+      });
+      return;
+    }
+
     if (this.showSupplierBankForm && !this.isFormValidWithoutSupplierIdCompanyBank()) {
       await Swal.fire({
         icon: 'warning',
@@ -1659,7 +1696,7 @@ export class SupplierAddComponent {
       this.submittedFormLottoRisk$.next(true);
       return;
     }
-    if (this.showSupplierBankFormAdd && !this.isFormValidWithoutSupplierIdCompanyBankAdd()) {
+    else if (this.showSupplierBankFormAdd && !this.isFormValidWithoutSupplierIdCompanyBankAdd()) {
       this.submittedFormLottoRisk$.next(true);
       await Swal.fire({
         icon: 'warning',
@@ -2298,7 +2335,7 @@ export class SupplierAddComponent {
             text: err,
             confirmButtonText: 'ปิด'
           });
-          this.supplierForm.patchValue({ tax_Id: ' ' });
+          this.supplierForm.patchValue({ tax_Id: '' });
           this._cdr.detectChanges();
         }
       });

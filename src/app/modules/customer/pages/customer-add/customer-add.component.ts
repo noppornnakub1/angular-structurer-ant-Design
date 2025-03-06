@@ -315,7 +315,14 @@ export class CustomerAddComponent implements OnInit {
 
   validateTaxId(event: any): void {
     const input = event.target.value;
-    const numericValue = this.validationService.validateTaxId(input);
+    var numericValue
+    if (this.customerForm.value.customerType === '1F' || this.customerForm.value.customerType === 'OSEA') {
+      var numericValue = input
+    }
+    else {
+      numericValue = this.validationService.validateTaxId(input);
+    }
+
     this.customerForm.patchValue({ taxId: numericValue });
     event.target.value = numericValue;
   }
@@ -339,6 +346,18 @@ export class CustomerAddComponent implements OnInit {
     const numericValue = this.validationService.validateSite(input);
     event.target.value = numericValue;
     this.customerForm.patchValue({ site: numericValue });
+  }
+
+  onblurTel() {
+    if (this.customerForm.value.tel != '-' && this.customerForm.value.tel.length < 10) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'warning',
+        text: 'หมายเลขโทรศัพท์ต้องมี 10 หลัก',
+        confirmButtonText: 'ตกลง'
+      });
+      return;
+    }
   }
 
   checkRole(): void {
@@ -981,8 +1000,8 @@ export class CustomerAddComponent implements OnInit {
       const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
 
       if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
-          Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
-          return;
+        Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+        return;
       }
       const fileNameWithoutExt = selectedFile.name.replace(`.${fileExtension}`, '');
       const randomId = this.generateUUID()
@@ -1205,7 +1224,7 @@ export class CustomerAddComponent implements OnInit {
       Name: name
     };
     this.customerService.CheckDuplicateSCustomerByConpanySiteAndName(formData).subscribe({
-      next: (response) => {    
+      next: (response) => {
         if (response) {
           Swal.fire({
             icon: 'question',
@@ -1245,7 +1264,7 @@ export class CustomerAddComponent implements OnInit {
               });
             } else {
               this.customerForm.patchValue({
-                isAddressOld:  'No'
+                isAddressOld: 'No'
               });
               Swal.fire({
                 icon: 'info',

@@ -15,7 +15,7 @@ export class ValidationService {
     if (startsWithHyphen) {
       return '-';
     }
-    
+
     return numericValue;
   }
 
@@ -28,11 +28,11 @@ export class ValidationService {
     numericValue = numericValue.slice(0, 10);
 
     if (startsWithHyphen) {
-        return '-';
+      return '-';
     }
 
     return numericValue;
-}
+  }
 
 
   validateSite(input: string): string {

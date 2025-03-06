@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
 import { UserService } from '../../../user-manager/services/user.service';
 import { EmailService } from '../../../../shared/constants/email.service';
+import { MasterContentService } from '../../../../shared/constants/masterContent.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -24,13 +25,15 @@ export class SignInComponent {
   isForgotPasswordModalVisible = false;
   forgotPasswordUsername = '';
   isLoading: boolean = false;
-  showPDPA: boolean = false; 
+  showPDPA: boolean = false;
+  manual: string = '';
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
     private userService: UserService,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private masterService: MasterContentService,
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
@@ -38,21 +41,21 @@ export class SignInComponent {
     });
   }
 
-  ngOnInit(): void { 
-   
+  ngOnInit(): void {
+    this.loadManualContent();
   }
 
   login(): void {
     if (this.loginForm.valid) {
-      this.isLoading = true; 
+      this.isLoading = true;
       const { username, password } = this.loginForm.value;
-  
+
       this.authService.login(username, password).subscribe(
         response => {
           if (response) {
             this.authService.getRole(response.user.role).subscribe(
               responseRole => {
-                
+
                 if (responseRole) {
                   // Swal.fire({
                   //   icon: 'success',
@@ -61,13 +64,13 @@ export class SignInComponent {
                   //   timer: 5000
                   // });
                   setTimeout(() => {
-                    this.isLoading = false; 
+                    this.isLoading = false;
                     this.router.navigate(['/feature/dashboard']);
                   }, 2000);
                 }
               },
               error => {
-                this.isLoading = false; 
+                this.isLoading = false;
                 console.error('Fetching role failed', error);
                 this.errorMessage = 'Fetching role failed. Please try again later.';
                 Swal.fire('Error!', 'การดึงข้อมูล role ล้มเหลว', 'error');
@@ -115,18 +118,18 @@ export class SignInComponent {
       const user = await this.userService.findUserByUsername(this.forgotPasswordUsername).toPromise();
       if (user) {
         const newPassword = this.generateRandomPassword();
-    
+
         // อัปเดตรหัสผ่านก่อน
         await this.userService.updatePassword(user.username, newPassword).toPromise();
-    
+
         // หลังจากอัปเดตรหัสผ่านแล้ว ส่งอีเมล
         const to = user.email;
         const subject = 'Password Reset';
-        const body = `รหัสผ่านใหม่ของคุณคือ: ${newPassword}`; 
+        const body = `รหัสผ่านใหม่ของคุณคือ: ${newPassword}`;
         await this.emailService.sendEmail(to, subject, body).toPromise();
-    
+
         Swal.fire('Success', 'A new password has been sent to your email.', 'success');
-        
+
       } else {
         Swal.fire('Not Found', 'User not found. Please contact IT.', 'error');
       }
@@ -143,6 +146,19 @@ export class SignInComponent {
     return Math.random().toString(36).slice(-8); // รหัสผ่านแบบสุ่ม 8 ตัวอักษร
   }
 
-  
+  loadManualContent(): void {
+    this.masterService.findContentById(15).subscribe({
+      next: (data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          this.manual = data[0].content
+        } else {
+          console.log("No content available");
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching Content:', err);
+      }
+    });
+  }
 
 }

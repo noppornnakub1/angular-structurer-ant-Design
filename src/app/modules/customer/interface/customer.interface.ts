@@ -55,7 +55,7 @@ export interface ICustomer {
     VENDOR_TYPE?: string;
     COMPANY_GROUP?: string;
     KEY_CUSTOMER?: string;
-    PAYMENT_MEDTHOD?: string;
+    PAYMENT_METHOD?: string;
     OU_SHORT_NAME?:string;
     
 

@@ -14,6 +14,7 @@ import { ViewDetailsComponent } from './view-details/view-details.component';
 import { ModalDataService } from '../../services/modal-data.service';
 import { ViewDetailOldComponent } from './view-detail-old/view-detail-old.component';
 import { PDPAConsent } from '../../services/PDPAConsent.interface';
+import { MasterContentService } from '../../../../shared/constants/masterContent.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -49,9 +50,12 @@ export class DashboardComponent {
   isLoading: boolean = false;
   showPDPA: boolean = false;
   doNotShowAgain: boolean = false;
-  listOfDataPDPA: PDPAConsent[] = [];
+  listOfDataPDPA: string = '';
   isScrolledToBottom = false;
   pdpaContent: string[] = [];
+  showAnnouncement: boolean = false;
+  doNotShowAgainAnnouncement: boolean = false;
+  Announcement: string = '';
   selectedData: any = {
     id: null,
     name: '',
@@ -149,7 +153,7 @@ export class DashboardComponent {
     },
     {
       title: 'Payment Method',
-      compare: (a: DataOld, b: DataOld) => a.PAYMENT_MEDTHOD ?? ''.localeCompare(b.PAYMENT_MEDTHOD ?? ''),
+      compare: (a: DataOld, b: DataOld) => a.PAYMENT_METHOD ?? ''.localeCompare(b.PAYMENT_METHOD ?? ''),
       priority: 2
     },
     {
@@ -182,6 +186,7 @@ export class DashboardComponent {
     private cdr: ChangeDetectorRef,
     private modal: NzModalService,
     private modalDataService: ModalDataService,
+    private masterService: MasterContentService,
 
   ) { }
 
@@ -201,7 +206,7 @@ export class DashboardComponent {
     this.checkPDPA(currentUser.user.username);
     this.checkRole();
     this.getData();
-    this.loadPDPAContent();
+    this.checkAnnouncement(currentUser.user.username)
   }
 
   ngAfterViewInit(): void {
@@ -324,7 +329,8 @@ export class DashboardComponent {
           this.listOfDataOld = response
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
-
+          console.log("this.displayDataOld : ", this.displayDataOld);
+          
           this.updateDisplayDataOld();
           this._cdr.markForCheck();
         },
@@ -495,6 +501,23 @@ export class DashboardComponent {
     this.showPDPA = false;
   }
 
+  acceptAnnouncement() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (this.doNotShowAgainAnnouncement) {
+      const username = currentUser.user.username;
+      this.masterService.addAnnouncement(username).subscribe({
+        next: (response: any) => {
+        },
+        error: () => {
+        }
+      });
+    }
+    else {
+      sessionStorage.setItem('Announcement', 'true');
+    }
+    this.showAnnouncement = false;
+  }
+
   checkPDPA(username: string): void {
     const pdpaAccepted = sessionStorage.getItem('pdpaAccepted');
 
@@ -509,6 +532,7 @@ export class DashboardComponent {
         }
         else {
           this.showPDPA = true;
+          this.loadPDPAContent();
         }
       },
       error: (err) => {
@@ -524,14 +548,57 @@ export class DashboardComponent {
   }
 
   loadPDPAContent(): void {
-    // นำข้อมูลจากไฟล์ใส่ในตัวแปรนี้
-    const rawContent = `
-      กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน) ประกอบด้วยบริษัทในเครือและผู้ถือหุ้นรายใหญ่ เพื่อคุ้มครองข้อมูลส่วนบุคคลตามพระราชบัญญัติปี 2562
-      กลุ่มบริษัทเก็บรวบรวมข้อมูลส่วนบุคคล เช่น ชื่อ ที่อยู่ อีเมล เบอร์โทรศัพท์ เพื่อวัตถุประสงค์ เช่น การให้บริการ การพัฒนาสินค้า และการส่งเสริมการขาย
-      ผู้ใช้บริการมีสิทธิควบคุมข้อมูลส่วนบุคคลของตน เช่น การขอเข้าถึงข้อมูล การแก้ไข และการลบข้อมูล
-      กลุ่มบริษัทใช้มาตรการความปลอดภัยสูงสุดเพื่อคุ้มครองข้อมูลจากการเข้าถึงโดยไม่ได้รับอนุญาต
-      หากคุณมีคำถามเกี่ยวกับนโยบายนี้ สามารถติดต่อเจ้าหน้าที่ DPO ได้ที่เบอร์โทร 02-669-9000 ต่อ 8308 หรืออีเมล dpo@onee.one
-    `;
-    this.pdpaContent = rawContent.trim().split('\n').map(p => p.trim());
+    this.masterService.findContentById(1).subscribe({
+      next: (data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          this.listOfDataPDPA = data[0].content
+        } else {
+          console.log("No content available");
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching Content:', err);
+        this.showPDPA = true      }
+    });
+  }
+
+  loadAnnouncementContent(): void {
+    this.masterService.findContentById(13).subscribe({
+      next: (data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          this.Announcement = data[0].content
+          
+        } else {
+          console.log("No content available");
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching Content:', err);
+        this.showAnnouncement = true      }
+    });
+  }
+
+  checkAnnouncement(username: string): void {
+    const Announcement = sessionStorage.getItem('Announcement');
+
+    if (Announcement) {
+      this.showAnnouncement = false; 
+      return;
+    }
+    this.masterService.GetAnnouncementByUsername(username).subscribe({
+      next: (data) => {
+        if (data && Object.keys(data).length > 0) {
+          this.showAnnouncement = false;
+        }
+        else {
+          this.showAnnouncement = true;
+          this.loadAnnouncementContent();
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching PDPA:', err);
+        this.showPDPA = true;
+      }
+    });
   }
 }

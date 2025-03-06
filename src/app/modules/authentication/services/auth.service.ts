@@ -85,5 +85,6 @@ export class AuthService {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('currentRole');
     sessionStorage.removeItem('pdpaAccepted');
+    sessionStorage.removeItem('Announcement');
   }
 }

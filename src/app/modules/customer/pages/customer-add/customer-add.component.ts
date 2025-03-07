@@ -81,6 +81,7 @@ export class CustomerAddComponent implements OnInit {
   isCheckingDuplicate: boolean = false;
   listOfCompany: DataCompany[] = [];
   filteredDataompany: DataCompany[] = [];
+  statusforUpdate: string = '';
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -185,6 +186,9 @@ export class CustomerAddComponent implements OnInit {
     return new Promise((resolve) => {
       this.route.paramMap.subscribe(async (params) => {
         const id = params.get('id');
+        this.route.queryParamMap.subscribe(params => {
+          this.statusforUpdate = params.get('status') ?? '';
+        });
         if (id) {
           this.customerId = +id;
           const { customerData, postCodes } = await forkJoin({
@@ -624,11 +628,53 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.getLog(customerId).subscribe(
       (data) => {
         this.logs = data.map(log => {
+          let updatedStatus = log.status;
+
+          if (log.status === "Pending Approved By ACC" && log.rejectReason === '') {
+            if (log.roleId === 2 || log.roleId === 1) {
+              updatedStatus = "Submitted";
+            } else if (log.roleId === 3) {
+              updatedStatus = "Edit By ACC";
+            }
+          }
+          if (log.status === "Pending Approved By ACC" && log.rejectReason !== '') {
+            if (log.roleId === 3 || log.roleId === 1) {
+              updatedStatus = "Reject By ACC";
+            } 
+          }
+
           return {
             ...log,
-            time: this.formatDateTime(log.time)
+            time: this.formatDateTime(log.time),
+            status: updatedStatus
           };
         });
+        if (this.logs.length > 0 && this.logs[0].status === "Submitted") {
+          const originalLog = data.find(log => log.status === "Pending Approved By ACC");
+          if (originalLog) {
+            this.logs.unshift({
+              status: "Pending Approved By ACC",
+              time: this.formatDateTime(originalLog.time) // ใช้เวลาเดิม
+            });
+          }
+        }
+        if (this.logs.length > 0 && this.logs[0].status === "Approved By ACC") {
+          const originalLog = data.find(log => log.status === "Approved By ACC");
+          if (originalLog) {
+            this.logs.unshift({
+              status: this.statusforUpdate,
+            });
+          }
+        }
+        if (this.logs.length > 0 && this.logs[0].status === "Reject By ACC") {
+          const originalLog = data.find(log => log.status === "Reject By ACC");
+          if (originalLog) {
+            this.logs.unshift({
+              status: 'Waiting For Admin Submit',
+              rejectReason: originalLog.rejectReason
+            });
+          }
+        }
       },
       (error) => {
         console.error('Error fetching logs', error);

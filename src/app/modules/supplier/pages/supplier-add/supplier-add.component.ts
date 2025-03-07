@@ -216,6 +216,7 @@ export class SupplierAddComponent {
   telFN: any;
   isPrefixIsYou = false;
   isLoading: boolean = false;
+  statusforUpdate: string = '';
   constructor(private _location: Location, private fb: FormBuilder
     , private supplierService: SupplierService,
     private router: Router,
@@ -289,6 +290,10 @@ export class SupplierAddComponent {
     return new Promise((resolve) => {
       this.route.paramMap.subscribe(params => {
         const id = params.get('id');
+        this.route.queryParamMap.subscribe(params => {
+          this.statusforUpdate = params.get('status') ?? '';
+        });
+
         if (id) {
           this.suppilerId = +id;
           forkJoin({
@@ -1383,11 +1388,90 @@ export class SupplierAddComponent {
     this.supplierService.getLog(SupplierId).subscribe(
       (data) => {
         this.logs = data.map(log => {
+          let updatedStatus = log.status;
+
+          if (log.status === "Pending Approved By ACC" && log.rejectReason === '') {
+            if (log.roleId === 2 || log.roleId === 1) {
+              updatedStatus = "Submitted";
+            } else if (log.roleId === 3) {
+              updatedStatus = "Edit By ACC";
+            }
+          }
+          if (log.status === "Pending Approved By ACC" && log.rejectReason !== '') {
+            if (log.roleId === 3 ) {
+              updatedStatus = "Reject By ACC";
+            } else if (log.roleId === 4 || log.roleId === 1) {
+              updatedStatus = "Reject By FN";
+            }
+          }
+
           return {
             ...log,
-            time: this.formatDateTime(log.time)
+            time: this.formatDateTime(log.time),
+            status: updatedStatus
           };
         });
+        // ตรวจสอบว่า "Submitted" อยู่บนสุดและไม่มี status อื่น
+        if (this.logs.length > 0 && this.logs[0].status === "Submitted") {
+          const originalLog = data.find(log => log.status === "Pending Approved By ACC");
+          if (originalLog) {
+            this.logs.unshift({
+              status: "Pending Approved By ACC",
+              time: this.formatDateTime(originalLog.time) // ใช้เวลาเดิม
+            });
+          }
+        }
+        if (this.logs.length > 0 && this.logs[0].status === "Approved By ACC" && this.logs[0].payment === "Cheque") {
+          const originalLog = data.find(log => log.status === "Approved By ACC");
+          if (originalLog) {
+            this.logs.unshift({
+              status: this.statusforUpdate,
+            });
+          }
+        }
+        if (this.logs.length > 0 && this.logs[0].status === "Approved By ACC" && this.logs[0].payment === "Transfer") {
+          const originalLog = data.find(log => log.status === "Approved By ACC");
+          if (originalLog) {
+            this.logs.unshift({
+              status: this.statusforUpdate,
+              time: this.formatDateTime(originalLog.time) // ใช้เวลาเดิม
+            });
+          }
+        }
+        if (this.logs.length > 0 && this.logs[0].status === "Approved By FN" && this.logs[0].payment === "Transfer") {
+          const originalLog = data.find(log => log.status === "Approved By FN");
+          if (originalLog) {
+            this.logs.unshift({
+              status: this.statusforUpdate,
+            });
+          }
+        }
+        if (this.logs.length > 0 && this.logs[0].status === "Reject By FN" && this.logs[0].payment === "Transfer") {
+          const originalLog = data.find(log => log.status === "Pending Approved By ACC");
+          if (originalLog) {
+            this.logs.unshift({
+              status: this.statusforUpdate,
+            });
+          }
+        }
+        if (this.logs.length > 0 && this.logs[0].status === "Reject By ACC" && this.logs[0].payment === "Transfer") {
+          const originalLog = data.find(log => log.status === "Reject By ACC");
+          if (originalLog) {
+            this.logs.unshift({
+              status: 'Waiting For Admin Submit',
+              rejectReason: originalLog.rejectReason
+            });
+          }
+        }
+        if (this.logs.length > 0 && this.logs[0].status === "Reject By ACC" && this.logs[0].payment !== "Transfer") {
+          const originalLog = data.find(log => log.status === "Reject By ACC");
+          if (originalLog) {
+            this.logs.unshift({
+              status: 'Waiting For Admin Submit',
+              rejectReason: originalLog.rejectReason
+            });
+          }
+        }
       },
       (error) => {
         console.error('Error fetching logs', error);

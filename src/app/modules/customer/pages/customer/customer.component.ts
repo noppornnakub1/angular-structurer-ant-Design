@@ -253,7 +253,7 @@ export class CustomerComponent implements OnInit {
   editCustomer(id: number): void {
     this._router.navigate(['/feature/customer/edit', id]);
   }
-  viewCustomer(id: number): void {
-    this._router.navigate(['/feature/customer/view', id]);
+  viewCustomer(id: number, status: string): void {
+    this._router.navigate(['/feature/customer/view', id], { queryParams: { status: status } });
   }
 }

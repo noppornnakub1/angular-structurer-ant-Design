@@ -89,7 +89,7 @@ export class SupplierComponent implements OnInit {
         this.isApproved = user.action.includes('approved');
         this.isUser = user.action.includes('user');
         this.isApprovedFN = user.action.includes('approvedFN');
-        if(this.isApprovedFN && this.isAdmin == false){
+        if (this.isApprovedFN && this.isAdmin == false) {
           this.isApproved = false;
         }
       }
@@ -116,7 +116,7 @@ export class SupplierComponent implements OnInit {
       });
     }
     else if (currentUser.user.role == 3) {
-      this.supplierService.findDataByUserCompanyACC(currentUser.user.company,currentUser.user.userId).subscribe({
+      this.supplierService.findDataByUserCompanyACC(currentUser.user.company, currentUser.user.userId).subscribe({
         next: (response: any) => {
           this.listOfData = response;
           this.selectedStatus = 'Pending Approved By ACC'
@@ -229,9 +229,10 @@ export class SupplierComponent implements OnInit {
   editSupplier(id: number): void {
     this._router.navigate(['/feature/supplier/edit', id]);
   }
-  viewSupplier(id: number): void {
-    this._router.navigate(['/feature/supplier/view', id]);
+  viewSupplier(id: number, status: string): void {
+    this._router.navigate(['/feature/supplier/view', id], { queryParams: { status: status } });
   }
+
 
   sortData(event: any): void {
     const sortField = event.key as keyof ISupplier;
@@ -251,9 +252,9 @@ export class SupplierComponent implements OnInit {
   getVisibleColumns(): any[] {
     return this.listOfColumn.filter(column => {
       if (!column.role) {
-        return true; 
+        return true;
       }
-      return column.role.some(role => (this as any)[role]); 
+      return column.role.some(role => (this as any)[role]);
     });
   }
 }

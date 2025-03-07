@@ -329,8 +329,7 @@ export class DashboardComponent {
           this.listOfDataOld = response
           this.filteredDataOld = this.listOfDataOld;
           this.displayDataOld = this.listOfDataOld;
-          console.log("this.displayDataOld : ", this.displayDataOld);
-          
+
           this.updateDisplayDataOld();
           this._cdr.markForCheck();
         },

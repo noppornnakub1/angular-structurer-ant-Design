@@ -54,7 +54,7 @@
         <td>{{ data.status }}</td>
         <td class="text-center">
           <button nz-button nzType="primary" class="mr-1" nzShape="round"
-            (click)="viewSupplier(data.id)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
+            (click)="viewSupplier(data.id,data.status)"><span nz-icon nzType="eye" nzTheme="outline"></span>View</button>
           <button
             *ngIf="(isApproved || isAdmin || (isUser && (data.status === 'Draft' || data.status === 'Reject By ACC' || data.status === 'Reject By FN'))) && data.status !== 'Success'"
             nz-button nzType="primary" class="mr-1 button-yellow" nzShape="round" (click)="editSupplier(data.id)">

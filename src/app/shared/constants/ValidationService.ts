@@ -40,4 +40,11 @@ export class ValidationService {
     const numericValue = input.replace(/\D/g, '');
     return numericValue;
   }
+
+  preventThaiInput(event: KeyboardEvent) {
+    const thaiCharacterPattern = /[ก-๙]/;
+    if (thaiCharacterPattern.test(event.key)) {
+      event.preventDefault(); // ❌ ไม่ให้พิมพ์ตัวอักษรไทย
+    }
+  }
 }

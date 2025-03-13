@@ -1955,7 +1955,7 @@ export class SupplierAddComponent {
       this.supplierForm.patchValue({ userId: this.currentUser?.id });
     }
 
-    await this.onSubmit();
+    // await this.onSubmit();
 
   }
 
@@ -2646,6 +2646,10 @@ export class SupplierAddComponent {
       nzStyle: { top: '10px' },
       nzClassName: 'scroll'
     });
+  }
+
+  preventThaiInput(event: KeyboardEvent) {
+    this.validationService.preventThaiInput(event);
   }
 
 

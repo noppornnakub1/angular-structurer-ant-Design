@@ -153,7 +153,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="mail" class="form-input">
-          <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" />
+          <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" (keypress)="preventThaiInput($event)"/>
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">

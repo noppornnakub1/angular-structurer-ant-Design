@@ -1418,4 +1418,8 @@ export class CustomerAddComponent implements OnInit {
       nzClassName: 'scroll'
     });
   }
+
+  preventThaiInput(event: KeyboardEvent) {
+    this.validationService.preventThaiInput(event);
+  }
 }

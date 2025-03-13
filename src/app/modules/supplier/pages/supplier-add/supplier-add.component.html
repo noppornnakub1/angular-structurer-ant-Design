@@ -231,7 +231,7 @@
         </nz-form-label>
         <nz-input-group nzPrefixIcon="mail" class="form-input"
           [ngStyle]="isFieldValidSupplier('email') ? {border: '1px solid red', borderRadius: '7px'} : null">
-          <input nz-input placeholder="กรอก อีเมลล์ของ Supplier เช่น Suppliernew@gmail.com" formControlName="email" (ngModelChange)="validateEmail()" />
+          <input nz-input placeholder="กรอก อีเมลล์ของ Supplier เช่น Suppliernew@gmail.com" formControlName="email" (ngModelChange)="validateEmail()"  (keypress)="preventThaiInput($event)"/>
         </nz-input-group>
         <div nz-form-explain *ngIf="supplierForm.get('email')?.invalid && supplierForm.get('email')?.touched"
           style="color: red;">

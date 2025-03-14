@@ -791,6 +791,7 @@ export class SupplierAddComponent {
 
   hideBankCopy() {
     this.showSupplierBankFormAdd = false;
+    this.updateFilteredSupplierGroups(this.supplierBankForm.value.supplierGroup)
     if (this.showSupplierBankFormAdd) {
       this.supplierBankFormAdd.patchValue({ accountName: this.supplierForm.get('name')?.value });
     }
@@ -1698,6 +1699,7 @@ export class SupplierAddComponent {
     this.supplierService.GetAllGroups().subscribe({
       next: (response: any) => {
         this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
+        this.filteredListOfGroup = this.listOfGroup
         this._cdr.markForCheck();
       },
       error: () => {
@@ -1832,7 +1834,8 @@ export class SupplierAddComponent {
       if (this.suppilerId == null) {
         this.setStatusAndSubmit('Draft');
       } else {
-        if (this.isApproved) {
+        const currentStatus = this.supplierForm.get('status')?.value;
+        if (this.isApproved && currentStatus === 'Pending Approved By ACC') {
           this.setStatusAndSubmit('Pending Approved By ACC');
         } else {
           this.setStatusAndSubmit('Draft');
@@ -1955,7 +1958,7 @@ export class SupplierAddComponent {
       this.supplierForm.patchValue({ userId: this.currentUser?.id });
     }
 
-    // await this.onSubmit();
+    await this.onSubmit();
 
   }
 
@@ -2196,9 +2199,12 @@ export class SupplierAddComponent {
 
   updateFilteredSupplierGroups(selectedGroup: string): void {
     if (this.showSupplierBankFormAdd) {
-      this.listOfGroup = this.listOfGroup.filter(group => {
+      this.listOfGroup = this.filteredListOfGroup.filter(group => {
         return group.group_name !== selectedGroup && group.group_name !== 'ALL Group';
       });
+    }
+    else{
+      this.listOfGroup = this.filteredListOfGroup
     }
     this.supplierBankFormAdd.get('supplierGroup')?.setValue('');
   }

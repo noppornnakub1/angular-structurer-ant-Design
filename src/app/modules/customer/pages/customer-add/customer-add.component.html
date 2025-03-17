@@ -70,7 +70,7 @@
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="13" class="pr-3" style="margin-top: 46px;">
         <nz-input-group nzPrefixIcon="user" class="form-input">
-          <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" />
+          <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" (input)="sanitizeInput('name')"/>
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
@@ -82,7 +82,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Address" formControlName="addressSup" maxlength="30" />
+          <input nz-input placeholder="Address" formControlName="addressSup" maxlength="30" (input)="sanitizeInput('addressSup')"/>
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="18" class="pr-3 mt-3">
@@ -94,7 +94,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Address" formControlName="addressDetail" />
+          <input nz-input placeholder="Address" formControlName="addressDetail" (input)="sanitizeInput('addressDetail')"/>
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
@@ -164,7 +164,7 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="whats-app" class="form-input">
-          <input nz-input placeholder="lineId" formControlName="lineId" />
+          <input nz-input placeholder="lineId" formControlName="lineId" (input)="sanitizeInput('lineId')"/>
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">

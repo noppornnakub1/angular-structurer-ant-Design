@@ -319,12 +319,13 @@ export class CustomerAddComponent implements OnInit {
 
   validateTaxId(event: any): void {
     const input = event.target.value;
+    const type = this.customerForm.value.customerType || '';
     var numericValue
     if (this.customerForm.value.customerType === '1F' || this.customerForm.value.customerType === 'OSEA') {
       var numericValue = input
     }
     else {
-      numericValue = this.validationService.validateTaxId(input);
+      numericValue = this.validationService.validateTaxId(input,type);
     }
 
     this.customerForm.patchValue({ taxId: numericValue });
@@ -1051,7 +1052,7 @@ export class CustomerAddComponent implements OnInit {
       }
       const fileNameWithoutExt = selectedFile.name.replace(`.${fileExtension}`, '');
       const randomId = this.generateUUID()
-      const uniqueFileName = `watermarked_${fileNameWithoutExt}_${randomId}.${fileExtension}`;
+      const uniqueFileName = `watermarked_${randomId}.${fileExtension}`;
 
       if (file.fileName === 'ใบขอเปิด Customer') {
         this.customerForm.patchValue({ fileReq: uniqueFileName });
@@ -1068,6 +1069,8 @@ export class CustomerAddComponent implements OnInit {
 
       const renamedFile = new File([selectedFile], uniqueFileName, { type: selectedFile.type });
       this.listfile.push(renamedFile);
+      console.log("this.listfile : ",this.listfile);
+      
     }
   }
 
@@ -1421,5 +1424,15 @@ export class CustomerAddComponent implements OnInit {
 
   preventThaiInput(event: KeyboardEvent) {
     this.validationService.preventThaiInput(event);
+  }
+
+  sanitizeInput(field: string): void {
+    let value = this.customerForm.get(field)?.value || '';
+    const customerType = this.customerForm.get('customerType')?.value;
+
+    if (customerType === '1F' || customerType === 'OSEA') {
+      value = value.replace(/[^A-Za-z0-9 ]/g, ''); 
+      this.customerForm.patchValue({ [field]: value });
+    }
   }
 }

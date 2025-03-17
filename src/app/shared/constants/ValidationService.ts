@@ -7,15 +7,23 @@ export class ValidationService {
 
   constructor() { }
 
-  validateTaxId(input: string): string {
+  validateTaxId(input: string, Type: string): string {
     let startsWithHyphen = input.startsWith('-');
-
+  
+    // ดึงเฉพาะตัวเลขออกมา
     let numericValue = input.replace(/[^0-9]/g, '');
-
+  
+    // ถ้าขึ้นต้นด้วย "-" ให้คืนค่าแค่ "-"
     if (startsWithHyphen) {
       return '-';
     }
-
+  
+    // ✅ จำกัดความยาว 13 ตัวอักษร ถ้า supplierType เป็นเงื่อนไขที่กำหนด
+    const fixedLengthTypes = ['LOCL', '2A', 'ARTS', '2K'];
+    if (fixedLengthTypes.includes(Type)) {
+      numericValue = numericValue.substring(0, 13);
+    }
+  
     return numericValue;
   }
 

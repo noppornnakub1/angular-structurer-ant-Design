@@ -108,7 +108,7 @@
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="12" class="pr-3" style="margin-top: 46px;">
         <nz-input-group nzPrefixIcon="user" class="form-input"
           [ngStyle]="isFieldValidSupplier('name') ? {border: '1px solid red', borderRadius: '7px'} : null">
-          <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" />
+          <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" (input)="sanitizeInput('name')"/>
         </nz-input-group>
         <div nz-form-explain *ngIf="supplierForm.get('name')?.invalid && supplierForm.get('name')?.touched"
           style="color: red;">
@@ -125,7 +125,7 @@
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input"
           [ngStyle]="isFieldValidSupplier('addressSup') ? {border: '1px solid red', borderRadius: '7px'} : null">
-          <input nz-input placeholder="Address" formControlName="addressSup" />
+          <input nz-input placeholder="Address" formControlName="addressSup" (input)="sanitizeInput('addressSup')"/>
         </nz-input-group>
         <div nz-form-explain *ngIf="supplierForm.get('addressSup')?.invalid && supplierForm.get('addressSup')?.touched"
           style="color: red;">

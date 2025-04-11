@@ -400,7 +400,7 @@
             <nz-form-control [nzSpan]="24"
               [ngStyle]="isFieldValidSupplierBank('accountNum') ? {border: '1px solid red', borderRadius: '7px'} : null">
               <input nz-input id="accountNumber" placeholder="Account Number" formControlName="accountNum"
-                class="form-input" (input)="validateAccountNum($event)" />
+                class="form-input" (input)="validateAccountNum($event)" maxlength="12"/>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -484,7 +484,7 @@
                 <nz-form-control [nzSpan]="24"
                   [ngStyle]="isFieldValidSupplierBankAdd('accountNum') ? {border: '1px solid red', borderRadius: '7px'} : null">
                   <input nz-input id="accountNumber" placeholder="Account Number" formControlName="accountNum"
-                    class="form-input" (input)="validateAccountNumAdd($event)" />
+                    class="form-input" (input)="validateAccountNumAdd($event)" maxlength="12"/>
                 </nz-form-control>
               </nz-form-item>
             </div>

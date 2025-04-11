@@ -5,8 +5,7 @@ import { Router } from '@angular/router';
 import { inject } from "@angular/core";
 export const apiInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
-  // const apiReq = req.clone({ url: `${environment.api_url}${req.url}` });
-  // return next(apiReq);
+
   const token = localStorage.getItem('currentUser') 
     ? JSON.parse(localStorage.getItem('currentUser')!).jwtToken 
     : null;

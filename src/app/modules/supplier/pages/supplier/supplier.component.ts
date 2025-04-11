@@ -106,7 +106,9 @@ export class SupplierComponent implements OnInit {
     if (currentUser.user.role == 1) {
       this.supplierService.getData().subscribe({
         next: (response: any) => {
-          this.listOfData = response;
+          const uniqueData = this.removeDuplicatesByName(response);
+    
+          this.listOfData = uniqueData;
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();
@@ -118,7 +120,9 @@ export class SupplierComponent implements OnInit {
     else if (currentUser.user.role == 3) {
       this.supplierService.findDataByUserCompanyACC(currentUser.user.company, currentUser.user.userId).subscribe({
         next: (response: any) => {
-          this.listOfData = response;
+          const uniqueData = this.removeDuplicatesByName(response);
+    
+          this.listOfData = uniqueData;
           this.selectedStatus = 'Pending Approved By ACC'
           this.changeStatusIfNeeded();
           this.applyFilters();
@@ -131,20 +135,24 @@ export class SupplierComponent implements OnInit {
     else if (currentUser.user.role == 4) {
       this.supplierService.findDataByUserCompanyFN(currentUser.user.company).subscribe({
         next: (response: any) => {
-          this.listOfData = response;
-          this.selectedStatus = 'Pending Approved By FN'
+
+          const uniqueData = this.removeDuplicatesByName(response);
+    
+          this.listOfData = uniqueData;
+          this.selectedStatus = 'Pending Approved By FN';
           this.changeStatusIfNeeded();
           this.applyFilters();
           this._cdr.markForCheck();
         },
-        error: () => {
-        }
+        error: () => {}
       });
     }
     else {
       this.supplierService.findDataByUserId(currentUser.user.userId).subscribe({
         next: (response: any) => {
-          this.listOfData = response;
+          const uniqueData = this.removeDuplicatesByName(response);
+    
+          this.listOfData = uniqueData;
 
           this.changeStatusIfNeeded();
           this.applyFilters();
@@ -256,5 +264,18 @@ export class SupplierComponent implements OnInit {
       }
       return column.role.some(role => (this as any)[role]);
     });
+  }
+
+  private removeDuplicatesByName(data: any[]): any[] {
+    const map = new Map<string, any>();
+
+    data.forEach(item => {
+      const name = item.name;
+      if (!map.has(name) || item.id > map.get(name).id) {
+        map.set(name, item);
+      }
+    });
+  
+    return Array.from(map.values()).sort((a, b) => b.Id - a.Id); 
   }
 }

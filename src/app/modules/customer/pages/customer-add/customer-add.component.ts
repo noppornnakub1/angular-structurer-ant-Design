@@ -159,6 +159,12 @@ export class CustomerAddComponent implements OnInit {
           this.customerForm.patchValue({
             prefix: ''
           });
+          setTimeout(() => {
+            this.sanitizeInput('name');
+            this.sanitizeInput('addressSup');
+            this.sanitizeInput('addressDetail');
+            this.sanitizeInput('lineId');
+          }, 0);
         } else {
           this.filteredItemsPrefix = this.item_prefix;
         }
@@ -1431,8 +1437,8 @@ export class CustomerAddComponent implements OnInit {
     const customerType = this.customerForm.get('customerType')?.value;
 
     if (customerType === '1F' || customerType === 'OSEA') {
-      value = value.replace(/[^A-Za-z0-9 ]/g, ''); 
-      this.customerForm.patchValue({ [field]: value });
+      value = value.replace(/[\u0E00-\u0E7F]/g, '');
+      this.customerForm.patchValue({ [field]: value }, { emitEvent: true });
     }
   }
 }

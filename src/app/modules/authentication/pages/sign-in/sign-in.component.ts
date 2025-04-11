@@ -27,6 +27,7 @@ export class SignInComponent {
   isLoading: boolean = false;
   showPDPA: boolean = false;
   manual: string = '';
+  register: string = '';
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -43,6 +44,7 @@ export class SignInComponent {
 
   ngOnInit(): void {
     this.loadManualContent();
+    this.loadRegisterContent();
   }
 
   login(): void {
@@ -151,6 +153,21 @@ export class SignInComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.manual = data[0].content
+        } else {
+          console.log("No content available");
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching Content:', err);
+      }
+    });
+  }
+  
+  loadRegisterContent(): void {
+    this.masterService.findContentById(16).subscribe({
+      next: (data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          this.register = data[0].content
         } else {
           console.log("No content available");
         }

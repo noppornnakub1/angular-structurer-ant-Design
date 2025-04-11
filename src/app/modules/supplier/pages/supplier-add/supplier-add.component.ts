@@ -250,6 +250,10 @@ export class SupplierAddComponent {
           this.supplierForm.patchValue({
             prefix: ''
           });
+          setTimeout(() => {
+            this.sanitizeInput('name');
+            this.sanitizeInput('addressSup');
+          }, 0);
         } else {
           this.filteredItemsPrefix = this.item_prefix;
         }
@@ -662,14 +666,14 @@ export class SupplierAddComponent {
 
   validateTaxId(event: any): void {
     const input = event.target.value;
-    const Type = this.supplierForm.value.supplierType || ''; 
-  
+    const Type = this.supplierForm.value.supplierType || '';
+
     const numericValue = this.validationService.validateTaxId(input, Type);
-    
+
     this.supplierForm.patchValue({ taxId: numericValue });
     event.target.value = numericValue;
   }
-  
+
 
   validateTel(event: any): void {
     const input = event.target.value;
@@ -1403,7 +1407,7 @@ export class SupplierAddComponent {
             }
           }
           if (log.status === "Pending Approved By ACC" && log.rejectReason !== '') {
-            if (log.roleId === 3 ) {
+            if (log.roleId === 3) {
               updatedStatus = "Reject By ACC";
             } else if (log.roleId === 4 || log.roleId === 1) {
               updatedStatus = "Reject By FN";
@@ -2207,7 +2211,7 @@ export class SupplierAddComponent {
         return group.group_name !== selectedGroup && group.group_name !== 'ALL Group';
       });
     }
-    else{
+    else {
       this.listOfGroup = this.filteredListOfGroup
     }
     this.supplierBankFormAdd.get('supplierGroup')?.setValue('');
@@ -2667,8 +2671,8 @@ export class SupplierAddComponent {
     const supplierType = this.supplierForm.get('supplierType')?.value;
 
     if (supplierType === '2F' || supplierType === 'OSEA') {
-      value = value.replace(/[^A-Za-z0-9 ]/g, ''); 
-      this.supplierForm.patchValue({ [field]: value });
+      value = value.replace(/[\u0E00-\u0E7F]/g, '');
+      this.supplierForm.patchValue({ [field]: value }, { emitEvent: true });
     }
   }
 

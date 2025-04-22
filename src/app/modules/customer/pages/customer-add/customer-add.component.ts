@@ -326,12 +326,23 @@ export class CustomerAddComponent implements OnInit {
   validateTaxId(event: any): void {
     const input = event.target.value;
     const type = this.customerForm.value.customerType || '';
+    if (/\s/.test(input)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'warning',
+        text: 'กรุณากรอกเลข Tax ID เป็นเลขติดกันเท่านั้น',
+        confirmButtonText: 'ตกลง'
+      });
+
+      const cleanedInput = input.replace(/\s/g, '');
+      event.target.value = cleanedInput;
+    }
     var numericValue
     if (this.customerForm.value.customerType === '1F' || this.customerForm.value.customerType === 'OSEA') {
       var numericValue = input
     }
     else {
-      numericValue = this.validationService.validateTaxId(input,type);
+      numericValue = this.validationService.validateTaxId(input, type);
     }
 
     this.customerForm.patchValue({ taxId: numericValue });
@@ -647,7 +658,7 @@ export class CustomerAddComponent implements OnInit {
           if (log.status === "Pending Approved By ACC" && log.rejectReason !== '') {
             if (log.roleId === 3 || log.roleId === 1) {
               updatedStatus = "Reject By ACC";
-            } 
+            }
           }
 
           return {
@@ -1075,8 +1086,8 @@ export class CustomerAddComponent implements OnInit {
 
       const renamedFile = new File([selectedFile], uniqueFileName, { type: selectedFile.type });
       this.listfile.push(renamedFile);
-      console.log("this.listfile : ",this.listfile);
-      
+      console.log("this.listfile : ", this.listfile);
+
     }
   }
 

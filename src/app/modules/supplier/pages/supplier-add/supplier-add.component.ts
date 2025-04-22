@@ -667,11 +667,25 @@ export class SupplierAddComponent {
   validateTaxId(event: any): void {
     const input = event.target.value;
     const Type = this.supplierForm.value.supplierType || '';
+    if (/\s/.test(input)) {
+       Swal.fire({
+        icon: 'warning',
+        title: 'warning',
+        text: 'กรุณากรอกเลข Tax ID เป็นเลข 13 หลักติดกันเท่านั้น',
+        confirmButtonText: 'ตกลง'
+      });
 
-    const numericValue = this.validationService.validateTaxId(input, Type);
+      const cleanedInput = input.replace(/\s/g, '');
+      event.target.value = cleanedInput; 
 
-    this.supplierForm.patchValue({ taxId: numericValue });
-    event.target.value = numericValue;
+      const numericValue = this.validationService.validateTaxId(cleanedInput, Type);
+      this.supplierForm.patchValue({ taxId: numericValue });
+      event.target.value = numericValue; 
+    } else {
+      const numericValue = this.validationService.validateTaxId(input, Type);
+      this.supplierForm.patchValue({ taxId: numericValue });
+      event.target.value = numericValue;
+    }
   }
 
 

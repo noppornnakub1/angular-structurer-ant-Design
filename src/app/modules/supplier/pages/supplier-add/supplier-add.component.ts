@@ -357,12 +357,25 @@ export class SupplierAddComponent {
 
     this.toggleSupplierBankForm(this.supplierForm.value.paymentMethod)
     this.supplierForm.get('supplierType')?.valueChanges.subscribe(value => {
+      
+      if (['ARTS', 'LOCL'].includes(value)) {
+        const currentTaxId = this.supplierForm.value.tax_Id || '';
+        console.log("currentTaxId: ",this.supplierForm.value.tax_Id);
+        
+        if (currentTaxId.length > 13) {
+          const trimmedTaxId = currentTaxId.substring(0, 13);
+          this.supplierForm.patchValue({ tax_Id: trimmedTaxId }, { emitEvent: false });
+          console.log('Trimmed taxId to 13 characters:', trimmedTaxId);
+        }
+      }
       const supplierTypeId = this.getSupplierTypeId(value);
 
       if (supplierTypeId) {
         this.loadSupplierType(supplierTypeId);
       }
       this.onSupplierTypeChange(value);
+
+      
 
       this._cdr.detectChanges();
     });
@@ -668,7 +681,7 @@ export class SupplierAddComponent {
     const input = event.target.value;
     const Type = this.supplierForm.value.supplierType || '';
     if (/\s/.test(input)) {
-       Swal.fire({
+      Swal.fire({
         icon: 'warning',
         title: 'warning',
         text: 'กรุณากรอกเลข Tax ID เป็นเลข 13 หลักติดกันเท่านั้น',
@@ -676,14 +689,14 @@ export class SupplierAddComponent {
       });
 
       const cleanedInput = input.replace(/\s/g, '');
-      event.target.value = cleanedInput; 
+      event.target.value = cleanedInput;
 
       const numericValue = this.validationService.validateTaxId(cleanedInput, Type);
-      this.supplierForm.patchValue({ taxId: numericValue });
-      event.target.value = numericValue; 
+      this.supplierForm.patchValue({ tax_Id: numericValue });
+      event.target.value = numericValue;
     } else {
       const numericValue = this.validationService.validateTaxId(input, Type);
-      this.supplierForm.patchValue({ taxId: numericValue });
+      this.supplierForm.patchValue({ tax_Id: numericValue });
       event.target.value = numericValue;
     }
   }

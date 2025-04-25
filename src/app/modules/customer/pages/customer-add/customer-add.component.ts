@@ -26,6 +26,7 @@ import { degrees, PDFDocument, rgb } from 'pdf-lib';
 import { ModalDataService } from '../../../dashboard/services/modal-data.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { PdfViewerComponent } from '../../../dashboard/pages/pdf-viewer/pdf-viewer.component';
+
 @Component({
   selector: 'app-customer-add',
   standalone: true,
@@ -125,7 +126,8 @@ export class CustomerAddComponent implements OnInit {
       lineId: [''],
       fileCertificateATR: [''],
       fileOrther: [''],
-      isAddressOld: ['New']
+      isAddressOld: ['New'],
+      country: ['THAILAND']
     });
 
     await this.handleRouteParams();
@@ -1056,29 +1058,51 @@ export class CustomerAddComponent implements OnInit {
     return true;
   }
 
-  onFileSelected(event: Event, file: any): void {
+  async onFileSelected(event: Event, file: any): Promise<void> {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const selectedFile = input.files[0];
 
-      const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
+    // ตรวจสอบว่า input.files มีค่าและมีความยาวมากกว่า 0
+    if (!input.files || input.files.length === 0) {
+      Swal.fire('ไม่มีไฟล์', 'กรุณาเลือกไฟล์ก่อนดำเนินการ', 'warning');
+      return;
+    }
 
-      if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
-        Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+    const selectedFile = input.files[0];
+
+    const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
+
+    if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
+      Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+      return;
+    }
+
+    try {
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const pageCount = pdfDoc.getPageCount();
+
+      if (pageCount > 4) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'ไม่สามารถแนบไฟล์ได้',
+          text: `ไฟล์ PDF มี ${pageCount} หน้า กรุณาเลือกไฟล์ที่มีไม่เกิน 4 หน้า`,
+          confirmButtonText: 'ตกลง',
+        });
         return;
       }
+
       const fileNameWithoutExt = selectedFile.name.replace(`.${fileExtension}`, '');
-      const randomId = this.generateUUID()
+      const randomId = this.generateUUID();
       const uniqueFileName = `watermarked_${randomId}.${fileExtension}`;
 
+      // อัปเดตฟอร์มตามประเภทไฟล์
       if (file.fileName === 'ใบขอเปิด Customer') {
         this.customerForm.patchValue({ fileReq: uniqueFileName });
       } else if (file.fileName === 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน') {
         this.customerForm.patchValue({ fileCertificate: uniqueFileName });
       } else if (file.fileName === 'ภพ.20') {
         this.customerForm.patchValue({ fileCertificateATR: uniqueFileName });
-      }
-      else if (file.fileName === 'อื่น ๆ') {
+      } else if (file.fileName === 'อื่น ๆ') {
         this.customerForm.patchValue({ fileOrther: uniqueFileName });
       }
 
@@ -1087,10 +1111,16 @@ export class CustomerAddComponent implements OnInit {
       const renamedFile = new File([selectedFile], uniqueFileName, { type: selectedFile.type });
       this.listfile.push(renamedFile);
       console.log("this.listfile : ", this.listfile);
-
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'ข้อผิดพลาด',
+        text: 'ไม่สามารถตรวจสอบจำนวนหน้าในไฟล์ PDF ได้ ไฟล์อาจมีการเข้ารหัสหรือเสียหาย กรุณาลองใหม่อีกครั้ง',
+        confirmButtonText: 'ตกลง',
+      });
+      console.error('Error checking PDF pages:', error);
     }
   }
-
 
   UploadFile(): Promise<void> {
     return new Promise((resolve, reject) => {

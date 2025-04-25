@@ -357,11 +357,11 @@ export class SupplierAddComponent {
 
     this.toggleSupplierBankForm(this.supplierForm.value.paymentMethod)
     this.supplierForm.get('supplierType')?.valueChanges.subscribe(value => {
-      
+
       if (['ARTS', 'LOCL'].includes(value)) {
         const currentTaxId = this.supplierForm.value.tax_Id || '';
-        console.log("currentTaxId: ",this.supplierForm.value.tax_Id);
-        
+        console.log("currentTaxId: ", this.supplierForm.value.tax_Id);
+
         if (currentTaxId.length > 13) {
           const trimmedTaxId = currentTaxId.substring(0, 13);
           this.supplierForm.patchValue({ tax_Id: trimmedTaxId }, { emitEvent: false });
@@ -375,7 +375,7 @@ export class SupplierAddComponent {
       }
       this.onSupplierTypeChange(value);
 
-      
+
 
       this._cdr.detectChanges();
     });
@@ -443,50 +443,101 @@ export class SupplierAddComponent {
     }
   }
 
-  onFileSelectSupplier(event: Event, fileType: string, labelText: string): void {
+  async onFileSelectSupplier(event: Event, fileType: string, labelText: string): Promise<void> {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const selectedFile = input.files[0];
-      const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
 
-      if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
-        Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+    if (!input.files || input.files.length === 0) {
+      Swal.fire('ไม่มีไฟล์', 'กรุณาเลือกไฟล์ก่อนดำเนินการ', 'warning');
+      return;
+    }
+
+    const selectedFile = input.files[0];
+    const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
+
+    if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
+      Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+      return;
+    }
+
+    try {
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const pageCount = pdfDoc.getPageCount();
+
+      if (pageCount > 4) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'ไม่สามารถแนบไฟล์ได้',
+          text: `ไฟล์ PDF มี ${pageCount} หน้า กรุณาเลือกไฟล์ที่มีไม่เกิน 4 หน้า`,
+          confirmButtonText: 'ตกลง',
+        });
         return;
       }
+
       const fileToUpdate = this.displayFiles.find(file => file.fileType === fileType && file.labelText === labelText);
 
       if (fileToUpdate) {
         fileToUpdate.filePath = '';
         fileToUpdate.fileName = selectedFile.name;
 
-        this.selectedFilesSupplier = this.selectedFilesSupplier.filter(file => file.fileType !== fileType || file.labelText !== labelText);
+        this.selectedFilesSupplier = this.selectedFilesSupplier.filter(
+          file => file.fileType !== fileType || file.labelText !== labelText
+        );
 
         const newFile: SelectedFile = {
           file: selectedFile,
           fileType: fileType,
           fileName: selectedFile.name,
           filePath: '',
-          labelText: labelText
+          labelText: labelText,
         };
         this.selectedFilesSupplier.push(newFile);
 
         this._cdr.detectChanges();
       }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'ข้อผิดพลาด',
+        text: 'ไม่สามารถตรวจสอบจำนวนหน้าในไฟล์ PDF ได้ ไฟล์อาจมีการเข้ารหัสหรือเสียหาย กรุณาลองใหม่อีกครั้ง',
+        confirmButtonText: 'ตกลง',
+      });
+      console.error('Error checking PDF pages in onFileSelectSupplier:', error);
     }
   }
 
-  onFileSelectNew(event: Event, fileType: string, labelText: string, isFromFilesBankAdd: boolean = false): void {
+  async onFileSelectNew(event: Event, fileType: string, labelText: string, isFromFilesBankAdd: boolean = false): Promise<void> {
     const input = event.target as HTMLInputElement;
 
-    if (input.files && input.files.length > 0) {
-      const selectedFile = input.files[0];
-      const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
+    if (!input.files || input.files.length === 0) {
+      Swal.fire('ไม่มีไฟล์', 'กรุณาเลือกไฟล์ก่อนดำเนินการ', 'warning');
+      return;
+    }
 
-      if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
-        Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+    const selectedFile = input.files[0];
+    const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
+
+    if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
+      Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+      return;
+    }
+
+    try {
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const pageCount = pdfDoc.getPageCount();
+
+      if (pageCount > 4) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'ไม่สามารถแนบไฟล์ได้',
+          text: `ไฟล์ PDF มี ${pageCount} หน้า กรุณาเลือกไฟล์ที่มีไม่เกิน 4 หน้า`,
+          confirmButtonText: 'ตกลง',
+        });
         return;
       }
-      let fileToUpdate;
+
+      let fileToUpdate: SelectedFile | undefined;
       if (isFromFilesBankAdd) {
         fileToUpdate = this.filesBankAdd.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
       } else {
@@ -510,7 +561,7 @@ export class SupplierAddComponent {
               this.fileIdsToRemoveMapping.push({
                 SupbankId: supbankId,
                 FileId: fileId,
-                IsNewUpload: true
+                IsNewUpload: true,
               });
             }
 
@@ -532,7 +583,7 @@ export class SupplierAddComponent {
         fileType: fileType,
         fileName: selectedFile.name,
         filePath: '',
-        labelText: labelText
+        labelText: labelText,
       };
 
       if (isFromFilesBankAdd) {
@@ -542,6 +593,14 @@ export class SupplierAddComponent {
       }
 
       this._cdr.detectChanges();
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'ข้อผิดพลาด',
+        text: 'ไม่สามารถตรวจสอบจำนวนหน้าในไฟล์ PDF ได้ ไฟล์อาจมีการเข้ารหัสหรือเสียหาย กรุณาลองใหม่อีกครั้ง',
+        confirmButtonText: 'ตกลง',
+      });
+      console.error('Error checking PDF pages in onFileSelectNew:', error);
     }
   }
 

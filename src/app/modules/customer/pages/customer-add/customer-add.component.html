@@ -73,7 +73,7 @@
           <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" (input)="sanitizeInput('name')"/>
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="3" class="pr-3 mt-3">
         <nz-form-label nzNoColon>No.<span style="color: red;">*</span>
           <span nz-tooltip
             nzTooltipTitle="No. : ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูล บ้านเลขที่"
@@ -85,7 +85,7 @@
           <input nz-input placeholder="Address" formControlName="addressSup" maxlength="30" (input)="sanitizeInput('addressSup')"/>
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="18" class="pr-3 mt-3">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="15" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Address
           <span nz-tooltip
             nzTooltipTitle="ADDRESS : ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูลตั้งแต่ บ้านเลขที่,อาคาร(ถ้ามี),ชั้น(ถ้ามี), เลขที่ห้อง(ถ้ามี),หมู่(ถ้ามี),หมู่บ้าน(ถ้ามี),ถนน(ถ้ามี),ซอย(ถ้ามี),ตรอก(ถ้ามี) และอื่นๆ"
@@ -96,6 +96,16 @@
         <nz-input-group nzPrefixIcon="home" class="form-input">
           <input nz-input placeholder="Address" formControlName="addressDetail" (input)="sanitizeInput('addressDetail')"/>
         </nz-input-group>
+      </div>
+      <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+      </div>
+      <div *ngIf="isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Country<span style="color: red;">*</span>
+        </nz-form-label>
+        <nz-select nzShowSearch nzServerSearch formControlName="country" nzPlaceHolder="Select Country" class="custom-select" (nzOnSearch)="onCountrySearch($event)">
+          <nz-option *ngFor="let c of filteredcountries" [nzLabel]="c.name"
+            [nzValue]="c.name"></nz-option>
+        </nz-select>
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Postal Code<span style="color: red;">*</span>

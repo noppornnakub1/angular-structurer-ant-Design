@@ -83,6 +83,8 @@ export class CustomerAddComponent implements OnInit {
   listOfCompany: DataCompany[] = [];
   filteredDataompany: DataCompany[] = [];
   statusforUpdate: string = '';
+  countries: any;
+  filteredcountries: any;
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -148,7 +150,7 @@ export class CustomerAddComponent implements OnInit {
     });
 
     this.getCustomerType();
-
+    this.getCustomerCountries();
     this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
       const customerTypeId = this.getCustomerTypeId(value);
 
@@ -431,7 +433,8 @@ export class CustomerAddComponent implements OnInit {
             district: '-',
             subdistrict: '-',
             site: '',
-            postId: 0
+            postId: 0,
+            country: ''
           });
         }
       }
@@ -1081,15 +1084,15 @@ export class CustomerAddComponent implements OnInit {
       const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
       const pageCount = pdfDoc.getPageCount();
 
-      if (pageCount > 4) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'ไม่สามารถแนบไฟล์ได้',
-          text: `ไฟล์ PDF มี ${pageCount} หน้า กรุณาเลือกไฟล์ที่มีไม่เกิน 4 หน้า`,
-          confirmButtonText: 'ตกลง',
-        });
-        return;
-      }
+      // if (pageCount > 4) {
+      //   Swal.fire({
+      //     icon: 'warning',
+      //     title: 'ไม่สามารถแนบไฟล์ได้',
+      //     text: `ไฟล์ PDF มี ${pageCount} หน้า กรุณาเลือกไฟล์ที่มีไม่เกิน 4 หน้า`,
+      //     confirmButtonText: 'ตกลง',
+      //   });
+      //   return;
+      // }
 
       const fileNameWithoutExt = selectedFile.name.replace(`.${fileExtension}`, '');
       const randomId = this.generateUUID();
@@ -1481,5 +1484,28 @@ export class CustomerAddComponent implements OnInit {
       value = value.replace(/[\u0E00-\u0E7F]/g, '');
       this.customerForm.patchValue({ [field]: value }, { emitEvent: true });
     }
+  }
+
+  getCustomerCountries(){
+    this.customerService.getCustomerCountries().subscribe({
+      next: (response: any) => {
+        this.countries = response;
+        this.filteredcountries = response;
+        this._cdr.markForCheck();
+      },
+      error: () => {
+      }
+    });
+  }
+
+  onCountrySearch(value: string): void {
+    if (!value) {
+      this.filteredcountries = [...this.countries];
+      return;
+    }
+
+    this.filteredcountries = this.countries.filter((item: any)=>
+      item.name.toLowerCase().includes(value.toLowerCase())
+    );
   }
 }

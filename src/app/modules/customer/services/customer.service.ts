@@ -181,4 +181,8 @@ export class CustomerService {
     const params = new HttpParams().set('username', username); 
     return this._http.post(url, null, { params });
   }
+
+  getCustomerCountries() {
+    return this._http.get(`/Customer/CustomerCountries`);
+  }
 }

@@ -464,15 +464,15 @@ export class SupplierAddComponent {
       const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
       const pageCount = pdfDoc.getPageCount();
 
-      if (pageCount > 4) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'ไม่สามารถแนบไฟล์ได้',
-          text: `ไฟล์ PDF มี ${pageCount} หน้า กรุณาเลือกไฟล์ที่มีไม่เกิน 4 หน้า`,
-          confirmButtonText: 'ตกลง',
-        });
-        return;
-      }
+      // if (pageCount > 4) {
+      //   Swal.fire({
+      //     icon: 'warning',
+      //     title: 'ไม่สามารถแนบไฟล์ได้',
+      //     text: `ไฟล์ PDF มี ${pageCount} หน้า กรุณาเลือกไฟล์ที่มีไม่เกิน 4 หน้า`,
+      //     confirmButtonText: 'ตกลง',
+      //   });
+      //   return;
+      // }
 
       const fileToUpdate = this.displayFiles.find(file => file.fileType === fileType && file.labelText === labelText);
 
@@ -527,15 +527,15 @@ export class SupplierAddComponent {
       const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
       const pageCount = pdfDoc.getPageCount();
 
-      if (pageCount > 4) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'ไม่สามารถแนบไฟล์ได้',
-          text: `ไฟล์ PDF มี ${pageCount} หน้า กรุณาเลือกไฟล์ที่มีไม่เกิน 4 หน้า`,
-          confirmButtonText: 'ตกลง',
-        });
-        return;
-      }
+      // if (pageCount > 4) {
+      //   Swal.fire({
+      //     icon: 'warning',
+      //     title: 'ไม่สามารถแนบไฟล์ได้',
+      //     text: `ไฟล์ PDF มี ${pageCount} หน้า กรุณาเลือกไฟล์ที่มีไม่เกิน 4 หน้า`,
+      //     confirmButtonText: 'ตกลง',
+      //   });
+      //   return;
+      // }
 
       let fileToUpdate: SelectedFile | undefined;
       if (isFromFilesBankAdd) {

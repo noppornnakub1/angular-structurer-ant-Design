@@ -259,6 +259,7 @@ export class CustomerAddComponent implements OnInit {
       } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
         nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue.trim()}`);
       } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
+        nameValue = nameValue.replace(/ห้างหุ้นส่วน/g, '');
         nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue.trim()}`);
       }
       else {

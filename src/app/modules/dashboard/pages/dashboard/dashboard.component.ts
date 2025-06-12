@@ -245,7 +245,7 @@ export class DashboardComponent {
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-
+    this.isLoading = true;
     if (!currentUser) {
       console.error('Current user is not available in local storage');
       return;
@@ -258,6 +258,7 @@ export class DashboardComponent {
           this.listOfData = response;
           this.applyFilters();
           this._cdr.markForCheck();
+          this.isLoading = false;
         },
         error: () => {
         }
@@ -271,6 +272,7 @@ export class DashboardComponent {
           this.listOfData = response;
           this.applyFilters();
           this._cdr.markForCheck();
+          this.isLoading = false;
         },
         error: () => {
         }
@@ -284,6 +286,7 @@ export class DashboardComponent {
           this.listOfData = response;
           this.applyFilters();
           this._cdr.markForCheck();
+          this.isLoading = false;
         },
         error: () => {
         }
@@ -297,6 +300,7 @@ export class DashboardComponent {
           this.listOfData = response;
           this.applyFilters();
           this._cdr.markForCheck();
+          this.isLoading = false;
         },
         error: () => {
         }

@@ -261,6 +261,7 @@ export class DashboardComponent {
           this.isLoading = false;
         },
         error: () => {
+            this.isLoading = false;
         }
       });
     }
@@ -275,6 +276,7 @@ export class DashboardComponent {
           this.isLoading = false;
         },
         error: () => {
+            this.isLoading = false;
         }
       });
     }
@@ -289,6 +291,7 @@ export class DashboardComponent {
           this.isLoading = false;
         },
         error: () => {
+            this.isLoading = false;
         }
       });
     }
@@ -303,6 +306,7 @@ export class DashboardComponent {
           this.isLoading = false;
         },
         error: () => {
+            this.isLoading = false;
         }
       });
     }
@@ -322,6 +326,7 @@ export class DashboardComponent {
           this._cdr.markForCheck();
         },
         error: () => {
+            this.isLoading = false;
         }
       });
     }
@@ -338,6 +343,7 @@ export class DashboardComponent {
           this._cdr.markForCheck();
         },
         error: () => {
+            this.isLoading = false;
         }
       });
     }

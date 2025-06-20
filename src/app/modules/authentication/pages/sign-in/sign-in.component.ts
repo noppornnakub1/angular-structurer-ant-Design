@@ -153,8 +153,6 @@ export class SignInComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.manual = data[0].content
-        } else {
-          console.log("No content available");
         }
       },
       error: (err) => {
@@ -168,8 +166,6 @@ export class SignInComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.register = data[0].content
-        } else {
-          console.log("No content available");
         }
       },
       error: (err) => {

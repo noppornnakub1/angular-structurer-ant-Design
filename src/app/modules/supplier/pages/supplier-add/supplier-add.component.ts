@@ -217,6 +217,7 @@ export class SupplierAddComponent {
   isPrefixIsYou = false;
   isLoading: boolean = false;
   statusforUpdate: string = '';
+  specializedUsers: boolean = false;
   constructor(private _location: Location, private fb: FormBuilder
     , private supplierService: SupplierService,
     private router: Router,
@@ -360,12 +361,9 @@ export class SupplierAddComponent {
 
       if (['ARTS', 'LOCL'].includes(value)) {
         const currentTaxId = this.supplierForm.value.tax_Id || '';
-        console.log("currentTaxId: ", this.supplierForm.value.tax_Id);
-
         if (currentTaxId.length > 13) {
           const trimmedTaxId = currentTaxId.substring(0, 13);
           this.supplierForm.patchValue({ tax_Id: trimmedTaxId }, { emitEvent: false });
-          console.log('Trimmed taxId to 13 characters:', trimmedTaxId);
         }
       }
       const supplierTypeId = this.getSupplierTypeId(value);
@@ -931,11 +929,13 @@ export class SupplierAddComponent {
   checkRole(): void {
     this.authService.currenttRole.subscribe(user => {
       this.currentUser = user;
+
       if (user) {
         this.isAdmin = user.action.includes('admin');
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
+        this.specializedUsers = user.action.includes('approved,user,approvedFN');    
         if (this.isApprovedFN && this.isAdmin == false) {
           this.isApproved = false;
         }

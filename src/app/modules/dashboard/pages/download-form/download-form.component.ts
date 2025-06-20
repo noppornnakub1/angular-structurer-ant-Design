@@ -28,8 +28,6 @@ export class DownloadFormComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.customer = data[0].content
-        } else {
-          console.log("No content available");
         }
       },
       error: (err) => {
@@ -40,8 +38,6 @@ export class DownloadFormComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.supplier = data[0].content
-        } else {
-          console.log("No content available");
         }
       },
       error: (err) => {
@@ -52,8 +48,6 @@ export class DownloadFormComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.oneIndividual = data[0].content
-        } else {
-          console.log("No content available");
         }
       },
       error: (err) => {
@@ -64,8 +58,6 @@ export class DownloadFormComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.oneLegal = data[0].content
-        } else {
-          console.log("No content available");
         }
       },
       error: (err) => {
@@ -76,8 +68,6 @@ export class DownloadFormComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.gchIndividual = data[0].content
-        } else {
-          console.log("No content available");
         }
       },
       error: (err) => {
@@ -88,8 +78,6 @@ export class DownloadFormComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.gchLegal = data[0].content
-        } else {
-          console.log("No content available");
         }
       },
       error: (err) => {

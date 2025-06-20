@@ -1114,7 +1114,6 @@ export class CustomerAddComponent implements OnInit {
 
       const renamedFile = new File([selectedFile], uniqueFileName, { type: selectedFile.type });
       this.listfile.push(renamedFile);
-      console.log("this.listfile : ", this.listfile);
     } catch (error) {
       Swal.fire({
         icon: 'error',

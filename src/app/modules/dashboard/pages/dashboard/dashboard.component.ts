@@ -561,9 +561,7 @@ export class DashboardComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.listOfDataPDPA = data[0].content
-        } else {
-          console.log("No content available");
-        }
+        } 
       },
       error: (err) => {
         console.error('Error fetching Content:', err);
@@ -577,8 +575,6 @@ export class DashboardComponent {
         if (Array.isArray(data) && data.length > 0) {
           this.Announcement = data[0].content
           
-        } else {
-          console.log("No content available");
         }
       },
       error: (err) => {

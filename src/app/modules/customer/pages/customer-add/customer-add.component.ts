@@ -85,6 +85,7 @@ export class CustomerAddComponent implements OnInit {
   statusforUpdate: string = '';
   countries: any;
   filteredcountries: any;
+  specializedUsers: boolean = false;
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -395,6 +396,7 @@ export class CustomerAddComponent implements OnInit {
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
+        this.specializedUsers = user.roleName.includes('ACT User');    
       }
     });
   }
@@ -604,9 +606,10 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.getCustomerType().subscribe({
       next: (response: any) => {
         this.listOfType = response;
-        if (this.isAdmin || this.isApproved) {
+        if (this.isAdmin || (this.isApproved && !this.specializedUsers)) {
           this.filteredDataType = this.listOfType;
-        } else {
+        } 
+        else {
           this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));
         }
         this._cdr.markForCheck();

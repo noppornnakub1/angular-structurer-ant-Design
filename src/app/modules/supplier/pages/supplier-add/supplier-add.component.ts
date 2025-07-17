@@ -1793,7 +1793,10 @@ export class SupplierAddComponent {
   getGruopName(): void {
     this.supplierService.GetAllGroups().subscribe({
       next: (response: any) => {
+        console.log("response : ",response);
         this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
+        console.log("listOfGroup : ",this.listOfGroup);
+        
         this.filteredListOfGroup = this.listOfGroup
         this._cdr.markForCheck();
       },
@@ -2160,7 +2163,7 @@ export class SupplierAddComponent {
               <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
               <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
               <br>
-              <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+              <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
               <br>
               <p>Best Regards</p>
               <p>OnePortal</p>
@@ -2199,7 +2202,7 @@ export class SupplierAddComponent {
               <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
               <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
               <br>
-              <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+              <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
               <br>
               <p>Best Regards</p>
               <p>OnePortal</p>
@@ -2380,7 +2383,7 @@ export class SupplierAddComponent {
         <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
         <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.telAcc}</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -2404,7 +2407,7 @@ export class SupplierAddComponent {
         <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
         <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.telAcc}</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -2428,7 +2431,7 @@ export class SupplierAddComponent {
         <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
         <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.telAcc}</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -2451,7 +2454,7 @@ export class SupplierAddComponent {
         <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
         <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.telAcc}</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -2475,7 +2478,7 @@ export class SupplierAddComponent {
         <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
         <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085//feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.telAcc}</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>

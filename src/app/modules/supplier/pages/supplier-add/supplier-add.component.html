@@ -158,9 +158,9 @@
       </div>
       <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Province<span style="color: red;">*</span></nz-form-label>
-        <nz-input-group nzPrefixIcon="global" class="form-input"
+        <nz-input-group nzPrefixIcon="global" class="form-input readonly"
           [ngStyle]="isFieldValidSupplier('province') ? {border: '1px solid red', borderRadius: '7px'} : null">
-          <input nz-input placeholder="Province" formControlName="province" />
+          <input nz-input placeholder="Province" formControlName="province" readonly/>
         </nz-input-group>
         <div nz-form-explain *ngIf="supplierForm.get('province')?.invalid && supplierForm.get('province')?.touched"
             style="color: red;">
@@ -169,9 +169,9 @@
       </div>
       <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>District<span style="color: red;">*</span></nz-form-label>
-        <nz-input-group nzPrefixIcon="cluster" class="form-input"
+        <nz-input-group nzPrefixIcon="cluster" class="form-input readonly"
           [ngStyle]="isFieldValidSupplier('district') ? {border: '1px solid red', borderRadius: '7px'} : null">
-          <input nz-input placeholder="District" formControlName="district" />
+          <input nz-input placeholder="District" formControlName="district" readonly/>
         </nz-input-group>
         <div nz-form-explain *ngIf="supplierForm.get('district')?.invalid && supplierForm.get('district')?.touched"
           style="color: red;">
@@ -180,9 +180,9 @@
       </div>
       <div *ngIf="!isOverseaSupplier()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Subdistrict<span style="color: red;">*</span></nz-form-label>
-        <nz-input-group nzPrefixIcon="environment" class="form-input"
+        <nz-input-group nzPrefixIcon="environment" class="form-input readonly"
           [ngStyle]="isFieldValidSupplier('subdistrict') ? {border: '1px solid red', borderRadius: '7px'} : null">
-          <input nz-input placeholder="Subdistrict" formControlName="subdistrict" />
+          <input nz-input placeholder="Subdistrict" formControlName="subdistrict" readonly/>
         </nz-input-group>
         <div nz-form-explain
           *ngIf="supplierForm.get('subdistrict')?.invalid && supplierForm.get('subdistrict')?.touched"

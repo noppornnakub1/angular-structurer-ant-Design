@@ -130,7 +130,7 @@ export class CustomerAddComponent implements OnInit {
       fileCertificateATR: [''],
       fileOrther: [''],
       isAddressOld: ['New'],
-      country: ['THAILAND']
+      country: ['THAILAND', Validators.required]
     });
 
     await this.handleRouteParams();
@@ -1053,7 +1053,7 @@ export class CustomerAddComponent implements OnInit {
     const requiredFields = [
       'name', 'taxId', 'addressSup', 'district', 'subdistrict',
       'province', 'postalCode', 'tel', 'email', 'customerType',
-      'site', 'company'
+      'site', 'company', 'country'
     ];
 
     for (const field of requiredFields) {

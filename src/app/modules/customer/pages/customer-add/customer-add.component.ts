@@ -280,11 +280,12 @@ export class CustomerAddComponent implements OnInit {
 
     if (siteValue.length !== 5) {
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Site ไม่ถูกต้อง',
-        text: 'โปรดตรวจสอบให้แน่ใจว่า Site ของคุณมี 5 หลักหรือไม่',
+        text: 'โปรดกรอก Site ของคุณให้ครบ 5 หลัก',
         confirmButtonText: 'ปิด'
       });
+      this.customerForm.patchValue({ site: '' });
       return;
     }
 
@@ -396,7 +397,7 @@ export class CustomerAddComponent implements OnInit {
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
-        this.specializedUsers = user.roleName.includes('ACT User');    
+        this.specializedUsers = user.roleName.includes('ACT User');
       }
     });
   }
@@ -608,7 +609,7 @@ export class CustomerAddComponent implements OnInit {
         this.listOfType = response;
         if (this.isAdmin || (this.isApproved && !this.specializedUsers)) {
           this.filteredDataType = this.listOfType;
-        } 
+        }
         else {
           this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));
         }
@@ -1489,7 +1490,7 @@ export class CustomerAddComponent implements OnInit {
     }
   }
 
-  getCustomerCountries(){
+  getCustomerCountries() {
     this.customerService.getCustomerCountries().subscribe({
       next: (response: any) => {
         this.countries = response;
@@ -1507,7 +1508,7 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
 
-    this.filteredcountries = this.countries.filter((item: any)=>
+    this.filteredcountries = this.countries.filter((item: any) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
   }

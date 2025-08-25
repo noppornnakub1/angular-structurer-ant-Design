@@ -51,8 +51,9 @@ export class SignInComponent {
     if (this.loginForm.valid) {
       this.isLoading = true;
       const { username, password } = this.loginForm.value;
-
-      this.authService.login(username, password).subscribe(
+      const trimmedUsername = username.trim();
+      const trimmedPassword = password.trim();
+      this.authService.login(trimmedUsername, trimmedPassword).subscribe(
         response => {
           if (response) {
             this.authService.getRole(response.user.role).subscribe(
@@ -160,7 +161,7 @@ export class SignInComponent {
       }
     });
   }
-  
+
   loadRegisterContent(): void {
     this.masterService.findContentById(16).subscribe({
       next: (data) => {
@@ -173,5 +174,11 @@ export class SignInComponent {
       }
     });
   }
+
+  preventSpace(event: KeyboardEvent): void {
+  if (event.code === 'Space' || event.key === ' ') {
+    event.preventDefault();
+  }
+}
 
 }

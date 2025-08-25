@@ -8,9 +8,9 @@
       <div *ngIf="isLoading" class="splash-screen">
         <img src="assets/images/ONE Portal-fix.png" alt="Loading Logo">
         <div class="spinner">
-            <div class="bounce1"></div>
-            <div class="bounce2"></div>
-            <div class="bounce3"></div>
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
         </div>
       </div>
       <div class="logo-top-center-desktop">
@@ -25,26 +25,22 @@
         <nz-form-item>
           <nz-form-control>
             <nz-input-group nzPrefixIcon="user" class="input-group-field">
-              <input formControlName="username" nz-input placeholder="username" autocomplete="off"/>
+              <input formControlName="username" nz-input placeholder="username" autocomplete="off"
+                (keydown)="preventSpace($event)" />
             </nz-input-group>
             <div *ngIf="loginForm.controls['username'].invalid && loginForm.controls['username'].dirty">
               <span *ngIf="loginForm.controls['username'].errors!['required']">Username is required.</span>
             </div>
           </nz-form-control>
         </nz-form-item>
-    
+
         <nz-form-item>
           <nz-form-control>
             <nz-input-group nzPrefixIcon="lock" class="input-group-field">
-              <input formControlName="password" 
-                     nz-input 
-                     [type]="isPasswordVisible ? 'text' : 'password'" 
-                     placeholder="Password" autocomplete="off"/>
-              <span nz-icon 
-                    [nzType]="isPasswordVisible ? 'eye-invisible' : 'eye'" 
-                    nzTheme="outline" 
-                    class="password-toggle-icon" 
-                    (click)="isPasswordVisible = !isPasswordVisible">
+              <input formControlName="password" nz-input [type]="isPasswordVisible ? 'text' : 'password'"
+                placeholder="Password" autocomplete="off" (keydown)="preventSpace($event)" />
+              <span nz-icon [nzType]="isPasswordVisible ? 'eye-invisible' : 'eye'" nzTheme="outline"
+                class="password-toggle-icon" (click)="isPasswordVisible = !isPasswordVisible">
               </span>
             </nz-input-group>
             <div *ngIf="loginForm.controls['password'].invalid && loginForm.controls['password'].dirty">
@@ -52,12 +48,13 @@
             </div>
           </nz-form-control>
         </nz-form-item>
-    
+
         <nz-form-item>
-          <p style="text-align: right; width: 100%;">ลงทะเบียนบัญชีใช้งาน <a href="{{register}}" target="_blank" style="color: #2d98ff;"><u>Click</u></a></p>
+          <p style="text-align: right; width: 100%;">ลงทะเบียนบัญชีใช้งาน <a href="{{register}}" target="_blank"
+              style="color: #2d98ff;"><u>Click</u></a></p>
           <button [disabled]="loginForm.invalid" nz-button nzType="primary" class="login-form-button">Login</button>
         </nz-form-item>
-    
+
         <!-- <div class="forgot-password">
           <a (click)="openForgotPasswordModal()">Forgot your password?</a>
         </div> -->
@@ -68,19 +65,20 @@
     </div>
   </div>
 </div>
-<nz-modal [(nzVisible)]="isForgotPasswordModalVisible" nzTitle="Forgot Password" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+<nz-modal [(nzVisible)]="isForgotPasswordModalVisible" nzTitle="Forgot Password" (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()">
   <div *nzModalContent>
-      <nz-form-item class="input-group-field justify-center">
-          <nz-form-label nzFor="username">Username</nz-form-label>
+    <nz-form-item class="input-group-field justify-center">
+      <nz-form-label nzFor="username">Username</nz-form-label>
+      <nz-form-control>
+        <nz-form-item>
           <nz-form-control>
-              <nz-form-item>
-                <nz-form-control>
-                  <nz-input-group nzPrefixIcon="user" class="input-group-field">
-                    <input [(ngModel)]="forgotPasswordUsername" id="username" nz-input placeholder="username" />
-                  </nz-input-group>
-                </nz-form-control>
-              </nz-form-item>
+            <nz-input-group nzPrefixIcon="user" class="input-group-field">
+              <input [(ngModel)]="forgotPasswordUsername" id="username" nz-input placeholder="username" />
+            </nz-input-group>
           </nz-form-control>
-      </nz-form-item>
+        </nz-form-item>
+      </nz-form-control>
+    </nz-form-item>
   </div>
 </nz-modal>

@@ -285,7 +285,7 @@ export class SupplierAddComponent {
   private createBankFormGroup(): FormGroup {
     return this.fb.group({
       supbankId: [0], supplierId: [, Validators.required],
-      nameBank: ['', Validators.required], branch: ['00000', Validators.required],
+      nameBank: ['', Validators.required], branch: ['9999', Validators.required],
       accountNum: ['', Validators.required], supplierGroup: ['', Validators.required],
       accountName: ['', Validators.required], company: ['', Validators.required]
     });

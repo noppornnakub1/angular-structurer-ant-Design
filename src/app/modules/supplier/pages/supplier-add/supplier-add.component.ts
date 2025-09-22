@@ -752,8 +752,13 @@ export class SupplierAddComponent {
       const numericValue = this.validationService.validateTaxId(cleanedInput, Type);
       this.supplierForm.patchValue({ tax_Id: numericValue });
       event.target.value = numericValue;
+
     } else {
       const numericValue = this.validationService.validateTaxId(input, Type);
+      console.log("numericValue : ", numericValue);
+      if (numericValue.length < 13) {
+
+      }
       this.supplierForm.patchValue({ tax_Id: numericValue });
       event.target.value = numericValue;
     }
@@ -935,7 +940,7 @@ export class SupplierAddComponent {
         this.isApproved = user.action.includes('approved');
         this.isApprovedFN = user.action.includes('approvedFN');
         this.isUser = user.action.includes('user');
-        this.specializedUsers = user.action.includes('approved,user,approvedFN');    
+        this.specializedUsers = user.action.includes('approved,user,approvedFN');
         if (this.isApprovedFN && this.isAdmin == false) {
           this.isApproved = false;
         }
@@ -1793,10 +1798,10 @@ export class SupplierAddComponent {
   getGruopName(): void {
     this.supplierService.GetAllGroups().subscribe({
       next: (response: any) => {
-        console.log("response : ",response);
+        console.log("response : ", response);
         this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
-        console.log("listOfGroup : ",this.listOfGroup);
-        
+        console.log("listOfGroup : ", this.listOfGroup);
+
         this.filteredListOfGroup = this.listOfGroup
         this._cdr.markForCheck();
       },
@@ -2503,6 +2508,17 @@ export class SupplierAddComponent {
     const taxId = this.supplierForm.get('tax_Id')?.value;
     const userId = this.supplierForm.get('id')?.value;
     const name = this.supplierForm.get('name')?.value;
+    
+    if (taxId.length < 13 && (supplierType !== 'OSEA')) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'TaxId ไม่ครบ 13 หลัก',
+        text: 'กรุณากรอก TaxId ให้ครบ 13 หลัก',
+        confirmButtonText: 'ปิด'
+      });
+      this.supplierForm.patchValue({ tax_Id: '' });
+      return;
+    }
     if ((supplierType && taxId) && userId == 0) {
       const formData = {
         taxId: taxId,

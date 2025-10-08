@@ -1837,9 +1837,10 @@ export class SupplierAddComponent {
   }
 
   validateEmail() {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,4}){1,2}$/;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,7}){1,2}$/;
     if (!this.supplierForm.value.email) {
       this.emailError = 'Email is required';
+      
     } else if (!emailPattern.test(this.supplierForm.value.email)) {
       if (this.supplierForm.value.email === '-') {
         this.emailError = '';
@@ -1855,7 +1856,8 @@ export class SupplierAddComponent {
 
   async checkSave(event: Event) {
     this.validateEmail()
-
+    console.log(this.emailError );
+    
     if (this.emailError != '' && !this.isFormValidWithoutSupplierNum()) {
       Swal.fire({
         icon: 'warning',

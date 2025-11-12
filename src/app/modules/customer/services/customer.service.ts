@@ -177,12 +177,16 @@ export class CustomerService {
   }
 
   addPDPAData(username: string): Observable<any> {
-    const url = `/PDPAConsent/InsertPDPA`; 
-    const params = new HttpParams().set('username', username); 
+    const url = `/PDPAConsent/InsertPDPA`;
+    const params = new HttpParams().set('username', username);
     return this._http.post(url, null, { params });
   }
 
   getCustomerCountries() {
     return this._http.get(`/Customer/CustomerCountries`);
+  }
+
+  findTimeSuccessByCustomerId(id: number): Observable<any> {
+    return this._http.get<any>(`/Customer/findTimeSuccessByCustomerId?id=${id}`);
   }
 }

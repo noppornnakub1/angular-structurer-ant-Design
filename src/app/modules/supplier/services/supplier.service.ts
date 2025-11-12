@@ -21,8 +21,8 @@ export class SupplierService {
   }
 
   addOrUpdateDataWithFiles(supplierId: number | null, formData: FormData): Observable<any> {
-    const url = supplierId 
-      ? `/Supplier/AddOrUpdateSupplierWithFiles/${supplierId}` 
+    const url = supplierId
+      ? `/Supplier/AddOrUpdateSupplierWithFiles/${supplierId}`
       : `/Supplier/AddOrUpdateSupplierWithFiles`;
     return this._http.post(url, formData);
   }
@@ -45,7 +45,7 @@ export class SupplierService {
 
   updateDataWithFiles(id: number, formData: FormData): Observable<any> {
     return this._http.put(`/Supplier/UpdateSupplierWithFiles?id=${id}`, formData);
-  }  
+  }
 
   findSupplierTypeById(id: number): Observable<IsupplierType> {
     return this._http.get<IsupplierType>(`/Supplier/FindSupplierTypeByID?id=${id}`);
@@ -157,7 +157,11 @@ export class SupplierService {
 
   exportExcel(data: { Username: string; StartDate: string; EndDate: string; }): Observable<Blob> {
     return this._http.post('/Supplier/ExportApprovedSuppliersToExcelDynamic', data, {
-        responseType: 'blob', 
+      responseType: 'blob',
     });
-}
+  }
+
+  findTimeSuccessBySupplierId(id: number): Observable<any> {
+    return this._http.get<any>(`/Supplier/findTimeSuccessBySupplierID?id=${id}`);
+  }
 }

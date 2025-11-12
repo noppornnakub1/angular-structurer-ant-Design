@@ -86,6 +86,7 @@ export class CustomerAddComponent implements OnInit {
   countries: any;
   filteredcountries: any;
   specializedUsers: boolean = false;
+  successTime: string = '';
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -190,6 +191,11 @@ export class CustomerAddComponent implements OnInit {
 
     this.checkRole();
     this.getDataCompany();
+
+    if(this.statusforUpdate === 'Success'){
+      this.getTimeSuccessByCustomerID(this.customerId || 0)
+    }
+    
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
   }
   private itemsProvincesLoaded = false;
@@ -691,6 +697,7 @@ export class CustomerAddComponent implements OnInit {
           if (originalLog) {
             this.logs.unshift({
               status: this.statusforUpdate,
+              time: this.formatDateTime(this.successTime)   
             });
           }
         }
@@ -1511,5 +1518,15 @@ export class CustomerAddComponent implements OnInit {
     this.filteredcountries = this.countries.filter((item: any) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
+  }
+
+  getTimeSuccessByCustomerID(id : number) {
+    this.customerService.findTimeSuccessByCustomerId(id).subscribe({
+      next: (response: any) => {
+        this.successTime = response[0].UpdateTimestamp
+      },
+      error: () => {
+      }
+    });
   }
 }

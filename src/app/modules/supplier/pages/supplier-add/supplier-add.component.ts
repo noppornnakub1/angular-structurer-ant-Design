@@ -218,6 +218,7 @@ export class SupplierAddComponent {
   isLoading: boolean = false;
   statusforUpdate: string = '';
   specializedUsers: boolean = false;
+  successTime: string = '';
   constructor(private _location: Location, private fb: FormBuilder
     , private supplierService: SupplierService,
     private router: Router,
@@ -318,6 +319,9 @@ export class SupplierAddComponent {
             }
             resolve();
           });
+          if (this.statusforUpdate === 'Success') {
+            this.getTimeSuccessBySupplierID(this.suppilerId || 0)
+          }
           this.loadSupplierData(this.suppilerId);
           this.isIDTemp = this.suppilerId;
         } else {
@@ -755,7 +759,6 @@ export class SupplierAddComponent {
 
     } else {
       const numericValue = this.validationService.validateTaxId(input, Type);
-      console.log("numericValue : ", numericValue);
       if (numericValue.length < 13) {
 
       }
@@ -1512,13 +1515,12 @@ export class SupplierAddComponent {
             status: updatedStatus
           };
         });
-        // ตรวจสอบว่า "Submitted" อยู่บนสุดและไม่มี status อื่น
         if (this.logs.length > 0 && this.logs[0].status === "Submitted") {
           const originalLog = data.find(log => log.status === "Pending Approved By ACC");
           if (originalLog) {
             this.logs.unshift({
               status: "Pending Approved By ACC",
-              time: this.formatDateTime(originalLog.time) // ใช้เวลาเดิม
+              time: this.formatDateTime(originalLog.time)
             });
           }
         }
@@ -1527,6 +1529,7 @@ export class SupplierAddComponent {
           if (originalLog) {
             this.logs.unshift({
               status: this.statusforUpdate,
+              time: this.formatDateTime(this.successTime)
             });
           }
         }
@@ -1535,7 +1538,7 @@ export class SupplierAddComponent {
           if (originalLog) {
             this.logs.unshift({
               status: this.statusforUpdate,
-              time: this.formatDateTime(originalLog.time) // ใช้เวลาเดิม
+              time: this.formatDateTime(originalLog.time)
             });
           }
         }
@@ -1544,6 +1547,7 @@ export class SupplierAddComponent {
           if (originalLog) {
             this.logs.unshift({
               status: this.statusforUpdate,
+              time: this.formatDateTime(this.successTime)
             });
           }
         }
@@ -1798,10 +1802,7 @@ export class SupplierAddComponent {
   getGruopName(): void {
     this.supplierService.GetAllGroups().subscribe({
       next: (response: any) => {
-        console.log("response : ", response);
         this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
-        console.log("listOfGroup : ", this.listOfGroup);
-
         this.filteredListOfGroup = this.listOfGroup
         this._cdr.markForCheck();
       },
@@ -1840,7 +1841,7 @@ export class SupplierAddComponent {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,7}){1,2}$/;
     if (!this.supplierForm.value.email) {
       this.emailError = 'Email is required';
-      
+
     } else if (!emailPattern.test(this.supplierForm.value.email)) {
       if (this.supplierForm.value.email === '-') {
         this.emailError = '';
@@ -1856,8 +1857,6 @@ export class SupplierAddComponent {
 
   async checkSave(event: Event) {
     this.validateEmail()
-    console.log(this.emailError );
-    
     if (this.emailError != '' && !this.isFormValidWithoutSupplierNum()) {
       Swal.fire({
         icon: 'warning',
@@ -2510,7 +2509,7 @@ export class SupplierAddComponent {
     const taxId = this.supplierForm.get('tax_Id')?.value;
     const userId = this.supplierForm.get('id')?.value;
     const name = this.supplierForm.get('name')?.value;
-    
+
     if (taxId.length < 13 && (supplierType !== 'OSEA')) {
       Swal.fire({
         icon: 'warning',
@@ -2782,6 +2781,31 @@ export class SupplierAddComponent {
       value = value.replace(/[\u0E00-\u0E7F]/g, '');
       this.supplierForm.patchValue({ [field]: value }, { emitEvent: true });
     }
+  }
+
+  getTimeSuccessBySupplierID(id: number) {
+    this.supplierService.findTimeSuccessBySupplierId(id).subscribe({
+      next: (response: any) => {
+        this.successTime = response[0].UpdateDateTime
+      },
+      error: () => {
+      }
+    });
+  }
+
+  formatDateTimeNew(dateTime: string): string {
+    const date = new Date(dateTime);
+    if (isNaN(date.getTime())) return 'Invalid Date';
+
+    return date.toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }).replace(/,/, '');
   }
 
 }

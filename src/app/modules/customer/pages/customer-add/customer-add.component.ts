@@ -192,10 +192,10 @@ export class CustomerAddComponent implements OnInit {
     this.checkRole();
     this.getDataCompany();
 
-    if(this.statusforUpdate === 'Success'){
+    if (this.statusforUpdate === 'Success') {
       this.getTimeSuccessByCustomerID(this.customerId || 0)
     }
-    
+
     this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
   }
   private itemsProvincesLoaded = false;
@@ -610,21 +610,35 @@ export class CustomerAddComponent implements OnInit {
   }
 
   getCustomerType(): void {
+    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const company = user.user.company;
+
     this.customerService.getCustomerType().subscribe({
       next: (response: any) => {
         this.listOfType = response;
+
         if (this.isAdmin || (this.isApproved && !this.specializedUsers)) {
           this.filteredDataType = this.listOfType;
         }
         else {
-          this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));
+          if (company.includes('FLD')) {
+            this.filteredDataType = this.listOfType.filter(type =>
+              ['LOCL', 'OSEA', 'ARTS','STUD'].includes(type.code)
+            );
+          }
+          else {
+            this.filteredDataType = this.listOfType.filter(type =>
+              ['LOCL', 'OSEA', 'ARTS'].includes(type.code)
+            );
+          }
         }
+
         this._cdr.markForCheck();
       },
-      error: () => {
-      }
+      error: () => { }
     });
   }
+
 
   insertLog(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -697,7 +711,7 @@ export class CustomerAddComponent implements OnInit {
           if (originalLog) {
             this.logs.unshift({
               status: this.statusforUpdate,
-              time: this.formatDateTime(this.successTime)   
+              time: this.formatDateTime(this.successTime)
             });
           }
         }
@@ -1520,7 +1534,7 @@ export class CustomerAddComponent implements OnInit {
     );
   }
 
-  getTimeSuccessByCustomerID(id : number) {
+  getTimeSuccessByCustomerID(id: number) {
     this.customerService.findTimeSuccessByCustomerId(id).subscribe({
       next: (response: any) => {
         this.successTime = response[0].UpdateTimestamp

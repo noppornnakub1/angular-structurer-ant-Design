@@ -2534,10 +2534,24 @@ export class SupplierAddComponent {
         },
         error: (err) => {
           console.error('Error occurred:', err);
+          const payload = JSON.parse(err);
+
+          let html = `<div>${payload.message}</div>`;
+
+          Object.keys(payload).forEach(key => {
+            if (key !== 'message') {
+              if (key === 'supplierInfo') {
+                html += `<div><b>${payload[key]}</b></div>`;
+              } else {
+                html += `<div>${payload[key]}</div>`;
+              }
+            }
+          });
+
           Swal.fire({
             icon: 'warning',
             title: 'ข้อมูลซ้ำ',
-            text: err,
+            html: html,
             confirmButtonText: 'ปิด'
           });
           this.supplierForm.patchValue({ tax_Id: '' });

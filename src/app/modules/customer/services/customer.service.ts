@@ -189,4 +189,9 @@ export class CustomerService {
   findTimeSuccessByCustomerId(id: number): Observable<any> {
     return this._http.get<any>(`/Customer/findTimeSuccessByCustomerId?id=${id}`);
   }
+
+  getCustomerTypeGroup() {
+    return this._http.get(`/Customer/CustomerTypeGroup`);
+  }
+
 }

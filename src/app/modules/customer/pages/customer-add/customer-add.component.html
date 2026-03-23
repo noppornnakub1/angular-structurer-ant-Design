@@ -2,7 +2,7 @@
   <div class="content-card">
     <nz-divider nzText="Customer Info"></nz-divider>
     <div nz-row nzGutter="16" class="mt-2">
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="7" class="pr-3">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
         <nz-form-label nzNoColon>Customer Type<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Customer Type = ประเภทของ Customer ที่ต้องการสร้าง 
           สามารถเลือก Dropdown ลงมาดูข้อมูลได้" class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -15,7 +15,7 @@
             [nzValue]="type.code"></nz-option>
         </nz-select>
       </div>
-      <div *ngIf="!isOverseaCustomer() && (isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="8"
+      <div *ngIf="!isOverseaCustomer() && (isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"
         class="pr-3">
         <nz-form-label nzNoColon>Customer Number<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Customer Number = ระบบจะ running number 
@@ -27,7 +27,7 @@
           <input nz-input placeholder="Customer Number" formControlName="customerNum" readonly />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="9" class="pr-3 ">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 ">
         <nz-form-label nzNoColon>Site<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Site = สำนักงานใหญ่ คือ 00000 , สาขาย่อยจะ running ตามสาขา 
           เช่น สาขาที่ 1 คือ 00001, สาขาที่ 10 คือ 00010" class="material-symbols-outlined ml-1"
@@ -37,8 +37,20 @@
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
           <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)"
-            (blur)="onSiteBlur()" required/>
+            (blur)="onSiteBlur()" required />
         </nz-input-group>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
+        <nz-form-label nzNoColon>Customer Group Type<span style="color: red;">*</span>
+          <span nz-tooltip nzTooltipTitle="Customer Type = ประเภทของ Customer Group Type ที่ต้องการสร้าง 
+          สามารถเลือก Dropdown ลงมาดูข้อมูลได้" class="material-symbols-outlined ml-1" style="font-size: 18px;">
+            info
+          </span>
+        </nz-form-label>
+        <nz-select formControlName="customerTypeGroup" nzPlaceHolder="Select customer_group_type" class="custom-select">
+          <nz-option *ngFor="let type of typeGroup" [nzLabel]="type.name"
+            [nzValue]="type.name"></nz-option>
+        </nz-select>
       </div>
       <div *ngIf="!isOverseaCustomer() && !(isAdmin||isApproved||isApprovedFN)" nz-col [nzXs]="24" [nzMd]="12"
         [nzLg]="8" class="pr-3">
@@ -53,7 +65,8 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="idcard" class="form-input">
-          <input nz-input type="text" placeholder="Tax ID" formControlName="taxId" (input)="validateTaxId($event)" (blur)="onTaxIdBlur()"/>
+          <input nz-input type="text" placeholder="Tax ID" formControlName="taxId" (input)="validateTaxId($event)"
+            (blur)="onTaxIdBlur()" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="4" class="pr-3 mt-3">
@@ -70,7 +83,8 @@
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="13" class="pr-3" style="margin-top: 46px;">
         <nz-input-group nzPrefixIcon="user" class="form-input">
-          <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()" (input)="sanitizeInput('name')"/>
+          <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()"
+            (input)="sanitizeInput('name')" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="3" class="pr-3 mt-3">
@@ -82,7 +96,8 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Address" formControlName="addressSup" maxlength="30" (input)="sanitizeInput('addressSup')"/>
+          <input nz-input placeholder="Address" formControlName="addressSup" maxlength="30"
+            (input)="sanitizeInput('addressSup')" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="15" class="pr-3 mt-3">
@@ -94,7 +109,8 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="home" class="form-input">
-          <input nz-input placeholder="Address" formControlName="addressDetail" (input)="sanitizeInput('addressDetail')"/>
+          <input nz-input placeholder="Address" formControlName="addressDetail"
+            (input)="sanitizeInput('addressDetail')" />
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3">
@@ -102,9 +118,9 @@
       <div *ngIf="isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Country<span style="color: red;">*</span>
         </nz-form-label>
-        <nz-select nzShowSearch nzServerSearch formControlName="country" nzPlaceHolder="Select Country" class="custom-select" (nzOnSearch)="onCountrySearch($event)">
-          <nz-option *ngFor="let c of filteredcountries" [nzLabel]="c.name"
-            [nzValue]="c.name"></nz-option>
+        <nz-select nzShowSearch nzServerSearch formControlName="country" nzPlaceHolder="Select Country"
+          class="custom-select" (nzOnSearch)="onCountrySearch($event)">
+          <nz-option *ngFor="let c of filteredcountries" [nzLabel]="c.name" [nzValue]="c.name"></nz-option>
         </nz-select>
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
@@ -129,33 +145,35 @@
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Province<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="global" class="form-input readonly">
-          <input nz-input placeholder="Province" formControlName="province" readonly/>
+          <input nz-input placeholder="Province" formControlName="province" readonly />
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>District<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="cluster" class="form-input readonly">
-          <input nz-input placeholder="District" formControlName="district" readonly/>
+          <input nz-input placeholder="District" formControlName="district" readonly />
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Subdistrict<span style="color: red;">*</span></nz-form-label>
         <nz-input-group nzPrefixIcon="environment" class="form-input readonly">
-          <input nz-input placeholder="Subdistrict" formControlName="subdistrict" readonly/>
+          <input nz-input placeholder="Subdistrict" formControlName="subdistrict" readonly />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
         <nz-form-label nzNoColon>Mobile Phone<span style="color: red;">*</span>
-          <span nz-tooltip nzTooltipTitle="Mobile Phone ของ Customer : กรอกข้อมูลเบอร์มือถือ โดยพิมตัวเลขติดกัน เช่น 063-259-1772 กรุณากรอก 0632591772 หากไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”" class="material-symbols-outlined ml-1" style="font-size: 18px;">
+          <span nz-tooltip
+            nzTooltipTitle="Mobile Phone ของ Customer : กรอกข้อมูลเบอร์มือถือ โดยพิมตัวเลขติดกัน เช่น 063-259-1772 กรุณากรอก 0632591772 หากไม่มีข้อมูลเบอร์โทรศัพท์ กรุณากรอก “-”"
+            class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="phone" class="form-input">
-          <input nz-input type="text" placeholder="Mobile Phone" maxlength="10" (input)="validateTel($event)" (blur)="onblurTel()"
-            formControlName="tel" />
+          <input nz-input type="text" placeholder="Mobile Phone" maxlength="10" (input)="validateTel($event)"
+            (blur)="onblurTel()" formControlName="tel" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
         <nz-form-label nzNoColon>Email<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Email : ของ Customer ถ้าไม่มีให้ระบุเป็น “-”"
             class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -163,10 +181,11 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="mail" class="form-input">
-          <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()" (keypress)="preventThaiInput($event)"/>
+          <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()"
+            (keypress)="preventThaiInput($event)" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
         <nz-form-label nzNoColon>LineId<span style="color: red;">*</span>
           <span nz-tooltip nzTooltipTitle="Line Id : ของ Customer ถ้าไม่มีให้ระบุเป็น “-”"
             class="material-symbols-outlined ml-1" style="font-size: 18px;">
@@ -174,10 +193,10 @@
           </span>
         </nz-form-label>
         <nz-input-group nzPrefixIcon="whats-app" class="form-input">
-          <input nz-input placeholder="lineId" formControlName="lineId" (input)="sanitizeInput('lineId')"/>
+          <input nz-input placeholder="lineId" formControlName="lineId" (input)="sanitizeInput('lineId')" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6"  [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
         <nz-form-label nzNoColon>Company<span style="color: red;">*</span>
         </nz-form-label>
         <nz-select formControlName="company" nzPlaceHolder="Select Company" class="custom-select">
@@ -213,7 +232,8 @@
             </div>
           </td>
           <td *ngIf="this.customerId != null" class="text-center">
-            <a *ngIf="file.filePath && file.filePath.endsWith('.pdf')" href="#" (click)="$event.preventDefault(); openModalold(file.filePath)">
+            <a *ngIf="file.filePath && file.filePath.endsWith('.pdf')" href="#"
+              (click)="$event.preventDefault(); openModalold(file.filePath)">
               <span class="material-symbols-outlined">description</span>
             </a>
             <span *ngIf="!file.filePath || file.filePath === ''" class="material-symbols-outlined">description</span>
@@ -224,15 +244,17 @@
     <div class="mt-5 display-flex justify-center ">
       <button nz-button nzType="default" class="mr-2" (click)="backClicked($event)"><span nz-icon nzType="rollback"
           nzTheme="outline"></span>ย้อนกลับ</button>
-      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || ((isAdmin || isApproved) && customerForm.get('status')?.value === 'Pending Approved By ACC'))" nz-button
-        nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
+      <button
+        *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || ((isAdmin || isApproved) && customerForm.get('status')?.value === 'Pending Approved By ACC'))"
+        nz-button nzType="primary" nzDanger class="mr-2" (click)="cancel($event)"><span nz-icon nzType="close"
           nzTheme="outline"></span>Cancel</button>
       <button nz-tooltip nzTooltipTitle="บันทึก ยังสามารถแก้ไขข้อมูลได้"
         *ngIf="!isViewMode && ((isUser && !['Pending Approved By ACC', 'Cancel', 'Approved By ACC'].includes(customerForm.get('status')?.value)) || isAdmin || isApproved)"
         class="mr-2 button-yellow" nz-button nzType="primary" (click)="checkSave($event)">
         <span nz-icon nzType="save" nzTheme="outline"></span>Save Draft
       </button>
-      <button *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || (isAdmin && customerForm.get('status')?.value === 'Pending Approved By ACC'))"
+      <button
+        *ngIf="isViewMode && ((isUser && customerForm.get('status')?.value === 'Draft') || (isAdmin && customerForm.get('status')?.value === 'Pending Approved By ACC'))"
         class="mr-2 green-button" nz-button nzType="primary" (click)="submit($event)">
         <span nz-icon nzType="send" nzTheme="outline"></span>Submit
       </button>

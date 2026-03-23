@@ -87,6 +87,7 @@ export class CustomerAddComponent implements OnInit {
   filteredcountries: any;
   specializedUsers: boolean = false;
   successTime: string = '';
+  typeGroup: any;
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -100,7 +101,10 @@ export class CustomerAddComponent implements OnInit {
     private supplierService: SupplierService,
     private modalDataService: ModalDataService,
     private modal: NzModalService,
-  ) { }
+  ) {
+    this.checkRole();
+    this.getCustomerType();
+  }
 
   async ngOnInit(): Promise<void> {
     this.customerForm = this.fb.group({
@@ -131,7 +135,8 @@ export class CustomerAddComponent implements OnInit {
       fileCertificateATR: [''],
       fileOrther: [''],
       isAddressOld: ['New'],
-      country: ['THAILAND', Validators.required]
+      country: ['THAILAND', Validators.required],
+      customerTypeGroup: ['', Validators.required]
     });
 
     await this.handleRouteParams();
@@ -151,9 +156,10 @@ export class CustomerAddComponent implements OnInit {
       this.filteredItemsPrefix = data;
     });
 
-    this.getCustomerType();
     this.getCustomerCountries();
+    this.getcustomerTypeGroup();
     this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
+
       const customerTypeId = this.getCustomerTypeId(value);
 
       if (customerTypeId) {
@@ -163,7 +169,7 @@ export class CustomerAddComponent implements OnInit {
         if (value === '1F' || value === 'OSEA') {
           this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
           this.customerForm.patchValue({
-            prefix: ''
+            prefix: '',
           });
           setTimeout(() => {
             this.sanitizeInput('name');
@@ -173,6 +179,9 @@ export class CustomerAddComponent implements OnInit {
           }, 0);
         } else {
           this.filteredItemsPrefix = this.item_prefix;
+          this.customerForm.patchValue({
+            country: 'THAILAND'
+          });
         }
       }
 
@@ -189,7 +198,6 @@ export class CustomerAddComponent implements OnInit {
       this.checkAndCallApi();
     });
 
-    this.checkRole();
     this.getDataCompany();
 
     if (this.statusforUpdate === 'Success') {
@@ -410,6 +418,7 @@ export class CustomerAddComponent implements OnInit {
 
   loadCustomerData(id: number): void {
     this.customerService.findCustomerById(id).subscribe((data: any) => {
+
       const postalCodeCombination = data.postalCode + '-' + data.subdistrict;
       this.customerForm.patchValue({
         ...data,
@@ -427,6 +436,8 @@ export class CustomerAddComponent implements OnInit {
 
       this.getTelACC();
       this.getEventLogs(id)
+
+
     });
   }
 
@@ -444,7 +455,8 @@ export class CustomerAddComponent implements OnInit {
             subdistrict: '-',
             site: '',
             postId: 0,
-            country: ''
+            country: '',
+            customerTypeGroup: ''
           });
         }
       }
@@ -574,6 +586,21 @@ export class CustomerAddComponent implements OnInit {
         await this.UploadFile();
       }
 
+      if (this.customerForm.value.customerType === 'OSEA') {
+        this.customerForm.patchValue({
+          postalCode: '-',
+          province: '-',
+          district: '-',
+          subdistrict: '-',
+          postId: 0
+        });
+      }
+      else {
+        this.customerForm.patchValue({
+          country: 'THAILAND'
+        });
+      }
+
       const formValue = this.prepareFormData();
 
       await this.customerService.updateData(this.customerId!, formValue).toPromise();
@@ -623,7 +650,7 @@ export class CustomerAddComponent implements OnInit {
         else {
           if (company.includes('FLD')) {
             this.filteredDataType = this.listOfType.filter(type =>
-              ['LOCL', 'OSEA', 'ARTS','STUD'].includes(type.code)
+              ['LOCL', 'OSEA', 'ARTS', 'STUD'].includes(type.code)
             );
           }
           else {
@@ -779,6 +806,7 @@ export class CustomerAddComponent implements OnInit {
 
     if (result.isConfirmed) {
       const status = this.customerForm.value.status
+
       if (status === 'Pending Approved By ACC') {
         await this.setStatusAndSubmit(status);
       }
@@ -810,6 +838,7 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     if (!this.isFormValidWithoutCustomerNum()) {
+
       Swal.fire({
         icon: 'warning',
         title: 'ข้อมูลไม่ถูกต้อง',
@@ -1075,7 +1104,7 @@ export class CustomerAddComponent implements OnInit {
     const requiredFields = [
       'name', 'taxId', 'addressSup', 'district', 'subdistrict',
       'province', 'postalCode', 'tel', 'email', 'customerType',
-      'site', 'company', 'country'
+      'site', 'company', 'country', 'customerTypeGroup'
     ];
 
     for (const field of requiredFields) {
@@ -1538,6 +1567,17 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.findTimeSuccessByCustomerId(id).subscribe({
       next: (response: any) => {
         this.successTime = response[0].UpdateTimestamp
+      },
+      error: () => {
+      }
+    });
+  }
+
+  getcustomerTypeGroup() {
+    this.customerService.getCustomerTypeGroup().subscribe({
+      next: (response: any) => {
+        this.typeGroup = response;
+        this._cdr.markForCheck();
       },
       error: () => {
       }

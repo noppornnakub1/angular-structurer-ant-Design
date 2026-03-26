@@ -64,8 +64,7 @@ export class CustomerService {
     return this._http.get(`/User/findApproversByCompany?company=${company}`);
   }
 
-  findDataHistoryByUserId(id?: number, company?: string): Observable<CustomerSupplier> {
-    // ตรวจสอบเงื่อนไขว่าเราจะส่งค่าอะไรบ้าง
+  findDataHistoryByUserId(id?: number, company?: string): Observable<CustomerSupplier[]> {
     let params = '';
 
     if (id) {
@@ -76,7 +75,7 @@ export class CustomerService {
       params += params ? `&company=${company}` : `?company=${company}`;
     }
 
-    return this._http.get<CustomerSupplier>(`/Customer/GetCustomerSupplierHistory${params}`);
+    return this._http.get<CustomerSupplier[]>(`/Customer/GetCustomerSupplierHistory${params}`);
   }
 
   findDataOldCustomer(num?: string, name?: string, site?: string): Observable<DataOld> {

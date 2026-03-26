@@ -245,6 +245,8 @@ export class DashboardComponent {
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    console.log("currentUser.user.role : ", currentUser.user.role);
+
     this.isLoading = true;
     if (!currentUser) {
       console.error('Current user is not available in local storage');
@@ -254,14 +256,19 @@ export class DashboardComponent {
       const userId = undefined;
       const company = undefined;
       this.customerService.findDataHistoryByUserId(userId, company).subscribe({
-        next: (response: any) => {
-          this.listOfData = response;
+        next: (response: CustomerSupplier[]) => {
+          const map = new Map<number, CustomerSupplier>(
+            response.map(item => [item.id, item])
+          );
+
+          this.listOfData = Array.from(map.values());
+
           this.applyFilters();
           this._cdr.markForCheck();
           this.isLoading = false;
         },
         error: () => {
-            this.isLoading = false;
+          this.isLoading = false;
         }
       });
     }
@@ -276,7 +283,7 @@ export class DashboardComponent {
           this.isLoading = false;
         },
         error: () => {
-            this.isLoading = false;
+          this.isLoading = false;
         }
       });
     }
@@ -291,7 +298,7 @@ export class DashboardComponent {
           this.isLoading = false;
         },
         error: () => {
-            this.isLoading = false;
+          this.isLoading = false;
         }
       });
     }
@@ -306,7 +313,7 @@ export class DashboardComponent {
           this.isLoading = false;
         },
         error: () => {
-            this.isLoading = false;
+          this.isLoading = false;
         }
       });
     }
@@ -326,7 +333,7 @@ export class DashboardComponent {
           this._cdr.markForCheck();
         },
         error: () => {
-            this.isLoading = false;
+          this.isLoading = false;
         }
       });
     }
@@ -343,7 +350,7 @@ export class DashboardComponent {
           this._cdr.markForCheck();
         },
         error: () => {
-            this.isLoading = false;
+          this.isLoading = false;
         }
       });
     }
@@ -364,18 +371,24 @@ export class DashboardComponent {
     const lowerCaseNum = num ? num.toLowerCase() : '';
     const lowerCaseTaxId = tax_Id ? tax_Id.toLowerCase() : '';
 
-    this.filteredData = this.listOfData.filter(data => {
-      const dataName = data.name ? data.name.toLowerCase() : '';
-      const dataNum = data.num ? data.num.toLowerCase() : '';
-      const dataTaxId = data.taxId ? data.taxId.toLowerCase() : '';
+    this.filteredData = Array.from(
+      new Map(
+        this.listOfData
+          .filter(data => {
+            const dataName = data.name ? data.name.toLowerCase() : '';
+            const dataNum = data.num ? data.num.toLowerCase() : '';
+            const dataTaxId = data.taxId ? data.taxId.toLowerCase() : '';
 
-      return (
-        dataName.includes(lowerCaseName) &&
-        dataNum.includes(lowerCaseNum) &&
-        dataTaxId.includes(lowerCaseTaxId) &&
-        (this.selectedType === 'All' || data.source === this.selectedType)
-      );
-    });
+            return (
+              dataName.includes(lowerCaseName) &&
+              dataNum.includes(lowerCaseNum) &&
+              dataTaxId.includes(lowerCaseTaxId) &&
+              (this.selectedType === 'All' || data.source === this.selectedType)
+            );
+          })
+          .map(item => [item.id, item]) // 🔥 ใช้ id เป็น key
+      ).values()
+    );
 
     this.pageIndex = 1;
     this.updateDisplayData();
@@ -401,6 +414,8 @@ export class DashboardComponent {
     const startIndex = (this.pageIndex - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.displayData = this.filteredData.slice(startIndex, endIndex);
+    console.log("this.displayData  : ", this.displayData);
+
     this._cdr.markForCheck();
   }
 
@@ -531,7 +546,7 @@ export class DashboardComponent {
     const pdpaAccepted = sessionStorage.getItem('pdpaAccepted');
 
     if (pdpaAccepted) {
-      this.showPDPA = false; 
+      this.showPDPA = false;
       return;
     }
     this.customerService.findPDPAById(username).subscribe({
@@ -561,11 +576,12 @@ export class DashboardComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.listOfDataPDPA = data[0].content
-        } 
+        }
       },
       error: (err) => {
         console.error('Error fetching Content:', err);
-        this.showPDPA = true      }
+        this.showPDPA = true
+      }
     });
   }
 
@@ -574,12 +590,13 @@ export class DashboardComponent {
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {
           this.Announcement = data[0].content
-          
+
         }
       },
       error: (err) => {
         console.error('Error fetching Content:', err);
-        this.showAnnouncement = true      }
+        this.showAnnouncement = true
+      }
     });
   }
 
@@ -587,7 +604,7 @@ export class DashboardComponent {
     const Announcement = sessionStorage.getItem('Announcement');
 
     if (Announcement) {
-      this.showAnnouncement = false; 
+      this.showAnnouncement = false;
       return;
     }
     this.masterService.GetAnnouncementByUsername(username).subscribe({

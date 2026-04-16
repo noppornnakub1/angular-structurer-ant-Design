@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, Observable, of } from 'rxjs';
-import { CustomerSupplier, DataOld, ICustomer } from '../interface/customer.interface';
+import { CustomerSupplier, DataOld, ICustomer, PagedResult } from '../interface/customer.interface';
 import { ICustomerType } from '../interface/customerType.interface';
 import { PDPAConsent } from '../../dashboard/services/PDPAConsent.interface';
 
@@ -64,18 +64,26 @@ export class CustomerService {
     return this._http.get(`/User/findApproversByCompany?company=${company}`);
   }
 
-  findDataHistoryByUserId(id?: number, company?: string): Observable<CustomerSupplier[]> {
-    let params = '';
+  findDataHistoryByUserId(
+    userId?: number,
+    company?: string,
+    pageNumber: number = 1,
+    pageSize: number = 20
+  ): Observable<PagedResult<CustomerSupplier>> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
 
-    if (id) {
-      params += `?userid=${id}`;
+    if (userId != null) {
+      params = params.set('userId', userId);
     }
 
     if (company) {
-      params += params ? `&company=${company}` : `?company=${company}`;
+      params = params.set('company', company);
     }
 
-    return this._http.get<CustomerSupplier[]>(`/Customer/GetCustomerSupplierHistory${params}`);
+    return this._http.get<PagedResult<CustomerSupplier>>(`/Customer/GetCustomerSupplierHistory?${params}`);
+
   }
 
   findDataOldCustomer(num?: string, name?: string, site?: string): Observable<DataOld> {
@@ -117,26 +125,36 @@ export class CustomerService {
     return this._http.get(`/TempNumKey/findbyKey/${num}`);
   }
 
-  FindDataHistoryByApprover(id?: number, company?: string, status?: string, ownerType?: string): Observable<CustomerSupplier> {
-    let params = '';
+  FindDataHistoryByApprover(
+    userId?: number,
+    company?: string,
+    status?: string, 
+    ownerType?: string,
+    pageNumber: number = 1,
+    pageSize: number = 20
+  ): Observable<PagedResult<CustomerSupplier>> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
 
-    if (id) {
-      params += `?userid=${id}`;
+    if (userId != null) {
+      params = params.set('userId', userId);
     }
 
     if (company) {
-      params += params ? `&company=${company}` : `?company=${company}`;
+      params = params.set('company', company);
     }
 
     if (status) {
-      params += params ? `&status=${status}` : `?status=${status}`;
+      params = params.set('status', status);
     }
 
     if (ownerType) {
-      params += params ? `&ownerType=${ownerType}` : `?ownerType=${ownerType}`;
+      params = params.set('ownerType', ownerType);
     }
 
-    return this._http.get<CustomerSupplier>(`/Customer/GetCustomerSupplierHistory${params}`);
+    return this._http.get<PagedResult<CustomerSupplier>>(`/Customer/GetCustomerSupplierHistory${params}`);
+
   }
 
   FindDataHistoryByApproverFN(id?: number, company?: string, status?: string, ownerType?: string): Observable<CustomerSupplier> {

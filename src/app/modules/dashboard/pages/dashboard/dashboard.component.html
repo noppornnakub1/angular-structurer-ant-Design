@@ -107,35 +107,34 @@
 <nz-tabset [nzSelectedIndex]="selectedTabIndex" (nzSelectedIndexChange)="onTabChange($event)" class=" mt-3">
   <nz-tab nzTitle="History">
     <div class="content-data-table">
-      <nz-table #datatable nzBordered [nzData]="displayData" [nzFrontPagination]="false" [nzTotal]="filteredData.length"
+      <nz-table #datatable nzBordered [nzData]="displayData" [nzFrontPagination]="false" [nzTotal]="total"
         [nzPageIndex]="pageIndex" [nzPageSize]="pageSize" (nzPageIndexChange)="onPageIndexChange($event)"
         (nzPageSizeChange)="onPageSizeChange($event)">
-        <thead>
-          <tr>
-            <th *ngFor="let column of getVisibleColumns()" [nzSortFn]="column.compare"
-              [nzSortPriority]="column.priority">
-              {{ column.title }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let data of displayData; let i = index">
-            <td style="text-align: right;">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
-            <td>{{ data.name }}</td>
-            <td>{{ data.num }}</td>
-            <td class="text-center">{{ data.taxId }}</td>
-            <td>{{ data.paymentMethod }}</td>
-            <td class="text-center">{{ data.site }}</td>
-            <td class="text-center">{{ data.company }}</td>
-            <td class="text-center" *ngIf="this.isApprovedFN || this.isAdmin">{{ data.supplierGroup }}</td>
-            <td class="text-center">{{ data.source }}</td>
-            <td class="text-center">
-              <button *ngIf="isApproved || isAdmin || isApprovedFN" nz-button nzType="primary" class="mr-1"
-                nzShape="round" (click)="openModal(data)"><span nz-icon nzType="eye"
-                  nzTheme="outline"></span>View</button>
-            </td>
-          </tr>
-        </tbody>
+      <thead>
+        <tr>
+          <th *ngFor="let column of getVisibleColumns()" [nzSortFn]="column.compare" [nzSortPriority]="column.priority">
+            {{ column.title }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of displayData; let i = index">
+          <td style="text-align: right;">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+          <td>{{ data.name }}</td>
+          <td>{{ data.num }}</td>
+          <td class="text-center">{{ data.taxId }}</td>
+          <td>{{ data.paymentMethod }}</td>
+          <td class="text-center">{{ data.site }}</td>
+          <td class="text-center">{{ data.company }}</td>
+          <td class="text-center" *ngIf="this.isApprovedFN || this.isAdmin">{{ data.supplierGroup }}</td>
+          <td class="text-center">{{ data.source }}</td>
+          <td class="text-center">
+            <button *ngIf="isApproved || isAdmin || isApprovedFN" nz-button nzType="primary" class="mr-1"
+              nzShape="round" (click)="openModal(data)"><span nz-icon nzType="eye"
+                nzTheme="outline"></span>View</button>
+          </td>
+        </tr>
+      </tbody>
       </nz-table>
     </div>
   </nz-tab>

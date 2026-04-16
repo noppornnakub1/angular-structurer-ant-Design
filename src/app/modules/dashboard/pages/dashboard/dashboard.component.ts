@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
 import { SharedModule } from '../../../../shared/shared.module';
-import { CustomerSupplier, DataOld } from '../../../customer/interface/customer.interface';
+import { CustomerSupplier, DataOld, PagedResult } from '../../../customer/interface/customer.interface';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../authentication/services/auth.service';
 import { CustomerService } from '../../../customer/services/customer.service';
@@ -41,6 +41,7 @@ export class DashboardComponent {
   pageSize: number = 10;
   pageIndexOld: number = 1;
   pageSizeOld: number = 10;
+  total = 0;
   sourceOptions: string[] = ['All', 'Customer', 'Supplier'];
   sourceOptionsOld: string[] = ['Customer', 'Supplier'];
   selectedTabIndex = 0;
@@ -245,78 +246,79 @@ export class DashboardComponent {
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log("currentUser.user.role : ", currentUser.user.role);
+    console.log('currentUser.user.role : ', currentUser?.user?.role);
 
     this.isLoading = true;
-    if (!currentUser) {
+
+    if (!currentUser?.user) {
       console.error('Current user is not available in local storage');
+      this.isLoading = false;
       return;
     }
-    if (currentUser.user.role == 1) {
-      const userId = undefined;
-      const company = undefined;
-      this.customerService.findDataHistoryByUserId(userId, company).subscribe({
-        next: (response: CustomerSupplier[]) => {
-          const map = new Map<number, CustomerSupplier>(
-            response.map(item => [item.id, item])
-          );
 
-          this.listOfData = Array.from(map.values());
+    const role = currentUser.user.role;
+    const userId = currentUser.user.userId;
+    const company = currentUser.user.company;
 
-          this.applyFilters();
-          this._cdr.markForCheck();
-          this.isLoading = false;
-        },
-        error: () => {
-          this.isLoading = false;
-        }
-      });
+    let request$;
+
+    if (role == 1) {
+      request$ = this.customerService.findDataHistoryByUserId(
+        undefined,
+        undefined,
+        this.pageIndex,
+        this.pageSize
+      );
     }
-    else if (currentUser.user.role == 3) {
-      const userId = currentUser.user.userId;
-      const company = currentUser.user.company;
-      this.customerService.FindDataHistoryByApprover(userId, company, 'Pending Approved By ACC', 'ACC').subscribe({
-        next: (response: any) => {
-          this.listOfData = response;
-          this.applyFilters();
-          this._cdr.markForCheck();
-          this.isLoading = false;
-        },
-        error: () => {
-          this.isLoading = false;
-        }
-      });
+    else if (role == 3) {
+      request$ = this.customerService.FindDataHistoryByApprover(
+        userId,
+        company,
+        'Pending Approved By ACC',
+        'ACC',
+        this.pageIndex,
+        this.pageSize
+      );
     }
-    else if (currentUser.user.role == 4) {
-      const userId = currentUser.user.userId;
-      const company = currentUser.user.company;
-      this.customerService.FindDataHistoryByApproverFN(userId, company, 'Approved By ACC', 'FN').subscribe({
-        next: (response: any) => {
-          this.listOfData = response;
-          this.applyFilters();
-          this._cdr.markForCheck();
-          this.isLoading = false;
-        },
-        error: () => {
-          this.isLoading = false;
-        }
-      });
+    else if (role == 4) {
+      request$ = this.customerService.FindDataHistoryByApprover(
+        userId,
+        company,
+        'Approved By ACC',
+        'FN',
+        this.pageIndex,
+        this.pageSize
+      );
     }
     else {
-      const userId = currentUser.user.userId;
-      const company = currentUser.user.company;
-      this.customerService.findDataHistoryByUserId(userId, company).subscribe({
-        next: (response: any) => {
-          this.listOfData = response;
-          this.applyFilters();
-          this._cdr.markForCheck();
-          this.isLoading = false;
-        },
-        error: () => {
-          this.isLoading = false;
-        }
-      });
+      request$ = this.customerService.findDataHistoryByUserId(
+        userId,
+        company,
+        this.pageIndex,
+        this.pageSize
+      );
     }
+
+    request$.subscribe({
+      next: (response: PagedResult<CustomerSupplier>) => {
+        this.listOfData = response.data ?? [];
+        this.total = response.totalCount ?? 0;
+        this.pageIndex = response.page ?? 1;
+        this.pageSize = response.pageSize ?? 20;
+
+        this.filteredData = this.listOfData;
+        this.displayData = this.listOfData;
+        this._cdr.markForCheck();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Load data error:', error);
+        this.listOfData = [];
+        this.total = 0;
+        this.isLoading = false;
+        this._cdr.markForCheck();
+      }
+    });
   }
 
   searchDataOld(): void {
@@ -390,24 +392,24 @@ export class DashboardComponent {
       ).values()
     );
 
-    this.pageIndex = 1;
     this.updateDisplayData();
   }
 
   onStatusChange(status: string): void {
     this.selectedType = status;
+    this.pageIndex = 1;
     this.applyFilters();
   }
 
-  onPageIndexChange(pageIndex: number): void {
-    this.pageIndex = pageIndex;
-    this.updateDisplayData();
+  onPageIndexChange(page: number): void {
+    this.pageIndex = page;
+    this.getData();
   }
 
-  onPageSizeChange(pageSize: number): void {
-    this.pageSize = pageSize;
+  onPageSizeChange(size: number): void {
+    this.pageSize = size;
     this.pageIndex = 1;
-    this.updateDisplayData();
+    this.getData();
   }
 
   updateDisplayData(): void {

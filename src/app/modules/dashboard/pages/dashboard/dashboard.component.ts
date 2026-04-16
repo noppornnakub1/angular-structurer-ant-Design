@@ -245,7 +245,6 @@ export class DashboardComponent {
 
   getData(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log("currentUser.user.role : ", currentUser.user.role);
 
     this.isLoading = true;
     if (!currentUser) {
@@ -414,7 +413,6 @@ export class DashboardComponent {
     const startIndex = (this.pageIndex - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.displayData = this.filteredData.slice(startIndex, endIndex);
-    console.log("this.displayData  : ", this.displayData);
 
     this._cdr.markForCheck();
   }

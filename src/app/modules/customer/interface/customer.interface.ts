@@ -1,64 +1,66 @@
 export interface ICustomer {
-    id: number,
-    name: string,
-    key:string,
-    taxId: string,
-    addressSup: string,
-    district: string,
-    subdistrict: string,
-    province: string,
-    postalCode: string,
-    status:string,
-    tel: string,
-    email: string,
-    customerNum: string,
-    customerType: string,
-    site: string,
-    tax:string,
-    company: string,
-    fileReq: string,
-    fileCertificate: string,
-    path: string,
-    postId: number
-  }
+  id: number,
+  name: string,
+  key: string,
+  taxId: string,
+  addressSup: string,
+  district: string,
+  subdistrict: string,
+  province: string,
+  postalCode: string,
+  status: string,
+  tel: string,
+  email: string,
+  customerNum: string,
+  customerType: string,
+  site: string,
+  tax: string,
+  company: string,
+  fileReq: string,
+  fileCertificate: string,
+  path: string,
+  postId: number
+}
 
-  export interface CustomerSupplier {
-    id: number;
-    name: string;
-    taxId: string;
-    address_sup: string;
-    district: string;
-    subdistrict: string;
-    province: string;
-    postalCode: string;
-    tel: string;
-    email: string;
-    num: string; // เป็น customer_num หรือ supplier_num ขึ้นอยู่กับข้อมูล
-    type: string; // เป็น customer_type หรือ supplier_type ขึ้นอยู่กับข้อมูล
-    site: string;
-    company: string;
-    paymentMethod?: string; // อาจเป็น null หรือไม่มีสำหรับ customer
-    source: string; // 'Customer' หรือ 'Supplier'
-    user_id: number;
-    supplierGroup?: string;
-    OwnerAccName?: string;
-    OwnerFnName?: string;
-    RejectReason?: string;
-  }
+export interface CustomerSupplier {
+  id: number;
+  name: string;
+  taxId: string;
+  address_sup: string;
+  district: string;
+  subdistrict: string;
+  province: string;
+  postalCode: string;
+  tel: string;
+  email: string;
+  num: string; // เป็น customer_num หรือ supplier_num ขึ้นอยู่กับข้อมูล
+  type: string; // เป็น customer_type หรือ supplier_type ขึ้นอยู่กับข้อมูล
+  site: string;
+  company: string;
+  paymentMethod?: string; // อาจเป็น null หรือไม่มีสำหรับ customer
+  source: string; // 'Customer' หรือ 'Supplier'
+  user_id: number;
+  supplierGroup?: string;
+  OwnerAccName?: string;
+  OwnerFnName?: string;
+  RejectReason?: string;
+  AccountNum?: string;
+  BankName?: string;
+  BankAccountName?: string;
+}
 
-  export interface DataOld {
-    NAME: string;
-    TAX?: string;
-    NUM: string; // เป็น customer_num หรือ supplier_num ขึ้นอยู่กับข้อมูล
-    SITE?: string;
-    KEY?:string;
-    VENDOR_TYPE?: string;
-    COMPANY_GROUP?: string;
-    KEY_CUSTOMER?: string;
-    PAYMENT_METHOD?: string;
-    OU_SHORT_NAME?:string;
-    
+export interface DataOld {
+  NAME: string;
+  TAX?: string;
+  NUM: string; // เป็น customer_num หรือ supplier_num ขึ้นอยู่กับข้อมูล
+  SITE?: string;
+  KEY?: string;
+  VENDOR_TYPE?: string;
+  COMPANY_GROUP?: string;
+  KEY_CUSTOMER?: string;
+  PAYMENT_METHOD?: string;
+  OU_SHORT_NAME?: string;
 
-  }
-  
-  
+
+}
+

@@ -1,47 +1,81 @@
 <div class="details-container">
-    <div class="details-row">
-        <p class="details-label">Name:</p>
-        <p class="details-value">{{ data?.name }}</p>
+
+    <!-- Section: Info -->
+    <div class="section-header">
+        <span class="section-title">ข้อมูลทั่วไป</span>
     </div>
-    <div class="details-row">
-        <p class="details-label">Tax ID:</p>
-        <p class="details-value">{{ data?.taxId }}</p>
+    <div class="details-grid">
+        <div class="details-row">
+            <p class="details-label">Name:</p>
+            <p class="details-value">{{ data?.name }}</p>
+        </div>
+        <div class="details-row">
+            <p class="details-label">Tax ID:</p>
+            <p class="details-value">{{ data?.taxId }}</p>
+        </div>
+        <div class="details-row">
+            <p class="details-label">Address:</p>
+            <p class="details-value">{{ data?.addressSup }}</p>
+        </div>
+        <div class="details-row">
+            <p class="details-label">Subdistrict:</p>
+            <p class="details-value">{{ data?.subdistrict }}</p>
+        </div>
+        <div class="details-row">
+            <p class="details-label">District:</p>
+            <p class="details-value">{{ data?.district }}</p>
+        </div>
+        <div class="details-row">
+            <p class="details-label">Province:</p>
+            <p class="details-value">{{ data?.province }}</p>
+        </div>
+        <div class="details-row">
+            <p class="details-label">Postal Code:</p>
+            <p class="details-value">{{ data?.postalCode }}</p>
+        </div>
+        <div class="details-row">
+            <p class="details-label">Email:</p>
+            <p class="details-value">{{ data?.email }}</p>
+        </div>
+        <div class="details-row">
+            <p class="details-label">Phone:</p>
+            <p class="details-value">{{ data?.mobile }}</p>
+        </div>
     </div>
-    <div class="details-row">
-        <p class="details-label">Address:</p>
-        <p class="details-value">{{ data?.addressSup }}</p>
+
+    <!-- Section: Bank -->
+    <div class="section-header">
+        <span class="section-title">ข้อมูลธนาคาร</span>
     </div>
-    <div class="details-row">
-        <p class="details-label">Subdistrict:</p>
-        <p class="details-value">{{ data?.subdistrict }}</p>
+    <div class="details-grid">
+        <div class="details-row">
+            <p class="details-label">Account Name:</p>
+            <p class="details-value">{{ data?.accountName }}</p>
+        </div>
+        <div class="details-row">
+            <p class="details-label">Bank Name:</p>
+            <p class="details-value">{{ data?.bankName }}</p>
+        </div>
+        <div class="details-row">
+            <p class="details-label">Bank Account:</p>
+            <p class="details-value">{{ data?.accountNum }}</p>
+        </div>
     </div>
-    <div class="details-row">
-        <p class="details-label">District:</p>
-        <p class="details-value">{{ data?.district }}</p>
+
+    <!-- Section: Approver -->
+    <div class="section-header">
+        <span class="section-title">ผู้อนุมัติ</span>
     </div>
-    <div class="details-row">
-        <p class="details-label">Province:</p>
-        <p class="details-value">{{ data?.province }}</p>
+    <div class="details-grid">
+        <div class="details-row">
+            <p class="details-label">ACC Approver:</p>
+            <p class="details-value">{{ data?.ownerAccName }}</p>
+        </div>
+        <div class="details-row" *ngIf="data?.paymentMethod === 'Transfer'">
+            <p class="details-label">FN Approver:</p>
+            <p *ngIf="data?.rejectReason !== null" class="details-value">{{ data?.ownerFnName }} (Reject)</p>
+            <p *ngIf="data?.rejectReason === null" class="details-value">{{ data?.ownerFnName }}</p>
+        </div>
     </div>
-    <div class="details-row">
-        <p class="details-label">Postal Code:</p>
-        <p class="details-value">{{ data?.postalCode }}</p>
-    </div>
-    <div class="details-row">
-        <p class="details-label">Email:</p>
-        <p class="details-value">{{ data?.email }}</p>
-    </div>
-    <div class="details-row">
-        <p class="details-label">Phone:</p>
-        <p class="details-value">{{ data?.mobile }}</p>
-    </div>
-    <div class="details-row">
-        <p class="details-label">ACC Approver:</p>
-        <p class="details-value">{{ data?.ownerAccName }}</p>
-    </div>
-    <div class="details-row" *ngIf="data?.paymentMethod === 'Transfer'">
-        <p class="details-label">FN Approver:</p>
-        <p *ngIf="data?.rejectReason !== null" class="details-value">{{ data?.ownerFnName }} (Reject)</p>
-        <p *ngIf="data?.rejectReason === null" class="details-value">{{ data?.ownerFnName }}</p>
-    </div>
+
 </div>

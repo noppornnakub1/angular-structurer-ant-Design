@@ -11,10 +11,14 @@
     padding: 15px;
 }
 
-.custom-select .ant-select-selection-overflow {
-    max-height: 100px;
-    /* ปรับขนาดตามต้องการ */
-    overflow-y: auto;
+::ng-deep .custom-select {
+    nz-select-top-control,
+    .ant-select-selector,
+    .ant-select-selection-overflow {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
 }
 
 nz-select {

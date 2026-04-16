@@ -27,6 +27,8 @@ export class CustomerComponent implements OnInit {
   pageSize: number = 10;
   statusOptions: string[] = ['All', 'Draft', 'Cancel', 'Pending Approved By ACC', 'Pending Approved By FN', 'Approved By ACC', 'Approve By FN', 'Reject By ACC', 'Reject By FN', 'Pending Sync.'];
   selectedStatus: string = 'All';
+  companyOptions: string[] = ['All'];
+  selectedCompany: string = 'All';
   hasCustomerNumber: boolean = false;
   listOfColumn = [
     {
@@ -116,6 +118,7 @@ export class CustomerComponent implements OnInit {
             };
           });
           this.changeStatusIfNeeded();
+          this.buildCompanyOptions();
           this.applyFilters();
           this._cdr.markForCheck();
         },
@@ -139,6 +142,7 @@ export class CustomerComponent implements OnInit {
           });
           this.hasCustomerNumber = this.listOfData.some(data => data.customerNum && data.status === 'Success');
           this.changeStatusIfNeeded();
+          this.buildCompanyOptions();
           this.applyFilters();
           this._cdr.markForCheck();
         },
@@ -163,6 +167,7 @@ export class CustomerComponent implements OnInit {
           this.hasCustomerNumber = this.listOfData.some(data => data.customerNum && data.status === 'Success');
 
           this.changeStatusIfNeeded();
+          this.buildCompanyOptions();
           this.applyFilters();
           this._cdr.markForCheck();
         },
@@ -170,6 +175,11 @@ export class CustomerComponent implements OnInit {
         }
       });
     }
+  }
+
+  buildCompanyOptions(): void {
+    const unique = [...new Set(this.listOfData.map(d => d.company).filter(Boolean))].sort();
+    this.companyOptions = ['All', ...unique];
   }
 
   changeStatusIfNeeded(): void {
@@ -199,7 +209,8 @@ export class CustomerComponent implements OnInit {
         dataName.includes(lowerCaseName) &&
         dataCustomerNum.includes(lowerCaseCustomerNum) &&
         dataTaxId.includes(lowerCaseTaxId) &&
-        (this.selectedStatus === 'All' || data.status === this.selectedStatus)
+        (this.selectedStatus === 'All' || data.status === this.selectedStatus) &&
+        (this.selectedCompany === 'All' || data.company === this.selectedCompany)
       );
     });
 

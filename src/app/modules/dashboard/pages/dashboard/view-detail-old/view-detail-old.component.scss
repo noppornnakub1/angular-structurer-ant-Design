@@ -26,3 +26,7 @@
     flex: 2;
     color: #000;
 }
+
+::ng-deep .ant-modal {
+    width: 600px !important;
+}

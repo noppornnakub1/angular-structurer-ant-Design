@@ -308,7 +308,7 @@ export class SupplierAddComponent {
           }).subscribe(({ supplierData, postCodes }) => {
             this.supplierForm.patchValue({
               ...supplierData,
-              postalCode: supplierData.postalCode + '-' + supplierData.subdistrict
+              postalCode: supplierData.postalCode + '-' + supplierData.subdistrict + ':' + supplierData.postId
             });
             this.selectedPrefix = this.supplierForm.value.prefix
             this.items_provinces = postCodes;
@@ -1155,32 +1155,27 @@ export class SupplierAddComponent {
   }
 
   onPostalCodeChange(value: any): void {
-    let selectedItemId: any;
-    let selectedItem: any;
-    const [postalCode, subdistrict] = value.split('-');
-    const potalCodeold = this.supplierForm.value.postalCode
-    const postId = this.supplierForm.value.postId
-    const district = this.supplierForm.value.district
-    const province = this.supplierForm.value.province
-    selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+    console.log(value);
+    
+    const colonIdx = (value as string).lastIndexOf(':');
+    const postIdFromValue = colonIdx !== -1 ? +value.slice(colonIdx + 1) : null;
+    const main: string = colonIdx !== -1 ? value.slice(0, colonIdx) : value;
 
-    if (potalCodeold === '' || potalCodeold == undefined) {
+    const dashIdx = main.indexOf('-');
+    const postalCode = dashIdx !== -1 ? main.slice(0, dashIdx) : main;
+    const subdistrict = dashIdx !== -1 ? main.slice(dashIdx + 1) : '';
+
+    const resolvedPostId = postIdFromValue || this.supplierForm.value.postId;
+
+    let selectedItem: any;
+    if (resolvedPostId) {
+      selectedItem = this.items_provinces.find(item => item.postId === resolvedPostId);
+    }
+    if (!selectedItem && postalCode && subdistrict) {
       selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
     }
-    if (selectedItem == null || selectedItem == undefined) {
-      selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
-    }
-    if (selectedItemId) {
-      selectedItemId.subdistrict = subdistrict;
-      selectedItemId.district = district;
-      selectedItemId.province = province;
-      this.filteredItemsProvince = [...this.items_provinces];
 
-      this.supplierForm.patchValue({
-        postalCode: selectedItemId.postalCode + '-' + selectedItemId.subdistrict
-      });
-    }
-    else if (selectedItem) {
+    if (selectedItem) {
       this.supplierForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
@@ -2620,7 +2615,7 @@ export class SupplierAddComponent {
     }
 
     const formValue = { ...this.supplierForm.value };
-    formValue.postalCode = formValue.postalCode.split('-')[0];
+    formValue.postalCode = formValue.postalCode.split(':')[0].split('-')[0];
     formValue.UserId = currentUser.user.userId;
 
     const formData = new FormData();

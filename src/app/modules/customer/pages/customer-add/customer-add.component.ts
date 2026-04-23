@@ -223,7 +223,7 @@ export class CustomerAddComponent implements OnInit {
 
           this.customerForm.patchValue({
             ...customerData,
-            postalCode: customerData.postalCode + '-' + customerData.subdistrict
+            postalCode: customerData.postalCode + '-' + customerData.subdistrict + ':' + customerData.postId
           });
 
           this.items_provinces = postCodes;
@@ -419,7 +419,7 @@ export class CustomerAddComponent implements OnInit {
   loadCustomerData(id: number): void {
     this.customerService.findCustomerById(id).subscribe((data: any) => {
 
-      const postalCodeCombination = data.postalCode + '-' + data.subdistrict;
+      const postalCodeCombination = data.postalCode + '-' + data.subdistrict + ':' + data.postId;
       this.customerForm.patchValue({
         ...data,
         postalCode: postalCodeCombination
@@ -482,33 +482,26 @@ export class CustomerAddComponent implements OnInit {
       console.warn('Items provinces are not loaded yet. Skipping onPostalCodeChange.');
       return;
     }
-    let selectedItemId: any;
+
+    const colonIdx = (value as string).lastIndexOf(':');
+    const postIdFromValue = colonIdx !== -1 ? +value.slice(colonIdx + 1) : null;
+    const main: string = colonIdx !== -1 ? value.slice(0, colonIdx) : value;
+
+    const dashIdx = main.indexOf('-');
+    const postalCode = dashIdx !== -1 ? main.slice(0, dashIdx) : main;
+    const subdistrict = dashIdx !== -1 ? main.slice(dashIdx + 1) : '';
+
+    const resolvedPostId = postIdFromValue || this.customerForm.value.postId;
+
     let selectedItem: any;
-    const [postalCode, subdistrict] = value.split('-');
-    const potalCodeold = this.customerForm.value.postalCode
-    const postId = this.customerForm.value.postId
-    const district = this.customerForm.value.district
-    const province = this.customerForm.value.province
-
-    selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
-
-    if (potalCodeold === '' || potalCodeold == undefined) {
+    if (resolvedPostId) {
+      selectedItem = this.items_provinces.find(item => item.postId === resolvedPostId);
+    }
+    if (!selectedItem && postalCode && subdistrict) {
       selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
     }
-    if (selectedItem == null || selectedItem == undefined) {
-      selectedItemId = this.items_provinces.find(item => item.postalCode === postalCode && item.postId === postId);
-    }
-    if (selectedItemId) {
-      selectedItemId.subdistrict = subdistrict;
-      selectedItemId.district = district;
-      selectedItemId.province = province;
-      this.filteredItemsProvince = [...this.items_provinces];
 
-      this.customerForm.patchValue({
-        postalCode: selectedItemId.postalCode + '-' + selectedItemId.subdistrict
-      });
-    }
-    else if (selectedItem) {
+    if (selectedItem) {
       this.customerForm.patchValue({
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
@@ -622,9 +615,7 @@ export class CustomerAddComponent implements OnInit {
     }
 
     const formValue = { ...this.customerForm.value };
-    const postalCode = formValue.postalCode.split('-')[0];
-
-    formValue.postalCode = postalCode;
+    formValue.postalCode = formValue.postalCode.split(':')[0].split('-')[0];
 
     if (this.listDataByTaxId) {
       formValue.id = 0
@@ -992,7 +983,7 @@ export class CustomerAddComponent implements OnInit {
 
             const latestData = dataList.reduce((prev, current) => (prev.id > current.id) ? prev : current);
 
-            const postalCodeCombination = latestData.postalCode + '-' + latestData.subdistrict;
+            const postalCodeCombination = latestData.postalCode + '-' + latestData.subdistrict + ':' + latestData.postId;
             this.customerForm.patchValue({
               ...latestData,
               postalCode: postalCodeCombination,

@@ -10,6 +10,7 @@
           </span>
         </nz-form-label>
         <nz-select formControlName="customerType" nzPlaceHolder="Select customer_type" class="custom-select"
+          [ngClass]="{'required-field-error': isFieldInvalid('customerType')}"
           (ngModelChange)="onCustomerTypeChange($event)">
           <nz-option *ngFor="let type of filteredDataType" [nzLabel]="'('+type.codeFrom+')'+' '+' '+type.meaning"
             [nzValue]="type.code"></nz-option>
@@ -35,7 +36,8 @@
             info
           </span>
         </nz-form-label>
-        <nz-input-group nzPrefixIcon="home" class="form-input">
+        <nz-input-group nzPrefixIcon="home" class="form-input"
+          [ngClass]="{'required-field-error': isFieldInvalid('site')}">
           <input nz-input placeholder="Site" maxlength="5" formControlName="site" (input)="validateSite($event)"
             (blur)="onSiteBlur()" required />
         </nz-input-group>
@@ -47,7 +49,8 @@
             info
           </span>
         </nz-form-label>
-        <nz-select formControlName="customerTypeGroup" nzPlaceHolder="Select customer_group_type" class="custom-select">
+        <nz-select formControlName="customerTypeGroup" nzPlaceHolder="Select customer_group_type" class="custom-select"
+          [ngClass]="{'required-field-error': isFieldInvalid('customerTypeGroup')}">
           <nz-option *ngFor="let type of typeGroup" [nzLabel]="type.name"
             [nzValue]="type.name"></nz-option>
         </nz-select>
@@ -64,7 +67,8 @@
             info
           </span>
         </nz-form-label>
-        <nz-input-group nzPrefixIcon="idcard" class="form-input">
+        <nz-input-group nzPrefixIcon="idcard" class="form-input"
+          [ngClass]="{'required-field-error': isFieldInvalid('taxId')}">
           <input nz-input type="text" placeholder="Tax ID" formControlName="taxId" (input)="validateTaxId($event)"
             (blur)="onTaxIdBlur()" />
         </nz-input-group>
@@ -77,17 +81,19 @@
             info
           </span>
         </nz-form-label>
-        <nz-select formControlName="prefix" nzPlaceHolder="Prefix" class="custom-select">
+        <nz-select formControlName="prefix" nzPlaceHolder="Prefix" class="custom-select"
+          [ngClass]="{'required-field-error': isFieldInvalid('prefix')}">
           <nz-option *ngFor="let type of filteredItemsPrefix" [nzLabel]="type.name" [nzValue]="type.name"></nz-option>
         </nz-select>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="13" class="pr-3" style="margin-top: 46px;">
-        <nz-input-group nzPrefixIcon="user" class="form-input">
+        <nz-input-group nzPrefixIcon="user" class="form-input"
+          [ngClass]="{'required-field-error': isFieldInvalid('name')}">
           <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()"
             (input)="sanitizeInput('name')" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="3" class="pr-3 mt-3">
+      <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="3" class="pr-3 mt-3">
         <nz-form-label nzNoColon>No.<span style="color: red;">*</span>
           <span nz-tooltip
             nzTooltipTitle="No. : ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูล บ้านเลขที่"
@@ -95,20 +101,22 @@
             info
           </span>
         </nz-form-label>
-        <nz-input-group nzPrefixIcon="home" class="form-input">
+        <nz-input-group nzPrefixIcon="home" class="form-input"
+          [ngClass]="{'required-field-error': isFieldInvalid('addressSup')}">
           <input nz-input placeholder="Address" formControlName="addressSup" maxlength="30"
             (input)="sanitizeInput('addressSup')" />
         </nz-input-group>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="15" class="pr-3 mt-3">
-        <nz-form-label nzNoColon>Address
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="isOverseaCustomer() ? 18 : 15" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>Address<span *ngIf="isOverseaCustomer()" style="color: red;">*</span>
           <span nz-tooltip
             nzTooltipTitle="ADDRESS : ข้อมูลที่อยู่ตามบัตรประชาชน เพื่อสำหรับออกเอกสารต่างๆ โดยใส่ข้อมูลตั้งแต่ บ้านเลขที่,อาคาร(ถ้ามี),ชั้น(ถ้ามี), เลขที่ห้อง(ถ้ามี),หมู่(ถ้ามี),หมู่บ้าน(ถ้ามี),ถนน(ถ้ามี),ซอย(ถ้ามี),ตรอก(ถ้ามี) และอื่นๆ"
             class="material-symbols-outlined ml-1" style="font-size: 18px;">
             info
           </span>
         </nz-form-label>
-        <nz-input-group nzPrefixIcon="home" class="form-input">
+        <nz-input-group nzPrefixIcon="home" class="form-input"
+          [ngClass]="{'required-field-error': isFieldInvalid('addressDetail')}">
           <input nz-input placeholder="Address" formControlName="addressDetail"
             (input)="sanitizeInput('addressDetail')" />
         </nz-input-group>
@@ -119,7 +127,8 @@
         <nz-form-label nzNoColon>Country<span style="color: red;">*</span>
         </nz-form-label>
         <nz-select nzShowSearch nzServerSearch formControlName="country" nzPlaceHolder="Select Country"
-          class="custom-select" (nzOnSearch)="onCountrySearch($event)">
+          class="custom-select" [ngClass]="{'required-field-error': isFieldInvalid('country')}"
+          (nzOnSearch)="onCountrySearch($event)">
           <nz-option *ngFor="let c of filteredcountries" [nzLabel]="c.name" [nzValue]="c.name"></nz-option>
         </nz-select>
       </div>
@@ -133,6 +142,7 @@
         <nz-form-item>
           <nz-form-control nzErrorTip="Please select postal code!">
             <nz-select nzShowSearch nzServerSearch nzPlaceHolder="Postal Code" (nzOnSearch)="onSearch($event)"
+              [ngClass]="{'required-field-error': isFieldInvalid('postalCode')}"
               formControlName="postalCode" (ngModelChange)="onPostalCodeChange($event)">
               <nz-option *ngFor="let item of filteredItemsProvince"
                 [nzLabel]="item.postalCode + ' ' + item.subdistrict + ' ' + item.district + ' ' + item.province"
@@ -144,19 +154,22 @@
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Province<span style="color: red;">*</span></nz-form-label>
-        <nz-input-group nzPrefixIcon="global" class="form-input readonly">
+        <nz-input-group nzPrefixIcon="global" class="form-input readonly"
+          [ngClass]="{'required-field-error': isFieldInvalid('province')}">
           <input nz-input placeholder="Province" formControlName="province" readonly />
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>District<span style="color: red;">*</span></nz-form-label>
-        <nz-input-group nzPrefixIcon="cluster" class="form-input readonly">
+        <nz-input-group nzPrefixIcon="cluster" class="form-input readonly"
+          [ngClass]="{'required-field-error': isFieldInvalid('district')}">
           <input nz-input placeholder="District" formControlName="district" readonly />
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" class="pr-3 mt-3">
         <nz-form-label nzNoColon>Subdistrict<span style="color: red;">*</span></nz-form-label>
-        <nz-input-group nzPrefixIcon="environment" class="form-input readonly">
+        <nz-input-group nzPrefixIcon="environment" class="form-input readonly"
+          [ngClass]="{'required-field-error': isFieldInvalid('subdistrict')}">
           <input nz-input placeholder="Subdistrict" formControlName="subdistrict" readonly />
         </nz-input-group>
       </div>
@@ -168,7 +181,8 @@
             info
           </span>
         </nz-form-label>
-        <nz-input-group nzPrefixIcon="phone" class="form-input">
+        <nz-input-group nzPrefixIcon="phone" class="form-input"
+          [ngClass]="{'required-field-error': isFieldInvalid('tel')}">
           <input nz-input type="text" placeholder="Mobile Phone" maxlength="10" (input)="validateTel($event)"
             (blur)="onblurTel()" formControlName="tel" />
         </nz-input-group>
@@ -180,7 +194,8 @@
             info
           </span>
         </nz-form-label>
-        <nz-input-group nzPrefixIcon="mail" class="form-input">
+        <nz-input-group nzPrefixIcon="mail" class="form-input"
+          [ngClass]="{'required-field-error': isFieldInvalid('email')}">
           <input nz-input placeholder="Email" formControlName="email" (ngModelChange)="validateEmail()"
             (keypress)="preventThaiInput($event)" />
         </nz-input-group>
@@ -192,14 +207,16 @@
             info
           </span>
         </nz-form-label>
-        <nz-input-group nzPrefixIcon="whats-app" class="form-input">
+        <nz-input-group nzPrefixIcon="whats-app" class="form-input"
+          [ngClass]="{'required-field-error': isFieldInvalid('lineId')}">
           <input nz-input placeholder="lineId" formControlName="lineId" (input)="sanitizeInput('lineId')" />
         </nz-input-group>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="6" [ngClass]="{'pr-3': true, 'mt-3': isOverseaCustomer()}">
         <nz-form-label nzNoColon>Company<span style="color: red;">*</span>
         </nz-form-label>
-        <nz-select formControlName="company" nzPlaceHolder="Select Company" class="custom-select">
+        <nz-select formControlName="company" nzPlaceHolder="Select Company" class="custom-select"
+          [ngClass]="{'required-field-error': isFieldInvalid('company')}">
           <nz-option *ngFor="let type of filteredDataompany" [nzLabel]="type.abbreviation+' : '+type.fullName"
             [nzValue]="type.abbreviation"></nz-option>
         </nz-select>

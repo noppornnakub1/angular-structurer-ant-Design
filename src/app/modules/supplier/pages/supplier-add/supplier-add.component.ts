@@ -363,7 +363,7 @@ export class SupplierAddComponent {
     this.toggleSupplierBankForm(this.supplierForm.value.paymentMethod)
     this.supplierForm.get('supplierType')?.valueChanges.subscribe(value => {
 
-      if (['ARTS', 'LOCL'].includes(value)) {
+      if (['LOCL'].includes(value)) {
         const currentTaxId = this.supplierForm.value.tax_Id || '';
         if (currentTaxId.length > 13) {
           const trimmedTaxId = currentTaxId.substring(0, 13);
@@ -1474,7 +1474,7 @@ export class SupplierAddComponent {
         if (this.isAdmin || this.isApproved) {
           this.filteredDataType = this.listOfType;
         } else {
-          this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA', 'ARTS'].includes(type.code));
+          this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA'].includes(type.code));
         }
         this._cdr.markForCheck();
       },

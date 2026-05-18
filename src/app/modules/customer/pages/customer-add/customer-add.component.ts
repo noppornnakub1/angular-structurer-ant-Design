@@ -88,6 +88,9 @@ export class CustomerAddComponent implements OnInit {
   specializedUsers: boolean = false;
   successTime: string = '';
   typeGroup: any;
+  showValidationErrors = false;
+  private noAddressSupApplied = false;
+  private overseaLocationApplied = false;
   constructor(private _location: Location, private fb: FormBuilder
     , private customerService: CustomerService,
     private router: Router,
@@ -128,10 +131,10 @@ export class CustomerAddComponent implements OnInit {
       fileReq: [''],
       fileCertificate: [''],
       path: [''],
-      prefix: [''],
+      prefix: ['', Validators.required],
       postId: [0],
       addressDetail: [''],
-      lineId: [''],
+      lineId: ['', Validators.required],
       fileCertificateATR: [''],
       fileOrther: [''],
       isAddressOld: ['New'],
@@ -159,6 +162,7 @@ export class CustomerAddComponent implements OnInit {
     this.getCustomerCountries();
     this.getcustomerTypeGroup();
     this.customerForm.get('customerType')!.valueChanges.subscribe(value => {
+      this.syncAddressSupForCustomerType(value);
 
       const customerTypeId = this.getCustomerTypeId(value);
 
@@ -225,6 +229,7 @@ export class CustomerAddComponent implements OnInit {
             ...customerData,
             postalCode: customerData.postalCode + '-' + customerData.subdistrict + ':' + customerData.postId
           });
+          this.syncAddressSupForCustomerType(customerData.customerType);
 
           this.items_provinces = postCodes;
           this.filteredItemsProvince = postCodes;
@@ -424,6 +429,7 @@ export class CustomerAddComponent implements OnInit {
         ...data,
         postalCode: postalCodeCombination
       });
+      this.syncAddressSupForCustomerType(data.customerType);
       this.originalData = { ...data };
       this.idreq = data.userId
       this.filess = [
@@ -524,12 +530,14 @@ export class CustomerAddComponent implements OnInit {
 
   async onSubmit(): Promise<void> {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    this.syncAddressSupForCustomerType(this.customerForm.value.customerType);
 
     if (this.isViewMode) {
       this.customerForm.enable();
     }
 
     if (this.customerForm.valid) {
+      this.showValidationErrors = false;
       const formValue = this.prepareFormData();
       if (this.customerId) {
         await this.onUpdate();
@@ -558,7 +566,18 @@ export class CustomerAddComponent implements OnInit {
         });
       }
     } else {
+      this.showValidationErrors = true;
       this.customerForm.markAllAsTouched();
+
+      if (this.emailError === '') {
+        Swal.fire({
+          icon: 'warning',
+          title: 'ข้อมูลไม่ครบถ้วน',
+          text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+          confirmButtonText: 'ปิด'
+        });
+        return;
+      }
 
       if (this.emailError !== '') {
         Swal.fire({
@@ -581,6 +600,7 @@ export class CustomerAddComponent implements OnInit {
 
       if (this.customerForm.value.customerType === 'OSEA') {
         this.customerForm.patchValue({
+          addressSup: null,
           postalCode: '-',
           province: '-',
           district: '-',
@@ -820,6 +840,8 @@ export class CustomerAddComponent implements OnInit {
   checkSave(event: Event) {
     this.validateEmail();
     if (this.emailError && this.emailError.trim() !== '') {
+      this.showValidationErrors = true;
+      this.customerForm.get('email')?.markAsTouched();
       Swal.fire({
         icon: 'warning',
         title: 'Email ไม่ถูกต้อง',
@@ -829,6 +851,16 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     if (!this.isFormValidWithoutCustomerNum()) {
+      this.showValidationErrors = true;
+      this.customerForm.markAllAsTouched();
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'ข้อมูลไม่ครบถ้วน',
+        text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        confirmButtonText: 'ปิด'
+      });
+      return;
 
       Swal.fire({
         icon: 'warning',
@@ -839,6 +871,7 @@ export class CustomerAddComponent implements OnInit {
       return;
     }
     else {
+      this.showValidationErrors = false;
       this.save(event);
     }
   }
@@ -1083,28 +1116,103 @@ export class CustomerAddComponent implements OnInit {
   }
 
   onCustomerTypeChange(value: string): void {
-    this.selectType = value;
+    this.syncAddressSupForCustomerType(value);
   }
 
   isOverseaCustomer(): boolean {
     return this.selectType === 'OSEA';
   }
 
+  private syncAddressSupForCustomerType(customerType: string): void {
+    this.selectType = customerType;
+    const addressSupControl = this.customerForm?.get('addressSup');
+    const addressDetailControl = this.customerForm?.get('addressDetail');
+    const locationControls = ['district', 'subdistrict', 'province', 'postalCode']
+      .map(field => this.customerForm?.get(field))
+      .filter(control => !!control);
 
-  isFormValidWithoutCustomerNum(): boolean {
-    const requiredFields = [
-      'name', 'taxId', 'addressSup', 'district', 'subdistrict',
-      'province', 'postalCode', 'tel', 'email', 'customerType',
-      'site', 'company', 'country', 'customerTypeGroup'
-    ];
-
-    for (const field of requiredFields) {
-      if (!this.customerForm.get(field)?.value) {
-        return false;
-      }
+    if (!addressSupControl || !addressDetailControl) {
+      return;
     }
 
-    return true;
+    if (customerType === 'OSEA') {
+      addressSupControl.setValue(null, { emitEvent: false });
+      addressSupControl.clearValidators();
+      addressDetailControl.setValidators([Validators.required]);
+      this.customerForm.patchValue({
+        postalCode: '-',
+        province: '-',
+        district: '-',
+        subdistrict: '-',
+        postId: 0
+      }, { emitEvent: false });
+      locationControls.forEach(control => control?.clearValidators());
+      this.noAddressSupApplied = true;
+      this.overseaLocationApplied = true;
+    } else if (this.noAddressSupApplied && addressSupControl.value === null) {
+      addressSupControl.setValue('', { emitEvent: false });
+      addressSupControl.setValidators([Validators.required]);
+      addressDetailControl.clearValidators();
+      if (this.overseaLocationApplied) {
+        this.customerForm.patchValue({
+          postalCode: '',
+          province: '',
+          district: '',
+          subdistrict: '',
+          postId: 0
+        }, { emitEvent: false });
+      }
+      locationControls.forEach(control => control?.setValidators([Validators.required]));
+      this.noAddressSupApplied = false;
+      this.overseaLocationApplied = false;
+    } else {
+      addressSupControl.setValidators([Validators.required]);
+      addressDetailControl.clearValidators();
+      locationControls.forEach(control => control?.setValidators([Validators.required]));
+    }
+
+    addressSupControl.updateValueAndValidity({ emitEvent: false });
+    addressDetailControl.updateValueAndValidity({ emitEvent: false });
+    locationControls.forEach(control => control?.updateValueAndValidity({ emitEvent: false }));
+  }
+
+
+  isFormValidWithoutCustomerNum(): boolean {
+    return this.getMissingRequiredFields().length === 0;
+  }
+
+  private getRequiredFields(): string[] {
+    return this.isOverseaCustomer() ? [
+      'name', 'prefix', 'taxId', 'addressDetail',
+      'tel', 'email', 'lineId', 'customerType', 'site', 'company', 'country', 'customerTypeGroup'
+    ] : [
+      'name', 'prefix', 'taxId', 'addressSup', 'district', 'subdistrict',
+      'province', 'postalCode', 'tel', 'email', 'customerType',
+      'site', 'company', 'lineId', 'country', 'customerTypeGroup'
+    ];
+  }
+
+  private getMissingRequiredFields(): string[] {
+    return this.getRequiredFields().filter(field => {
+      const value = this.customerForm.get(field)?.value;
+
+      if (typeof value === 'string') {
+        return value.trim() === '';
+      }
+
+      return value === null || value === undefined;
+    });
+  }
+
+  isFieldInvalid(field: string): boolean {
+    const control = this.customerForm?.get(field);
+
+    if (!control) {
+      return false;
+    }
+
+    const shouldShow = control.touched || this.showValidationErrors;
+    return shouldShow && (control.invalid || (field === 'email' && this.emailError.trim() !== ''));
   }
 
   async onFileSelected(event: Event, file: any): Promise<void> {

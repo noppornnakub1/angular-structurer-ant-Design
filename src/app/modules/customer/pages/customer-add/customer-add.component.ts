@@ -1629,12 +1629,51 @@ export class CustomerAddComponent implements OnInit {
     this.validationService.preventThaiInput(event);
   }
 
+  isAddressEnglishOnlyCustomer(): boolean {
+    const customerType = this.customerForm?.get('customerType')?.value || this.selectType;
+    return customerType === '1F' || customerType === 'OSEA';
+  }
+
+  preventNonEnglishAddressInput(event: KeyboardEvent): void {
+    if (!this.isAddressEnglishOnlyCustomer()) {
+      return;
+    }
+
+    if (event.ctrlKey || event.metaKey || event.altKey) {
+      return;
+    }
+
+    const allowedKeys = [
+      'Backspace',
+      'Tab',
+      'Enter',
+      'Escape',
+      'Delete',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Home',
+      'End'
+    ];
+
+    if (allowedKeys.includes(event.key)) {
+      return;
+    }
+
+    if (!/^[A-Za-z0-9\s.,/#\-()]+$/.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+
   sanitizeInput(field: string): void {
     let value = this.customerForm.get(field)?.value || '';
     const customerType = this.customerForm.get('customerType')?.value;
 
     if (customerType === '1F' || customerType === 'OSEA') {
-      value = value.replace(/[\u0E00-\u0E7F]/g, '');
+      value = field === 'addressDetail'
+        ? value.replace(/[^A-Za-z0-9\s.,/#\-()]/g, '')
+        : value.replace(/[\u0E00-\u0E7F]/g, '');
       this.customerForm.patchValue({ [field]: value }, { emitEvent: true });
     }
   }

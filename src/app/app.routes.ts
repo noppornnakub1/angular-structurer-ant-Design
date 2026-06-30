@@ -52,5 +52,5 @@ export const routes: Routes = [
       },
     ]
   },
-  { path: '*', pathMatch: 'full', redirectTo: '/auth' },
+  { path: '**', pathMatch: 'full', redirectTo: '/auth' },
 ];

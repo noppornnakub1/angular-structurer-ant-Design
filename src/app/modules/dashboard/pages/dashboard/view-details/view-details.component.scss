@@ -54,6 +54,14 @@
     word-break: break-word;
 }
 
+.status-text {
+    font-weight: 600;
+}
+
+.status-danger {
+    color: #ff4d4f;
+}
+
 ::ng-deep .ant-modal {
     width: 900px !important;
 }

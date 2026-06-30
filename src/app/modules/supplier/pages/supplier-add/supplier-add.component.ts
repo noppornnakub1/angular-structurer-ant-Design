@@ -1,36 +1,47 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { SharedModule } from '../../../../shared/shared.module';
-import { NgZorroAntdModule } from '../../../../shared/ng-zorro-antd.module';
-import { CommonModule, Location } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SupplierService } from '../../services/supplier.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { PostCodeService } from '../../../../shared/constants/post-code.service';
-import { HttpClientModule } from '@angular/common/http';
-import { IsupplierType } from '../../interface/supplierType.interface';
-import { NzFormModule } from 'ng-zorro-antd/form';
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzSelectModule } from 'ng-zorro-antd/select';
-import { NzDividerModule } from 'ng-zorro-antd/divider';
-import { NzGridModule } from 'ng-zorro-antd/grid';
-import { NzIconModule } from 'ng-zorro-antd/icon';
-import { AuthService } from '../../../authentication/services/auth.service';
-import { IRole } from '../../../user-manager/interface/role.interface';
-import { BankMasterService } from '../../../../shared/constants/bank-master.service';
-import Swal from 'sweetalert2';
-import { EmailService } from '../../../../shared/constants/email.service';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, forkJoin } from 'rxjs';
-import { prefixService } from '../../../../shared/constants/prefix.service';
-import { NzSpaceModule } from 'ng-zorro-antd/space';
-import { ValidationService } from '../../../../shared/constants/ValidationService';
-import { UserService } from '../../../user-manager/services/user.service';
-import { degrees, PDFDocument, rgb } from 'pdf-lib';
-import { LogDownloadSerive } from '../../../../shared/constants/logDownload.service';
-import { ModalDataService } from '../../../dashboard/services/modal-data.service';
-import { PdfViewerComponent } from '../../../dashboard/pages/pdf-viewer/pdf-viewer.component';
-import { NzModalService } from 'ng-zorro-antd/modal';
+import { ChangeDetectorRef, Component, inject } from "@angular/core";
+import { SharedModule } from "../../../../shared/shared.module";
+import { NgZorroAntdModule } from "../../../../shared/ng-zorro-antd.module";
+import { CommonModule, Location } from "@angular/common";
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
+import { SupplierService } from "../../services/supplier.service";
+import { ActivatedRoute, Router } from "@angular/router";
+import { PostCodeService } from "../../../../shared/constants/post-code.service";
+import { HttpClientModule } from "@angular/common/http";
+import { IsupplierType } from "../../interface/supplierType.interface";
+import { NzFormModule } from "ng-zorro-antd/form";
+import { NzInputModule } from "ng-zorro-antd/input";
+import { NzSelectModule } from "ng-zorro-antd/select";
+import { NzDividerModule } from "ng-zorro-antd/divider";
+import { NzGridModule } from "ng-zorro-antd/grid";
+import { NzIconModule } from "ng-zorro-antd/icon";
+import { AuthService } from "../../../authentication/services/auth.service";
+import { IRole } from "../../../user-manager/interface/role.interface";
+import { BankMasterService } from "../../../../shared/constants/bank-master.service";
+import Swal from "sweetalert2";
+import { EmailService } from "../../../../shared/constants/email.service";
+import {
+  BehaviorSubject,
+  debounceTime,
+  distinctUntilChanged,
+  forkJoin,
+} from "rxjs";
+import { prefixService } from "../../../../shared/constants/prefix.service";
+import { NzSpaceModule } from "ng-zorro-antd/space";
+import { ValidationService } from "../../../../shared/constants/ValidationService";
+import { UserService } from "../../../user-manager/services/user.service";
+import { degrees, PDFDocument, rgb } from "pdf-lib";
+import { LogDownloadSerive } from "../../../../shared/constants/logDownload.service";
+import { ModalDataService } from "../../../dashboard/services/modal-data.service";
+import { PdfViewerComponent } from "../../../dashboard/pages/pdf-viewer/pdf-viewer.component";
+import { NzModalService } from "ng-zorro-antd/modal";
 export interface DataLocation {
-  postId: number,
+  postId: number;
   province: string;
   district: string;
   subdistrict: string;
@@ -38,43 +49,41 @@ export interface DataLocation {
 }
 
 export interface DataBank {
-  bankId: number,
-  bankName: string,
-  bankNumber: string,
-  alternateBankName: string,
-  shortBankName: string,
+  bankId: number;
+  bankName: string;
+  bankNumber: string;
+  alternateBankName: string;
+  shortBankName: string;
 }
 
 export interface DataPaymentMethod {
-  id: number,
-  paymentMethodName: string,
-  description: string
+  id: number;
+  paymentMethodName: string;
+  description: string;
 }
 
 export interface DataVat {
-  id: number,
-  inputTaxCode: string,
-  interimTaxAccount: string,
-  taxAccount: number,
-  taxDescription: string,
-  taxRate: string,
-
+  id: number;
+  inputTaxCode: string;
+  interimTaxAccount: string;
+  taxAccount: number;
+  taxDescription: string;
+  taxRate: string;
 }
 
 export interface DataCompany {
-  com_code: number,
-  fullName: string,
-  abbreviation: string,
-  group_name: string
+  com_code: number;
+  fullName: string;
+  abbreviation: string;
+  group_name: string;
 }
 
 export interface DataGroup {
-  group_name: string
+  group_name: string;
 }
 
-
 export interface prefix {
-  id: number,
+  id: number;
   name: string;
   format: string;
 }
@@ -90,10 +99,13 @@ interface SelectedFile {
 }
 
 @Component({
-  selector: 'app-supplier-add',
+  selector: "app-supplier-add",
   standalone: true,
-  imports: [SharedModule, NgZorroAntdModule, HttpClientModule
-    , CommonModule,
+  imports: [
+    SharedModule,
+    NgZorroAntdModule,
+    HttpClientModule,
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     NzFormModule,
@@ -102,18 +114,21 @@ interface SelectedFile {
     NzDividerModule,
     NzGridModule,
     NzIconModule,
-    NzSpaceModule
+    NzSpaceModule,
   ],
   // providers: [PostCodeService],
-  templateUrl: './supplier-add.component.html',
-  styleUrl: './supplier-add.component.scss'
+  templateUrl: "./supplier-add.component.html",
+  styleUrl: "./supplier-add.component.scss",
 })
-
 export class SupplierAddComponent {
-  fileIdsToRemove: { SupbankId: number, FileId: number }[] = [];
+  fileIdsToRemove: { SupbankId: number; FileId: number }[] = [];
   fileIdsToRemoveForBank: number[] = [];
-  fileIdsToRemoveMapping: { SupbankId: number; FileId: number; IsNewUpload?: boolean }[] = [];
-  fileIdsToRemoveJson: string = '';
+  fileIdsToRemoveMapping: {
+    SupbankId: number;
+    FileId: number;
+    IsNewUpload?: boolean;
+  }[] = [];
+  fileIdsToRemoveJson: string = "";
   currentUser!: IRole | null;
   listOfType: IsupplierType[] = [];
   filteredDataType: IsupplierType[] = [];
@@ -130,7 +145,7 @@ export class SupplierAddComponent {
   item_prefix: prefix[] = [];
   filteredItemsPrefix: prefix[] = [];
   logs: any[] = [];
-  reasonTemp: string = '';
+  reasonTemp: string = "";
   supplierForm!: FormGroup;
   supplierBankForm!: FormGroup;
   supplierBankFormAdd!: FormGroup;
@@ -144,20 +159,20 @@ export class SupplierAddComponent {
   showSupplierBankForm: boolean = false;
   showSupplierBankFormAdd: boolean = false;
   isBankFormVisible: boolean = false;
-  paymentMethods = ['Transfer', 'Transfer_Employee'];
+  paymentMethods = ["Transfer", "Transfer_Employee"];
   isIDTemp = 0;
-  isNameTemp = '';
+  isNameTemp = "";
   isLength = false;
-  selectType: string = '';
+  selectType: string = "";
   listOfGroup: DataGroup[] = [];
   filteredListOfGroup = [...this.listOfGroup];
   selectedSupplierGroup: string | null = null;
   selectedSupplierGroupAdd: string | null = null;
-  emailError: string = '';
+  emailError: string = "";
   isOneTime = false;
-  typeCode: string = '';
-  fileIdsToRemoveForBankJson: string = '';
-  newSupnum: string = '';
+  typeCode: string = "";
+  fileIdsToRemoveForBankJson: string = "";
+  newSupnum: string = "";
   selectedFileSupplier: File | null = null;
   selectedFile: File | null = null;
   selectedFileAdd: File | null = null;
@@ -171,10 +186,10 @@ export class SupplierAddComponent {
   fileIdsToRemoveBank: number[] = [];
   fileIdsToRemoveBankAdd: number[] = [];
   private _cdr = inject(ChangeDetectorRef);
-  private readonly authService = inject(AuthService)
+  private readonly authService = inject(AuthService);
   listOfTypeVendor = [
     {
-      title: 'Supplier',
+      title: "Supplier",
     },
     // {
     //   title: 'One Time',
@@ -183,29 +198,86 @@ export class SupplierAddComponent {
   files: any[] = [];
   listSupplierBankFileTemplates: any[] = [];
   filesBank = [
-    { fileName: 'หนังสือยินยอมการโอนเงิน', fileType: '', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน' },
-    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: '', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' },
-    { fileName: 'สำเนาหน้า Book Bank', fileType: '', filePath: '', labelText: 'สำเนาหน้า Book Bank' },
+    {
+      fileName: "หนังสือยินยอมการโอนเงิน",
+      fileType: "",
+      filePath: "",
+      labelText: "หนังสือยินยอมการโอนเงิน",
+    },
+    {
+      fileName: "หนังสือรับรองบริษัท / สำเนาบัตรประชาชน",
+      fileType: "",
+      filePath: "",
+      labelText: "หนังสือรับรองบริษัท / สำเนาบัตรประชาชน",
+    },
+    {
+      fileName: "สำเนาหน้า Book Bank",
+      fileType: "",
+      filePath: "",
+      labelText: "สำเนาหน้า Book Bank",
+    },
   ];
   filesBankAdd = [
-    { fileName: 'หนังสือยินยอมการโอนเงิน', fileType: 'gchGroupConsentFile', filePath: '', labelText: 'หนังสือยินยอมการโอนเงิน' },
-    { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน', fileType: 'gchGroupCertificationFile', filePath: '', labelText: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน' },
-    { fileName: 'สำเนาหน้า Book Bank', fileType: 'gchGroupBookBankFile', filePath: '', labelText: 'สำเนาหน้า Book Bank]' },
+    {
+      fileName: "หนังสือยินยอมการโอนเงิน",
+      fileType: "gchGroupConsentFile",
+      filePath: "",
+      labelText: "หนังสือยินยอมการโอนเงิน",
+    },
+    {
+      fileName: "หนังสือรับรองบริษัท / สำเนาบัตรประชาชน",
+      fileType: "gchGroupCertificationFile",
+      filePath: "",
+      labelText: "หนังสือรับรองบริษัท / สำเนาบัตรประชาชน",
+    },
+    {
+      fileName: "สำเนาหน้า Book Bank",
+      fileType: "gchGroupBookBankFile",
+      filePath: "",
+      labelText: "สำเนาหน้า Book Bank]",
+    },
   ];
-  private fileBankMapping: { [key: string]: { fileName: string; fileType: string; labelText: string; filePath: string }[] } = {};
+  private fileBankMapping: {
+    [key: string]: {
+      fileName: string;
+      fileType: string;
+      labelText: string;
+      filePath: string;
+    }[];
+  } = {};
   file: any;
-  filess: Array<{ fileName: string; fileType: string; filePath: string; labelText: string; }> = [];
-  displayFiles: Array<{ fileType: string; fileName: string; filePath: string; labelText: string; }> = [];
-  displayFilesBank: Array<{ fileName: string, fileType: string, filePath: string, labelText?: string }> = [];
-  displayFilesBankAdd: Array<{ fileName: string, fileType: string, filePath: string, labelText?: string }> = [];
-  selectedPrefix: string = '';
-  nameInput: string = '';
-  fullName: string = '';
+  filess: Array<{
+    fileName: string;
+    fileType: string;
+    filePath: string;
+    labelText: string;
+  }> = [];
+  displayFiles: Array<{
+    fileType: string;
+    fileName: string;
+    filePath: string;
+    labelText: string;
+  }> = [];
+  displayFilesBank: Array<{
+    fileName: string;
+    fileType: string;
+    filePath: string;
+    labelText?: string;
+  }> = [];
+  displayFilesBankAdd: Array<{
+    fileName: string;
+    fileType: string;
+    filePath: string;
+    labelText?: string;
+  }> = [];
+  selectedPrefix: string = "";
+  nameInput: string = "";
+  fullName: string = "";
   isCheckingDuplicate: boolean = false;
   idreq: number = 0;
   selectedPostalCodeObject: any;
   selectedPostalCode: any = null;
-  emailreq: string = '';
+  emailreq: string = "";
   fileBankAddApi: boolean = false;
   public isLoadingFromAPI = false;
   submittedFormLottoRisk$ = new BehaviorSubject<boolean>(false);
@@ -216,11 +288,13 @@ export class SupplierAddComponent {
   telFN: any;
   isPrefixIsYou = false;
   isLoading: boolean = false;
-  statusforUpdate: string = '';
+  statusforUpdate: string = "";
   specializedUsers: boolean = false;
-  successTime: string = '';
-  constructor(private _location: Location, private fb: FormBuilder
-    , private supplierService: SupplierService,
+  successTime: string = "";
+  constructor(
+    private _location: Location,
+    private fb: FormBuilder,
+    private supplierService: SupplierService,
     private router: Router,
     private route: ActivatedRoute,
     private postCodeService: PostCodeService,
@@ -232,7 +306,7 @@ export class SupplierAddComponent {
     private userService: UserService,
     private modalDataService: ModalDataService,
     private modal: NzModalService,
-  ) { }
+  ) {}
 
   async ngOnInit(): Promise<void> {
     this.isLoading = false;
@@ -242,41 +316,57 @@ export class SupplierAddComponent {
     this.loadStaticData();
     this.setupFormListeners();
 
-    this.supplierForm.get('supplierType')!.valueChanges.subscribe(value => {
+    this.supplierForm.get("supplierType")!.valueChanges.subscribe((value) => {
       if (value && this.supplierForm.value.tax_Id) {
-        this.checkAndCallApi()
+        this.checkAndCallApi();
       }
       if (!this.suppilerId)
-        if (value === '2F' || value === 'OSEA') {
-          this.filteredItemsPrefix = this.item_prefix.filter(prefix => prefix.name === 'อื่นๆ');
+        if (value === "2F" || value === "OSEA") {
+          this.filteredItemsPrefix = this.item_prefix.filter(
+            (prefix) => prefix.name === "อื่นๆ",
+          );
           this.supplierForm.patchValue({
-            prefix: ''
+            prefix: "",
           });
           setTimeout(() => {
-            this.sanitizeInput('name');
-            this.sanitizeInput('addressSup');
+            this.sanitizeInput("name");
+            this.sanitizeInput("addressSup");
           }, 0);
         } else {
           this.filteredItemsPrefix = this.item_prefix;
         }
       this._cdr.detectChanges();
     });
-    this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
+    this.displayFiles =
+      this.filess && this.filess.length > 0 ? this.filess : this.files;
 
     this.checkRole();
   }
 
   private initializeForms(): void {
     this.supplierForm = this.fb.group({
-      id: [0], prefix: ['', Validators.required], name: ['', Validators.required],
-      tax_Id: ['', Validators.required], addressSup: ['', Validators.required],
-      postalCode: [null, Validators.required], province: [null, Validators.required], district: [null, Validators.required],
-      subdistrict: [null, Validators.required], tel: ['', Validators.required], email: ['', Validators.required],
-      supplierNum: [{ value: '', disabled: true }], supplierType: ['', Validators.required],
-      site: ['00000', Validators.required], vat: [''], status: ['', Validators.required],
-      paymentMethod: ['', Validators.required], company: ['', Validators.required],
-      type: ['Supplier', Validators.required], userId: [''], mobile: ['', Validators.required],
-      postId: ['']
+      id: [0],
+      prefix: ["", Validators.required],
+      name: ["", Validators.required],
+      tax_Id: ["", Validators.required],
+      addressSup: ["", Validators.required],
+      postalCode: [null, Validators.required],
+      province: [null, Validators.required],
+      district: [null, Validators.required],
+      subdistrict: [null, Validators.required],
+      tel: ["", Validators.required],
+      email: ["", Validators.required],
+      supplierNum: [{ value: "", disabled: true }],
+      supplierType: ["", Validators.required],
+      site: ["00000", Validators.required],
+      vat: [""],
+      status: ["", Validators.required],
+      paymentMethod: ["", Validators.required],
+      company: ["", Validators.required],
+      type: ["Supplier", Validators.required],
+      userId: [""],
+      mobile: ["", Validators.required],
+      postId: [""],
     });
 
     this.supplierBankForm = this.createBankFormGroup();
@@ -285,42 +375,56 @@ export class SupplierAddComponent {
 
   private createBankFormGroup(): FormGroup {
     return this.fb.group({
-      supbankId: [0], supplierId: [, Validators.required],
-      nameBank: ['', Validators.required], branch: ['9999', Validators.required],
-      accountNum: ['', Validators.required], supplierGroup: ['', Validators.required],
-      accountName: ['', Validators.required], company: ['', Validators.required]
+      supbankId: [0],
+      supplierId: [, Validators.required],
+      nameBank: ["", Validators.required],
+      branch: ["9999", Validators.required],
+      accountNum: ["", Validators.required],
+      supplierGroup: ["", Validators.required],
+      accountName: ["", Validators.required],
+      company: ["", Validators.required],
     });
   }
 
   private handleRouteParams(): Promise<void> {
     return new Promise((resolve) => {
-      this.route.paramMap.subscribe(params => {
-        const id = params.get('id');
-        this.route.queryParamMap.subscribe(params => {
-          this.statusforUpdate = params.get('status') ?? '';
+      this.route.paramMap.subscribe((params) => {
+        const id = params.get("id");
+        this.route.queryParamMap.subscribe((params) => {
+          this.statusforUpdate = params.get("status") ?? "";
         });
 
         if (id) {
           this.suppilerId = +id;
           forkJoin({
-            supplierData: this.supplierService.findSupplierByIdV2(this.suppilerId),
-            postCodes: this.postCodeService.getPostCodes()
+            supplierData: this.supplierService.findSupplierByIdV2(
+              this.suppilerId,
+            ),
+            postCodes: this.postCodeService.getPostCodes(),
           }).subscribe(({ supplierData, postCodes }) => {
             this.supplierForm.patchValue({
               ...supplierData,
-              postalCode: supplierData.postalCode + '-' + supplierData.subdistrict + ':' + supplierData.postId
+              postalCode:
+                supplierData.postalCode +
+                "-" +
+                supplierData.subdistrict +
+                ":" +
+                supplierData.postId,
             });
-            this.selectedPrefix = this.supplierForm.value.prefix
+            this.selectedPrefix = this.supplierForm.value.prefix;
             this.items_provinces = postCodes;
             this.filteredItemsProvince = postCodes;
-            if (this.supplierForm.value.postalCode && this.supplierForm.value.postId) {
+            if (
+              this.supplierForm.value.postalCode &&
+              this.supplierForm.value.postId
+            ) {
               const merge = this.supplierForm.value.postalCode;
               this.onPostalCodeChange(merge);
             }
             resolve();
           });
-          if (this.statusforUpdate === 'Success') {
-            this.getTimeSuccessBySupplierID(this.suppilerId || 0)
+          if (this.statusforUpdate === "Success") {
+            this.getTimeSuccessBySupplierID(this.suppilerId || 0);
           }
           this.loadSupplierData(this.suppilerId);
           this.isIDTemp = this.suppilerId;
@@ -332,7 +436,7 @@ export class SupplierAddComponent {
   }
 
   private initializeViewMode(): void {
-    if (this.router.url.includes('/view/')) {
+    if (this.router.url.includes("/view/")) {
       this.isViewMode = true;
       this.supplierForm.disable();
       this.supplierBankForm.disable();
@@ -341,11 +445,11 @@ export class SupplierAddComponent {
   }
 
   private loadStaticData(): void {
-    this.postCodeService.getPostCodes().subscribe(data => {
+    this.postCodeService.getPostCodes().subscribe((data) => {
       this.items_provinces = data;
       this.filteredItemsProvince = data;
     });
-    this.prefixService.getPrefix().subscribe(data => {
+    this.prefixService.getPrefix().subscribe((data) => {
       this.item_prefix = data;
       this.filteredItemsPrefix = data;
     });
@@ -359,15 +463,16 @@ export class SupplierAddComponent {
   }
 
   private setupFormListeners(): void {
-
-    this.toggleSupplierBankForm(this.supplierForm.value.paymentMethod)
-    this.supplierForm.get('supplierType')?.valueChanges.subscribe(value => {
-
-      if (['LOCL'].includes(value)) {
-        const currentTaxId = this.supplierForm.value.tax_Id || '';
+    this.toggleSupplierBankForm(this.supplierForm.value.paymentMethod);
+    this.supplierForm.get("supplierType")?.valueChanges.subscribe((value) => {
+      if (["LOCL"].includes(value)) {
+        const currentTaxId = this.supplierForm.value.tax_Id || "";
         if (currentTaxId.length > 13) {
           const trimmedTaxId = currentTaxId.substring(0, 13);
-          this.supplierForm.patchValue({ tax_Id: trimmedTaxId }, { emitEvent: false });
+          this.supplierForm.patchValue(
+            { tax_Id: trimmedTaxId },
+            { emitEvent: false },
+          );
         }
       }
       const supplierTypeId = this.getSupplierTypeId(value);
@@ -377,43 +482,46 @@ export class SupplierAddComponent {
       }
       this.onSupplierTypeChange(value);
 
-
-
       this._cdr.detectChanges();
     });
 
-    this.supplierForm.get('paymentMethod')?.valueChanges.subscribe(value => this.toggleSupplierBankForm(value));
-    this.supplierForm.get('name')?.valueChanges.subscribe((value: string) => {
+    this.supplierForm
+      .get("paymentMethod")
+      ?.valueChanges.subscribe((value) => this.toggleSupplierBankForm(value));
+    this.supplierForm.get("name")?.valueChanges.subscribe((value: string) => {
       this.updateAccountNames(value);
     });
-    this.supplierForm.get('prefix')?.valueChanges.subscribe(prefix => {
+    this.supplierForm.get("prefix")?.valueChanges.subscribe((prefix) => {
       this.selectedPrefix = prefix;
-      if (this.selectedPrefix === 'คุณ') {
+      if (this.selectedPrefix === "คุณ") {
         this.isPrefixIsYou = true;
         this.supplierForm.patchValue({
-          tel: '-',
+          tel: "-",
         });
-      }
-      else {
+      } else {
         this.isPrefixIsYou = false;
       }
       this.updateNameWithPrefixChange();
       this._cdr.detectChanges();
     });
 
-    this.supplierBankForm.get('supplierGroup')?.valueChanges.subscribe((selectedGroup: string) => {
-      if (selectedGroup === 'ALL Group') {
-        this.showSupplierBankFormAdd = false;
-      }
-      this.setFilesBank(selectedGroup, 'filesBank');
-      this.updateFilteredSupplierGroups(selectedGroup);
-    });
+    this.supplierBankForm
+      .get("supplierGroup")
+      ?.valueChanges.subscribe((selectedGroup: string) => {
+        if (selectedGroup === "ALL Group") {
+          this.showSupplierBankFormAdd = false;
+        }
+        this.setFilesBank(selectedGroup, "filesBank");
+        this.updateFilteredSupplierGroups(selectedGroup);
+      });
 
-    this.supplierBankFormAdd.get('supplierGroup')?.valueChanges.subscribe(value => {
-      if (!this.isLoadingFromAPI) {
-        this.setFilesBank(value, 'filesBankAdd');
-      }
-    });
+    this.supplierBankFormAdd
+      .get("supplierGroup")
+      ?.valueChanges.subscribe((value) => {
+        if (!this.isLoadingFromAPI) {
+          this.setFilesBank(value, "filesBankAdd");
+        }
+      });
   }
 
   updateAccountNames(value: string): void {
@@ -423,21 +531,27 @@ export class SupplierAddComponent {
   }
 
   private mapFilesToGroups(): void {
-    this.fileBankMapping = this.listSupplierBankFileTemplates.reduce((acc: { [key: string]: any[] }, file: any) => {
-      if (!acc[file.groupName]) {
-        acc[file.groupName] = [];
-      }
-      acc[file.groupName].push({
-        fileName: file.fileName,
-        fileType: file.fileType,
-        labelText: file.labelText,
-        filePath: file.filePath
-      });
-      return acc;
-    }, {});
+    this.fileBankMapping = this.listSupplierBankFileTemplates.reduce(
+      (acc: { [key: string]: any[] }, file: any) => {
+        if (!acc[file.groupName]) {
+          acc[file.groupName] = [];
+        }
+        acc[file.groupName].push({
+          fileName: file.fileName,
+          fileType: file.fileType,
+          labelText: file.labelText,
+          filePath: file.filePath,
+        });
+        return acc;
+      },
+      {},
+    );
   }
 
-  private setFilesBank(value: string, target: 'filesBank' | 'filesBankAdd'): void {
+  private setFilesBank(
+    value: string,
+    target: "filesBank" | "filesBankAdd",
+  ): void {
     if (this.fileBankMapping[value]) {
       this[target] = this.fileBankMapping[value];
     } else {
@@ -445,25 +559,31 @@ export class SupplierAddComponent {
     }
   }
 
-  async onFileSelectSupplier(event: Event, fileType: string, labelText: string): Promise<void> {
+  async onFileSelectSupplier(
+    event: Event,
+    fileType: string,
+    labelText: string,
+  ): Promise<void> {
     const input = event.target as HTMLInputElement;
 
     if (!input.files || input.files.length === 0) {
-      Swal.fire('ไม่มีไฟล์', 'กรุณาเลือกไฟล์ก่อนดำเนินการ', 'warning');
+      Swal.fire("ไม่มีไฟล์", "กรุณาเลือกไฟล์ก่อนดำเนินการ", "warning");
       return;
     }
 
     const selectedFile = input.files[0];
-    const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
+    const fileExtension = selectedFile.name.split(".").pop()?.toLowerCase();
 
-    if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
-      Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+    if (fileExtension !== "pdf" || selectedFile.type !== "application/pdf") {
+      Swal.fire("ไฟล์ไม่รองรับ", "กรุณาอัปโหลดไฟล์ PDF เท่านั้น", "warning");
       return;
     }
 
     try {
       const arrayBuffer = await selectedFile.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const pdfDoc = await PDFDocument.load(arrayBuffer, {
+        ignoreEncryption: true,
+      });
       const pageCount = pdfDoc.getPageCount();
 
       // if (pageCount > 4) {
@@ -476,21 +596,23 @@ export class SupplierAddComponent {
       //   return;
       // }
 
-      const fileToUpdate = this.displayFiles.find(file => file.fileType === fileType && file.labelText === labelText);
+      const fileToUpdate = this.displayFiles.find(
+        (file) => file.fileType === fileType && file.labelText === labelText,
+      );
 
       if (fileToUpdate) {
-        fileToUpdate.filePath = '';
+        fileToUpdate.filePath = "";
         fileToUpdate.fileName = selectedFile.name;
 
         this.selectedFilesSupplier = this.selectedFilesSupplier.filter(
-          file => file.fileType !== fileType || file.labelText !== labelText
+          (file) => file.fileType !== fileType || file.labelText !== labelText,
         );
 
         const newFile: SelectedFile = {
           file: selectedFile,
           fileType: fileType,
           fileName: selectedFile.name,
-          filePath: '',
+          filePath: "",
           labelText: labelText,
         };
         this.selectedFilesSupplier.push(newFile);
@@ -499,34 +621,41 @@ export class SupplierAddComponent {
       }
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'ข้อผิดพลาด',
-        text: 'ไม่สามารถตรวจสอบจำนวนหน้าในไฟล์ PDF ได้ ไฟล์อาจมีการเข้ารหัสหรือเสียหาย กรุณาลองใหม่อีกครั้ง',
-        confirmButtonText: 'ตกลง',
+        icon: "error",
+        title: "ข้อผิดพลาด",
+        text: "ไม่สามารถตรวจสอบจำนวนหน้าในไฟล์ PDF ได้ ไฟล์อาจมีการเข้ารหัสหรือเสียหาย กรุณาลองใหม่อีกครั้ง",
+        confirmButtonText: "ตกลง",
       });
-      console.error('Error checking PDF pages in onFileSelectSupplier:', error);
+      console.error("Error checking PDF pages in onFileSelectSupplier:", error);
     }
   }
 
-  async onFileSelectNew(event: Event, fileType: string, labelText: string, isFromFilesBankAdd: boolean = false): Promise<void> {
+  async onFileSelectNew(
+    event: Event,
+    fileType: string,
+    labelText: string,
+    isFromFilesBankAdd: boolean = false,
+  ): Promise<void> {
     const input = event.target as HTMLInputElement;
 
     if (!input.files || input.files.length === 0) {
-      Swal.fire('ไม่มีไฟล์', 'กรุณาเลือกไฟล์ก่อนดำเนินการ', 'warning');
+      Swal.fire("ไม่มีไฟล์", "กรุณาเลือกไฟล์ก่อนดำเนินการ", "warning");
       return;
     }
 
     const selectedFile = input.files[0];
-    const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
+    const fileExtension = selectedFile.name.split(".").pop()?.toLowerCase();
 
-    if (fileExtension !== 'pdf' || selectedFile.type !== 'application/pdf') {
-      Swal.fire('ไฟล์ไม่รองรับ', 'กรุณาอัปโหลดไฟล์ PDF เท่านั้น', 'warning');
+    if (fileExtension !== "pdf" || selectedFile.type !== "application/pdf") {
+      Swal.fire("ไฟล์ไม่รองรับ", "กรุณาอัปโหลดไฟล์ PDF เท่านั้น", "warning");
       return;
     }
 
     try {
       const arrayBuffer = await selectedFile.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const pdfDoc = await PDFDocument.load(arrayBuffer, {
+        ignoreEncryption: true,
+      });
       const pageCount = pdfDoc.getPageCount();
 
       // if (pageCount > 4) {
@@ -541,21 +670,32 @@ export class SupplierAddComponent {
 
       let fileToUpdate: SelectedFile | undefined;
       if (isFromFilesBankAdd) {
-        fileToUpdate = this.filesBankAdd.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
+        fileToUpdate = this.filesBankAdd.find(
+          (file) => file.fileType === fileType && file.labelText === labelText,
+        ) as SelectedFile | undefined;
       } else {
-        fileToUpdate = this.filesBank.find(file => file.fileType === fileType && file.labelText === labelText) as SelectedFile | undefined;
+        fileToUpdate = this.filesBank.find(
+          (file) => file.fileType === fileType && file.labelText === labelText,
+        ) as SelectedFile | undefined;
       }
 
       if (fileToUpdate) {
-        fileToUpdate.filePath = '';
+        fileToUpdate.filePath = "";
         fileToUpdate.fileName = selectedFile.name;
 
-        if (fileToUpdate && 'fileId' in fileToUpdate) {
+        if (fileToUpdate && "fileId" in fileToUpdate) {
           const fileId = fileToUpdate.fileId;
           if (fileId) {
-            const supbankId = fileToUpdate.supbankId ?? (isFromFilesBankAdd ? this.supplierBankFormAdd.get('supbankId')?.value : this.supplierBankForm.get('supbankId')?.value);
+            const supbankId =
+              fileToUpdate.supbankId ??
+              (isFromFilesBankAdd
+                ? this.supplierBankFormAdd.get("supbankId")?.value
+                : this.supplierBankForm.get("supbankId")?.value);
 
-            const existingEntry = this.fileIdsToRemoveMapping.find(entry => entry.SupbankId === supbankId && entry.FileId === fileId);
+            const existingEntry = this.fileIdsToRemoveMapping.find(
+              (entry) =>
+                entry.SupbankId === supbankId && entry.FileId === fileId,
+            );
 
             if (existingEntry) {
               existingEntry.IsNewUpload = true;
@@ -584,7 +724,7 @@ export class SupplierAddComponent {
         file: selectedFile,
         fileType: fileType,
         fileName: selectedFile.name,
-        filePath: '',
+        filePath: "",
         labelText: labelText,
       };
 
@@ -597,12 +737,12 @@ export class SupplierAddComponent {
       this._cdr.detectChanges();
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'ข้อผิดพลาด',
-        text: 'ไม่สามารถตรวจสอบจำนวนหน้าในไฟล์ PDF ได้ ไฟล์อาจมีการเข้ารหัสหรือเสียหาย กรุณาลองใหม่อีกครั้ง',
-        confirmButtonText: 'ตกลง',
+        icon: "error",
+        title: "ข้อผิดพลาด",
+        text: "ไม่สามารถตรวจสอบจำนวนหน้าในไฟล์ PDF ได้ ไฟล์อาจมีการเข้ารหัสหรือเสียหาย กรุณาลองใหม่อีกครั้ง",
+        confirmButtonText: "ตกลง",
       });
-      console.error('Error checking PDF pages in onFileSelectNew:', error);
+      console.error("Error checking PDF pages in onFileSelectNew:", error);
     }
   }
 
@@ -614,8 +754,8 @@ export class SupplierAddComponent {
         file: selectedFile,
         fileType: fileType,
         fileName: selectedFile.name,
-        filePath: '',
-        labelText: labelText
+        filePath: "",
+        labelText: labelText,
       };
       this.selectedFiles.push(newFile);
     }
@@ -631,8 +771,8 @@ export class SupplierAddComponent {
           file: selectedFile,
           fileType: fileType,
           fileName: selectedFile.name,
-          filePath: '',
-          labelText: labelText
+          filePath: "",
+          labelText: labelText,
         };
         this.selectedFilesAdd.push(newFile);
       }
@@ -640,50 +780,50 @@ export class SupplierAddComponent {
   }
 
   onNameBlur(): void {
-    const nameControl = this.supplierForm.get('name');
-    let nameValue = nameControl?.value || '';
+    const nameControl = this.supplierForm.get("name");
+    let nameValue = nameControl?.value || "";
 
     if (!nameValue) {
       return;
     }
 
-    if (this.selectedPrefix === 'อื่นๆ') {
+    if (this.selectedPrefix === "อื่นๆ") {
       nameControl?.setValue(nameValue.trim());
       this.checkAndCallApi();
       return;
-    }
-    else {
-      nameValue = nameValue.replace(/^บริษัท /, '')
-        .replace(/\s?จำกัด\s?\(มหาชน\)/g, '')
-        .replace(/\s?จำกัด/g, '')
-        .replace(/^คุณ /, '')
-        .replace(/^ห้างหุ้นส่วนสามัญ/, '')
-        .replace(/^ห้างหุ้นส่วนจำกัด/, '');
+    } else {
+      nameValue = nameValue
+        .replace(/^บริษัท /, "")
+        .replace(/\s?จำกัด\s?\(มหาชน\)/g, "")
+        .replace(/\s?จำกัด/g, "")
+        .replace(/^คุณ /, "")
+        .replace(/^ห้างหุ้นส่วนสามัญ/, "")
+        .replace(/^ห้างหุ้นส่วนจำกัด/, "");
 
-      if (this.selectedPrefix === 'บริษัทจำกัด') {
+      if (this.selectedPrefix === "บริษัทจำกัด") {
         nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด`);
-      } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
+      } else if (this.selectedPrefix === "บริษัทจำกัด (มหาชน)") {
         nameControl?.setValue(`บริษัท ${nameValue.trim()} จำกัด (มหาชน)`);
-      } else if (this.selectedPrefix === 'คุณ') {
+      } else if (this.selectedPrefix === "คุณ") {
         nameControl?.setValue(`คุณ ${nameValue.trim()}`);
-      } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
+      } else if (this.selectedPrefix === "ห้างหุ้นส่วนสามัญ") {
         nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue.trim()}`);
-      } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
-        nameValue = nameValue.replace(/ห้างหุ้นส่วน/g, '');
+      } else if (this.selectedPrefix === "ห้างหุ้นส่วนจำกัด") {
+        nameValue = nameValue.replace(/ห้างหุ้นส่วน/g, "");
         nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue.trim()}`);
       } else {
         nameControl?.setValue(nameValue.trim());
       }
     }
 
-    if (this.supplierForm.value.supplierType === 'OSEA') {
+    if (this.supplierForm.value.supplierType === "OSEA") {
       this.checkAndCallApi();
     }
   }
 
   onSiteBlur(): void {
-    const nameControl = this.supplierForm.get('site');
-    let siteValue = nameControl?.value || '';
+    const nameControl = this.supplierForm.get("site");
+    let siteValue = nameControl?.value || "";
 
     if (!siteValue) {
       return;
@@ -691,89 +831,87 @@ export class SupplierAddComponent {
 
     if (siteValue.length !== 5) {
       Swal.fire({
-        icon: 'error',
-        title: 'Site ไม่ถูกต้อง',
-        text: 'โปรดตรวจสอบให้แน่ใจว่า Site ของคุณมี 5 หลักหรือไม่',
-        confirmButtonText: 'ปิด'
+        icon: "error",
+        title: "Site ไม่ถูกต้อง",
+        text: "โปรดตรวจสอบให้แน่ใจว่า Site ของคุณมี 5 หลักหรือไม่",
+        confirmButtonText: "ปิด",
       });
-      this.supplierForm.value.site = '00000'
+      this.supplierForm.value.site = "00000";
       return;
     }
   }
 
   updateNameWithPrefixChange(): void {
-    const nameControl = this.supplierForm.get('name');
-    let nameValue = nameControl?.value || '';
+    const nameControl = this.supplierForm.get("name");
+    let nameValue = nameControl?.value || "";
 
     if (!nameValue) {
       return;
     }
 
-    if (this.selectedPrefix === 'อื่นๆ') {
+    if (this.selectedPrefix === "อื่นๆ") {
       nameControl?.setValue(nameValue.trim());
       this.checkAndCallApi();
       return;
-    }
-    else {
-      nameValue = nameValue.replace(/^บริษัท /, '')
-        .replace(/ จำกัด \(มหาชน\)$/, '')
-        .replace(/ จำกัด$/, '')
-        .replace(/^คุณ /, '')
-        .replace(/^ห้างหุ้นส่วนสามัญ/, '')
-        .replace(/^ห้างหุ้นส่วนจำกัด/, '');
+    } else {
+      nameValue = nameValue
+        .replace(/^บริษัท /, "")
+        .replace(/ จำกัด \(มหาชน\)$/, "")
+        .replace(/ จำกัด$/, "")
+        .replace(/^คุณ /, "")
+        .replace(/^ห้างหุ้นส่วนสามัญ/, "")
+        .replace(/^ห้างหุ้นส่วนจำกัด/, "");
 
-      if (this.selectedPrefix === 'บริษัทจำกัด') {
+      if (this.selectedPrefix === "บริษัทจำกัด") {
         nameControl?.setValue(`บริษัท ${nameValue} จำกัด`);
-      } else if (this.selectedPrefix === 'บริษัทจำกัด (มหาชน)') {
+      } else if (this.selectedPrefix === "บริษัทจำกัด (มหาชน)") {
         nameControl?.setValue(`บริษัท ${nameValue} จำกัด (มหาชน)`);
-      } else if (this.selectedPrefix === 'คุณ') {
+      } else if (this.selectedPrefix === "คุณ") {
         nameControl?.setValue(`คุณ ${nameValue}`);
-      } else if (this.selectedPrefix === 'ห้างหุ้นส่วนสามัญ') {
+      } else if (this.selectedPrefix === "ห้างหุ้นส่วนสามัญ") {
         nameControl?.setValue(`ห้างหุ้นส่วนสามัญ${nameValue}`);
-      } else if (this.selectedPrefix === 'ห้างหุ้นส่วนจำกัด') {
+      } else if (this.selectedPrefix === "ห้างหุ้นส่วนจำกัด") {
         nameControl?.setValue(`ห้างหุ้นส่วนจำกัด${nameValue}`);
       } else {
         nameControl?.setValue(nameValue);
       }
     }
-
   }
 
   validateTaxId(event: any): void {
     const input = event.target.value;
-    const Type = this.supplierForm.value.supplierType || '';
+    const Type = this.supplierForm.value.supplierType || "";
     if (/\s/.test(input)) {
       Swal.fire({
-        icon: 'warning',
-        title: 'warning',
-        text: 'กรุณากรอกเลข Tax ID เป็นเลข 13 หลักติดกันเท่านั้น',
-        confirmButtonText: 'ตกลง'
+        icon: "warning",
+        title: "warning",
+        text: "กรุณากรอกเลข Tax ID เป็นเลข 13 หลักติดกันเท่านั้น",
+        confirmButtonText: "ตกลง",
       });
 
-      const cleanedInput = input.replace(/\s/g, '');
+      const cleanedInput = input.replace(/\s/g, "");
       event.target.value = cleanedInput;
 
-      const numericValue = this.validationService.validateTaxId(cleanedInput, Type);
+      const numericValue = this.validationService.validateTaxId(
+        cleanedInput,
+        Type,
+      );
       this.supplierForm.patchValue({ tax_Id: numericValue });
       event.target.value = numericValue;
-
     } else {
       const numericValue = this.validationService.validateTaxId(input, Type);
       if (numericValue.length < 13) {
-
       }
       this.supplierForm.patchValue({ tax_Id: numericValue });
       event.target.value = numericValue;
     }
   }
-
 
   validateTel(event: any): void {
     const input = event.target.value;
     const numericValue = this.validationService.validateTel(input);
     event.target.value = numericValue;
     this.supplierForm.patchValue({ tel: numericValue });
-
   }
 
   validateMobile(event: any): void {
@@ -781,28 +919,33 @@ export class SupplierAddComponent {
     const numericValue = this.validationService.validateTel(input);
     event.target.value = numericValue;
     this.supplierForm.patchValue({ mobile: numericValue });
-
   }
 
   onblurTel() {
-    if (this.supplierForm.value.tel != '-' && this.supplierForm.value.tel.length < 9) {
+    if (
+      this.supplierForm.value.tel != "-" &&
+      this.supplierForm.value.tel.length < 9
+    ) {
       Swal.fire({
-        icon: 'warning',
-        title: 'warning',
-        text: 'หมายเลขโทรศัพท์ต้องมีอย่างน้อย 9 หลัก',
-        confirmButtonText: 'ตกลง'
+        icon: "warning",
+        title: "warning",
+        text: "หมายเลขโทรศัพท์ต้องมีอย่างน้อย 9 หลัก",
+        confirmButtonText: "ตกลง",
       });
       return;
     }
   }
 
   onblurMobile() {
-    if (this.supplierForm.value.mobile != '-' && this.supplierForm.value.mobile.length < 10) {
+    if (
+      this.supplierForm.value.mobile != "-" &&
+      this.supplierForm.value.mobile.length < 10
+    ) {
       Swal.fire({
-        icon: 'warning',
-        title: 'warning',
-        text: 'หมายเลขโทรศัพท์มือถือต้องมี 10 หลัก',
-        confirmButtonText: 'ตกลง'
+        icon: "warning",
+        title: "warning",
+        text: "หมายเลขโทรศัพท์มือถือต้องมี 10 หลัก",
+        confirmButtonText: "ตกลง",
       });
       return;
     }
@@ -817,15 +960,15 @@ export class SupplierAddComponent {
 
   validateBranch(event: any): void {
     const input = event.target.value;
-    let numericValue = input.replace(/[^0-9-]/g, '');
+    let numericValue = input.replace(/[^0-9-]/g, "");
     const hyphenCount = (numericValue.match(/-/g) || []).length;
 
     if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
+      numericValue = numericValue.replace(/-/g, "-").replace("-", "");
     }
 
-    if (numericValue.replace(/-/g, '').length > 10) {
-      numericValue = numericValue.slice(0, 10) + (hyphenCount ? '-' : '');
+    if (numericValue.replace(/-/g, "").length > 10) {
+      numericValue = numericValue.slice(0, 10) + (hyphenCount ? "-" : "");
     }
 
     event.target.value = numericValue;
@@ -835,15 +978,15 @@ export class SupplierAddComponent {
 
   validateBranchAdd(event: any): void {
     const input = event.target.value;
-    let numericValue = input.replace(/[^0-9-]/g, '');
+    let numericValue = input.replace(/[^0-9-]/g, "");
     const hyphenCount = (numericValue.match(/-/g) || []).length;
 
     if (hyphenCount > 1) {
-      numericValue = numericValue.replace(/-/g, '-').replace('-', '');
+      numericValue = numericValue.replace(/-/g, "-").replace("-", "");
     }
 
-    if (numericValue.replace(/-/g, '').length > 10) {
-      numericValue = numericValue.slice(0, 10) + (hyphenCount ? '-' : '');
+    if (numericValue.replace(/-/g, "").length > 10) {
+      numericValue = numericValue.slice(0, 10) + (hyphenCount ? "-" : "");
     }
 
     event.target.value = numericValue;
@@ -853,30 +996,32 @@ export class SupplierAddComponent {
 
   validateAccountNum(event: any): void {
     const input = event.target.value;
-    const numericValue = input.replace(/\D/g, '');
+    const numericValue = input.replace(/\D/g, "");
     this.supplierBankForm.patchValue({ accountNum: numericValue });
     event.target.value = numericValue;
   }
 
   validateAccountNumAdd(event: any): void {
     const input = event.target.value;
-    const numericValue = input.replace(/\D/g, '');
+    const numericValue = input.replace(/\D/g, "");
 
     this.supplierBankFormAdd.patchValue({ accounNnum: numericValue });
     event.target.value = numericValue;
   }
 
   toggleSupplierBankForm(value: string): void {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
     if (!currentUser) {
-      console.error('Current user is not available in local storage');
+      console.error("Current user is not available in local storage");
       return;
     }
     this.getGruopName();
     this.showSupplierBankForm = this.paymentMethods.includes(value);
 
     if (this.showSupplierBankForm) {
-      this.supplierBankForm.patchValue({ accountName: this.supplierForm.value.name });
+      this.supplierBankForm.patchValue({
+        accountName: this.supplierForm.value.name,
+      });
     }
     this._cdr.detectChanges();
   }
@@ -884,17 +1029,24 @@ export class SupplierAddComponent {
   showBankCopy() {
     this.showSupplierBankFormAdd = true;
     if (this.showSupplierBankFormAdd) {
-      this.updateFilteredSupplierGroups(this.supplierBankForm.value.supplierGroup)
-      this.supplierBankFormAdd.patchValue({ accountName: this.supplierForm.value.name });
-
+      this.updateFilteredSupplierGroups(
+        this.supplierBankForm.value.supplierGroup,
+      );
+      this.supplierBankFormAdd.patchValue({
+        accountName: this.supplierForm.value.name,
+      });
     }
   }
 
   hideBankCopy() {
     this.showSupplierBankFormAdd = false;
-    this.updateFilteredSupplierGroups(this.supplierBankForm.value.supplierGroup)
+    this.updateFilteredSupplierGroups(
+      this.supplierBankForm.value.supplierGroup,
+    );
     if (this.showSupplierBankFormAdd) {
-      this.supplierBankFormAdd.patchValue({ accountName: this.supplierForm.get('name')?.value });
+      this.supplierBankFormAdd.patchValue({
+        accountName: this.supplierForm.get("name")?.value,
+      });
     }
   }
 
@@ -903,47 +1055,108 @@ export class SupplierAddComponent {
   }
 
   updateDisplayFiles(): void {
-    if (this.selectedSupplierGroup === 'ONE GROUP') {
+    if (this.selectedSupplierGroup === "ONE GROUP") {
       this.displayFilesBank = [
-        { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'gchGroupConsentFile', filePath: '' },
-        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
-        { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'gchGroupBookBankFile', filePath: '' }
+        {
+          fileName: "หนังสือยินยอมการโอนเงิน [ONE Group]",
+          fileType: "gchGroupConsentFile",
+          filePath: "",
+        },
+        {
+          fileName: "หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]",
+          fileType: "gchGroupCertificationFile",
+          filePath: "",
+        },
+        {
+          fileName: "สำเนาหน้า Book Bank [ONE Group]",
+          fileType: "gchGroupBookBankFile",
+          filePath: "",
+        },
       ];
-    } else if (this.selectedSupplierGroup === 'GCH GROUP') {
+    } else if (this.selectedSupplierGroup === "GCH GROUP") {
       this.displayFilesBank = [
-        { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '' },
-        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
-        { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '' }
+        {
+          fileName: "หนังสือยินยอมการโอนเงิน [GCH Group]",
+          fileType: "gchGroupConsentFile",
+          filePath: "",
+        },
+        {
+          fileName: "หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]",
+          fileType: "gchGroupCertificationFile",
+          filePath: "",
+        },
+        {
+          fileName: "สำเนาหน้า Book Bank [GCH Group]",
+          fileType: "gchGroupBookBankFile",
+          filePath: "",
+        },
       ];
-    } else if (this.selectedSupplierGroup === 'ACT') {
+    } else if (this.selectedSupplierGroup === "ACT") {
       this.displayFilesBank = [
-        { fileName: 'หนังสือยินยอมการโอนเงิน [ACT]', fileType: 'gchGroupConsentFile', filePath: '' },
-        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]', fileType: 'gchGroupCertificationFile', filePath: '' },
-        { fileName: 'สำเนาหน้า Book Bank [ACT]', fileType: 'gchGroupBookBankFile', filePath: '' }
+        {
+          fileName: "หนังสือยินยอมการโอนเงิน [ACT]",
+          fileType: "gchGroupConsentFile",
+          filePath: "",
+        },
+        {
+          fileName: "หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ACT]",
+          fileType: "gchGroupCertificationFile",
+          filePath: "",
+        },
+        {
+          fileName: "สำเนาหน้า Book Bank [ACT]",
+          fileType: "gchGroupBookBankFile",
+          filePath: "",
+        },
       ];
-    }
-    else if (this.selectedSupplierGroup === 'ALL Group') {
+    } else if (this.selectedSupplierGroup === "ALL Group") {
       this.displayFilesBank = [
-        { fileName: 'หนังสือยินยอมการโอนเงิน [ONE Group]', fileType: 'gchGroupConsentFile', filePath: '' },
-        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
-        { fileName: 'สำเนาหน้า Book Bank [ONE Group]', fileType: 'gchGroupBookBankFile', filePath: '' },
-        { fileName: 'หนังสือยินยอมการโอนเงิน [GCH Group]', fileType: 'gchGroupConsentFile', filePath: '' },
-        { fileName: 'หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]', fileType: 'gchGroupCertificationFile', filePath: '' },
-        { fileName: 'สำเนาหน้า Book Bank [GCH Group]', fileType: 'gchGroupBookBankFile', filePath: '' }
+        {
+          fileName: "หนังสือยินยอมการโอนเงิน [ONE Group]",
+          fileType: "gchGroupConsentFile",
+          filePath: "",
+        },
+        {
+          fileName: "หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [ONE Group]",
+          fileType: "gchGroupCertificationFile",
+          filePath: "",
+        },
+        {
+          fileName: "สำเนาหน้า Book Bank [ONE Group]",
+          fileType: "gchGroupBookBankFile",
+          filePath: "",
+        },
+        {
+          fileName: "หนังสือยินยอมการโอนเงิน [GCH Group]",
+          fileType: "gchGroupConsentFile",
+          filePath: "",
+        },
+        {
+          fileName: "หนังสือรับรองบริษัท / สำเนาบัตรประชาชน [GCH Group]",
+          fileType: "gchGroupCertificationFile",
+          filePath: "",
+        },
+        {
+          fileName: "สำเนาหน้า Book Bank [GCH Group]",
+          fileType: "gchGroupBookBankFile",
+          filePath: "",
+        },
       ];
     }
   }
 
   checkRole(): void {
-    this.authService.currenttRole.subscribe(user => {
+    this.authService.currenttRole.subscribe((user) => {
       this.currentUser = user;
 
       if (user) {
-        this.isAdmin = user.action.includes('admin');
-        this.isApproved = user.action.includes('approved');
-        this.isApprovedFN = user.action.includes('approvedFN');
-        this.isUser = user.action.includes('user');
-        this.specializedUsers = user.action.includes('approved,user,approvedFN');
+        this.isAdmin = user.action.includes("admin");
+        this.isApproved = user.action.includes("approved");
+        this.isApprovedFN = user.action.includes("approvedFN");
+        this.isUser = user.action.includes("user");
+        this.specializedUsers = user.action.includes(
+          "approved,user,approvedFN",
+        );
         if (this.isApprovedFN && this.isAdmin == false) {
           this.isApproved = false;
         }
@@ -953,27 +1166,46 @@ export class SupplierAddComponent {
 
   removeFile(file: any, isForBank: boolean = false): void {
     if (file.fileId) {
-      const supbankId = file.supbankId || (isForBank ? this.supplierBankForm.get('supbankId')?.value : this.supplierBankFormAdd.get('supbankId')?.value);
+      const supbankId =
+        file.supbankId ||
+        (isForBank
+          ? this.supplierBankForm.get("supbankId")?.value
+          : this.supplierBankFormAdd.get("supbankId")?.value);
       if (isForBank) {
         this.fileIdsToRemoveForBank.push(file.fileId);
       } else {
         this.fileIdsToRemove.push(file.fileId);
       }
 
-      if (!this.fileIdsToRemoveMapping.find(item => item.FileId === file.fileId && item.SupbankId === supbankId)) {
-        this.fileIdsToRemoveMapping.push({ SupbankId: supbankId, FileId: file.fileId });
+      if (
+        !this.fileIdsToRemoveMapping.find(
+          (item) => item.FileId === file.fileId && item.SupbankId === supbankId,
+        )
+      ) {
+        this.fileIdsToRemoveMapping.push({
+          SupbankId: supbankId,
+          FileId: file.fileId,
+        });
       }
-      file.filePath = '';
-      file.fileName = '';
+      file.filePath = "";
+      file.fileName = "";
 
       if (!isForBank) {
-        this.selectedFilesSupplier = this.selectedFilesSupplier.filter(f => f.fileType !== file.fileType || f.labelText !== file.labelText);
+        this.selectedFilesSupplier = this.selectedFilesSupplier.filter(
+          (f) => f.fileType !== file.fileType || f.labelText !== file.labelText,
+        );
       } else {
-        this.selectedNewFilesSupplier = this.selectedNewFilesSupplier.filter(f => f.fileType !== file.fileType || f.labelText !== file.labelText);
+        this.selectedNewFilesSupplier = this.selectedNewFilesSupplier.filter(
+          (f) => f.fileType !== file.fileType || f.labelText !== file.labelText,
+        );
       }
 
-      this.fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemoveMapping.filter(item => !isForBank));
-      this.fileIdsToRemoveForBankJson = JSON.stringify(this.fileIdsToRemoveMapping.filter(item => isForBank));
+      this.fileIdsToRemoveJson = JSON.stringify(
+        this.fileIdsToRemoveMapping.filter((item) => !isForBank),
+      );
+      this.fileIdsToRemoveForBankJson = JSON.stringify(
+        this.fileIdsToRemoveMapping.filter((item) => isForBank),
+      );
 
       this._cdr.detectChanges();
     }
@@ -982,15 +1214,15 @@ export class SupplierAddComponent {
   getAdjustedFilePath(filePath: string): string {
     let adjustedFilePath = filePath;
 
-    const isLocalhost = window.location.hostname.includes('localhost');
+    const isLocalhost = window.location.hostname.includes("localhost");
 
-    const baseURL = 'http://10.10.0.28:8088';
+    const baseURL = "http://10.10.0.28:8088";
 
     if (isLocalhost) {
-      if (!filePath.includes('localhost')) {
+      if (!filePath.includes("localhost")) {
         adjustedFilePath = `https://localhost:7126/${filePath}`;
       } else {
-        adjustedFilePath = filePath.replace('localhost:2222', 'localhost:7126');
+        adjustedFilePath = filePath.replace("localhost:2222", "localhost:7126");
       }
     } else {
       adjustedFilePath = `${baseURL}/${filePath}`;
@@ -1000,154 +1232,181 @@ export class SupplierAddComponent {
   }
 
   loadSupplierData(id: number): void {
-    this.supplierService.findSupplierByIdV2(id).subscribe((data: any) => {
-      const postalCode = data?.postalCode || '';
-      const subdistrict = data?.subdistrict || '';
-      const postalCodeCombination = postalCode && subdistrict ? postalCode + '-' + subdistrict : postalCode;
-      this.supplierForm.patchValue({
-        ...data,
-        postalCode: postalCodeCombination
-      });
-      this.idreq = data.userId
-      if (data.supplierFiles && data.supplierFiles.length > 0) {
-        this.filess = data.supplierFiles.map((file: any) => ({
-          fileId: file.fileId,
-          fileName: file.fileName,
-          fileType: file.fileType,
-          filePath: file.filePath,
-          labelText: file.labelText || ''
-        }));
-        const missingFiles = this.files.filter(file => {
-          const existingFile = this.filess.find(f => f.labelText === file.labelText);
-          return !existingFile || !existingFile.filePath;
+    this.supplierService.findSupplierByIdV2(id).subscribe(
+      (data: any) => {
+        const postalCode = data?.postalCode || "";
+        const subdistrict = data?.subdistrict || "";
+        const postalCodeCombination =
+          postalCode && subdistrict
+            ? postalCode + "-" + subdistrict
+            : postalCode;
+        this.supplierForm.patchValue({
+          ...data,
+          postalCode: postalCodeCombination,
         });
-        this.displayFiles = [...this.filess, ...missingFiles];
-
-      } else {
-        this.displayFiles = this.files;
-      }
-      this.getTelACC(data.ownerAcc);
-      this.loadSupplierBank(id);
-      this.getEventLogs(id);
-    }, error => {
-      console.error('Error loading supplier data:', error);
-    });
+        this.idreq = data.userId;
+        if (data.supplierFiles && data.supplierFiles.length > 0) {
+          this.filess = data.supplierFiles.map((file: any) => ({
+            fileId: file.fileId,
+            fileName: file.fileName,
+            fileType: file.fileType,
+            filePath: file.filePath,
+            labelText: file.labelText || "",
+          }));
+          const missingFiles = this.files.filter((file) => {
+            const existingFile = this.filess.find(
+              (f) => f.labelText === file.labelText,
+            );
+            return !existingFile || !existingFile.filePath;
+          });
+          this.displayFiles = [...this.filess, ...missingFiles];
+        } else {
+          this.displayFiles = this.files;
+        }
+        this.getTelACC(data.ownerAcc);
+        this.loadSupplierBank(id);
+        this.getEventLogs(id);
+      },
+      (error) => {
+        console.error("Error loading supplier data:", error);
+      },
+    );
   }
 
   loadSupplierBank(id: number): void {
-    this.supplierService.findSupplierBankBySupplierIdV2(id).subscribe((data: any) => {
-      this._cdr.detectChanges();
-      if (data.supplierBank.length > 0) {
-        const bankData = data.supplierBank[0];
-        if (bankData.supplierGroup && !this.listOfGroup.some(group => group.group_name === bankData.supplierGroup)) {
-          this.listOfGroup.push({ group_name: bankData.supplierGroup });
+    this.supplierService
+      .findSupplierBankBySupplierIdV2(id)
+      .subscribe((data: any) => {
+        this._cdr.detectChanges();
+        if (data.supplierBank.length > 0) {
+          const bankData = data.supplierBank[0];
+          if (
+            bankData.supplierGroup &&
+            !this.listOfGroup.some(
+              (group) => group.group_name === bankData.supplierGroup,
+            )
+          ) {
+            this.listOfGroup.push({ group_name: bankData.supplierGroup });
+          }
+
+          this.supplierBankForm.patchValue({
+            supbankId: bankData.SupbankId,
+            supplierId: bankData.SupplierId,
+            nameBank: bankData.NameBank,
+            branch: bankData.Branch,
+            accountNum: bankData.AccountNum,
+            supplierGroup: bankData.SupplierGroup,
+            accountName: bankData.AccountName,
+            company: bankData.Company,
+          });
+          this.selectedSupplierGroup =
+            this.supplierBankForm.value.supplierGroup;
+
+          this.showSupplierBankForm = true;
         }
 
-        this.supplierBankForm.patchValue({
-          supbankId: bankData.SupbankId,
-          supplierId: bankData.SupplierId,
-          nameBank: bankData.NameBank,
-          branch: bankData.Branch,
-          accountNum: bankData.AccountNum,
-          supplierGroup: bankData.SupplierGroup,
-          accountName: bankData.AccountName,
-          company: bankData.Company
-        });
-        this.selectedSupplierGroup = this.supplierBankForm.value.supplierGroup
+        if (
+          data.supplierBankFilesForSupbankId1 &&
+          data.supplierBankFilesForSupbankId1.length > 0
+        ) {
+          this.filesBank = data.supplierBankFilesForSupbankId1.map(
+            (file: any) => ({
+              fileId: file.FileId,
+              supbankId: file.SupbankId,
+              fileName: file.FileName,
+              fileType: file.FileType,
+              filePath: file.FilePath,
+              labelText: file.LabelText,
+            }),
+          );
+        }
 
-        this.showSupplierBankForm = true;
-      }
+        if (data.supplierBank.length > 1) {
+          const bankDataAdd = data.supplierBank[1];
+          this.isLoadingFromAPI = true;
+          this.selectedSupplierGroupAdd = bankDataAdd.SupplierGroup;
 
-      if (data.supplierBankFilesForSupbankId1 && data.supplierBankFilesForSupbankId1.length > 0) {
-        this.filesBank = data.supplierBankFilesForSupbankId1.map((file: any) => ({
-          fileId: file.FileId,
-          supbankId: file.SupbankId,
-          fileName: file.FileName,
-          fileType: file.FileType,
-          filePath: file.FilePath,
-          labelText: file.LabelText
-        }));
-      }
+          this.supplierBankFormAdd.patchValue({
+            supbankId: bankDataAdd.SupbankId,
+            supplierId: bankDataAdd.SupplierId,
+            nameBank: bankDataAdd.NameBank,
+            branch: bankDataAdd.Branch,
+            accountNum: bankDataAdd.AccountNum,
+            supplierGroup: bankDataAdd.SupplierGroup,
+            accountName: bankDataAdd.AccountName,
+            company: bankDataAdd.Company,
+          });
 
+          this.showSupplierBankFormAdd = true;
+          this._cdr.detectChanges();
+          setTimeout(() => {
+            this.isLoadingFromAPI = false;
+          }, 1000);
+        }
 
-      if (data.supplierBank.length > 1) {
-        const bankDataAdd = data.supplierBank[1];
-        this.isLoadingFromAPI = true;
-        this.selectedSupplierGroupAdd = bankDataAdd.SupplierGroup;
-
-        this.supplierBankFormAdd.patchValue({
-          supbankId: bankDataAdd.SupbankId,
-          supplierId: bankDataAdd.SupplierId,
-          nameBank: bankDataAdd.NameBank,
-          branch: bankDataAdd.Branch,
-          accountNum: bankDataAdd.AccountNum,
-          supplierGroup: bankDataAdd.SupplierGroup,
-          accountName: bankDataAdd.AccountName,
-          company: bankDataAdd.Company
-        });
-
-        this.showSupplierBankFormAdd = true;
-        this._cdr.detectChanges();
-        setTimeout(() => {
-          this.isLoadingFromAPI = false;
-        }, 1000);
-      }
-
-      if (data.supplierBankFilesForSupbankId2 && data.supplierBankFilesForSupbankId2.length > 0) {
-        this.filesBankAdd = data.supplierBankFilesForSupbankId2.map((file: any) => ({
-          fileId: file.FileId,
-          supbankId: file.SupbankId,
-          fileName: file.FileName,
-          fileType: file.FileType,
-          filePath: file.FilePath,
-          labelText: file.LabelText
-        }));
-      }
-    });
+        if (
+          data.supplierBankFilesForSupbankId2 &&
+          data.supplierBankFilesForSupbankId2.length > 0
+        ) {
+          this.filesBankAdd = data.supplierBankFilesForSupbankId2.map(
+            (file: any) => ({
+              fileId: file.FileId,
+              supbankId: file.SupbankId,
+              fileName: file.FileName,
+              fileType: file.FileType,
+              filePath: file.FilePath,
+              labelText: file.LabelText,
+            }),
+          );
+        }
+      });
   }
   loadSupplierType(id: number): void {
-    this.supplierService.findSupplierTypeById(id).pipe(debounceTime(300), distinctUntilChanged()).subscribe((data: any) => {
-      const SupplierNumPrefix = data.codeFrom;
-      this.typeCode = SupplierNumPrefix;
-      if (SupplierNumPrefix === '2F') {
-        if (this.supplierForm.value.company === '') {
-          this.supplierForm.patchValue({
-            postalCode: '-',
-            province: '-',
-            district: '-',
-            subdistrict: '-',
-            vat: '-',
-            paymentMethod: '-',
-            tax_Id: '-'
-          });
+    this.supplierService
+      .findSupplierTypeById(id)
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe((data: any) => {
+        const SupplierNumPrefix = data.codeFrom;
+        this.typeCode = SupplierNumPrefix;
+        if (SupplierNumPrefix === "2F") {
+          if (this.supplierForm.value.company === "") {
+            this.supplierForm.patchValue({
+              postalCode: "-",
+              province: "-",
+              district: "-",
+              subdistrict: "-",
+              vat: "-",
+              paymentMethod: "-",
+              tax_Id: "-",
+            });
+          } else {
+            this.supplierForm.patchValue({
+              postalCode: "-",
+              province: "-",
+              district: "-",
+              subdistrict: "-",
+              vat: "-",
+              paymentMethod: "-",
+              tax_Id: "",
+            });
+          }
         }
-        else {
-          this.supplierForm.patchValue({
-            postalCode: '-',
-            province: '-',
-            district: '-',
-            subdistrict: '-',
-            vat: '-',
-            paymentMethod: '-',
-            tax_Id: ''
-          });
-        }
-      }
-    });
+      });
   }
 
   getSupplierTypeId(code: string): number | undefined {
-    const type = this.listOfType.find(t => t.code === code);
+    const type = this.listOfType.find((t) => t.code === code);
     return type ? type.id : undefined;
   }
 
   onSearch(value: string): void {
     if (value) {
-      this.filteredItemsProvince = this.items_provinces.filter(item =>
-        item.postalCode.includes(value) ||
-        item.subdistrict.includes(value) ||
-        item.district.includes(value) ||
-        item.province.includes(value)
+      this.filteredItemsProvince = this.items_provinces.filter(
+        (item) =>
+          item.postalCode.includes(value) ||
+          item.subdistrict.includes(value) ||
+          item.district.includes(value) ||
+          item.province.includes(value),
       );
     } else {
       this.filteredItemsProvince = [...this.items_provinces];
@@ -1156,23 +1415,28 @@ export class SupplierAddComponent {
 
   onPostalCodeChange(value: any): void {
     console.log(value);
-    
-    const colonIdx = (value as string).lastIndexOf(':');
+
+    const colonIdx = (value as string).lastIndexOf(":");
     const postIdFromValue = colonIdx !== -1 ? +value.slice(colonIdx + 1) : null;
     const main: string = colonIdx !== -1 ? value.slice(0, colonIdx) : value;
 
-    const dashIdx = main.indexOf('-');
+    const dashIdx = main.indexOf("-");
     const postalCode = dashIdx !== -1 ? main.slice(0, dashIdx) : main;
-    const subdistrict = dashIdx !== -1 ? main.slice(dashIdx + 1) : '';
+    const subdistrict = dashIdx !== -1 ? main.slice(dashIdx + 1) : "";
 
     const resolvedPostId = postIdFromValue || this.supplierForm.value.postId;
 
     let selectedItem: any;
     if (resolvedPostId) {
-      selectedItem = this.items_provinces.find(item => item.postId === resolvedPostId);
+      selectedItem = this.items_provinces.find(
+        (item) => item.postId === resolvedPostId,
+      );
     }
     if (!selectedItem && postalCode && subdistrict) {
-      selectedItem = this.items_provinces.find(item => item.postalCode === postalCode && item.subdistrict === subdistrict);
+      selectedItem = this.items_provinces.find(
+        (item) =>
+          item.postalCode === postalCode && item.subdistrict === subdistrict,
+      );
     }
 
     if (selectedItem) {
@@ -1180,14 +1444,14 @@ export class SupplierAddComponent {
         district: selectedItem.district,
         subdistrict: selectedItem.subdistrict,
         province: selectedItem.province,
-        postId: selectedItem.postId
+        postId: selectedItem.postId,
       });
       this.cdr.markForCheck();
     }
   }
 
   isSubdistrictMatching(item: DataLocation): boolean {
-    const currentSubdistrict = this.supplierForm.get('subdistrict')?.value;
+    const currentSubdistrict = this.supplierForm.get("subdistrict")?.value;
     return item.subdistrict === currentSubdistrict;
   }
 
@@ -1196,8 +1460,8 @@ export class SupplierAddComponent {
       this.toggleFormState(true);
     }
 
-    if (this.supplierForm.value.email === '-') {
-      this.emailError = '';
+    if (this.supplierForm.value.email === "-") {
+      this.emailError = "";
     }
 
     this.isSubmitting = true;
@@ -1205,7 +1469,9 @@ export class SupplierAddComponent {
     if (this.supplierForm.valid) {
       if (this.supplierBankForm.value.supbankId != 0 || null || undefined) {
         if (this.supplierBankForm.value.accountName == undefined || null) {
-          this.supplierBankForm.patchValue({ accountName: this.supplierForm.value.name });
+          this.supplierBankForm.patchValue({
+            accountName: this.supplierForm.value.name,
+          });
         }
       }
 
@@ -1214,27 +1480,33 @@ export class SupplierAddComponent {
       if (this.suppilerId) {
         await this.onUpdate(formData);
       } else {
-        this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
-          next: (response) => {
-            if (response) {
-              // this.handleAddResponse(response);
-              // this.insertLog();
-              Swal.fire({
-                icon: 'success',
-                title: 'Saved!',
-                text: 'Your data has been saved.',
-                showConfirmButton: false,
-                timer: 1500
-              });
+        this.supplierService
+          .addOrUpdateSupplierWithBankAndFiles(formData)
+          .subscribe({
+            next: (response) => {
+              if (response) {
+                // this.handleAddResponse(response);
+                // this.insertLog();
+                Swal.fire({
+                  icon: "success",
+                  title: "Saved!",
+                  text: "Your data has been saved.",
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
 
-              this.router.navigate(['/feature/supplier']);
-            }
-          },
-          error: (err) => {
-            console.error('Error adding supplier data:', err);
-            Swal.fire('Error!', 'There was an error saving your data.', 'error');
-          }
-        });
+                this.router.navigate(["/feature/supplier"]);
+              }
+            },
+            error: (err) => {
+              console.error("Error adding supplier data:", err);
+              Swal.fire(
+                "Error!",
+                "There was an error saving your data.",
+                "error",
+              );
+            },
+          });
       }
     } else {
       this.handleInvalidForm();
@@ -1242,9 +1514,9 @@ export class SupplierAddComponent {
   }
 
   private toggleFormState(isEnabled: boolean): void {
-    this.supplierForm[isEnabled ? 'enable' : 'disable']();
-    this.supplierBankForm[isEnabled ? 'enable' : 'disable']();
-    this.supplierBankFormAdd[isEnabled ? 'enable' : 'disable']();
+    this.supplierForm[isEnabled ? "enable" : "disable"]();
+    this.supplierBankForm[isEnabled ? "enable" : "disable"]();
+    this.supplierBankFormAdd[isEnabled ? "enable" : "disable"]();
   }
 
   private async handleAddResponse(response: any): Promise<void> {
@@ -1256,21 +1528,24 @@ export class SupplierAddComponent {
       // await this.insertLog();
 
       Swal.fire({
-        icon: 'success',
-        title: 'Saved!',
-        text: 'Your data has been saved.',
+        icon: "success",
+        title: "Saved!",
+        text: "Your data has been saved.",
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
       });
 
-      this.router.navigate(['/feature/supplier']);
+      this.router.navigate(["/feature/supplier"]);
     } else {
-      console.error('Response does not contain supplier_id', response);
+      console.error("Response does not contain supplier_id", response);
     }
   }
 
   private updateSupplierBankForm(response: any): void {
-    this.supplierBankForm.patchValue({ supplierId: response.supplier_id, company: response.company });
+    this.supplierBankForm.patchValue({
+      supplierId: response.supplier_id,
+      company: response.company,
+    });
     this.isIDTemp = response.supplier_id;
   }
 
@@ -1290,31 +1565,36 @@ export class SupplierAddComponent {
 
       supplierBankData.push(bankFormValue);
 
-      this.selectedNewFilesSupplier.forEach(selectedFile => {
-        formData.append('Files', selectedFile.file, selectedFile.file.name);
+      this.selectedNewFilesSupplier.forEach((selectedFile) => {
+        formData.append("Files", selectedFile.file, selectedFile.file.name);
         if (!labelTextsGrouped[bankFormValue.supplierGroup]) {
           labelTextsGrouped[bankFormValue.supplierGroup] = [];
         }
-        labelTextsGrouped[bankFormValue.supplierGroup].push(selectedFile.labelText);
+        labelTextsGrouped[bankFormValue.supplierGroup].push(
+          selectedFile.labelText,
+        );
       });
     }
 
     if (this.showSupplierBankFormAdd) {
       const bankFormValueAdd = this.supplierBankFormAdd.value;
-      bankFormValueAdd.supplierId = bankFormValueAdd.supplierId || mainSupplierId || 0;
+      bankFormValueAdd.supplierId =
+        bankFormValueAdd.supplierId || mainSupplierId || 0;
       bankFormValueAdd.company = bankFormValueAdd.company || mainCompany;
       supplierBankData.push(bankFormValueAdd);
 
-      this.selectedFilesAdd.forEach(selectedFile => {
-        formData.append('Files', selectedFile.file, selectedFile.file.name);
+      this.selectedFilesAdd.forEach((selectedFile) => {
+        formData.append("Files", selectedFile.file, selectedFile.file.name);
         if (!labelTextsGrouped[bankFormValueAdd.supplierGroup]) {
           labelTextsGrouped[bankFormValueAdd.supplierGroup] = [];
         }
-        labelTextsGrouped[bankFormValueAdd.supplierGroup].push(selectedFile.labelText);
+        labelTextsGrouped[bankFormValueAdd.supplierGroup].push(
+          selectedFile.labelText,
+        );
       });
     }
 
-    supplierBankData.forEach(bank => {
+    supplierBankData.forEach((bank) => {
       const group = bank.supplierGroup;
       if (labelTextsGrouped[group]) {
         bank.LabelTextsV2 = { [group]: labelTextsGrouped[group] };
@@ -1322,25 +1602,33 @@ export class SupplierAddComponent {
     });
 
     if (supplierBankData.length > 0) {
-      formData.append('supplierBankJson', JSON.stringify(supplierBankData));
-      formData.append('LabelTextsJson', JSON.stringify(labelTextsGrouped));
+      formData.append("supplierBankJson", JSON.stringify(supplierBankData));
+      formData.append("LabelTextsJson", JSON.stringify(labelTextsGrouped));
 
       try {
-        await this.supplierService.saveSupplierBanksWithFiles(formData).toPromise();
+        await this.supplierService
+          .saveSupplierBanksWithFiles(formData)
+          .toPromise();
       } catch (error) {
-        console.error('Error sending data to backend:', error);
-        Swal.fire('Error!', 'There was an error saving your data.', 'error');
+        console.error("Error sending data to backend:", error);
+        Swal.fire("Error!", "There was an error saving your data.", "error");
       }
     }
   }
 
   private validateBankForms(): boolean {
-    if (this.showSupplierBankForm && !this.isFormValidWithoutSupplierIdCompanyBank()) {
-      Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
+    if (
+      this.showSupplierBankForm &&
+      !this.isFormValidWithoutSupplierIdCompanyBank()
+    ) {
+      Swal.fire("Warning!", "กรุณากรอกข้อมูลให้ครบถ้วน", "warning");
       return false;
     }
-    if (this.showSupplierBankFormAdd && !this.isFormValidWithoutSupplierIdCompanyBankAdd()) {
-      Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
+    if (
+      this.showSupplierBankFormAdd &&
+      !this.isFormValidWithoutSupplierIdCompanyBankAdd()
+    ) {
+      Swal.fire("Warning!", "กรุณากรอกข้อมูลให้ครบถ้วน", "warning");
       return false;
     }
     return true;
@@ -1348,7 +1636,7 @@ export class SupplierAddComponent {
 
   private handleInvalidForm(): void {
     this.supplierForm.markAllAsTouched();
-    if (this.emailError !== '') {
+    if (this.emailError !== "") {
       // Swal.fire({
       //   icon: 'warning',
       //   title: 'Email ไม่ถูกต้อง',
@@ -1356,102 +1644,110 @@ export class SupplierAddComponent {
       //   confirmButtonText: 'ปิด'
       // });
     } else {
-      Swal.fire('Warning!', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
+      Swal.fire("Warning!", "กรุณากรอกข้อมูลให้ครบถ้วน", "warning");
     }
   }
 
   private showSuccessNotification(): void {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
     Swal.fire({
-      icon: 'success',
-      title: 'Updated!',
-      text: 'Your data has been updated.',
+      icon: "success",
+      title: "Updated!",
+      text: "Your data has been updated.",
       showConfirmButton: false,
-      timer: 1500
+      timer: 1500,
     });
     const status = this.supplierForm.value.status;
-    if ((this.isApproved && status === 'Pending Approved By ACC') && currentUser.user.role == 3) {
+    if (
+      this.isApproved &&
+      status === "Pending Approved By ACC" &&
+      currentUser.user.role == 3
+    ) {
       this.router.navigate([`/feature/supplier/view/${this.suppilerId}`]);
     } else {
-      this.router.navigate(['/feature/supplier']);
+      this.router.navigate(["/feature/supplier"]);
     }
   }
-
 
   onUpdate(formValue: any): void {
     if (formValue && this.suppilerId) {
       const formData = this.prepareFormAddData();
 
       const fileIdsToRemoveJson = JSON.stringify(this.fileIdsToRemove);
-      formData.append('fileIdsToRemoveJson', fileIdsToRemoveJson);
+      formData.append("fileIdsToRemoveJson", fileIdsToRemoveJson);
       this.isLoading = true;
-      this.supplierService.addOrUpdateSupplierWithBankAndFiles(formData).subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          this.sendEmailNotification();
-          this.sendEmailNotificationRequester();
-          this.showSuccessNotification();
-
-        },
-        error: (err) => {
-          this.isLoading = false;
-          Swal.fire('Error!', 'There was an error Update your data.', 'error');
-          console.error('Error updating data with files:', err);
-        }
-      });
+      this.supplierService
+        .addOrUpdateSupplierWithBankAndFiles(formData)
+        .subscribe({
+          next: (response) => {
+            this.isLoading = false;
+            this.sendEmailNotification();
+            this.sendEmailNotificationRequester();
+            this.showSuccessNotification();
+          },
+          error: (err) => {
+            this.isLoading = false;
+            Swal.fire(
+              "Error!",
+              "There was an error Update your data.",
+              "error",
+            );
+            console.error("Error updating data with files:", err);
+          },
+        });
     } else {
       this.supplierForm.markAllAsTouched();
       this.supplierBankForm.markAllAsTouched();
-      Swal.fire('Warning!', 'กรุณาตรวจสอบข้อมูลของคุณให้ครบถ้วน', 'warning');
+      Swal.fire("Warning!", "กรุณาตรวจสอบข้อมูลของคุณให้ครบถ้วน", "warning");
     }
   }
 
   prepareFormData(): FormData {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
 
     if (!currentUser || !currentUser.user.userId) {
-      console.error('Current user is not available in local storage');
+      console.error("Current user is not available in local storage");
       return new FormData();
     }
 
     const formValue = { ...this.supplierForm.value };
-    const postalCode = formValue.postalCode.split('-')[0];
-    formValue.postalCode = postalCode
+    const postalCode = formValue.postalCode.split("-")[0];
+    formValue.postalCode = postalCode;
 
     formValue.user_id = currentUser.user.userId;
 
     const formData = new FormData();
-    formData.append('Prefix', formValue.prefix);
-    formData.append('Name', formValue.name);
-    formData.append('Tax_Id', formValue.tax_Id);
-    formData.append('AddressSup', formValue.addressSup);
-    formData.append('District', formValue.district);
-    formData.append('Subdistrict', formValue.subdistrict);
-    formData.append('Province', formValue.province);
-    formData.append('PostalCode', formValue.postalCode);
-    formData.append('Tel', formValue.tel);
-    formData.append('Email', formValue.email);
-    formData.append('SupplierNum', formValue.supplierNum || '');
-    formData.append('SupplierType', formValue.supplierType);
-    formData.append('Site', formValue.site);
-    formData.append('Vat', formValue.vat);
-    formData.append('Status', formValue.status);
-    formData.append('PaymentMethod', formValue.paymentMethod);
-    formData.append('Company', formValue.company);
-    formData.append('Type', formValue.type);
-    formData.append('UserId', formValue.user_id);
-    formData.append('Mobile', formValue.mobile);
-    formData.append('PostId', formValue.postId);
-    formData.append('groupName', 'SupplierFile');
+    formData.append("Prefix", formValue.prefix);
+    formData.append("Name", formValue.name);
+    formData.append("Tax_Id", formValue.tax_Id);
+    formData.append("AddressSup", formValue.addressSup);
+    formData.append("District", formValue.district);
+    formData.append("Subdistrict", formValue.subdistrict);
+    formData.append("Province", formValue.province);
+    formData.append("PostalCode", formValue.postalCode);
+    formData.append("Tel", formValue.tel);
+    formData.append("Email", formValue.email);
+    formData.append("SupplierNum", formValue.supplierNum || "");
+    formData.append("SupplierType", formValue.supplierType);
+    formData.append("Site", formValue.site);
+    formData.append("Vat", formValue.vat);
+    formData.append("Status", formValue.status);
+    formData.append("PaymentMethod", formValue.paymentMethod);
+    formData.append("Company", formValue.company);
+    formData.append("Type", formValue.type);
+    formData.append("UserId", formValue.user_id);
+    formData.append("Mobile", formValue.mobile);
+    formData.append("PostId", formValue.postId);
+    formData.append("groupName", "SupplierFile");
 
     const fileIdsToRemove = this.fileIdsToRemove || [];
-    formData.append('fileIdsToRemoveJson', JSON.stringify(fileIdsToRemove));
+    formData.append("fileIdsToRemoveJson", JSON.stringify(fileIdsToRemove));
 
     const labelTexts: string[] = [];
     const fileIds: number[] = [];
 
     for (let selectedFile of this.selectedFilesSupplier) {
-      formData.append('Files', selectedFile.file, selectedFile.file.name);
+      formData.append("Files", selectedFile.file, selectedFile.file.name);
       labelTexts.push(selectedFile.labelText);
     }
 
@@ -1461,8 +1757,8 @@ export class SupplierAddComponent {
       }
     }
 
-    formData.append('LabelTextsJson', JSON.stringify(labelTexts));
-    formData.append('FileIdsJson', JSON.stringify(fileIds));
+    formData.append("LabelTextsJson", JSON.stringify(labelTexts));
+    formData.append("FileIdsJson", JSON.stringify(fileIds));
 
     return formData;
   }
@@ -1474,29 +1770,36 @@ export class SupplierAddComponent {
         if (this.isAdmin || this.isApproved) {
           this.filteredDataType = this.listOfType;
         } else {
-          this.filteredDataType = this.listOfType.filter(type => ['LOCL', 'OSEA'].includes(type.code));
+          this.filteredDataType = this.listOfType.filter((type) =>
+            ["LOCL", "OSEA"].includes(type.code),
+          );
         }
         this._cdr.markForCheck();
       },
-      error: () => {
-      }
+      error: () => {},
     });
   }
 
   getEventLogs(SupplierId: number): void {
     this.supplierService.getLog(SupplierId).subscribe(
       (data) => {
-        this.logs = data.map(log => {
+        this.logs = data.map((log) => {
           let updatedStatus = log.status;
 
-          if (log.status === "Pending Approved By ACC" && log.rejectReason === '') {
+          if (
+            log.status === "Pending Approved By ACC" &&
+            log.rejectReason === ""
+          ) {
             if (log.roleId === 2 || log.roleId === 1) {
               updatedStatus = "Submitted";
             } else if (log.roleId === 3) {
               updatedStatus = "Edit By ACC";
             }
           }
-          if (log.status === "Pending Approved By ACC" && log.rejectReason !== '') {
+          if (
+            log.status === "Pending Approved By ACC" &&
+            log.rejectReason !== ""
+          ) {
             if (log.roleId === 3) {
               updatedStatus = "Reject By ACC";
             } else if (log.roleId === 4 || log.roleId === 1) {
@@ -1507,75 +1810,113 @@ export class SupplierAddComponent {
           return {
             ...log,
             time: this.formatDateTime(log.time),
-            status: updatedStatus
+            status: updatedStatus,
           };
         });
         if (this.logs.length > 0 && this.logs[0].status === "Submitted") {
-          const originalLog = data.find(log => log.status === "Pending Approved By ACC");
+          const originalLog = data.find(
+            (log) => log.status === "Pending Approved By ACC",
+          );
           if (originalLog) {
             this.logs.unshift({
               status: "Pending Approved By ACC",
-              time: this.formatDateTime(originalLog.time)
+              time: this.formatDateTime(originalLog.time),
             });
           }
         }
-        if (this.logs.length > 0 && this.logs[0].status === "Approved By ACC" && this.logs[0].payment === "Cheque") {
-          const originalLog = data.find(log => log.status === "Approved By ACC");
+        if (
+          this.logs.length > 0 &&
+          this.logs[0].status === "Approved By ACC" &&
+          this.logs[0].payment === "Cheque"
+        ) {
+          const originalLog = data.find(
+            (log) => log.status === "Approved By ACC",
+          );
           if (originalLog) {
             this.logs.unshift({
               status: this.statusforUpdate,
-              time: this.formatDateTime(this.successTime)
+              time: this.formatDateTime(this.successTime),
             });
           }
         }
-        if (this.logs.length > 0 && this.logs[0].status === "Approved By ACC" && this.logs[0].payment === "Transfer") {
-          const originalLog = data.find(log => log.status === "Approved By ACC");
+        if (
+          this.logs.length > 0 &&
+          this.logs[0].status === "Approved By ACC" &&
+          this.logs[0].payment === "Transfer"
+        ) {
+          const originalLog = data.find(
+            (log) => log.status === "Approved By ACC",
+          );
           if (originalLog) {
             this.logs.unshift({
               status: this.statusforUpdate,
-              time: this.formatDateTime(originalLog.time)
+              time: this.formatDateTime(originalLog.time),
             });
           }
         }
-        if (this.logs.length > 0 && this.logs[0].status === "Approved By FN" && this.logs[0].payment === "Transfer") {
-          const originalLog = data.find(log => log.status === "Approved By FN");
+        if (
+          this.logs.length > 0 &&
+          this.logs[0].status === "Approved By FN" &&
+          this.logs[0].payment === "Transfer"
+        ) {
+          const originalLog = data.find(
+            (log) => log.status === "Approved By FN",
+          );
           if (originalLog) {
             this.logs.unshift({
               status: this.statusforUpdate,
-              time: this.formatDateTime(this.successTime)
+              time: this.formatDateTime(this.successTime),
             });
           }
         }
-        if (this.logs.length > 0 && this.logs[0].status === "Reject By FN" && this.logs[0].payment === "Transfer") {
-          const originalLog = data.find(log => log.status === "Pending Approved By ACC");
+        if (
+          this.logs.length > 0 &&
+          this.logs[0].status === "Reject By FN" &&
+          this.logs[0].payment === "Transfer"
+        ) {
+          const originalLog = data.find(
+            (log) => log.status === "Pending Approved By ACC",
+          );
           if (originalLog) {
             this.logs.unshift({
               status: this.statusforUpdate,
             });
           }
         }
-        if (this.logs.length > 0 && this.logs[0].status === "Reject By ACC" && this.logs[0].payment === "Transfer") {
-          const originalLog = data.find(log => log.status === "Reject By ACC");
+        if (
+          this.logs.length > 0 &&
+          this.logs[0].status === "Reject By ACC" &&
+          this.logs[0].payment === "Transfer"
+        ) {
+          const originalLog = data.find(
+            (log) => log.status === "Reject By ACC",
+          );
           if (originalLog) {
             this.logs.unshift({
-              status: 'Waiting For Admin Submit',
-              rejectReason: originalLog.rejectReason
+              status: "Waiting For Admin Submit",
+              rejectReason: originalLog.rejectReason,
             });
           }
         }
-        if (this.logs.length > 0 && this.logs[0].status === "Reject By ACC" && this.logs[0].payment !== "Transfer") {
-          const originalLog = data.find(log => log.status === "Reject By ACC");
+        if (
+          this.logs.length > 0 &&
+          this.logs[0].status === "Reject By ACC" &&
+          this.logs[0].payment !== "Transfer"
+        ) {
+          const originalLog = data.find(
+            (log) => log.status === "Reject By ACC",
+          );
           if (originalLog) {
             this.logs.unshift({
-              status: 'Waiting For Admin Submit',
-              rejectReason: originalLog.rejectReason
+              status: "Waiting For Admin Submit",
+              rejectReason: originalLog.rejectReason,
             });
           }
         }
       },
       (error) => {
-        console.error('Error fetching logs', error);
-      }
+        console.error("Error fetching logs", error);
+      },
     );
   }
 
@@ -1586,8 +1927,7 @@ export class SupplierAddComponent {
         this.filteredDataBank = response;
         this._cdr.markForCheck();
       },
-      error: () => {
-      }
+      error: () => {},
     });
   }
 
@@ -1597,7 +1937,10 @@ export class SupplierAddComponent {
 
     if (this.supplierBankFormAdd.invalid && this.supplierBankForm.valid) {
       if (!this.supplierBankFormAdd.value.supplierId) {
-        this.supplierBankFormAdd.patchValue({ supplierId: this.isIDTemp, company });
+        this.supplierBankFormAdd.patchValue({
+          supplierId: this.isIDTemp,
+          company,
+        });
       }
     }
 
@@ -1611,64 +1954,80 @@ export class SupplierAddComponent {
 
     if (supplierBankData.length > 0) {
       const formData = new FormData();
-      formData.append('supplierBankJson', JSON.stringify(supplierBankData));
+      formData.append("supplierBankJson", JSON.stringify(supplierBankData));
 
-      formData.append('fileIdsToRemoveForBankJson', this.fileIdsToRemoveForBankJson);
-      formData.append('fileIdsToRemoveJson', this.fileIdsToRemoveForBankJson);
+      formData.append(
+        "fileIdsToRemoveForBankJson",
+        this.fileIdsToRemoveForBankJson,
+      );
+      formData.append("fileIdsToRemoveJson", this.fileIdsToRemoveForBankJson);
 
       const labelTextsGrouped: { [key: string]: string[] } = {};
-      [...this.selectedNewFilesSupplier, ...this.selectedFilesAdd].forEach(selectedFile => {
-        if (!labelTextsGrouped[selectedFile.fileType]) {
-          labelTextsGrouped[selectedFile.fileType] = [];
-        }
-        labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
-      });
+      [...this.selectedNewFilesSupplier, ...this.selectedFilesAdd].forEach(
+        (selectedFile) => {
+          if (!labelTextsGrouped[selectedFile.fileType]) {
+            labelTextsGrouped[selectedFile.fileType] = [];
+          }
+          labelTextsGrouped[selectedFile.fileType].push(selectedFile.labelText);
+        },
+      );
 
-      formData.append('LabelTextsJson', JSON.stringify(labelTextsGrouped));
+      formData.append("LabelTextsJson", JSON.stringify(labelTextsGrouped));
 
-      [...this.selectedNewFilesSupplier, ...this.selectedFilesAdd].forEach(selectedFile => {
-        formData.append('Files', selectedFile.file, selectedFile.file.name);
-      });
+      [...this.selectedNewFilesSupplier, ...this.selectedFilesAdd].forEach(
+        (selectedFile) => {
+          formData.append("Files", selectedFile.file, selectedFile.file.name);
+        },
+      );
 
       this.supplierService.saveSupplierBanksWithFiles(formData).subscribe({
-        next: () => Swal.fire('Success!', 'Your bank data has been updated successfully.', 'success'),
+        next: () =>
+          Swal.fire(
+            "Success!",
+            "Your bank data has been updated successfully.",
+            "success",
+          ),
         error: (err) => {
-          Swal.fire('Error!', 'There was an error updating your bank data.', 'error');
-          console.error('Error updating bank data with files:', err);
-        }
+          Swal.fire(
+            "Error!",
+            "There was an error updating your bank data.",
+            "error",
+          );
+          console.error("Error updating bank data with files:", err);
+        },
       });
     } else {
       this.supplierBankForm.markAllAsTouched();
       this.supplierBankFormAdd.markAllAsTouched();
-      Swal.fire('Error!', 'Please fill in all required fields.', 'error');
+      Swal.fire("Error!", "Please fill in all required fields.", "error");
     }
   }
 
   prepareBankFormData(bankFormValue: any): FormData {
     const formData = new FormData();
-    formData.append('SupbankId', bankFormValue.supbankId);
-    formData.append('SupplierId', bankFormValue.supplierId);
-    formData.append('NameBank', bankFormValue.nameBank);
-    formData.append('Branch', bankFormValue.branch);
-    formData.append('AccountNum', bankFormValue.accountNum);
-    formData.append('SupplierGroup', bankFormValue.supplierGroup);
-    formData.append('AccountName', bankFormValue.accountName);
-    formData.append('Company', bankFormValue.company);
+    formData.append("SupbankId", bankFormValue.supbankId);
+    formData.append("SupplierId", bankFormValue.supplierId);
+    formData.append("NameBank", bankFormValue.nameBank);
+    formData.append("Branch", bankFormValue.branch);
+    formData.append("AccountNum", bankFormValue.accountNum);
+    formData.append("SupplierGroup", bankFormValue.supplierGroup);
+    formData.append("AccountName", bankFormValue.accountName);
+    formData.append("Company", bankFormValue.company);
 
     const labelTexts: string[] = [];
-    const filesToRemoveBank: number[] = this.fileIdsToRemoveBank
+    const filesToRemoveBank: number[] = this.fileIdsToRemoveBank;
 
     for (let selectedFile of this.selectedNewFilesSupplier) {
-      formData.append('Files', selectedFile.file, selectedFile.file.name);
+      formData.append("Files", selectedFile.file, selectedFile.file.name);
       labelTexts.push(selectedFile.labelText);
     }
 
     for (let fileId of filesToRemoveBank) {
-      formData.append('FileIdsToRemove', fileId.toString());
+      formData.append("FileIdsToRemove", fileId.toString());
     }
 
-    formData.append('LabelTextsJson', JSON.stringify(labelTexts));
-    formData.append('FileIdsString', JSON.stringify(filesToRemoveBank));
+    formData.append("LabelTextsJson", JSON.stringify(labelTexts));
+    formData.append("FileIdsString", JSON.stringify(filesToRemoveBank));
 
     formData.forEach((value, key) => {
       if (value instanceof File) {
@@ -1679,87 +2038,85 @@ export class SupplierAddComponent {
   }
 
   insertLog(): void {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
 
     if (!currentUser) {
-      console.error('Current user is not available in local storage');
+      console.error("Current user is not available in local storage");
       return;
     }
 
-    if (this.showSupplierBankForm = true) {
+    if ((this.showSupplierBankForm = true)) {
       if (this.supplierForm.valid) {
         const currentDate = new Date();
         currentDate.setHours(currentDate.getHours() + 7);
         const log = {
           id: 0,
           userId: currentUser.user.userId || 0,
-          username: currentUser.user.username || 'string',
-          email: currentUser.user.email || 'string',
-          status: this.supplierForm.get('status')?.value || 'Draft',
+          username: currentUser.user.username || "string",
+          email: currentUser.user.email || "string",
+          status: this.supplierForm.get("status")?.value || "Draft",
           customerId: 0,
           supplierId: this.isIDTemp || 0,
           time: currentDate,
-          rejectReason: this.reasonTemp
+          rejectReason: this.reasonTemp,
         };
         this.supplierService.insertLog(log).subscribe({
           next: (response) => {
-
             this.isIDTemp = 0;
           },
           error: (err) => {
-            console.error('Error adding log data', err);
-          }
+            console.error("Error adding log data", err);
+          },
         });
       } else {
-
       }
-    }
-    else {
+    } else {
       if (this.supplierForm.valid && this.supplierBankForm.valid) {
         const log = {
           id: 0,
           userId: currentUser.user.userId || 0,
-          username: currentUser.user.username || 'string',
-          email: currentUser.user.email || 'string',
-          status: this.supplierForm.get('status')?.value || 'Draft',
+          username: currentUser.user.username || "string",
+          email: currentUser.user.email || "string",
+          status: this.supplierForm.get("status")?.value || "Draft",
           customerId: 0,
-          supplierId: this.supplierBankForm.get('supplier_id')?.value || 0,
-          time: new Date().toISOString()
+          supplierId: this.supplierBankForm.get("supplier_id")?.value || 0,
+          time: new Date().toISOString(),
         };
         this.supplierService.insertLog(log).subscribe({
-          next: (response) => {
-          },
+          next: (response) => {},
           error: (err) => {
-            console.error('Error adding log data', err);
-          }
+            console.error("Error adding log data", err);
+          },
         });
       } else {
-        console.error('Supplier form or supplier bank form is not valid');
+        console.error("Supplier form or supplier bank form is not valid");
       }
     }
   }
 
   getTaxIdData(): void {
-    const taxId = this.supplierForm.get('tax_Id')?.value;
+    const taxId = this.supplierForm.get("tax_Id")?.value;
 
     if (taxId) {
       this.supplierService.getDataByTaxId(taxId).subscribe({
         next: (dataList: any[]) => {
           if (dataList.length > 0) {
-            const latestData = dataList.reduce((prev, current) => (prev.id > current.id) ? prev : current);
-            const postalCodeCombination = latestData.postalCode + '-' + latestData.subdistrict;
+            const latestData = dataList.reduce((prev, current) =>
+              prev.id > current.id ? prev : current,
+            );
+            const postalCodeCombination =
+              latestData.postalCode + "-" + latestData.subdistrict;
             this.supplierForm.patchValue({
               ...latestData,
               postalCode: postalCodeCombination,
-              status: ''
+              status: "",
             });
           } else {
-
           }
         },
         error: (err) => {
-          console.error('Error fetching data by Tax ID', err);
-        }
+          console.error("Error fetching data by Tax ID", err);
+        },
       });
     }
   }
@@ -1771,149 +2128,153 @@ export class SupplierAddComponent {
         if (this.isAdmin || this.isApproved) {
           this.filteredDataPaymentMethod = this.listOfPaymentMethod;
         } else {
-          this.filteredDataPaymentMethod = this.listOfPaymentMethod.filter(type => ['Cheque', 'Transfer'].includes(type.paymentMethodName));
+          this.filteredDataPaymentMethod = this.listOfPaymentMethod.filter(
+            (type) => ["Cheque", "Transfer"].includes(type.paymentMethodName),
+          );
         }
         this._cdr.markForCheck();
       },
-      error: () => {
-      }
+      error: () => {},
     });
   }
   getDataVAT(): void {
     this.supplierService.getDataVat().subscribe({
       next: (response: any) => {
-
         this.listOfVat = response;
-
 
         this.filteredDataVat = response;
         this._cdr.markForCheck();
       },
-      error: () => {
-      }
+      error: () => {},
     });
   }
 
   getGruopName(): void {
     this.supplierService.GetAllGroups().subscribe({
       next: (response: any) => {
-        this.listOfGroup = response.map((groupName: string) => ({ group_name: groupName }));
-        this.filteredListOfGroup = this.listOfGroup
+        this.listOfGroup = response.map((groupName: string) => ({
+          group_name: groupName,
+        }));
+        this.filteredListOfGroup = this.listOfGroup;
         this._cdr.markForCheck();
       },
-      error: () => {
-      }
+      error: () => {},
     });
   }
 
   getDataCompany(): void {
-    const CheckcurrentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const userCompanies = CheckcurrentUser.user.company ? CheckcurrentUser.user.company.split(',') : [];
+    const CheckcurrentUser = JSON.parse(
+      localStorage.getItem("currentUser") || "{}",
+    );
+    const userCompanies = CheckcurrentUser.user.company
+      ? CheckcurrentUser.user.company.split(",")
+      : [];
 
     if (userCompanies.length === 0) {
-      console.error('No company information found in local storage');
+      console.error("No company information found in local storage");
       return;
     }
 
     this.supplierService.getDataCompany().subscribe({
       next: (response: any) => {
-
-        if (CheckcurrentUser.user.company === 'ALL') {
+        if (CheckcurrentUser.user.company === "ALL") {
           this.listOfCompany = response;
           this.filteredDataompany = response;
         } else {
-          this.listOfCompany = response.filter((company: DataCompany) => userCompanies.includes(company.abbreviation));
+          this.listOfCompany = response.filter((company: DataCompany) =>
+            userCompanies.includes(company.abbreviation),
+          );
           this.filteredDataompany = this.listOfCompany;
         }
         this._cdr.markForCheck();
       },
-      error: () => {
-      }
+      error: () => {},
     });
   }
 
   validateEmail() {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,7}){1,2}$/;
+    const emailPattern =
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,7}){1,2}$/;
     if (!this.supplierForm.value.email) {
-      this.emailError = 'Email is required';
-
+      this.emailError = "Email is required";
     } else if (!emailPattern.test(this.supplierForm.value.email)) {
-      if (this.supplierForm.value.email === '-') {
-        this.emailError = '';
-      }
-      else {
-        this.emailError = 'Email is wrong emailPattern';
+      if (this.supplierForm.value.email === "-") {
+        this.emailError = "";
+      } else {
+        this.emailError = "Email is wrong emailPattern";
       }
     } else {
-      this.emailError = '';
+      this.emailError = "";
     }
     this.cdr.detectChanges();
   }
 
   async checkSave(event: Event) {
-    this.validateEmail()
-    if (this.emailError != '' && !this.isFormValidWithoutSupplierNum()) {
+    this.validateEmail();
+    if (this.emailError != "" && !this.isFormValidWithoutSupplierNum()) {
       Swal.fire({
-        icon: 'warning',
-        title: 'ข้อมูลไม่ถูกต้อง',
-        text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-        confirmButtonText: 'ปิด'
+        icon: "warning",
+        title: "ข้อมูลไม่ถูกต้อง",
+        text: "กรุณากรอกข้อมูลให้ครบถ้วน",
+        confirmButtonText: "ปิด",
       });
       return;
-    }
-    else if (this.emailError != '' && this.isFormValidWithoutSupplierNum()) {
+    } else if (this.emailError != "" && this.isFormValidWithoutSupplierNum()) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Email ไม่ถูกต้อง',
-        text: 'โปรดตรวจสอบให้แน่ใจว่า Format Email ของคุณถูกต้อง',
-        confirmButtonText: 'ปิด'
+        icon: "warning",
+        title: "Email ไม่ถูกต้อง",
+        text: "โปรดตรวจสอบให้แน่ใจว่า Format Email ของคุณถูกต้อง",
+        confirmButtonText: "ปิด",
       });
       return;
     }
 
-    if (this.showSupplierBankForm && !this.isFormValidWithoutSupplierIdCompanyBank()) {
+    if (
+      this.showSupplierBankForm &&
+      !this.isFormValidWithoutSupplierIdCompanyBank()
+    ) {
       await Swal.fire({
-        icon: 'warning',
-        title: 'ข้อมูลไม่ถูกต้อง',
-        text: 'โปรดตรวจสอบให้แน่ใจว่าคุณได้กรอกข้อมูล Bank ครบแล้ว',
-        confirmButtonText: 'ปิด'
+        icon: "warning",
+        title: "ข้อมูลไม่ถูกต้อง",
+        text: "โปรดตรวจสอบให้แน่ใจว่าคุณได้กรอกข้อมูล Bank ครบแล้ว",
+        confirmButtonText: "ปิด",
       });
       this.submittedFormLottoRisk$.next(true);
       return;
-    }
-    else if (this.showSupplierBankFormAdd && !this.isFormValidWithoutSupplierIdCompanyBankAdd()) {
+    } else if (
+      this.showSupplierBankFormAdd &&
+      !this.isFormValidWithoutSupplierIdCompanyBankAdd()
+    ) {
       this.submittedFormLottoRisk$.next(true);
       await Swal.fire({
-        icon: 'warning',
-        title: 'ข้อมูลไม่ถูกต้อง',
-        text: 'โปรดตรวจสอบให้แน่ใจว่าคุณได้กรอกข้อมูล Bank ครบแล้ว',
-        confirmButtonText: 'ปิด'
+        icon: "warning",
+        title: "ข้อมูลไม่ถูกต้อง",
+        text: "โปรดตรวจสอบให้แน่ใจว่าคุณได้กรอกข้อมูล Bank ครบแล้ว",
+        confirmButtonText: "ปิด",
       });
       return;
-    }
-    else {
+    } else {
       try {
         await this.save(event);
       } catch (error) {
-        console.error('Error occurred:', error);
+        console.error("Error occurred:", error);
       }
     }
   }
 
-
   cancel(event: Event): void {
     event.preventDefault();
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "Do you want to cancel ?",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, save it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        this.setStatusAndSubmit('Cancel');
+        this.setStatusAndSubmit("Cancel");
       }
     });
   }
@@ -1921,23 +2282,23 @@ export class SupplierAddComponent {
   async save(event: Event): Promise<void> {
     event.preventDefault();
     const result = await Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "Do you want to save the changes?",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, save it!",
     });
     if (result.isConfirmed) {
       if (this.suppilerId == null) {
-        this.setStatusAndSubmit('Draft');
+        this.setStatusAndSubmit("Draft");
       } else {
-        const currentStatus = this.supplierForm.get('status')?.value;
-        if (this.isApproved && currentStatus === 'Pending Approved By ACC') {
-          this.setStatusAndSubmit('Pending Approved By ACC');
+        const currentStatus = this.supplierForm.get("status")?.value;
+        if (this.isApproved && currentStatus === "Pending Approved By ACC") {
+          this.setStatusAndSubmit("Pending Approved By ACC");
         } else {
-          this.setStatusAndSubmit('Draft');
+          this.setStatusAndSubmit("Draft");
         }
       }
     }
@@ -1946,18 +2307,21 @@ export class SupplierAddComponent {
   submit(event: Event): void {
     event.preventDefault();
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "Do you want to save the changes?",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, save it!",
     }).then((result) => {
       if (result.isConfirmed) {
         if (result.isConfirmed) {
-          const currentStatus = this.supplierForm.get('status')?.value;
-          const newStatus = currentStatus === 'Pending Approved By ACC' ? 'Pending Approve By FN' : 'Pending Approved By ACC';
+          const currentStatus = this.supplierForm.get("status")?.value;
+          const newStatus =
+            currentStatus === "Pending Approved By ACC"
+              ? "Pending Approve By FN"
+              : "Pending Approved By ACC";
           this.setStatusAndSubmit(newStatus);
         }
       }
@@ -1967,27 +2331,29 @@ export class SupplierAddComponent {
   async approve(event: Event): Promise<void> {
     event.preventDefault();
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "Do you want to save the changes?",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, save it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        const currentStatus = this.supplierForm.get('status')?.value;
-        const newStatus = currentStatus === 'Approved By ACC' ? 'Approved By FN' : 'Approved By ACC';
+        const currentStatus = this.supplierForm.get("status")?.value;
+        const newStatus =
+          currentStatus === "Approved By ACC"
+            ? "Approved By FN"
+            : "Approved By ACC";
         this.setStatusAndSubmit(newStatus);
-      }
-      else if (result.dismiss === Swal.DismissReason.cancel) {
-        this.supplierForm.patchValue({ supplierNum: '' });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        this.supplierForm.patchValue({ supplierNum: "" });
         Swal.fire({
-          icon: 'info',
-          title: 'Cancelled',
-          text: 'Your Supplier number has been cleared.',
+          icon: "info",
+          title: "Cancelled",
+          text: "Your Supplier number has been cleared.",
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
       }
     });
@@ -1995,10 +2361,10 @@ export class SupplierAddComponent {
 
   async checkApprove(event: Event) {
     try {
-      this.supplierForm.value.supplierNum = '-'
+      this.supplierForm.value.supplierNum = "-";
       await this.approve(event);
     } catch (error) {
-      console.error('Error occurred:', error);
+      console.error("Error occurred:", error);
     }
   }
 
@@ -2007,17 +2373,20 @@ export class SupplierAddComponent {
     this.showRejectPopup().then((rejectReason) => {
       if (rejectReason !== undefined) {
         Swal.fire({
-          title: 'Are you sure?',
+          title: "Are you sure?",
           text: "Do you want to save the changes?",
-          icon: 'warning',
+          icon: "warning",
           showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, save it!'
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, save it!",
         }).then((result) => {
           if (result.isConfirmed) {
-            const currentStatus = this.supplierForm.get('status')?.value;
-            const newStatus = currentStatus === 'Approved By ACC' ? 'Pending Approved By ACC' : 'Reject By ACC';
+            const currentStatus = this.supplierForm.get("status")?.value;
+            const newStatus =
+              currentStatus === "Approved By ACC"
+                ? "Pending Approved By ACC"
+                : "Reject By ACC";
             this.reasonTemp = rejectReason;
             this.setStatusAndSubmit(newStatus);
           }
@@ -2029,19 +2398,19 @@ export class SupplierAddComponent {
 
   showRejectPopup(): Promise<string | undefined> {
     return Swal.fire({
-      title: 'Reject Reason',
-      input: 'textarea',
-      inputLabel: 'Please provide a reason for rejection',
-      inputPlaceholder: 'Enter your reason here...',
+      title: "Reject Reason",
+      input: "textarea",
+      inputLabel: "Please provide a reason for rejection",
+      inputPlaceholder: "Enter your reason here...",
       showCancelButton: true,
-      confirmButtonText: 'Submit',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: "Submit",
+      cancelButtonText: "Cancel",
       inputValidator: (value) => {
         if (!value) {
-          return 'กรุณากรอกเหตุผล'
+          return "กรุณากรอกเหตุผล";
         }
         return null;
-      }
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         return result.value;
@@ -2058,24 +2427,23 @@ export class SupplierAddComponent {
     }
 
     await this.onSubmit();
-
   }
 
   sendEmailNotification(): void {
-    const supplierName = this.supplierForm.get('name')?.value;
-    const TaxID = this.supplierForm.get('tax_Id')?.value;
-    var name = '';
+    const supplierName = this.supplierForm.get("name")?.value;
+    const TaxID = this.supplierForm.get("tax_Id")?.value;
+    var name = "";
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
-      name = data.firstname
+      name = data.firstname;
       this._cdr.markForCheck();
     });
-    if (this.supplierForm.get('status')?.value === 'Pending Approved By ACC') {
-      const company = this.supplierForm.get('company')?.value;
+    if (this.supplierForm.get("status")?.value === "Pending Approved By ACC") {
+      const company = this.supplierForm.get("company")?.value;
       this.supplierService.findApproversByCompanySupplier(company).subscribe(
         (approvers) => {
           approvers.forEach((approver: any) => {
             const to = approver.email;
-            const subject = 'OnePortal Notification';
+            const subject = "OnePortal Notification";
             const body = `
               <p>เรียน ส่วนงานบัญชี</p>
               <br>
@@ -2085,7 +2453,7 @@ export class SupplierAddComponent {
               <br>
               <p>เราได้รับคำขอเปิด Supplier: ${supplierName} Tax ID:${TaxID} ของคุณแล้ว</p>
               <br>
-              <p>สถานะคำขอของคุณ: ${this.supplierForm.get('status')?.value} </p>
+              <p>สถานะคำขอของคุณ: ${this.supplierForm.get("status")?.value} </p>
               <br>
               <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ <a href='http://10.10.0.28:8085/'>ลิงก์นี้</a></p>
               <br>
@@ -2094,26 +2462,28 @@ export class SupplierAddComponent {
               <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
 
             this.emailService.sendEmail(to, subject, body).subscribe(
-              (response) => {
-              },
+              (response) => {},
               (error) => {
-                console.error('Error sending email', error);
-              }
+                console.error("Error sending email", error);
+              },
             );
           });
         },
         (error) => {
-          console.error('Error finding approvers', error);
-        }
+          console.error("Error finding approvers", error);
+        },
       );
-    }
-    else if ((this.supplierForm.get('status')?.value === 'Approved By ACC' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee'))) {
-      const company = this.supplierForm.get('company')?.value;
+    } else if (
+      this.supplierForm.get("status")?.value === "Approved By ACC" &&
+      (this.supplierForm.get("paymentMethod")?.value === "Transfer" ||
+        this.supplierForm.get("paymentMethod")?.value === "Transfer_Employee")
+    ) {
+      const company = this.supplierForm.get("company")?.value;
       this.supplierService.findApproversFNByCompany(company).subscribe(
         (approvers) => {
           approvers.forEach((approver: any) => {
             const to = approver.email;
-            const subject = 'OnePortal Notification';
+            const subject = "OnePortal Notification";
             const body = `
             <p>เรียน ส่วนงานการเงิน</p>
             <br>
@@ -2123,7 +2493,7 @@ export class SupplierAddComponent {
             <br>
             <p>เราได้รับคำขอเปิด Supplier: ${supplierName} Tax ID:${TaxID} ของคุณได้รับการอนุมัติจากบัญชีแล้ว</p>
             <br>
-            <p>สถานะคำขอของคุณ: ${this.supplierForm.get('status')?.value}</p>
+            <p>สถานะคำขอของคุณ: ${this.supplierForm.get("status")?.value}</p>
             <br>
             <p>คุณสามารถติดตามสถานะคำขอของคุณได้ที่ <a href='http://10.10.0.28:8085/'>ลิงก์นี้</a></p>
             <br>
@@ -2132,26 +2502,28 @@ export class SupplierAddComponent {
             <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
 
             this.emailService.sendEmail(to, subject, body).subscribe(
-              (response) => {
-              },
+              (response) => {},
               (error) => {
-                console.error('Error sending email', error);
-              }
+                console.error("Error sending email", error);
+              },
             );
           });
         },
         (error) => {
-          console.error('Error finding approvers', error);
-        }
+          console.error("Error finding approvers", error);
+        },
       );
-    }
-    else if ((this.supplierForm.get('status')?.value === 'Approved By FN' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee'))) {
-      const company = this.supplierForm.get('company')?.value;
+    } else if (
+      this.supplierForm.get("status")?.value === "Approved By FN" &&
+      (this.supplierForm.get("paymentMethod")?.value === "Transfer" ||
+        this.supplierForm.get("paymentMethod")?.value === "Transfer_Employee")
+    ) {
+      const company = this.supplierForm.get("company")?.value;
       this.supplierService.findApproversByCompanySupplier(company).subscribe(
         (approvers) => {
           approvers.forEach((approver: any) => {
             const to = approver.email;
-            const subject = 'OnePortal Notification';
+            const subject = "OnePortal Notification";
             const body = `
               <p>เรียน ส่วนงานบัญชี</p>
               <br>
@@ -2159,38 +2531,40 @@ export class SupplierAddComponent {
               <br>
               <p>คำขอ Supplier ของท่าน ได้รับการอนุมัติ เรียบร้อยแล้ว อยู่ระหว่างการนำข้อมูลเข้าระบบ ERP Oracle </p>
               <br>
-              <p>Supplier Number : ${this.supplierForm.get('supplierNum')?.value}</p>
-              <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
-              <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
-              <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+              <p>Supplier Number : ${this.supplierForm.get("supplierNum")?.value}</p>
+              <p>Supplier Name : ${this.supplierForm.get("name")?.value}</p>
+              <p>Tax ID : ${this.supplierForm.get("tax_Id")?.value} </p>
+              <p>Type: ${this.supplierForm.get("supplierType")?.value} </p>
               <br>
-              <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+              <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get("id")?.value}'>ลิงก์นี้</a></p>
               <br>
               <p>Best Regards</p>
               <p>OnePortal</p>
               <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>
               `;
             this.emailService.sendEmail(to, subject, body).subscribe(
-              (response) => {
-              },
+              (response) => {},
               (error) => {
-                console.error('Error sending email', error);
-              }
+                console.error("Error sending email", error);
+              },
             );
           });
         },
         (error) => {
-          console.error('Error finding approvers', error);
-        }
+          console.error("Error finding approvers", error);
+        },
       );
-    }
-    else if ((this.supplierForm.get('status')?.value === 'Reject By FN' && (this.supplierForm.get('paymentMethod')?.value === 'Transfer' || this.supplierForm.get('paymentMethod')?.value === 'Transfer_Employee'))) {
-      const company = this.supplierForm.get('company')?.value;
+    } else if (
+      this.supplierForm.get("status")?.value === "Reject By FN" &&
+      (this.supplierForm.get("paymentMethod")?.value === "Transfer" ||
+        this.supplierForm.get("paymentMethod")?.value === "Transfer_Employee")
+    ) {
+      const company = this.supplierForm.get("company")?.value;
       this.supplierService.findApproversByCompanySupplier(company).subscribe(
         (approvers) => {
           approvers.forEach((approver: any) => {
             const to = approver.email;
-            const subject = 'OnePortal Notification';
+            const subject = "OnePortal Notification";
             const body = `
               <p>เรียน ส่วนงานบัญชี</p>
               <br>
@@ -2198,29 +2572,28 @@ export class SupplierAddComponent {
               <br>
               <p>คำขอ Supplier ของท่าน ถูกปฏิเสธ จากส่วนงานการเงิน โปรดตรวจสอบสาเหตุที่โดนปฏิเสธและทำการแก้ไข </p>
               <br>
-              <p>Supplier Number : ${this.supplierForm.get('supplierNum')?.value}</p>
-              <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
-              <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
-              <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+              <p>Supplier Number : ${this.supplierForm.get("supplierNum")?.value}</p>
+              <p>Supplier Name : ${this.supplierForm.get("name")?.value}</p>
+              <p>Tax ID : ${this.supplierForm.get("tax_Id")?.value} </p>
+              <p>Type: ${this.supplierForm.get("supplierType")?.value} </p>
               <br>
-              <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+              <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get("id")?.value}'>ลิงก์นี้</a></p>
               <br>
               <p>Best Regards</p>
               <p>OnePortal</p>
               <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>
               `;
             this.emailService.sendEmail(to, subject, body).subscribe(
-              (response) => {
-              },
+              (response) => {},
               (error) => {
-                console.error('Error sending email', error);
-              }
+                console.error("Error sending email", error);
+              },
             );
           });
         },
         (error) => {
-          console.error('Error finding approvers', error);
-        }
+          console.error("Error finding approvers", error);
+        },
       );
     }
   }
@@ -2235,28 +2608,39 @@ export class SupplierAddComponent {
   }
 
   isOverseaSupplier(): boolean {
-    return this.selectType === 'OSEA';
+    return this.selectType === "OSEA";
   }
 
   onSupplierTypeOneChange(value: string) {
-    if (value === 'One Time') {
+    if (value === "One Time") {
       this.isOneTime = true;
       this.supplierForm.patchValue({
-        supplierNum: '',
-        site: '00000',
-        supplierType: '-'
+        supplierNum: "",
+        site: "00000",
+        supplierType: "-",
       });
     } else {
       this.isOneTime = false;
     }
   }
 
-
   isFormValidWithoutSupplierNum(): boolean {
     const requiredFields = [
-      'name', 'tax_Id', 'addressSup', 'district', 'subdistrict',
-      'province', 'postalCode', 'tel', 'email', 'supplierType',
-      'site', 'paymentMethod', 'company', 'type', 'mobile'
+      "name",
+      "tax_Id",
+      "addressSup",
+      "district",
+      "subdistrict",
+      "province",
+      "postalCode",
+      "tel",
+      "email",
+      "supplierType",
+      "site",
+      "paymentMethod",
+      "company",
+      "type",
+      "mobile",
     ];
 
     for (const field of requiredFields) {
@@ -2270,7 +2654,11 @@ export class SupplierAddComponent {
 
   isFormValidBank(): boolean {
     const requiredFields = [
-      'supplierGroup', 'nameBank', 'branch', 'accountNum', 'accountName',
+      "supplierGroup",
+      "nameBank",
+      "branch",
+      "accountNum",
+      "accountName",
     ];
 
     for (const field of requiredFields) {
@@ -2284,7 +2672,11 @@ export class SupplierAddComponent {
 
   isFormValidBankAdd(): boolean {
     const requiredFields = [
-      'supplierGroup', 'nameBank', 'branch', 'accountNum', 'accountName',
+      "supplierGroup",
+      "nameBank",
+      "branch",
+      "accountNum",
+      "accountName",
     ];
 
     for (const field of requiredFields) {
@@ -2298,19 +2690,24 @@ export class SupplierAddComponent {
 
   updateFilteredSupplierGroups(selectedGroup: string): void {
     if (this.showSupplierBankFormAdd) {
-      this.listOfGroup = this.filteredListOfGroup.filter(group => {
-        return group.group_name !== selectedGroup && group.group_name !== 'ALL Group';
+      this.listOfGroup = this.filteredListOfGroup.filter((group) => {
+        return (
+          group.group_name !== selectedGroup && group.group_name !== "ALL Group"
+        );
       });
+    } else {
+      this.listOfGroup = this.filteredListOfGroup;
     }
-    else {
-      this.listOfGroup = this.filteredListOfGroup
-    }
-    this.supplierBankFormAdd.get('supplierGroup')?.setValue('');
+    this.supplierBankFormAdd.get("supplierGroup")?.setValue("");
   }
 
   isFormValidWithoutSupplierIdCompanyBank(): boolean {
     const requiredFields = [
-      'supplierGroup', 'accountName', 'accountNum', 'branch', 'nameBank',
+      "supplierGroup",
+      "accountName",
+      "accountNum",
+      "branch",
+      "nameBank",
     ];
 
     for (const field of requiredFields) {
@@ -2325,7 +2722,11 @@ export class SupplierAddComponent {
 
   isFormValidWithoutSupplierIdCompanyBankAdd(): boolean {
     const requiredFields = [
-      'supplierGroup', 'accountName', 'accountNum', 'branch', 'nameBank',
+      "supplierGroup",
+      "accountName",
+      "accountNum",
+      "branch",
+      "nameBank",
     ];
 
     for (const field of requiredFields) {
@@ -2338,17 +2739,17 @@ export class SupplierAddComponent {
   }
 
   sendEmailNotificationRequester(): void {
-    const status = this.supplierForm.get('status')?.value;
-    const paymentMethod = this.supplierForm.get('paymentMethod')?.value;
-    var to = ''
-    var subject = ''
-    var body = ''
+    const status = this.supplierForm.get("status")?.value;
+    const paymentMethod = this.supplierForm.get("paymentMethod")?.value;
+    var to = "";
+    var subject = "";
+    var body = "";
     this.userService.findUserById(this.idreq).subscribe((data: any) => {
-      this.userData = data
+      this.userData = data;
 
-      if (status === 'Pending Approved By ACC') {
+      if (status === "Pending Approved By ACC") {
         to = this.userData.email;
-        subject = 'OnePortal Notification';
+        subject = "OnePortal Notification";
         body = `
         <p>เรียน คุณ${this.userData.firstname}</p>
         <br>
@@ -2356,11 +2757,11 @@ export class SupplierAddComponent {
         <br>
         <p>คำขอเปิด Supplier ใหม่ ของท่าน ส่งให้ส่วนงานบัญชีเรียบร้อยแล้ว</p>
         <br>
-        <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
-        <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
-        <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+        <p>Supplier Name : ${this.supplierForm.get("name")?.value}</p>
+        <p>Tax ID : ${this.supplierForm.get("tax_Id")?.value} </p>
+        <p>Type: ${this.supplierForm.get("supplierType")?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a>http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get("id")?.value}</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี [เบอร์กลางบัญชี]</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -2368,11 +2769,13 @@ export class SupplierAddComponent {
         <p>Best Regards</p>
         <p>OnePortal</p>
         <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
-      }
-      else if (status === 'Approved By ACC') {
-        if (paymentMethod === 'Transfer' || paymentMethod === 'Transfer_Employee') {
+      } else if (status === "Approved By ACC") {
+        if (
+          paymentMethod === "Transfer" ||
+          paymentMethod === "Transfer_Employee"
+        ) {
           to = this.userData.email;
-          subject = 'OnePortal Notification';
+          subject = "OnePortal Notification";
           body = `
         <p>เรียน คุณ${this.userData.firstname}</p>
         <br>
@@ -2380,11 +2783,11 @@ export class SupplierAddComponent {
         <br>
         <p>คำขอ Supplier ของท่าน ${status} โดยส่วนงานบัญชี</p>
         <br>
-        <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
-        <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
-        <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+        <p>Supplier Name : ${this.supplierForm.get("name")?.value}</p>
+        <p>Tax ID : ${this.supplierForm.get("tax_Id")?.value} </p>
+        <p>Type: ${this.supplierForm.get("supplierType")?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get("id")?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.telAcc}</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -2392,10 +2795,9 @@ export class SupplierAddComponent {
         <p>Best Regards</p>
         <p>OnePortal</p>
         <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
-        }
-        else {
+        } else {
           to = this.userData.email;
-          subject = 'OnePortal Notification';
+          subject = "OnePortal Notification";
           body = `
         <p>เรียน คุณ${this.userData.firstname}</p>
         <br>
@@ -2403,12 +2805,12 @@ export class SupplierAddComponent {
         <br>
         <p>คำขอ Supplier ของท่าน ได้รับการอนุมัติ เรียบร้อยแล้ว อยู่ระหว่างการนำข้อมูลเข้าระบบ ERP Oracle </p>
         <br>
-        <p>Supplier Number : ${this.supplierForm.get('supplierNum')?.value}</p>
-        <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
-        <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
-        <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+        <p>Supplier Number : ${this.supplierForm.get("supplierNum")?.value}</p>
+        <p>Supplier Name : ${this.supplierForm.get("name")?.value}</p>
+        <p>Tax ID : ${this.supplierForm.get("tax_Id")?.value} </p>
+        <p>Type: ${this.supplierForm.get("supplierType")?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get("id")?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.telAcc}</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -2417,10 +2819,9 @@ export class SupplierAddComponent {
         <p>OnePortal</p>
         <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
         }
-      }
-      else if (status === 'Reject By ACC') {
+      } else if (status === "Reject By ACC") {
         to = this.userData.email;
-        subject = 'OnePortal Notification';
+        subject = "OnePortal Notification";
         body = `
         <p>เรียน คุณ${this.userData.firstname}</p>
         <br>
@@ -2428,11 +2829,11 @@ export class SupplierAddComponent {
         <br>
         <p>คำขอ Supplier ของท่าน ${status} โดยส่วนงานบัญชี</p>
         <br>
-        <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
-        <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
-        <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+        <p>Supplier Name : ${this.supplierForm.get("name")?.value}</p>
+        <p>Tax ID : ${this.supplierForm.get("tax_Id")?.value} </p>
+        <p>Type: ${this.supplierForm.get("supplierType")?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get("id")?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.telAcc}</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -2440,10 +2841,9 @@ export class SupplierAddComponent {
         <p>Best Regards</p>
         <p>OnePortal</p>
         <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
-      }
-      else if (status === 'Reject By FN') {
+      } else if (status === "Reject By FN") {
         to = this.userData.email;
-        subject = 'OnePortal Notification';
+        subject = "OnePortal Notification";
         body = `
         <p>เรียน คุณ${this.userData.firstname}</p>
         <br>
@@ -2451,11 +2851,11 @@ export class SupplierAddComponent {
         <br>
         <p>คำขอ Supplier ของท่าน ${status} โดยส่วนงานการเงิน</p>
         <br>
-        <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
-        <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
-        <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+        <p>Supplier Name : ${this.supplierForm.get("name")?.value}</p>
+        <p>Tax ID : ${this.supplierForm.get("tax_Id")?.value} </p>
+        <p>Type: ${this.supplierForm.get("supplierType")?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get("id")?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.telAcc}</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -2463,10 +2863,9 @@ export class SupplierAddComponent {
         <p>Best Regards</p>
         <p>OnePortal</p>
         <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
-      }
-      else if (status === 'Approved By FN') {
+      } else if (status === "Approved By FN") {
         to = this.userData.email;
-        subject = 'OnePortal Notification';
+        subject = "OnePortal Notification";
         body = `
         <p>เรียน คุณ${this.userData.firstname}</p>
         <br>
@@ -2474,12 +2873,12 @@ export class SupplierAddComponent {
         <br>
         <p>คำขอ Supplier ของท่าน ได้รับการอนุมัติ เรียบร้อยแล้ว อยู่ระหว่างการนำข้อมูลเข้าระบบ ERP Oracle </p>
         <br>
-        <p>Supplier Number : ${this.supplierForm.get('supplierNum')?.value}</p>
-        <p>Supplier Name : ${this.supplierForm.get('name')?.value}</p>
-        <p>Tax ID : ${this.supplierForm.get('tax_Id')?.value} </p>
-        <p>Type: ${this.supplierForm.get('supplierType')?.value} </p>
+        <p>Supplier Number : ${this.supplierForm.get("supplierNum")?.value}</p>
+        <p>Supplier Name : ${this.supplierForm.get("name")?.value}</p>
+        <p>Tax ID : ${this.supplierForm.get("tax_Id")?.value} </p>
+        <p>Type: ${this.supplierForm.get("supplierType")?.value} </p>
         <br>
-        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get('id')?.value}'>ลิงก์นี้</a></p>
+        <p>ท่านสามารถติดตามสถานะคำขอของท่าน ได้ที่ <a href='http://10.10.0.28:8085/feature/supplier/view/${this.supplierForm.get("id")?.value}'>ลิงก์นี้</a></p>
         <br>
         <p>หากมีข้อสงสัยเพิ่มเติม สามารถสอบถามได้ที่บัญชี ${this.telAcc}</p>
         <p>หรือหากพบเจอปัญหาของระบบ สามารถติดต่อ IT #9432</p>
@@ -2489,83 +2888,105 @@ export class SupplierAddComponent {
         <p>กลุ่มบริษัท เดอะ วัน เอ็นเตอร์ไพรส์ จำกัด (มหาชน)</p>`;
       }
       this.emailService.sendEmail(to, subject, body).subscribe(
-        (response) => {
-        },
+        (response) => {},
         (error) => {
-          console.error('Error sending email', error);
-        }
+          console.error("Error sending email", error);
+        },
       );
       this._cdr.markForCheck();
     });
   }
 
   checkAndCallApi(): void {
-    const supplierType = this.supplierForm.get('supplierType')?.value;
-    const taxId = this.supplierForm.get('tax_Id')?.value;
-    const userId = this.supplierForm.get('id')?.value;
-    const name = this.supplierForm.get('name')?.value;
+    const supplierType = this.supplierForm.get("supplierType")?.value;
+    const taxId = this.supplierForm.get("tax_Id")?.value;
+    const userId = this.supplierForm.get("id")?.value;
+    const name = this.supplierForm.get("name")?.value;
 
-    if (taxId.length < 13 && (supplierType !== 'OSEA')) {
+    if (taxId.length < 13 && supplierType !== "OSEA") {
       Swal.fire({
-        icon: 'warning',
-        title: 'TaxId ไม่ครบ 13 หลัก',
-        text: 'กรุณากรอก TaxId ให้ครบ 13 หลัก',
-        confirmButtonText: 'ปิด'
+        icon: "warning",
+        title: "TaxId ไม่ครบ 13 หลัก",
+        text: "กรุณากรอก TaxId ให้ครบ 13 หลัก",
+        confirmButtonText: "ปิด",
       });
-      this.supplierForm.patchValue({ tax_Id: '' });
+      this.supplierForm.patchValue({ tax_Id: "" });
       return;
     }
-    if ((supplierType && taxId) && userId == 0) {
+    if (taxId && userId == 0) {
       const formData = {
         taxId: taxId,
         supplierType: supplierType,
-        name: name
+        name: name,
       };
-      this.supplierService.CheckDuplicateSupplierByTaxIdAndType(formData).subscribe({
-        next: (response: string) => {
-          if (response.includes('No duplicate supplier found')) {
-          }
-          this._cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Error occurred:', err);
-          const payload = JSON.parse(err);
-
-          let html = `<div>${payload.message}</div>`;
-
-          Object.keys(payload).forEach(key => {
-            if (key !== 'message') {
-              if (key === 'supplierInfo') {
-                html += `<div><b>${payload[key]}</b></div>`;
-              } else {
-                html += `<div>${payload[key]}</div>`;
-              }
+      this.supplierService
+        .CheckDuplicateSupplierByTaxIdAndType(formData)
+        .subscribe({
+          next: (response: string) => {
+            if (response.includes("No duplicate supplier found")) {
             }
-          });
+            this._cdr.detectChanges();
+          },
+          error: (err) => {
+            console.log("err:", err);
 
-          Swal.fire({
-            icon: 'warning',
-            title: 'ข้อมูลซ้ำ',
-            html: html,
-            confirmButtonText: 'ปิด'
-          });
-          this.supplierForm.patchValue({ tax_Id: '' });
-          this._cdr.detectChanges();
-        }
-      });
+            let payload: any;
+            try {
+              payload =
+                typeof err === "string"
+                  ? JSON.parse(err)
+                  : JSON.parse(err.message);
+            } catch {
+              Swal.fire({
+                icon: "warning",
+                title: "เกิดข้อผิดพลาด",
+                text: String(err),
+                confirmButtonText: "ปิด",
+              });
+              this.supplierForm.patchValue({ tax_Id: "" });
+              this._cdr.detectChanges();
+              return;
+            }
+
+            let html = `<div>${payload.message}</div>`;
+            Object.keys(payload).forEach((key) => {
+              if (key !== "message" && key !== "source") {
+                if (key === "supplierInfo") {
+                  const items = payload[key]
+                    .split("|")
+                    .map((item: string) => item.trim());
+                  html += items
+                    .map((item: string) => `<div><b>${item}</b></div>`)
+                    .join("");
+                } else {
+                  html += `<div>${payload[key]}</div>`;
+                }
+              }
+            });
+
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลซ้ำ",
+              html: html,
+              confirmButtonText: "ปิด",
+            });
+            this.supplierForm.patchValue({ tax_Id: "" });
+            this._cdr.detectChanges();
+          },
+        });
     }
   }
 
   formatDateTime(dateTime: string): string {
     const date = new Date(dateTime);
 
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
 
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
 
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   }
@@ -2577,13 +2998,13 @@ export class SupplierAddComponent {
           fileName: file.fileName,
           fileType: file.fileType,
           filePath: file.filePath,
-          labelText: file.labelText
+          labelText: file.labelText,
         }));
-        this.displayFiles = this.filess && this.filess.length > 0 ? this.filess : this.files;
+        this.displayFiles =
+          this.filess && this.filess.length > 0 ? this.filess : this.files;
         this._cdr.markForCheck();
       },
-      error: () => {
-      }
+      error: () => {},
     });
   }
 
@@ -2596,57 +3017,69 @@ export class SupplierAddComponent {
           fileName: file.fileName,
           fileType: file.fileType,
           filePath: file.filePath,
-          labelText: file.labelText
+          labelText: file.labelText,
         }));
         this.mapFilesToGroups();
         this._cdr.markForCheck();
       },
-      error: () => {
-      }
+      error: () => {},
     });
   }
 
   prepareFormAddData(): FormData {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
 
     if (!currentUser || !currentUser.user.userId) {
-      console.error('Current user is not available in local storage');
+      console.error("Current user is not available in local storage");
       return new FormData();
     }
 
     const formValue = { ...this.supplierForm.value };
-    formValue.postalCode = formValue.postalCode.split(':')[0].split('-')[0];
+    formValue.postalCode = formValue.postalCode.split(":")[0].split("-")[0];
     formValue.UserId = currentUser.user.userId;
 
     const formData = new FormData();
-    formData.append('groupName', 'SupplierFile');
-    formData.append('fileIdsToRemoveJson', JSON.stringify(this.fileIdsToRemove || []));
-    const SupplierFilesMetadata: { supplierGroup: string, fileName: string, labelText: string }[] = [];
+    formData.append("groupName", "SupplierFile");
+    formData.append(
+      "fileIdsToRemoveJson",
+      JSON.stringify(this.fileIdsToRemove || []),
+    );
+    const SupplierFilesMetadata: {
+      supplierGroup: string;
+      fileName: string;
+      labelText: string;
+    }[] = [];
     const labelTexts: string[] = [];
     for (const selectedFile of this.selectedFilesSupplier) {
-      formData.append('SupplierFiles', selectedFile.file, selectedFile.file.name);
+      formData.append(
+        "SupplierFiles",
+        selectedFile.file,
+        selectedFile.file.name,
+      );
       SupplierFilesMetadata.push({
-        supplierGroup: 'SupplierFile',
+        supplierGroup: "SupplierFile",
         fileName: selectedFile.file.name,
-        labelText: selectedFile.labelText
+        labelText: selectedFile.labelText,
       });
       labelTexts.push(selectedFile.labelText);
     }
 
-    const fileIds = (this.fileIdsToRemove || []).map(file => file.FileId).filter(id => id !== undefined);
-    const filesToRemoveBank: number[] = this.fileIdsToRemoveBank
-
-
+    const fileIds = (this.fileIdsToRemove || [])
+      .map((file) => file.FileId)
+      .filter((id) => id !== undefined);
+    const filesToRemoveBank: number[] = this.fileIdsToRemoveBank;
 
     const supplierBankData = [];
     let mainSupplierId: number | undefined;
     let mainCompany: string | undefined;
     const labelTextsGrouped: { [key: string]: string[] } = {};
-    const supplierBankFilesMetadata: { supplierGroup: string, fileName: string, labelText: string }[] = [];
-
+    const supplierBankFilesMetadata: {
+      supplierGroup: string;
+      fileName: string;
+      labelText: string;
+    }[] = [];
 
     if (this.showSupplierBankForm) {
-
       const bankFormValue = { ...this.supplierBankForm.value };
       bankFormValue.supplierId = bankFormValue.supplierId || 0;
       mainSupplierId = bankFormValue.supplierId;
@@ -2654,46 +3087,59 @@ export class SupplierAddComponent {
 
       supplierBankData.push(bankFormValue);
 
-      this.selectedNewFilesSupplier.forEach(selectedFile => {
-        formData.append('SupplierBankFiles', selectedFile.file, selectedFile.file.name);
+      this.selectedNewFilesSupplier.forEach((selectedFile) => {
+        formData.append(
+          "SupplierBankFiles",
+          selectedFile.file,
+          selectedFile.file.name,
+        );
 
         supplierBankFilesMetadata.push({
           supplierGroup: bankFormValue.supplierGroup,
           fileName: selectedFile.file.name,
-          labelText: selectedFile.labelText
+          labelText: selectedFile.labelText,
         });
 
         if (!labelTextsGrouped[bankFormValue.supplierGroup]) {
           labelTextsGrouped[bankFormValue.supplierGroup] = [];
         }
-        labelTextsGrouped[bankFormValue.supplierGroup].push(selectedFile.labelText);
+        labelTextsGrouped[bankFormValue.supplierGroup].push(
+          selectedFile.labelText,
+        );
       });
     }
 
     if (this.showSupplierBankFormAdd) {
       const bankFormValueAdd = { ...this.supplierBankFormAdd.value };
-      bankFormValueAdd.supplierId = bankFormValueAdd.supplierId || mainSupplierId || 0;
+      bankFormValueAdd.supplierId =
+        bankFormValueAdd.supplierId || mainSupplierId || 0;
       bankFormValueAdd.company = bankFormValueAdd.company || mainCompany;
 
       supplierBankData.push(bankFormValueAdd);
 
-      this.selectedFilesAdd.forEach(selectedFile => {
-        formData.append('SupplierBankFiles', selectedFile.file, selectedFile.file.name);
+      this.selectedFilesAdd.forEach((selectedFile) => {
+        formData.append(
+          "SupplierBankFiles",
+          selectedFile.file,
+          selectedFile.file.name,
+        );
 
         supplierBankFilesMetadata.push({
           supplierGroup: bankFormValueAdd.supplierGroup,
           fileName: selectedFile.file.name,
-          labelText: selectedFile.labelText
+          labelText: selectedFile.labelText,
         });
 
         if (!labelTextsGrouped[bankFormValueAdd.supplierGroup]) {
           labelTextsGrouped[bankFormValueAdd.supplierGroup] = [];
         }
-        labelTextsGrouped[bankFormValueAdd.supplierGroup].push(selectedFile.labelText);
+        labelTextsGrouped[bankFormValueAdd.supplierGroup].push(
+          selectedFile.labelText,
+        );
       });
     }
 
-    supplierBankData.forEach(bank => {
+    supplierBankData.forEach((bank) => {
       const group = bank.supplierGroup;
       if (labelTextsGrouped[group]) {
         bank.LabelTextsV2 = { [group]: labelTextsGrouped[group] };
@@ -2701,43 +3147,61 @@ export class SupplierAddComponent {
     });
 
     for (let fileId of filesToRemoveBank) {
-      formData.append('FileIdsToRemove', fileId.toString());
+      formData.append("FileIdsToRemove", fileId.toString());
     }
 
-    formData.append('supplierJson', JSON.stringify(formValue));
-    formData.append('supplierBankJson', JSON.stringify(supplierBankData));
-    formData.append('fileIdsToRemoveJson', JSON.stringify(fileIds));
-    formData.append('fileBankIdsToRemoveJson', this.fileIdsToRemoveForBankJson);
-    formData.append('SupplierBankFilesMetadata', JSON.stringify(supplierBankFilesMetadata));
-    formData.append('SupplierFilesMetadata', JSON.stringify(SupplierFilesMetadata));
-    formData.append('rejectReason', JSON.stringify(this.reasonTemp));
+    formData.append("supplierJson", JSON.stringify(formValue));
+    formData.append("supplierBankJson", JSON.stringify(supplierBankData));
+    formData.append("fileIdsToRemoveJson", JSON.stringify(fileIds));
+    formData.append("fileBankIdsToRemoveJson", this.fileIdsToRemoveForBankJson);
+    formData.append(
+      "SupplierBankFilesMetadata",
+      JSON.stringify(supplierBankFilesMetadata),
+    );
+    formData.append(
+      "SupplierFilesMetadata",
+      JSON.stringify(SupplierFilesMetadata),
+    );
+    formData.append("rejectReason", JSON.stringify(this.reasonTemp));
     return formData;
   }
 
   isFieldValidSupplier(field: string): boolean {
     const control = this.supplierForm.get(field);
-    return !!control?.invalid && (!!control?.touched || (!!control?.untouched && this.submittedFormLottoRisk$.value));
+    return (
+      !!control?.invalid &&
+      (!!control?.touched ||
+        (!!control?.untouched && this.submittedFormLottoRisk$.value))
+    );
   }
 
   isFieldValidSupplierBank(field: string): boolean {
     const control = this.supplierBankForm.get(field);
-    return !!control?.invalid && (!!control?.touched || (!!control?.untouched && this.submittedFormLottoRisk$.value));
+    return (
+      !!control?.invalid &&
+      (!!control?.touched ||
+        (!!control?.untouched && this.submittedFormLottoRisk$.value))
+    );
   }
 
   isFieldValidSupplierBankAdd(field: string): boolean {
     const control = this.supplierBankFormAdd.get(field);
-    return !!control?.invalid && (!!control?.touched || (!!control?.untouched && this.submittedFormLottoRisk$.value));
+    return (
+      !!control?.invalid &&
+      (!!control?.touched ||
+        (!!control?.untouched && this.submittedFormLottoRisk$.value))
+    );
   }
 
   onEnterKeyPress(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       event.preventDefault();
 
       const targetElement = event.target as HTMLElement;
 
       if (targetElement && targetElement.closest) {
-        const form = targetElement.closest('form') as HTMLFormElement;
-        const inputs = Array.from(form.querySelectorAll('input'));
+        const form = targetElement.closest("form") as HTMLFormElement;
+        const inputs = Array.from(form.querySelectorAll("input"));
         const currentIndex = inputs.indexOf(targetElement as HTMLInputElement);
 
         if (currentIndex > -1 && currentIndex < inputs.length - 1) {
@@ -2751,30 +3215,32 @@ export class SupplierAddComponent {
   getTelACC(value: any) {
     if (value) {
       this.userService.findUserById(value).subscribe((data: any) => {
-        this.telAcc = data.tel
+        this.telAcc = data.tel;
       });
-    }
-    else {
+    } else {
       if (this.isApproved) {
-        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        this.userService.findUserById(currentUser.user.userId).subscribe((data: any) => {
-          this.telAcc = data.tel
-        });
+        const currentUser = JSON.parse(
+          localStorage.getItem("currentUser") || "{}",
+        );
+        this.userService
+          .findUserById(currentUser.user.userId)
+          .subscribe((data: any) => {
+            this.telAcc = data.tel;
+          });
       }
     }
   }
-
 
   openModalold(filePath: string): void {
     const pdfUrl = this.getAdjustedFilePath(filePath);
     this.modalDataService.setData(pdfUrl);
     this.modal.create({
-      nzTitle: 'PDF Viewer',
+      nzTitle: "PDF Viewer",
       nzContent: PdfViewerComponent,
       nzFooter: null,
-      nzWidth: '55vw',
-      nzStyle: { top: '10px' },
-      nzClassName: 'scroll'
+      nzWidth: "55vw",
+      nzStyle: { top: "10px" },
+      nzClassName: "scroll",
     });
   }
 
@@ -2783,11 +3249,11 @@ export class SupplierAddComponent {
   }
 
   sanitizeInput(field: string): void {
-    let value = this.supplierForm.get(field)?.value || '';
-    const supplierType = this.supplierForm.get('supplierType')?.value;
+    let value = this.supplierForm.get(field)?.value || "";
+    const supplierType = this.supplierForm.get("supplierType")?.value;
 
-    if (supplierType === '2F' || supplierType === 'OSEA') {
-      value = value.replace(/[\u0E00-\u0E7F]/g, '');
+    if (supplierType === "2F" || supplierType === "OSEA") {
+      value = value.replace(/[\u0E00-\u0E7F]/g, "");
       this.supplierForm.patchValue({ [field]: value }, { emitEvent: true });
     }
   }
@@ -2795,27 +3261,26 @@ export class SupplierAddComponent {
   getTimeSuccessBySupplierID(id: number) {
     this.supplierService.findTimeSuccessBySupplierId(id).subscribe({
       next: (response: any) => {
-        this.successTime = response[0].UpdateDateTime
+        this.successTime = response[0].UpdateDateTime;
       },
-      error: () => {
-      }
+      error: () => {},
     });
   }
 
   formatDateTimeNew(dateTime: string): string {
     const date = new Date(dateTime);
-    if (isNaN(date.getTime())) return 'Invalid Date';
+    if (isNaN(date.getTime())) return "Invalid Date";
 
-    return date.toLocaleString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    }).replace(/,/, '');
+    return date
+      .toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      })
+      .replace(/,/, "");
   }
-
 }
-

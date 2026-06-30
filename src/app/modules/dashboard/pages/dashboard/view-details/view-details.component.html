@@ -43,6 +43,7 @@
         </div>
     </div>
 
+    <ng-container *ngIf="data?.ownerFN != 0">
     <!-- Section: Bank -->
     <div class="section-header">
         <span class="section-title">ข้อมูลธนาคาร</span>
@@ -61,6 +62,7 @@
             <p class="details-value">{{ data?.accountNum }}</p>
         </div>
     </div>
+    </ng-container>
 
     <!-- Section: Approver -->
     <div class="section-header">
@@ -69,7 +71,15 @@
     <div class="details-grid">
         <div class="details-row">
             <p class="details-label">ACC Approver:</p>
-            <p class="details-value">{{ data?.ownerAccName }}</p>
+            <p class="details-value">
+                {{ data?.ownerAccName }}
+                <span
+                    *ngIf="data?.status && data?.status !== 'Approved By ACC'"
+                    class="status-text"
+                    [ngClass]="{ 'status-danger': data?.status === 'Cancel' || data?.status?.includes('Reject') }">
+                    ({{ data?.status }})
+                </span>
+            </p>
         </div>
         <div class="details-row" *ngIf="data?.paymentMethod === 'Transfer'">
             <p class="details-label">FN Approver:</p>

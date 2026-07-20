@@ -86,11 +86,16 @@
           <nz-option *ngFor="let type of filteredItemsPrefix" [nzLabel]="type.name" [nzValue]="type.name"></nz-option>
         </nz-select>
       </div>
-      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="13" class="pr-3" style="margin-top: 46px;">
+      <div nz-col [nzXs]="24" [nzMd]="12" [nzLg]="13" class="pr-3 mt-3">
+        <nz-form-label nzNoColon>
+          <span *ngIf="isAddressEnglishOnlyCustomer()" class="address-input-note">
+           * ระบุภาษาอังกฤษหรือตัวเลขเท่านั้น *
+          </span>
+        </nz-form-label>
         <nz-input-group nzPrefixIcon="user" class="form-input"
           [ngClass]="{'required-field-error': isFieldInvalid('name')}">
           <input nz-input placeholder="ชื่อ นามสกุล" formControlName="name" (blur)="onNameBlur()"
-            (input)="sanitizeInput('name')" />
+            (keypress)="preventNonEnglishAddressInput($event)" (input)="sanitizeInput('name')" />
         </nz-input-group>
       </div>
       <div *ngIf="!isOverseaCustomer()" nz-col [nzXs]="24" [nzMd]="12" [nzLg]="3" class="pr-3 mt-3">

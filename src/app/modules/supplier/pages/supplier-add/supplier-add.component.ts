@@ -3248,12 +3248,51 @@ export class SupplierAddComponent {
     this.validationService.preventThaiInput(event);
   }
 
+  isAddressEnglishOnlySupplier(): boolean {
+    const supplierType = this.supplierForm?.get('supplierType')?.value || this.selectType;
+    return supplierType === '2F' || supplierType === 'OSEA';
+  }
+
+  preventNonEnglishAddressInput(event: KeyboardEvent): void {
+    if (!this.isAddressEnglishOnlySupplier()) {
+      return;
+    }
+
+    if (event.ctrlKey || event.metaKey || event.altKey) {
+      return;
+    }
+
+    const allowedKeys = [
+      'Backspace',
+      'Tab',
+      'Enter',
+      'Escape',
+      'Delete',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Home',
+      'End'
+    ];
+
+    if (allowedKeys.includes(event.key)) {
+      return;
+    }
+
+    if (!/^[A-Za-z0-9\s.,/#\-()]+$/.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+
   sanitizeInput(field: string): void {
     let value = this.supplierForm.get(field)?.value || "";
     const supplierType = this.supplierForm.get("supplierType")?.value;
 
     if (supplierType === "2F" || supplierType === "OSEA") {
-      value = value.replace(/[\u0E00-\u0E7F]/g, "");
+      value = (field === 'addressSup' || field === 'name')
+        ? value.replace(/[^A-Za-z0-9\s.,/#\-()]/g, '')
+        : value.replace(/[\u0E00-\u0E7F]/g, "");
       this.supplierForm.patchValue({ [field]: value }, { emitEvent: true });
     }
   }

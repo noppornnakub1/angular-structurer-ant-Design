@@ -1671,7 +1671,7 @@ export class CustomerAddComponent implements OnInit {
     const customerType = this.customerForm.get('customerType')?.value;
 
     if (customerType === '1F' || customerType === 'OSEA') {
-      value = field === 'addressDetail'
+      value = (field === 'addressDetail' || field === 'name')
         ? value.replace(/[^A-Za-z0-9\s.,/#\-()]/g, '')
         : value.replace(/[\u0E00-\u0E7F]/g, '');
       this.customerForm.patchValue({ [field]: value }, { emitEvent: true });

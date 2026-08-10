@@ -12,6 +12,7 @@ import { IRole } from '../../../user-manager/interface/role.interface';
 import { ICustomerType } from '../../interface/customerType.interface';
 import { DataCompany, DataLocation, prefix } from '../../../supplier/pages/supplier-add/supplier-add.component';
 import Swal from 'sweetalert2';
+import isEmail from 'validator/es/lib/isEmail';
 import { EmailService } from '../../../../shared/constants/email.service';
 import { debounceTime, distinctUntilChanged, lastValueFrom } from 'rxjs';
 import { prefixService } from '../../../../shared/constants/prefix.service';
@@ -770,10 +771,9 @@ export class CustomerAddComponent implements OnInit {
   }
 
   validateEmail() {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,7}){1,2}$/;
     if (!this.customerForm.value.email) {
       this.emailError = 'Email is required';
-    } else if (!emailPattern.test(this.customerForm.value.email)) {
+    } else if (!isEmail(this.customerForm.value.email)) {
       if (this.customerForm.value.email === '-') {
         this.emailError = '';
       }

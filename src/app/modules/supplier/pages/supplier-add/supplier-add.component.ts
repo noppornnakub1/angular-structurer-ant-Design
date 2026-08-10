@@ -24,6 +24,7 @@ import { AuthService } from "../../../authentication/services/auth.service";
 import { IRole } from "../../../user-manager/interface/role.interface";
 import { BankMasterService } from "../../../../shared/constants/bank-master.service";
 import Swal from "sweetalert2";
+import isEmail from "validator/es/lib/isEmail";
 import { EmailService } from "../../../../shared/constants/email.service";
 import {
   BehaviorSubject,
@@ -2193,11 +2194,9 @@ export class SupplierAddComponent {
   }
 
   validateEmail() {
-    const emailPattern =
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,7}){1,2}$/;
     if (!this.supplierForm.value.email) {
       this.emailError = "Email is required";
-    } else if (!emailPattern.test(this.supplierForm.value.email)) {
+    } else if (!isEmail(this.supplierForm.value.email)) {
       if (this.supplierForm.value.email === "-") {
         this.emailError = "";
       } else {

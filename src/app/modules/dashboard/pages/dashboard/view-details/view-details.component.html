@@ -76,15 +76,28 @@
                 <span
                     *ngIf="data?.status && data?.status !== 'Approved By ACC'"
                     class="status-text"
-                    [ngClass]="{ 'status-danger': data?.status === 'Cancel' || data?.status?.includes('Reject') }">
+                    [ngClass]="{
+                        'status-danger': data?.status === 'Cancel' || data?.status?.includes('Reject'),
+                        'status-success': data?.status === 'Success'
+                    }">
                     ({{ data?.status }})
                 </span>
             </p>
         </div>
         <div class="details-row" *ngIf="data?.paymentMethod === 'Transfer'">
             <p class="details-label">FN Approver:</p>
-            <p *ngIf="data?.rejectReason !== null" class="details-value">{{ data?.ownerFnName }} (Reject)</p>
-            <p *ngIf="data?.rejectReason === null" class="details-value">{{ data?.ownerFnName }}</p>
+            <p class="details-value">
+                {{ data?.ownerFnName }}
+                <span
+                    *ngIf="fnApproverStatus()"
+                    class="status-text"
+                    [ngClass]="{
+                        'status-danger': fnApproverStatus() === '(Reject)',
+                        'status-success': fnApproverStatus() === '(Success)'
+                    }">
+                    {{ fnApproverStatus() }}
+                </span>
+            </p>
         </div>
     </div>
 

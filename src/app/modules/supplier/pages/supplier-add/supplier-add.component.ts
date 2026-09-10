@@ -3279,7 +3279,7 @@ export class SupplierAddComponent {
       return;
     }
 
-    if (!/^[A-Za-z0-9\s.,/#\-()]+$/.test(event.key)) {
+    if (!/^[A-Za-z0-9\s.,/#\-()&@']+$/.test(event.key)) {
       event.preventDefault();
     }
   }
@@ -3290,7 +3290,7 @@ export class SupplierAddComponent {
 
     if (supplierType === "2F" || supplierType === "OSEA") {
       value = (field === 'addressSup' || field === 'name')
-        ? value.replace(/[^A-Za-z0-9\s.,/#\-()]/g, '')
+        ? value.replace(/[^A-Za-z0-9\s.,/#\-()&@']/g, '')
         : value.replace(/[\u0E00-\u0E7F]/g, "");
       this.supplierForm.patchValue({ [field]: value }, { emitEvent: true });
     }
